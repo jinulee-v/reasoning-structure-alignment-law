@@ -1,0 +1,7 @@
+e4f1b845016fc38b95b702bbbb27a5c9af3eadfa856ba585662b8b2cd71c187c  sara.tar.gz
+source: https://nlp.jhu.edu/law/sara/sara.tar.gz
+paper:  https://arxiv.org/abs/2005.05257  (Holzenberger, Blair-Stanek, Van Durme 2020)
+code:   https://github.com/SgfdDttt/sara
+fetched: 2026-08-28
+contents: statutes/{prolog,source}, cases/ (376), splits/{train,test}
+NOTE: pristine upstream. Do not edit. Compat patches live in sara_port/prolog_compat/.

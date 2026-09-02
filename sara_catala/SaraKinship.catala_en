@@ -1,0 +1,386 @@
+# Kinship (Layer 0)
+
+> Module SaraKinship
+
+> Using SaraWorld as W
+
+Port of the kinship relations in `utils.pl`: `is_child_of/4`, `is_sibling_of/4`,
+`is_descendent_of/4`, and the step- and in-law relations §152 builds on. These
+are world model, not statute, so they live in Layer 0.
+
+Every relation carries a validity window, and the Prolog derives it with the
+`var`/`nonvar` idiom:
+
+```prolog
+( ( \+ start_(Relationship,_) ) ; start_(Relationship,Day_start) ),
+( ( \+ end_(Relationship,_) )   ; end_(Relationship,Day_end) )
+```
+
+Two things follow. An event with no start date leaves `Day_start` *unbound* —
+"no constraint", not some sentinel — which is an `Absent` here. And an event
+carrying several start dates yields one solution per date, so a relationship
+with two starts and two ends produces four rows. The port reproduces that cross
+product rather than collapsing to one window.
+
+```catala-metadata
+declaration structure Window:
+  data starts_on content optional of date
+  data ends_on content optional of date
+
+## One relationship instance: `subject` stands in the relation to `object`
+## over `window`.
+declaration structure Kinship:
+  data subject content W.Entity
+  data object content W.Entity
+  data window content Window
+
+## The `optional` lift of a role list: an empty list is "no constraint", a
+## non-empty one contributes each of its values separately.
+declaration opt_dates content list of optional of date
+  depends on ds content list of date
+  equals
+    if (number of ds) = 0
+    then [Absent]
+    else map each d among ds to (Present content d)
+
+## Every (start, end) pairing the Prolog's two disjunctions admit.
+declaration windows content list of Window
+  depends on ev content W.Event
+  equals
+    combine all inner
+      among (map each s among (opt_dates of ev.starts) to
+              (map each e among (opt_dates of ev.ends) to
+                Window { -- starts_on: s -- ends_on: e }))
+      in acc initially []
+      with acc ++ inner
+
+## The pairs an event contributes to a relation, given which role holds the
+## subject and which holds the object, with the `X \== Y` guard.
+declaration pairs_from content list of Kinship
+  depends on ev content W.Event,
+             subjects content list of W.Entity,
+             objects content list of W.Entity
+  equals
+    combine all a
+      among (map each x among subjects to
+              (combine all b
+                 among (map each y among
+                         (list of o among objects such that o.id != x.id)
+                        to (map each w among (windows of ev) to
+                             Kinship { -- subject: x -- object: y -- window: w }))
+                 in acc2 initially []
+                 with acc2 ++ b))
+      in acc initially []
+      with acc ++ a
+
+declaration flatten_kinship content list of Kinship
+  depends on nested content list of list of Kinship
+  equals
+    combine all inner among nested in acc initially [] with acc ++ inner
+```
+
+## Child of
+
+`son_`/`daughter_` name the child as agent and the parent as patient;
+`father_`/`mother_` name the parent as agent and the child as patient. Both
+directions produce the same `is_child_of(Child, Parent, ...)` relation.
+
+```catala-metadata
+declaration scope Kinships:
+  input world content W.World
+  output child_of content list of Kinship
+  output sibling_of content list of Kinship
+  ## `is_descendent_of/4`, unrolled to depth 3. The longest ancestor chain in
+  ## all 376 cases is 2 (measured), so depth 3 covers the suite with margin;
+  ## Catala has no recursion, so the bound is explicit rather than implied.
+  output descendent_of content list of Kinship
+```
+
+```catala
+scope Kinships:
+  definition child_of equals
+    (flatten_kinship of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Son
+                   or e.kinds contains W.EventKind.Daughter)
+       to pairs_from of ev, ev.agents, ev.patients))
+    ++
+    (flatten_kinship of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Father
+                   or e.kinds contains W.EventKind.Mother)
+       to pairs_from of ev, ev.patients, ev.agents))
+
+  ## `is_sibling_of/4`: a brother_ or sister_ event in which both X and Y
+  ## appear, in either role.
+  definition sibling_of equals
+    flatten_kinship of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Brother
+                   or e.kinds contains W.EventKind.Sister)
+       to pairs_from of ev, (ev.agents ++ ev.patients),
+                            (ev.agents ++ ev.patients))
+
+  ## Base case plus two compositions. The recursive clause keeps the
+  ## *descendant's* own window and discards the intermediate one, which is what
+  ## `is_child_of(Z,Y,_,_), is_descendent_of(X,Z,Day_start,Day_end)` does.
+  definition descendent_of equals
+    child_of
+    ++ (flatten_kinship of
+         (map each mid among child_of to
+           (map each lower among
+             (list of c among child_of such that c.object.id = mid.subject.id)
+            to Kinship { -- subject: lower.subject -- object: mid.object
+                         -- window: lower.window })))
+    ++ (flatten_kinship of
+         (map each mid among child_of to
+           (flatten_kinship of
+             (map each mid2 among
+               (list of c among child_of such that c.object.id = mid.subject.id)
+              to (map each lower among
+                   (list of c among child_of
+                    such that c.object.id = mid2.subject.id)
+                  to Kinship { -- subject: lower.subject -- object: mid.object
+                               -- window: lower.window })))))
+```
+
+## Queries over a derived relation
+
+`is_child_of(alice, bob, _, _)` in a case is an existence question over the
+relation, optionally pinning the window.
+
+```catala-metadata
+declaration relates content boolean
+  depends on rel content list of Kinship,
+             subject content W.Entity, object content W.Entity
+  equals
+    exists k among rel such that
+      k.subject.id = subject.id and k.object.id = object.id
+
+## The same query, but reporting *which* windows the relation holds over. A
+## case that binds `Start_relationship`/`End_relationship` and then constrains
+## them is asking about the solutions, not just whether one exists.
+declaration windows_between content list of Window
+  depends on rel content list of Kinship,
+             subject content W.Entity, object content W.Entity
+  equals
+    map each k among
+      (list of r among rel
+       such that r.subject.id = subject.id and r.object.id = object.id)
+    to k.window
+
+## A case may grant a *windowed* relation outright --
+## `s152_c_2(bob,alice,"2015-01-01","2020-12-31")` supplies the relationship and
+## the window that §152(c)(1)(B) then measures the shared abode against. The
+## date payload carries `|0001-01-01|` where the argument was not a date, which
+## is the "unbound, no constraint" reading again.
+declaration injected_opt_date content optional of date
+  depends on inj content W.Injection, pos content integer
+  equals
+    match (List.nth_element of inj.dates, pos) with pattern
+    -- Absent: Absent
+    -- Present content d:
+        if d = |0001-01-01| then Absent else Present content d
+
+declaration injected_windows content list of Window
+  depends on injections content list of W.Injection,
+             pred content integer, pattern content list of integer,
+             start_pos content integer, end_pos content integer
+  equals
+    map each inj among (W.injections_for of injections, pred, pattern)
+    to Window { -- starts_on: injected_opt_date of inj, start_pos
+                -- ends_on: injected_opt_date of inj, end_pos }
+```
+
+## `latest/2` and `earliest/2`
+
+`utils.pl` folds a list of days, **skipping unbound ones** (`var(Day)` → carry
+on) and leaving the result unbound when nothing was bound. That is exactly a
+fold over `optional of date` that ignores `Absent` and returns `Absent` for an
+all-absent list — the "no constraint" reading again, not a sentinel.
+
+```catala-metadata
+declaration latest content optional of date
+  depends on ds content list of optional of date
+  equals
+    combine all d among ds in acc initially Absent with
+      (match d with pattern
+       -- Absent: acc
+       -- Present content x:
+           (match acc with pattern
+            -- Absent: Present content x
+            -- Present content y: Present content (if x >= y then x else y)))
+
+declaration earliest content optional of date
+  depends on ds content list of optional of date
+  equals
+    combine all d among ds in acc initially Absent with
+      (match d with pattern
+       -- Absent: acc
+       -- Present content x:
+           (match acc with pattern
+            -- Absent: Present content x
+            -- Present content y: Present content (if x <= y then x else y)))
+
+declaration join_windows content Window
+  depends on a content Window, b content Window
+  equals
+    Window {
+      -- starts_on: latest of [a.starts_on; b.starts_on]
+      -- ends_on: earliest of [a.ends_on; b.ends_on]
+    }
+```
+
+## Step and in-law relations
+
+Each is a child-of or sibling-of link composed with a marriage. The validity
+window is the intersection of the two, via `latest`/`earliest`, which is what
+the Prolog builds explicitly at each site.
+
+One asymmetry is deliberate: `is_stepparent_of/4` requires the marriage to have
+a start date (`start_(Marriage,Start_time)` with no `\+ start_` alternative),
+while its four siblings accept a marriage with none. That is how `utils.pl` is
+written, so the port keeps it.
+
+```catala-metadata
+## The marriages joining `a` and `b`, with their windows.
+declaration marriages_of content list of Window
+  depends on world content W.World, a content W.Entity, b content W.Entity
+  equals
+    combine all ws
+      among (map each ev among
+              (list of e among world.events
+               such that e.kinds contains W.EventKind.Marriage
+                         and e.agents contains a and e.agents contains b)
+             to windows of ev)
+      in acc initially []
+      with acc ++ ws
+
+## As above, but only marriages that carry a start date -- the extra condition
+## `is_stepparent_of/4` imposes.
+declaration dated_marriages_of content list of Window
+  depends on world content W.World, a content W.Entity, b content W.Entity
+  equals
+    list of w among (marriages_of of world, a, b)
+    such that (match w.starts_on with pattern
+               -- Absent: false
+               -- Present content d: true)
+
+declaration scope InLaws:
+  input world content W.World
+  input child_of content list of Kinship
+  input sibling_of content list of Kinship
+  ## X is a stepsibling of Y: their respective parents are married.
+  output stepsibling_of content list of Kinship
+  ## X is the stepparent of Y: X married one of Y's parents.
+  output stepparent_of content list of Kinship
+  ## X married a child of Y.
+  output child_in_law_of content list of Kinship
+  ## X married a parent of Y.
+  output parent_in_law_of content list of Kinship
+  ## X married a sibling of Y, or vice versa.
+  output sibling_in_law_of content list of Kinship
+```
+
+```catala
+scope InLaws:
+  definition stepsibling_of equals
+    flatten_kinship of
+      (map each cy among child_of to
+        (flatten_kinship of
+          (map each cx among
+            (list of c among child_of such that c.subject.id != cy.subject.id)
+           to (map each m among
+                 (marriages_of of world, cy.object, cx.object)
+               to Kinship {
+                    -- subject: cx.subject -- object: cy.subject
+                    -- window: join_windows of
+                                 (join_windows of cx.window, cy.window), m }))))
+
+  ## `is_stepparent_of` is the one in-law relation whose marriage must be
+  ## *dated*. Its four siblings all write
+  ## `( \+ start_(Marriage,_) ; start_(Marriage,Start_time) )`, so an undated
+  ## marriage is no constraint for them; `utils.pl:262` writes a bare
+  ## `start_(Marriage,Start_time)` with no such fallback, and an undated
+  ## marriage makes the clause fail outright. The asymmetry is SARA's, not a
+  ## reading of the statute, so the port reproduces it here and nowhere else.
+  definition stepparent_of equals
+    flatten_kinship of
+      (map each cy among child_of to
+        (flatten_kinship of
+          (map each other among
+            (list of e among world.events
+             such that e.kinds contains W.EventKind.Marriage
+                       and e.agents contains cy.object
+                       and (number of e.starts) > 0)
+           to (map each sp among
+                 (list of a among other.agents such that a.id != cy.object.id
+                                                and a.id != cy.subject.id)
+               to Kinship {
+                    -- subject: sp -- object: cy.subject
+                    -- window: join_windows of cy.window,
+                                 (match (List.first_element of
+                                          (dated_marriages_of of world, cy.object, sp))
+                                  with pattern
+                                  -- Absent: Window { -- starts_on: Absent
+                                                      -- ends_on: Absent }
+                                  -- Present content w: w) }))))
+
+  ## Each in-law relation runs only while *both* the kinship and the marriage
+  ## do: SARA takes `latest([Start_marriage,Day_start_y],Day_start)` and
+  ## `earliest([End_marriage,Day_end_y],Day_end)`. Taking the kinship window
+  ## alone dropped a marriage that had ended. See D42.
+  definition child_in_law_of equals
+    flatten_kinship of
+      (map each cy among child_of to
+        (flatten_kinship of
+          (map each ev among
+            (list of e among world.events
+             such that e.kinds contains W.EventKind.Marriage
+                       and e.agents contains cy.subject)
+           to (map each sp among
+                 (list of a among ev.agents such that a.id != cy.subject.id
+                                                and a.id != cy.object.id)
+               to Kinship { -- subject: sp -- object: cy.object
+                            -- window: join_windows of cy.window, (match (List.first_element of (windows of ev)) with pattern
+                                  -- Absent: Window { -- starts_on: Absent
+                                                      -- ends_on: Absent }
+                                  -- Present content mw: mw) }))))
+
+  definition parent_in_law_of equals
+    flatten_kinship of
+      (map each cy among child_of to
+        (flatten_kinship of
+          (map each ev among
+            (list of e among world.events
+             such that e.kinds contains W.EventKind.Marriage
+                       and e.agents contains cy.object)
+           to (map each sp among
+                 (list of a among ev.agents such that a.id != cy.object.id
+                                                and a.id != cy.subject.id)
+               to Kinship { -- subject: sp -- object: cy.subject
+                            -- window: join_windows of cy.window, (match (List.first_element of (windows of ev)) with pattern
+                                  -- Absent: Window { -- starts_on: Absent
+                                                      -- ends_on: Absent }
+                                  -- Present content mw: mw) }))))
+
+  definition sibling_in_law_of equals
+    flatten_kinship of
+      (map each sib among sibling_of to
+        (flatten_kinship of
+          (map each ev among
+            (list of e among world.events
+             such that e.kinds contains W.EventKind.Marriage
+                       and e.agents contains sib.subject)
+           to (map each sp among
+                 (list of a among ev.agents such that a.id != sib.subject.id
+                                                and a.id != sib.object.id)
+               to Kinship { -- subject: sp -- object: sib.object
+                            -- window: join_windows of sib.window, (match (List.first_element of (windows of ev)) with pattern
+                                  -- Absent: Window { -- starts_on: Absent
+                                                      -- ends_on: Absent }
+                                  -- Present content mw: mw) }))))
+```

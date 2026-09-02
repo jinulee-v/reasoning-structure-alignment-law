@@ -1,0 +1,143 @@
+# Gross income (Layer 0)
+
+> Module SaraIncome
+
+> Using SaraWorld as W
+
+Port of `gross_income/3` and `gross_income_individual/3` from `utils.pl`. This
+is world model rather than statute, so it lives in Layer 0 alongside the event
+base.
+
+The Prolog collects income with
+
+```prolog
+findall(Amount,
+    ( income_(Income), agent_(Income,Person), amount_(Income,Amount),
+      start_(Income,Start_time),
+      is_before(First_day_year,Start_time), is_before(Start_time,Last_day_year) ),
+    Income_amounts),
+sum_list(Income_amounts,Income),
+```
+
+Two details of that are load-bearing and easy to lose in translation:
+
+1. **It is a join, not a lookup.** `amount_/2` and `start_/2` are relations, and
+   the corpus does contain events carrying several of each (`amount_` fan-out
+   reaches 2, `start_` reaches 101). `findall` therefore emits one row per
+   *pair* of an amount and an in-window start date, and the sum counts an amount
+   once for every qualifying start. The port reproduces that cross product
+   rather than summing each amount once.
+2. **The window is closed at both ends.** `is_before/2` compares with `=<`, so
+   an income event starting exactly on 1 January or 31 December is inside the
+   taxable year.
+
+Payments are collected the same way but keyed on `patient_` — money received —
+rather than on `agent_`.
+
+```catala-metadata
+## The amounts one event contributes: its amount list, repeated once per start
+## date falling inside the taxable year.
+declaration event_contribution content money
+  depends on ev content W.Event, y content integer
+  equals
+    (Money.sum of ev.amounts)
+    * (decimal of (number of
+        (list of d among ev.starts
+         such that (W.first_day_year of y) <= d and d <= (W.last_day_year of y))))
+
+## `gross_income/3` with the *person* unbound. SARA collects the amounts with
+## `findall(Amount, (income_(I), agent_(I,Person), amount_(I,Amount), ...))`,
+## and an unbound `Person` is re-bound on every solution rather than fixed by
+## the first: the call then sums the income of everyone in the world and leaves
+## `Person` unbound at the end. That is not the individual test asked one
+## person at a time, and a caller that reaches §152(d)(1)(B) before binding the
+## dependant gets this reading -- see D34.
+declaration everyone_income content money
+  depends on world content W.World, y content integer
+  equals
+    (Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Income)
+       to event_contribution of ev, y))
+    + (Money.sum of
+        (map each ev among
+          (list of e among world.events
+           such that e.kinds contains W.EventKind.Payment)
+         to event_contribution of ev, y))
+
+## How many times an entity appears in a role list. SARA's sums are `findall`s
+## over `income_(I), agent_(I,Person), amount_(I,Amount), start_(I,S)`, so the
+## number of solutions is the product of the matches in *each* of those
+## positions: a fact base that states `patient_(p,alice)` twice contributes the
+## amount twice. `event_contribution` already multiplies by the in-window
+## starts; this supplies the role factor. See D40.
+declaration role_count content integer
+  depends on l content list of W.Entity, e content W.Entity
+  equals number of (list of x among l such that x.id = e.id)
+
+declaration scope GrossIncomeIndividual:
+  input world content W.World
+  input person content W.Entity
+  input taxable_year content integer
+  output income content money
+  output payments content money
+  output total content money
+```
+
+```catala
+scope GrossIncomeIndividual:
+  ## income_(I), agent_(I,Person)
+  definition income equals
+    Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Income
+                   and e.agents contains person)
+       to (event_contribution of ev, taxable_year)
+          * (decimal of (role_count of ev.agents, person)))
+
+  ## payment_(P), patient_(P,Person)
+  definition payments equals
+    Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Payment
+                   and e.patients contains person)
+       to (event_contribution of ev, taxable_year)
+          * (decimal of (role_count of ev.patients, person)))
+
+  definition total equals income + payments
+```
+
+## Joint returns
+
+`gross_income/3` adds the spouse's individual gross income when the taxpayer
+files a joint return covering the whole taxable year. Whether a joint return was
+filed depends on §7703, which is one of the cycle-entry points, so the spouse
+arrives as an explicit input rather than being derived here — see Pattern 3 in
+`SaraPattern.catala_en`.
+
+```catala-metadata
+declaration scope GrossIncome:
+  input world content W.World
+  input person content W.Entity
+  input taxable_year content integer
+  ## Present only when a joint return covering the full year was filed; the
+  ## §7703 determination is stratified out of Layer 0.
+  input joint_spouse content optional of W.Entity
+  output total content money
+```
+
+```catala
+scope GrossIncome:
+  definition total equals
+    (output of GrossIncomeIndividual with {
+       -- world: world -- person: person -- taxable_year: taxable_year }).total
+    + (match joint_spouse with pattern
+       -- Absent: $0
+       -- Present content sp:
+           (output of GrossIncomeIndividual with {
+              -- world: world -- person: sp
+              -- taxable_year: taxable_year }).total)
+```

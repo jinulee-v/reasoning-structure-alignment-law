@@ -1,0 +1,390 @@
+# §1. Tax imposed
+
+> Module Section1
+
+> Using SaraWorld as W
+> Using SaraKinship as K
+> Using SaraPredicates as P
+> Using SaraStatus as St
+> Using Section7703 as S7703
+> Using Section152 as S152
+> Using Section63 as S63
+
+Port of `section1.pl`. §1 imposes tax on taxable income according to one of four
+rate schedules, selected by filing status:
+
+| schedule | §1 | who |
+|---|---|---|
+| A | (a) | married filing jointly, and surviving spouses |
+| B | (b) | heads of household |
+| C | (c) | unmarried, not a surviving spouse or head of household |
+| D | (d) | married filing separately |
+
+Each schedule is five brackets. SARA exposes every bracket as its own predicate
+(`s1_a_i/2` … `s1_d_v/2`), and 60 of the 376 cases query one directly, asking
+whether a *claimed* tax figure is the one the bracket produces for a given
+taxable income. Both uses are served here from one table, so the twenty bracket
+predicates are one definition rather than twenty.
+
+```catala-metadata
+declaration enumeration Schedule:
+  -- ScheduleA
+  -- ScheduleB
+  -- ScheduleC
+  -- ScheduleD
+
+## One row of a rate schedule: tax is `base` plus `rate` of the excess over
+## `floor`, provided income does not exceed `ceiling`. The top bracket has no
+## ceiling.
+declaration structure Bracket:
+  data floor content money
+  data ceiling content optional of money
+  data base content money
+  data rate content decimal
+```
+
+## Rate schedules
+
+The figures are the 1994 tables SARA encodes, transcribed from the statute text
+in `section1.pl`.
+
+```catala-metadata
+declaration brackets_of content list of Bracket
+  depends on sched content Schedule
+  equals
+    match sched with pattern
+    -- ScheduleA: [
+         Bracket { -- floor: $0      -- ceiling: Present content $36,900
+                   -- base: $0          -- rate: 0.15 };
+         Bracket { -- floor: $36,900 -- ceiling: Present content $89,150
+                   -- base: $5,535      -- rate: 0.28 };
+         Bracket { -- floor: $89,150 -- ceiling: Present content $140,000
+                   -- base: $20,165     -- rate: 0.31 };
+         Bracket { -- floor: $140,000 -- ceiling: Present content $250,000
+                   -- base: $35,928.50  -- rate: 0.36 };
+         Bracket { -- floor: $250,000 -- ceiling: Absent
+                   -- base: $75,528.50  -- rate: 0.396 } ]
+    -- ScheduleB: [
+         Bracket { -- floor: $0      -- ceiling: Present content $29,600
+                   -- base: $0          -- rate: 0.15 };
+         Bracket { -- floor: $29,600 -- ceiling: Present content $76,400
+                   -- base: $4,440      -- rate: 0.28 };
+         Bracket { -- floor: $76,400 -- ceiling: Present content $127,500
+                   -- base: $17,544     -- rate: 0.31 };
+         Bracket { -- floor: $127,500 -- ceiling: Present content $250,000
+                   -- base: $33,385     -- rate: 0.36 };
+         Bracket { -- floor: $250,000 -- ceiling: Absent
+                   -- base: $77,485     -- rate: 0.396 } ]
+    -- ScheduleC: [
+         Bracket { -- floor: $0      -- ceiling: Present content $22,100
+                   -- base: $0          -- rate: 0.15 };
+         Bracket { -- floor: $22,100 -- ceiling: Present content $53,500
+                   -- base: $3,315      -- rate: 0.28 };
+         Bracket { -- floor: $53,500 -- ceiling: Present content $115,000
+                   -- base: $12,107     -- rate: 0.31 };
+         Bracket { -- floor: $115,000 -- ceiling: Present content $250,000
+                   -- base: $31,172     -- rate: 0.36 };
+         Bracket { -- floor: $250,000 -- ceiling: Absent
+                   -- base: $79,772     -- rate: 0.396 } ]
+    -- ScheduleD: [
+         Bracket { -- floor: $0      -- ceiling: Present content $18,450
+                   -- base: $0          -- rate: 0.15 };
+         Bracket { -- floor: $18,450 -- ceiling: Present content $44,575
+                   -- base: $2,767.50   -- rate: 0.28 };
+         Bracket { -- floor: $44,575 -- ceiling: Present content $70,000
+                   -- base: $10,082.50  -- rate: 0.31 };
+         Bracket { -- floor: $70,000 -- ceiling: Present content $125,000
+                   -- base: $17,964.25  -- rate: 0.36 };
+         Bracket { -- floor: $125,000 -- ceiling: Absent
+                   -- base: $37,764.25  -- rate: 0.396 } ]
+```
+
+## Bracket arithmetic
+
+The Prolog computes `round(base + (Taxinc - floor) * rate)` in floating point
+and rounds to a whole dollar. Catala works in exact decimal, so the port rounds
+the same way but without the float error; `sara_scripts/DEVIATIONS.md` records the
+comparison once the differential runner has checked all 60 §1 cases.
+
+```catala-metadata
+declaration bracket_tax content money
+  depends on b content Bracket, taxable_income content money
+  equals
+    money of (round of (decimal of (b.base + (taxable_income - b.floor) * b.rate)))
+
+## Does this bracket govern the given taxable income? The Prolog writes the
+## test as `Taxinc =< ceiling, floor < Taxinc`, so the floor is exclusive and
+## the ceiling inclusive. The first bracket has floor $0 and the Prolog omits
+## its lower test entirely, which matters only for negative income; income is
+## never negative in the corpus.
+declaration bracket_applies content boolean
+  depends on b content Bracket, taxable_income content money
+  equals
+    (b.floor = $0 or b.floor < taxable_income)
+    and (match b.ceiling with pattern
+         -- Absent: true
+         -- Present content c: taxable_income <= c)
+```
+
+## The twenty bracket predicates
+
+`s1_a_i/2` … `s1_d_v/2`. A case asks whether a claimed tax figure is what the
+bracket yields, which holds only when the bracket applies *and* the arithmetic
+agrees — exactly the Prolog's conjunction.
+
+```catala-metadata
+declaration scope BracketHolds:
+  input sched content Schedule
+  ## 1-based, matching the statute's (i)…(v).
+  input index content integer
+  input taxable_income content money
+  input claimed_tax content money
+  output holds content boolean
+```
+
+```catala
+scope BracketHolds:
+  definition holds equals
+    match (List.nth_element of (brackets_of of sched), index) with pattern
+    -- Absent: false
+    -- Present content b:
+        (bracket_applies of b, taxable_income)
+        and (bracket_tax of b, taxable_income) = claimed_tax
+```
+
+## Tax under a schedule
+
+`s1_a_tax/2` and its siblings: the tax for a taxable income under one schedule,
+being whichever bracket applies.
+
+```catala-metadata
+declaration scope ScheduleTax:
+  input sched content Schedule
+  input taxable_income content money
+  output tax content money
+```
+
+```catala
+scope ScheduleTax:
+  definition tax equals
+    match
+      (List.first_element of
+        (list of b among (brackets_of of sched)
+         such that bracket_applies of b, taxable_income))
+    with pattern
+    -- Absent: $0
+    -- Present content b: bracket_tax of b, taxable_income
+```
+
+## The subsections themselves
+
+`s1_a/4`, `s1_b/4`, `s1_c/4` and `s1_d/5` each assert that the taxpayer falls
+under that subsection *and* that the claimed tax is what the schedule yields for
+their taxable income. Taxable income comes from §63, which the cases supply by
+injection; where it is absent the subsection cannot hold.
+
+```catala-metadata
+declaration schedule_of content Schedule
+  depends on st content St.Status
+  equals
+    match st with pattern
+    -- JointOrSurvivingSpouse: Schedule.ScheduleA
+    -- HeadOfHousehold: Schedule.ScheduleB
+    -- Unmarried: Schedule.ScheduleC
+    -- MarriedFilingSeparately: Schedule.ScheduleD
+
+declaration scope SubsectionHolds:
+  input status content St.Status
+  input subsection content Schedule
+  ## §63 taxable income, as injected by the case.
+  input taxable_income content optional of money
+  ## ... and as the statute derives it, with its own availability: a *replaced*
+  ## `s63/3` leaves only the granted rows. Both are solutions of the same
+  ## `s63(Taxp,Taxy,Taxinc)` goal, so either may satisfy the claimed tax.
+  input derived_income content money
+  input derived_applies content boolean
+  input claimed_tax content money
+  output holds content boolean
+```
+
+```catala
+scope SubsectionHolds:
+  definition holds equals
+    (schedule_of of status) = subsection
+    and ((match taxable_income with pattern
+          -- Absent: false
+          -- Present content ti:
+              (output of ScheduleTax with {
+                 -- sched: subsection -- taxable_income: ti }).tax = claimed_tax)
+         or (derived_applies
+             and (output of ScheduleTax with {
+                    -- sched: subsection
+                    -- taxable_income: derived_income }).tax = claimed_tax))
+```
+
+## §1 as a value
+
+`s1/4` is what `tax/3` asks for, and it wants a *number*, not a yes/no. The
+four subsections are tried in the order the Prolog writes them — (a), then (b),
+then (c), then (d) — and the first that applies fixes the schedule. They are
+not quite mutually exclusive: a surviving spouse who also heads a household
+satisfies both (a) and (b), and Prolog's first solution is (a).
+
+`SaraStatus.FilingStatus` cannot stand in for this. It reads §7703(a) rather
+than the whole of §7703, and it has no equivalent of the nonresident-alien bar
+that (a)(1) puts on filing jointly. Both matter here, where the answer is a
+dollar figure rather than a status.
+
+Taxable income is derived from §63 rather than read from the case's grant. That
+is the Prolog's own order: a case that also asserts `s63/3` adds a *clause*
+after the statute's, so the derived value is the first solution, and `tax/3`
+takes the first solution.
+
+```catala-metadata
+declaration scope Tax:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  ## The §7703 spouses, which (a)(1) and (d) both quantify over.
+  output spouses content list of W.Entity
+  output taxable_income_applies content boolean
+  output married content boolean
+  ## s1_a_1/6 — married, filing jointly, and neither spouse a nonresident alien
+  output holds_a_1 content boolean
+  ## s1_a/4
+  output holds_a content boolean
+  ## s1_b/4
+  output holds_b content boolean
+  ## s1_c/4
+  output holds_c content boolean
+  ## s1_d/5
+  output holds_d content boolean
+  ## s63/3
+  output taxable_income content money
+  output subsection content optional of Schedule
+  ## s1/4 — the tax, and whether the goal has a solution at all
+  output tax content money
+  output holds content boolean
+```
+
+```catala
+scope Tax:
+  definition spouses equals
+    (output of S7703.MaritalStatus with {
+       -- injections: injections -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- qualifying_dependants:
+            (output of S152.QualifyingChildrenOf with {
+               -- injections: injections -- world: world
+               -- taxpayer: taxpayer -- taxable_year: taxable_year
+               -- child_of: child_of -- sibling_of: sibling_of
+               -- descendent_of: descendent_of
+               -- stepsibling_of: stepsibling_of }).children }).spouses
+
+  definition married equals
+    (number of spouses) > 0
+    or (W.injected_holds of injections, P.pred_s7703_4,
+          [taxpayer.id; -1; -1; W.num_key of taxable_year])
+
+  ## A joint return by these two spanning the whole taxable year, which the
+  ## Prolog states by unifying its start and end with the year boundaries.
+  definition holds_a_1 equals
+    exists sp among spouses such that
+      (exists jr among world.events such that
+         jr.kinds contains W.EventKind.JointReturn
+         and jr.agents contains taxpayer and jr.agents contains sp
+         and jr.starts contains (W.first_day_year of taxable_year)
+         and jr.ends contains (W.last_day_year of taxable_year))
+      # nonresident aliens cannot file jointly
+      and not (exists nra among world.events such that
+                 nra.kinds contains W.EventKind.NonresidentAlien
+                 and (nra.agents contains taxpayer or nra.agents contains sp)
+                 and ((number of nra.starts) = 0
+                      or (exists st among nra.starts such that
+                            st <= (W.last_day_year of taxable_year)))
+                 and ((number of nra.ends) = 0
+                      or (exists en among nra.ends such that
+                            (W.first_day_year of taxable_year) <= en)))
+
+  definition holds_a equals
+    holds_a_1
+    or (output of St.FilingStatus with {
+          -- world: world -- injections: injections -- taxpayer: taxpayer
+          -- taxable_year: taxable_year }).surviving_spouse
+
+  definition holds_b equals
+    (output of St.FilingStatus with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year }).head_of_household
+
+  definition holds_c equals
+    not (output of St.FilingStatus with {
+           -- world: world -- injections: injections -- taxpayer: taxpayer
+           -- taxable_year: taxable_year }).surviving_spouse
+    and not holds_b
+    and not married
+
+  ## (d) is per spouse: married to somebody they did not file jointly with.
+  definition holds_d equals
+    exists sp among spouses such that
+      not (exists jr among world.events such that
+             jr.kinds contains W.EventKind.JointReturn
+             and jr.agents contains taxpayer and jr.agents contains sp
+             and jr.starts contains (W.first_day_year of taxable_year)
+             and jr.ends contains (W.last_day_year of taxable_year))
+
+  definition taxable_income equals
+    (output of S63.TaxableIncome with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).income
+
+  ## `s1/4` reaches its rate schedule through §63, and §63 through §151. When a
+  ## case *replaces* `s151/5` and names nobody relevant, the chain fails rather
+  ## than yielding a taxable income of zero, and `tax(Taxp,Taxy,T)` then takes
+  ## its `\+ s1(...)` branch with `Income_tax is 0`. See D39.
+  definition taxable_income_applies equals
+    (output of S63.TaxableIncome with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).applies
+
+  definition subsection equals
+    if not taxable_income_applies then Absent
+    else if holds_a then Present content Schedule.ScheduleA
+    else if holds_b then Present content Schedule.ScheduleB
+    else if holds_c then Present content Schedule.ScheduleC
+    else if holds_d then Present content Schedule.ScheduleD
+    else Absent
+
+  definition holds equals
+    match subsection with pattern
+    -- Absent: false
+    -- Present content sched: true
+
+  definition tax equals
+    match subsection with pattern
+    -- Absent: $0
+    -- Present content sched:
+        (output of ScheduleTax with {
+           -- sched: sched -- taxable_income: taxable_income }).tax
+```

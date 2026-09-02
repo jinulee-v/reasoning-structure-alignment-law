@@ -1,0 +1,62 @@
+# Runtime smoke test
+
+> Module SaraSmoke
+
+> Using SaraWorld as W
+> Using SaraPattern as P
+
+Data taken from the grounded case `s151_c_pos`, which supplies
+`marriage_(alice_and_charlie)`, `agent_` for alice and charlie, a start date,
+and injects `s152_c_1(bob,alice,2015)`. Interned ids: alice=1, bob=2,
+charlie=3, alice_and_charlie=10.
+
+```catala-metadata
+declaration scope Smoke:
+  output derived content boolean
+  output injected_wins content boolean
+  output ongoing content boolean
+```
+
+```catala
+scope Smoke:
+  definition derived equals
+    (output of P.DependantQualifies with {
+       -- world: W.World {
+            -- events: [ W.Event {
+                 -- ident: W.Entity { -- id: 10 -- tag: W.EntityTag.PlainEntity }
+                 -- kinds: [ W.EventKind.Marriage ]
+                 -- agents: [ W.Entity { -- id: 1 -- tag: W.EntityTag.PlainEntity };
+                              W.Entity { -- id: 3 -- tag: W.EntityTag.PlainEntity } ]
+                 -- patients: [] -- starts: [ |2015-02-02| ] -- ends: []
+                 -- amounts: [] -- purposes: [] -- places: [] -- media: []
+                 -- reasons: [] -- beneficiaries: [] -- countries: []
+                 -- types: [] -- destinations: []
+                 } ]
+            -- universal_purposes: [] }
+       -- dependant: W.Entity { -- id: 2 -- tag: W.EntityTag.PlainEntity }
+       -- taxpayer: W.Entity { -- id: 1 -- tag: W.EntityTag.PlainEntity }
+       -- taxable_year: 2015
+       -- injected: Absent
+     }).qualifies
+
+  definition injected_wins equals
+    (output of P.DependantQualifies with {
+       -- world: W.World { -- events: [] -- universal_purposes: [] }
+       -- dependant: W.Entity { -- id: 2 -- tag: W.EntityTag.PlainEntity }
+       -- taxpayer: W.Entity { -- id: 1 -- tag: W.EntityTag.PlainEntity }
+       -- taxable_year: 2015
+       -- injected: Present content true
+     }).qualifies
+
+  definition ongoing equals
+    (output of P.RelationshipWindow with {
+       -- ev: W.Event {
+            -- ident: W.Entity { -- id: 10 -- tag: W.EntityTag.PlainEntity }
+            -- kinds: [ W.EventKind.Marriage ] -- agents: [] -- patients: []
+            -- starts: [ |2015-02-02| ] -- ends: []
+            -- amounts: [] -- purposes: [] -- places: [] -- media: []
+            -- reasons: [] -- beneficiaries: [] -- countries: []
+                 -- types: [] -- destinations: []
+            }
+     }).is_ongoing
+```

@@ -1,0 +1,267 @@
+# §68. Overall limitation on itemized deductions
+
+> Module Section68
+
+> Using SaraWorld as W
+> Using SaraIncome as Inc
+> Using SaraStatus as St
+> Using SaraPredicates as P
+
+Port of `section68.pl`. §68 reduces itemized deductions for taxpayers whose
+adjusted gross income exceeds an applicable amount that depends on filing
+status.
+
+§68 sits on the §151 → §68 → §63 → §151 cycle. Filing status (§2(a), §2(b),
+§7703) is therefore taken as input rather than derived here, which is the
+stratification described in `SaraPattern.catala_en` Pattern 3; 154 of the 376
+cases supply exactly these conclusions by injection anyway.
+
+## (b) Applicable amount
+
+The Prolog keeps the four figures in an `amount/2` table keyed by the statute's
+subparagraph letters, with (D) defined as half of (A) rather than as a literal.
+That derivation is preserved here.
+
+```catala-metadata
+declaration enumeration FilingStatus:
+  ## (A) joint return, or a surviving spouse under §2(a)
+  -- JointOrSurvivingSpouse
+  ## (B) head of household under §2(b)
+  -- HeadOfHousehold
+  ## (C) unmarried, and neither a surviving spouse nor a head of household
+  -- Unmarried
+  ## (D) married filing separately
+  -- MarriedFilingSeparately
+
+declaration applicable_amount content money
+  depends on status content FilingStatus
+  equals
+    # (D) is half of (A), per the statute, not an independent literal.
+    match status with pattern
+    -- JointOrSurvivingSpouse: $300,000
+    -- HeadOfHousehold: $275,000
+    -- Unmarried: $250,000
+    -- MarriedFilingSeparately: money of (round of ($300,000 / $2))
+```
+
+## (a)(1) and (a)(2) — the two candidate reductions
+
+`round(3*(Agi-Aa) rdiv 100)` and `round(80*Itemded rdiv 100)`. The Prolog uses
+exact rational division here (`rdiv`), not floats, so the port's exact decimal
+arithmetic matches it without qualification.
+
+```catala-metadata
+## (1) 3 percent of the excess of adjusted gross income over the applicable
+## amount.
+declaration reduction_1 content money
+  depends on agi content money, aa content money
+  equals money of (round of (decimal of ((agi - aa) * 0.03)))
+
+## (2) 80 percent of the itemized deductions otherwise allowable.
+declaration reduction_2 content money
+  depends on itemized content money
+  equals money of (round of (decimal of (itemized * 0.8)))
+```
+
+## (f) Section not to apply
+
+`between(2018,2025,Taxy)`. Suspended for taxable years beginning after 31
+December 2017 and before 1 January 2026.
+
+```catala-metadata
+declaration suspended content boolean
+  depends on y content integer
+  equals y >= 2018 and y <= 2025
+```
+
+## (a) General rule, and the section as a whole
+
+The reduction applies only when AGI exceeds the applicable amount, and is the
+lesser of the two candidates. `s68/4` then subtracts it, except in a suspended
+year, where deductions pass through unchanged.
+
+```catala-metadata
+declaration scope Section68:
+  input taxable_year content integer
+  input status content FilingStatus
+  input agi content money
+  input itemized_deductions content money
+  ## (a): does the general rule bite at all?
+  output applies content boolean
+  ## (a): the reduction, $0 when the rule does not apply
+  output reduction content money
+  ## the applicable amount under (b)
+  output aa content money
+  ## deductions after the limitation
+  output deductions_out content money
+```
+
+```catala
+scope Section68:
+  definition aa equals applicable_amount of status
+
+  definition applies equals (not (suspended of taxable_year)) and agi > aa
+
+  definition reduction equals $0
+  exception definition reduction under condition applies consequence equals
+    Money.min of (reduction_1 of agi, aa), (reduction_2 of itemized_deductions)
+
+  definition deductions_out equals itemized_deductions - reduction
+```
+
+## Query surfaces used by the cases
+
+The §68 cases query the individual subsections directly, so each is exposed as
+its own relation check in the same shape as the Prolog predicate.
+
+```catala-metadata
+## s68_a_1(Agi,Aa,Reduction)
+declaration scope ReductionOneHolds:
+  input agi content money
+  input aa content money
+  input claimed content money
+  output holds content boolean
+
+## s68_a_2(Taxp,Itemded,Reduction,Taxy). `s63_d/4` is a *generator*, and SARA
+## guards it with `L>0`: a taxpayer with no itemized deduction in the year makes
+## §63(d) fail rather than total zero, and §68(a)(2) fails with it. `itemizes`
+## carries that, because `itemized = $0` cannot distinguish "no deductions" from
+## "deductions summing to nothing".
+declaration scope ReductionTwoHolds:
+  input itemized content money
+  input itemizes content boolean
+  input claimed content money
+  output holds content boolean
+
+## s68_b(Taxp,Aa,Taxy) and the s68_b_1_* subparagraphs
+declaration scope ApplicableAmountHolds:
+  input status content FilingStatus
+  input claimed content money
+  output holds content boolean
+
+## s68_f(Taxy)
+declaration scope SuspendedHolds:
+  input taxable_year content integer
+  output holds content boolean
+```
+
+```catala
+scope ReductionOneHolds:
+  definition holds equals (reduction_1 of agi, aa) = claimed
+
+scope ReductionTwoHolds:
+  definition holds equals itemizes and (reduction_2 of itemized) = claimed
+
+scope ApplicableAmountHolds:
+  definition holds equals (applicable_amount of status) = claimed
+
+scope SuspendedHolds:
+  definition holds equals suspended of taxable_year
+```
+
+## Subparagraph queries
+
+`s68_b_1_A/5` … `s68_b_1_D/3` each assert both that the taxpayer falls in that
+subparagraph's filing status *and* that the applicable amount is the claimed
+figure. The Prolog states the two as a conjunction, so the port does too. Some
+cases leave the amount unbound — `s68_b_1_A(alice,_,_,_,2016)` — and then only
+the status is asserted.
+
+```catala-metadata
+declaration status_of_filing content FilingStatus
+  depends on st content St.Status
+  equals
+    match st with pattern
+    -- St.Status.JointOrSurvivingSpouse: FilingStatus.JointOrSurvivingSpouse
+    -- St.Status.HeadOfHousehold: FilingStatus.HeadOfHousehold
+    -- St.Status.Unmarried: FilingStatus.Unmarried
+    -- St.Status.MarriedFilingSeparately: FilingStatus.MarriedFilingSeparately
+
+declaration scope SubparagraphHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input subparagraph content FilingStatus
+  input claimed content optional of money
+  output holds content boolean
+```
+
+```catala
+scope SubparagraphHolds:
+  # (A) is `$300,000 in the case of a joint return or a surviving spouse`, and
+  # SARA writes the second half as `s2_a(Surviving_spouse,_,Taxy)` with
+  # `Surviving_spouse` reaching it *unbound* — `s68_b` passes `_` for that
+  # argument. The clause therefore asks whether anybody at all is a surviving
+  # spouse this year, not whether the taxpayer is one, and hands the $300,000
+  # threshold to a taxpayer who merely shares a world with one. D11 recorded
+  # this and left the port deliberately narrower; the fuzzer has since shown
+  # it is reachable, so it is reproduced here.
+  definition holds equals
+    ((status_of_filing of
+       (output of St.FilingStatus with {
+          -- world: world -- injections: injections
+          -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+       = subparagraph
+     or (subparagraph = FilingStatus.JointOrSurvivingSpouse
+         and ((W.injected_holds of injections, P.pred_s2_a_3,
+                 [-1; -1; W.num_key of taxable_year])
+              or (exists p among
+                    (combine all r
+                       among (map each ev among world.events
+                              to (ev.agents ++ ev.patients))
+                       in acc initially [] with acc ++ r)
+                  such that
+                    (output of St.FilingStatus with {
+                       -- world: world -- injections: injections
+                       -- taxpayer: p
+                       -- taxable_year: taxable_year }).surviving_spouse))))
+    and (match claimed with pattern
+         -- Absent: true
+         -- Present content c: (applicable_amount of subparagraph) = c)
+```
+
+## The conjunctive (a)(1) query
+
+Two cases ask (a)(1) as a conjunction that first *binds* the applicable amount
+and the taxpayer's gross income:
+
+```prolog
+s68_b(alice,Applicable_amount,2016),
+gross_income(alice,2016,Gross_income),
+s68_a_1(Gross_income,Applicable_amount,306)
+```
+
+Answering only the first conjunct would answer a different question, so the
+whole chain is one scope.
+
+```catala-metadata
+declaration scope ReductionOneForTaxpayer:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content money
+  output agi content money
+  output aa content money
+  output holds content boolean
+```
+
+```catala
+scope ReductionOneForTaxpayer:
+  definition agi equals
+    (output of Inc.GrossIncomeIndividual with {
+       -- world: world -- person: taxpayer
+       -- taxable_year: taxable_year }).total
+
+  definition aa equals
+    applicable_amount of
+      (status_of_filing of
+        (output of St.FilingStatus with {
+           -- world: world -- injections: injections
+           -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+
+  definition holds equals
+    (output of ReductionOneHolds with {
+       -- agi: agi -- aa: aa -- claimed: claimed }).holds
+```

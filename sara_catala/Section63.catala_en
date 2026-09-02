@@ -1,0 +1,1013 @@
+# §63. Taxable income defined
+
+> Module Section63
+
+> Using SaraWorld as W
+> Using SaraIncome as Inc
+> Using SaraStatus as St
+> Using SaraPredicates as P
+> Using SaraKinship as K
+> Using Section7703 as S7703
+> Using Section152 as S152
+> Using Section151 as S151
+> Using Section68 as S68
+
+Port of `section63.pl`. §63 defines taxable income as gross income less
+deductions, and defines the standard deduction that an individual who does not
+itemize takes instead.
+
+§63 sits on the §151 → §68 → §63 → §151 cycle. The cycle is cut at §68(b) —
+the applicable amount is a pure function of filing status, so §151(d)(3) can
+reach it without coming back through §63 — which lets §63 depend on §151 and
+§68 outright. See `Section151.catala_en` for the argument. Subsection query
+scopes that predate the cut still take the two figures as inputs, since the
+cases supply them by injection.
+
+## (c)(7) Special rules for 2018 through 2025
+
+Substitutes $18,000 for the head-of-household figure in (c)(2)(B) and $12,000
+for the residual figure in (c)(2)(C).
+
+```catala-metadata
+declaration in_2018_2025 content boolean
+  depends on y content integer
+  equals y > 2017 and y < 2026
+
+declaration head_of_household_basic content money
+  depends on y content integer
+  equals if in_2018_2025 of y then $18,000 else $4,400
+
+declaration residual_basic content money
+  depends on y content integer
+  equals if in_2018_2025 of y then $12,000 else $3,000
+```
+
+## (c)(2) Basic standard deduction
+
+(A) doubles the residual figure for a joint return or a surviving spouse; (B)
+gives heads of household their own figure; (C) is everyone else.
+
+```catala-metadata
+declaration scope BasicStandardDeduction:
+  input status content St.Status
+  input taxable_year content integer
+  output doubled content boolean
+  output amount content money
+```
+
+```catala
+scope BasicStandardDeduction:
+  definition doubled equals status = St.Status.JointOrSurvivingSpouse
+
+  definition amount equals residual_basic of taxable_year
+  exception definition amount
+    under condition status = St.Status.HeadOfHousehold
+    consequence equals head_of_household_basic of taxable_year
+  exception definition amount
+    under condition doubled
+    consequence equals (residual_basic of taxable_year) * (decimal of 2)
+```
+
+## (f) Aged or blind additional amounts
+
+§63(f) counts the taxpayer's entitlements — aged self, aged spouse, blind self,
+blind spouse — and multiplies by $600, or $750 for an individual who is neither
+married nor a surviving spouse.
+
+The age test is written in the Prolog as a comparison of two *durations* rather
+than of two dates: the span from birth to the last day of the taxable year
+against the span from that day to the last day of the year 65 years later.
+Because those two windows contain different numbers of leap days the test is
+not exactly "age >= 65", so the port compares the same two spans rather than
+substituting a date comparison.
+
+**The blind-spouse count is 600, not 1** — see `sara_scripts/DEVIATIONS.md` D6.
+That is a defect in the gold, reproduced here deliberately.
+
+```catala-metadata
+declaration attained_65 content boolean
+  depends on birth content date, y content integer
+  equals
+    ((W.last_day_year of y) - birth)
+      >= ((W.last_day_year of (y + 65)) - (W.last_day_year of y))
+
+declaration per_entitlement content money
+  depends on married content boolean, surviving_spouse content boolean
+  equals if (not married) and (not surviving_spouse) then $750 else $600
+
+declaration scope AgedOrBlind:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input married content boolean
+  input surviving_spouse content boolean
+  ## The §7703 spouses for whom §151(b) allows the additional exemption --- a
+  ## *list*, because `s63_f_1_B(Taxp,Spouse,Taxy)` carries one `Spouse` through
+  ## both halves of the clause: the same person has to be over 65 *and* be the
+  ## one §151(b) allows. Reading the two halves off different spouses gave a
+  ## couple filing jointly a $600 entitlement SARA never grants; see D80. The
+  ## cases inject this, and D2 records that the Prolog's arity-2 guard is
+  ## vacuous.
+  input exempt_spouses content list of W.Entity
+  output aged_self content boolean
+  output aged_spouse content boolean
+  output blind_self content boolean
+  output blind_spouse content boolean
+  output counts content integer
+  output additional content money
+```
+
+```catala
+scope AgedOrBlind:
+  # A grant answers the goal; a grant made *without* `discontiguous` also
+  # removes the birth-date derivation, and then only a matching row can. Here
+  # failing is an ordinary outcome rather than an unavailable value -- the
+  # Prolog wraps it in `( ... -> Count1 is 1 ; Count1 is 0 )` -- so this needs
+  # `pred_available` and no `applies` companion. See D57.
+  definition aged_self equals
+    (W.injected_holds of injections, P.pred_s63_f_1_A_2,
+       [taxpayer.id; W.num_key of taxable_year])
+    or
+    ((not (W.pred_overridden of injections, P.pred_s63_f_1_A_2))
+     and (exists ev among world.events such that
+            ev.kinds contains W.EventKind.Birth
+            and ev.agents contains taxpayer
+            and (exists d among ev.starts such that attained_65 of d, taxable_year)))
+
+  definition aged_spouse equals
+    (W.injected_holds of injections, P.pred_s63_f_1_B_3,
+       [taxpayer.id; -1; W.num_key of taxable_year])
+    or
+    ((not (W.pred_overridden of injections, P.pred_s63_f_1_B_3))
+    and married
+    and (exists sp among exempt_spouses such that
+           exists ev among world.events such that
+             ev.kinds contains W.EventKind.Birth
+             and ev.agents contains sp
+             and (exists d among ev.starts
+                  such that attained_65 of d, taxable_year)))
+
+  definition blind_self equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Blindness
+      and ev.agents contains taxpayer
+      and (exists d among ev.starts
+           such that d <= (W.last_day_year of taxable_year))
+
+  definition blind_spouse equals
+    married
+    and (exists sp among exempt_spouses such that
+           exists ev among world.events such that
+             ev.kinds contains W.EventKind.Blindness
+             and ev.agents contains sp
+             and (exists d among ev.starts
+                  such that d <= (W.last_day_year of taxable_year)))
+
+  definition counts equals
+    (if aged_self then 1 else 0)
+    + (if aged_spouse then 1 else 0)
+    + (if blind_self then 1 else 0)
+    # DEVIATIONS.md D6: the gold uses 600 here where every sibling uses 1.
+    + (if blind_spouse then 600 else 0)
+
+  definition additional equals
+    (per_entitlement of married, surviving_spouse) * (decimal of counts)
+```
+
+## (d) Itemized deductions
+
+Collected from `deduction_` events the taxpayer is the agent of, whose start
+date falls inside the taxable year. The Prolog requires at least one such
+deduction (`length(Amounts,L), L>0`), so a taxpayer with none does not itemize
+at all — which is what routes them to §63(b).
+
+As in `SaraIncome`, `amount_/2` and `start_/2` are relations, so the sum is over
+the cross product of amounts and in-window start dates.
+
+```catala-metadata
+declaration scope ItemizedDeductions:
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  output itemizes content boolean
+  output total content money
+```
+
+```catala
+scope ItemizedDeductions:
+  definition total equals
+    Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Deduction
+                   and e.agents contains taxpayer)
+       to (Inc.event_contribution of ev, taxable_year)
+          # `agent_/2` is a relation like the other two: stating it twice gives
+          # the `findall` two solutions and counts the deduction twice. Same
+          # reading as D40, one section over. See D56.
+          * (decimal of (Inc.role_count of ev.agents, taxpayer)))
+
+  # `length(Amounts,L), L>0` counts the `findall`'s solutions, and every goal
+  # in it has to succeed for there to be one -- `amount_(Deduction,Amount)`
+  # included. A deduction event with a date but no amount is not a solution, so
+  # the taxpayer does not itemize and §63(b) takes over. See D72.
+  definition itemizes equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Deduction
+      and ev.agents contains taxpayer
+      and (number of ev.amounts) > 0
+      and (exists d among ev.starts such that
+             (W.first_day_year of taxable_year) <= d
+             and d <= (W.last_day_year of taxable_year))
+```
+
+## (c)(6) Individuals not eligible for the standard deduction
+
+(A) a married individual filing separately where either spouse itemizes, (B) a
+nonresident alien, (D) an estate, trust, common trust fund or partnership. For
+(B) and (D) the Prolog treats a missing start or end date as "no constraint",
+which is the `var`/`nonvar` idiom and becomes an empty list here.
+
+```catala-metadata
+declaration overlaps_year content boolean
+  depends on ev content W.Event, y content integer
+  equals
+    ((number of ev.starts) = 0
+     or (exists d among ev.starts such that d <= (W.last_day_year of y)))
+    and ((number of ev.ends) = 0
+         or (exists d among ev.ends such that (W.first_day_year of y) <= d))
+
+declaration scope NotEligible:
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input married content boolean
+  input joint_return content boolean
+  ## Every §7703 spouse, not the first: the Prolog backtracks over
+  ## `s7703(Taxp,Spouse,_,Taxy)` and any of them may be the one who itemizes.
+  ## See D71.
+  input spouses content list of W.Entity
+  output subparagraph_a content boolean
+  output subparagraph_b content boolean
+  output subparagraph_d content boolean
+  output not_eligible content boolean
+```
+
+```catala
+scope NotEligible:
+  definition subparagraph_a equals
+    married and not joint_return
+    and (exists ev among world.events such that
+           ev.kinds contains W.EventKind.Deduction
+           and (ev.agents contains taxpayer
+                or (exists sp among spouses such that ev.agents contains sp))
+           and (exists d among ev.starts such that
+                  (W.first_day_year of taxable_year) <= d
+                  and d <= (W.last_day_year of taxable_year)))
+
+  definition subparagraph_b equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.NonresidentAlien
+      and ev.agents contains taxpayer
+      and overlaps_year of ev, taxable_year
+
+  definition subparagraph_d equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.BusinessTrust
+      and ev.agents contains taxpayer
+      and overlaps_year of ev, taxable_year
+
+  definition not_eligible equals
+    subparagraph_a or subparagraph_b or subparagraph_d
+```
+
+## (c)(5) Limitation for certain dependents
+
+Where a §151 deduction is allowable to another taxpayer for this individual, the
+basic standard deduction is capped at the greater of $500 and $250 plus the
+individual's earned income. The Prolog reads "earned income" as gross income.
+
+```catala-metadata
+declaration scope DependentCap:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## §151(b)/(c) allowable to another taxpayer, derived by §151 now that the
+  ## section exists; the cases also inject it directly.
+  input dependent_of_another content boolean
+  output capped content boolean
+  output cap content money
+```
+
+```catala
+scope DependentCap:
+  definition capped equals
+    dependent_of_another
+    or (W.injected_holds of injections, P.pred_s151_b_applies_3,
+          [-1; taxpayer.id; W.num_key of taxable_year])
+    or (W.injected_holds of injections, P.pred_s151_c_applies_3,
+          [-1; taxpayer.id; W.num_key of taxable_year])
+
+  definition cap equals
+    Money.max of $500,
+      ($250 + (output of Inc.GrossIncomeIndividual with {
+                 -- world: world -- person: taxpayer
+                 -- taxable_year: taxable_year }).total)
+```
+
+## Query surfaces used by the cases
+
+```catala-metadata
+## s63_c_7_i(Taxy,Amount) and s63_c_7_ii(Taxy,Amount)
+declaration scope SpecialRuleHolds:
+  input taxable_year content integer
+  ## true for clause (i) -- the head-of-household substitution
+  input is_clause_i content boolean
+  input claimed content money
+  output holds content boolean
+
+## s63_c_2_C(Taxy,Bassd)
+declaration scope ResidualBasicHolds:
+  input taxable_year content integer
+  input claimed content money
+  output holds content boolean
+
+## s63_c_2_B(Taxp,Taxy,Bassd)
+declaration scope HeadOfHouseholdBasicHolds:
+  input status content St.Status
+  input taxable_year content integer
+  input claimed content money
+  output holds content boolean
+```
+
+```catala
+scope SpecialRuleHolds:
+  definition holds equals
+    (in_2018_2025 of taxable_year)
+    and claimed = (if is_clause_i then $18,000 else $12,000)
+
+scope ResidualBasicHolds:
+  definition holds equals (residual_basic of taxable_year) = claimed
+
+scope HeadOfHouseholdBasicHolds:
+  definition holds equals
+    status = St.Status.HeadOfHousehold
+    and (head_of_household_basic of taxable_year) = claimed
+```
+
+## Remaining query surfaces
+
+These expose the subsections above in the shape the cases query them, so that
+every scope in this module is reachable from the suite rather than merely
+typechecking. Argument orders follow the Prolog exactly, which is not uniform:
+`s63_c_3(Taxp,Addsd,Taxy)` puts the amount second while
+`s63_f_3(Taxp,Taxy,Amount)` puts it third.
+
+```catala-metadata
+## s63_f_1_A(Taxp,Taxy), s63_f_1_B(Taxp,Spouse,Taxy),
+## s63_f_2_A(Taxp,Taxy), s63_f_2_B(Taxp,Spouse,Taxy)
+declaration enumeration AgedBlindClause:
+  -- AgedSelf
+  -- AgedSpouse
+  -- BlindSelf
+  -- BlindSpouse
+
+declaration scope AgedBlindClauseHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input married content boolean
+  input surviving_spouse content boolean
+  input exempt_spouses content list of W.Entity
+  input clause content AgedBlindClause
+  output holds content boolean
+
+## s63_f_3(Taxp,Taxy,Amount) -- the $750 substitution
+declaration scope HigherAmountHolds:
+  input married content boolean
+  input surviving_spouse content boolean
+  input claimed content money
+  output holds content boolean
+
+## s63_c_3(Taxp,Addsd,Taxy) -- the additional standard deduction
+declaration scope AdditionalDeductionHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input married content boolean
+  input surviving_spouse content boolean
+  input exempt_spouses content list of W.Entity
+  input claimed content money
+  output holds content boolean
+
+## s63_d(Taxp,Itemded,Total_amount,Taxy)
+declaration scope ItemizedTotalHolds:
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content optional of money
+  output holds content boolean
+
+## s63_c_6_A/4, s63_c_6_B/2, s63_c_6_D/2
+declaration enumeration IneligibleClause:
+  -- ClauseA
+  -- ClauseB
+  -- ClauseD
+
+declaration scope NotEligibleClauseHolds:
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input married content boolean
+  input joint_return content boolean
+  input spouses content list of W.Entity
+  input clause content IneligibleClause
+  output holds content boolean
+
+## s63_c_5(Taxp,S45,Grossinc,Taxy,Bassd)
+declaration scope DependentCapHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content optional of money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output dependent_of_another content boolean
+  output holds content boolean
+
+## s63_c_2_A_i(Taxp,Joint_return,Taxy) and s63_c_2_A_ii(Taxp,Taxy)
+declaration scope DoubledBasicHolds:
+  input married content boolean
+  input joint_return content boolean
+  input surviving_spouse content boolean
+  ## true for clause (i) -- the joint-return route
+  input is_clause_i content boolean
+  output holds content boolean
+```
+
+```catala
+scope AgedBlindClauseHolds:
+  definition holds equals
+    (let ab equals
+       (output of AgedOrBlind with {
+          -- world: world -- injections: injections -- taxpayer: taxpayer
+          -- taxable_year: taxable_year
+          -- married: married -- surviving_spouse: surviving_spouse
+          -- exempt_spouses: exempt_spouses }) in
+     match clause with pattern
+     -- AgedSelf: ab.aged_self
+     -- AgedSpouse: ab.aged_spouse
+     -- BlindSelf: ab.blind_self
+     -- BlindSpouse: ab.blind_spouse)
+
+scope HigherAmountHolds:
+  definition holds equals
+    (not married) and (not surviving_spouse)
+    and (per_entitlement of married, surviving_spouse) = claimed
+
+scope AdditionalDeductionHolds:
+  definition holds equals
+    (output of AgedOrBlind with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- married: married -- surviving_spouse: surviving_spouse
+       -- exempt_spouses: exempt_spouses }).additional
+      = claimed
+
+scope ItemizedTotalHolds:
+  definition holds equals
+    (let d equals
+       (output of ItemizedDeductions with {
+          -- world: world -- taxpayer: taxpayer
+          -- taxable_year: taxable_year }) in
+     d.itemizes
+     and (match claimed with pattern
+          -- Absent: true
+          -- Present content c: d.total = c))
+
+scope NotEligibleClauseHolds:
+  definition holds equals
+    (let n equals
+       (output of NotEligible with {
+          -- world: world -- taxpayer: taxpayer
+          -- taxable_year: taxable_year -- married: married
+          -- joint_return: joint_return -- spouses: spouses }) in
+     match clause with pattern
+     -- ClauseA: n.subparagraph_a
+     -- ClauseB: n.subparagraph_b
+     -- ClauseD: n.subparagraph_d)
+
+scope DependentCapHolds:
+  ## §151(b)/(c) allowable to *another* taxpayer for this individual, which is
+  ## exactly the disallowance test §151(d)(2) runs.
+  definition dependent_of_another equals
+    (output of S151.Individual with {
+       -- injections: injections -- world: world
+       -- taxpayer: taxpayer -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).disallowed
+
+  definition holds equals
+    (let d equals
+       (output of DependentCap with {
+          -- world: world -- injections: injections -- taxpayer: taxpayer
+          -- taxable_year: taxable_year
+          -- dependent_of_another: dependent_of_another }) in
+     d.capped
+     and (match claimed with pattern
+          -- Absent: true
+          -- Present content c: d.cap = c))
+
+scope DoubledBasicHolds:
+  definition holds equals
+    if is_clause_i then (married and joint_return) else surviving_spouse
+```
+
+## (c) and (c)(1) — the standard deduction as a value
+
+`s63_c/3` is `s63_c_1/3`, which is zero for an individual (c)(6) makes
+ineligible and otherwise the basic amount from (c)(1)(A) plus the additional
+amount from (c)(1)(B). (c)(1)(A) caps the basic amount by (c)(5) where that
+paragraph bites.
+
+Each level a case can grant is an exception here: `s63_c/3`, `s63_c_1/3`,
+`s63_c_2/3` and `s63_c_3/3` are all injected somewhere in the corpus.
+
+```catala-metadata
+declaration scope StandardDeduction:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output status content St.Status
+  ## (c)(6)
+  output not_eligible content boolean
+  ## (c)(2), before the (c)(5) cap
+  output basic_uncapped content money
+  ## (c)(1)(A)
+  output basic content money
+  ## The §7703 spouses §151(b) allows an additional exemption for
+  output exempt_spouses content list of W.Entity
+  ## (c)(1)(B) = s63_c_3 = §63(f)
+  output additional content money
+  ## s63_c_1/3 and s63_c/3
+  output amount content money
+```
+
+```catala
+scope StandardDeduction:
+  definition status equals
+    (output of St.FilingStatus with {
+       -- world: world -- injections: injections
+       -- taxpayer: taxpayer -- taxable_year: taxable_year }).status
+
+  definition not_eligible equals
+    (output of NotEligible with {
+       -- world: world -- taxpayer: taxpayer -- taxable_year: taxable_year
+       -- married: (output of St.FilingStatus with {
+                      -- world: world -- injections: injections
+                      -- taxpayer: taxpayer
+                      -- taxable_year: taxable_year }).married
+       -- joint_return: (output of St.FilingStatus with {
+                           -- world: world -- injections: injections
+                           -- taxpayer: taxpayer
+                           -- taxable_year: taxable_year }).joint_return
+       -- spouses: (output of S7703.MaritalStatusA with {
+                      -- world: world -- taxpayer: taxpayer
+                      -- taxable_year: taxable_year }).spouses }).not_eligible
+
+  definition basic_uncapped equals
+    (output of BasicStandardDeduction with {
+       -- status: status -- taxable_year: taxable_year }).amount
+
+  exception definition basic_uncapped
+    under condition
+      (W.injected_holds of injections, P.pred_s63_c_2_3,
+         [taxpayer.id; W.num_key of taxable_year; -1])
+    consequence equals
+      (match (W.injected_money of injections, P.pred_s63_c_2_3,
+                [taxpayer.id; W.num_key of taxable_year; -1], 3) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+
+  definition basic equals
+    (let d equals
+       (output of DependentCap with {
+          -- world: world -- injections: injections -- taxpayer: taxpayer
+          -- taxable_year: taxable_year
+          -- dependent_of_another:
+               (output of S151.Individual with {
+                  -- injections: injections -- world: world
+                  -- taxpayer: taxpayer -- taxable_year: taxable_year
+                  -- child_of: child_of -- sibling_of: sibling_of
+                  -- descendent_of: descendent_of
+                  -- stepsibling_of: stepsibling_of
+                  -- stepparent_of: stepparent_of
+                  -- child_in_law_of: child_in_law_of
+                  -- parent_in_law_of: parent_in_law_of
+                  -- sibling_in_law_of: sibling_in_law_of }).disallowed }) in
+     if d.capped then Money.min of basic_uncapped, d.cap else basic_uncapped)
+
+  # Every spouse for whom `s151_b_applies(Taxp,Spouse,Taxy)` holds: §151
+  # derives the set, and a grant contributes the spouse it names --- or, where
+  # it left that argument free, every spouse §7703 offers, because the free
+  # variable unifies with each in turn. Replacing the predicate leaves nothing
+  # but the rows. See D22 and D80.
+  definition exempt_spouses equals
+    (let indiv equals
+       (output of S151.Individual with {
+          -- injections: injections -- world: world
+          -- taxpayer: taxpayer -- taxable_year: taxable_year
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of
+          -- stepsibling_of: stepsibling_of
+          -- stepparent_of: stepparent_of
+          -- child_in_law_of: child_in_law_of
+          -- parent_in_law_of: parent_in_law_of
+          -- sibling_in_law_of: sibling_in_law_of }) in
+     (let granted equals
+        (combine all r
+           among (map each inj among
+                   (W.injections_for of injections, P.pred_s151_b_applies_3,
+                      [taxpayer.id; -1; W.num_key of taxable_year])
+                  to (match (W.injection_entity of inj, 2) with pattern
+                      -- Absent: indiv.all_spouses
+                      -- Present content sp: [sp]))
+           in acc initially [] with acc ++ r) in
+      if W.pred_overridden of injections, P.pred_s151_b_applies_3
+      then granted
+      else granted ++ indiv.exempt_spouses))
+
+  definition additional equals
+    (output of AgedOrBlind with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- married: (output of St.FilingStatus with {
+                      -- world: world -- injections: injections
+                      -- taxpayer: taxpayer
+                      -- taxable_year: taxable_year }).married
+       -- surviving_spouse: (output of St.FilingStatus with {
+                               -- world: world -- injections: injections
+                               -- taxpayer: taxpayer
+                               -- taxable_year: taxable_year }).surviving_spouse
+       # `s63_f_1_B(Taxp,_,Taxy)` ends in `s151_b_applies(Taxp,Spouse,Taxy)`
+       # with the spouse existentially quantified over the *whole* clause, so
+       # the person §151(b) allows and the person over 65 are one and the same.
+       # Cases inject the conclusion; a `tax/3` case derives it, and without
+       # that half the standard deduction of a married couple over 65 is short
+       # by one $600 entitlement. A grant that leaves its own spouse argument
+       # free unifies with whichever spouse §7703 offers, so it admits them
+       # all; one that names a spouse admits only that one. See D80.
+       -- exempt_spouses: exempt_spouses
+       }).additional
+
+  exception definition additional
+    under condition
+      (W.injected_holds of injections, P.pred_s63_c_3_3,
+         [taxpayer.id; -1; W.num_key of taxable_year])
+    consequence equals
+      (match (W.injected_money of injections, P.pred_s63_c_3_3,
+                [taxpayer.id; -1; W.num_key of taxable_year], 2) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+
+  definition amount equals
+    if not_eligible then $0 else basic + additional
+
+  exception definition amount
+    under condition
+      (W.injected_holds of injections, P.pred_s63_c_1_3,
+         [taxpayer.id; W.num_key of taxable_year; -1])
+    consequence equals
+      (match (W.injected_money of injections, P.pred_s63_c_1_3,
+                [taxpayer.id; W.num_key of taxable_year; -1], 3) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+
+  exception definition amount
+    under condition
+      (W.injected_holds of injections, P.pred_s63_c_3,
+         [taxpayer.id; W.num_key of taxable_year; -1])
+    consequence equals
+      (match (W.injected_money of injections, P.pred_s63_c_3,
+                [taxpayer.id; W.num_key of taxable_year; -1], 3) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+```
+
+## (a), (b) and §63 itself — taxable income
+
+(b) is for the individual who does not itemize, which the Prolog decides by
+`\+ s63_d(Taxp,_,_,Taxy)` — no deduction events in the year at all. (a) is
+everyone else: gross income less the §68-limited itemized total and the §151
+personal exemptions. Both floor the result at zero.
+
+```catala-metadata
+declaration scope TaxableIncome:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output gross content money
+  output itemizes content boolean
+  output itemized_total content money
+  ## after §68
+  output deductions_allowed content money
+  ## §151, both the total and the list of amounts (a) and (d)(2) need
+  output exemptions content money
+  output exemption_amounts content list of money
+  ## s63_a/5 — the third argument
+  output income_a content money
+  ## s63_b/4 — the third argument
+  output income_b content money
+  ## s63/3
+  output income content money
+  ## §63 needs §151 to succeed. A *replaced* `s151/5` that names nobody
+  ## relevant makes it fail rather than contribute zero -- see D39.
+  output applies content boolean
+```
+
+```catala
+scope TaxableIncome:
+  ## §63(a) and (b) read `gross_income/3`, not `gross_income_individual/3`, so
+  ## a taxpayer filing jointly is taxed on both incomes. §68 sees the same
+  ## figure as its adjusted gross income, because this is what it is passed.
+  definition gross equals
+    (output of Inc.GrossIncome with {
+       -- world: world -- person: taxpayer
+       -- taxable_year: taxable_year
+       -- joint_spouse:
+            (output of S7703.JointFilingSpouse with {
+               -- injections: injections -- world: world -- taxpayer: taxpayer
+               -- taxable_year: taxable_year
+               -- qualifying_dependants:
+                    (output of S152.QualifyingChildrenOf with {
+                       -- injections: injections -- world: world
+                       -- taxpayer: taxpayer -- taxable_year: taxable_year
+                       -- child_of: child_of -- sibling_of: sibling_of
+                       -- descendent_of: descendent_of
+                       -- stepsibling_of: stepsibling_of }).children }).spouse
+     }).total
+
+  definition itemizes equals
+    (output of ItemizedDeductions with {
+       -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year }).itemizes
+
+  ## A case may grant `s63_d/4` outright, which makes the taxpayer an itemizer
+  ## even with no deduction events of their own.
+  exception definition itemizes
+    under condition
+      (W.injected_holds of injections, P.pred_s63_d_4,
+         [taxpayer.id; -1; -1; W.num_key of taxable_year])
+    consequence equals true
+
+  definition itemized_total equals
+    (output of ItemizedDeductions with {
+       -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year }).total
+
+  exception definition itemized_total
+    under condition
+      (W.injected_holds of injections, P.pred_s63_d_4,
+         [taxpayer.id; -1; -1; W.num_key of taxable_year])
+    consequence equals
+      (match (W.injected_money of injections, P.pred_s63_d_4,
+                [taxpayer.id; -1; -1; W.num_key of taxable_year], 3) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+
+  definition deductions_allowed equals
+    (output of S68.Section68 with {
+       -- taxable_year: taxable_year
+       -- status: S68.status_of_filing of
+                    (output of St.FilingStatus with {
+                       -- world: world -- injections: injections
+                       -- taxpayer: taxpayer
+                       -- taxable_year: taxable_year }).status
+       -- agi: gross
+       -- itemized_deductions: itemized_total }).deductions_out
+
+  definition exemptions equals
+    (output of S151.Personal with {
+       -- injections: injections -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).total
+
+  definition exemption_amounts equals
+    (output of S151.Personal with {
+       -- injections: injections -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).amounts
+
+  # `s63(Taxp,Taxy,Taxinc) :- ( s63_b(...) ; ( \+ s63_b(...), s63_a(...) ) )`.
+  # The standard-deduction branch needs §63(c); when a case *replaces* that
+  # predicate (D22) and names nobody relevant, (b) fails, and with no itemized
+  # deductions to fall back on §63 fails outright — so §1 does too and `tax/3`
+  # reports zero. §63 itself can be replaced the same way.
+  definition applies equals
+    (W.pred_available of injections, P.pred_s63_3,
+       [taxpayer.id; W.num_key of taxable_year; -1])
+    and (itemizes
+         or ((W.pred_available of injections, P.pred_s63_c_3,
+                [taxpayer.id; W.num_key of taxable_year; -1])
+             and (W.pred_available of injections, P.pred_s63_c_1_3,
+                    [taxpayer.id; W.num_key of taxable_year; -1])
+             and (W.pred_available of injections, P.pred_s63_c_2_3,
+                    [taxpayer.id; W.num_key of taxable_year; -1])
+             and (W.pred_available of injections, P.pred_s63_c_3_3,
+                    [taxpayer.id; -1; W.num_key of taxable_year])))
+    and (output of S151.Personal with {
+       -- injections: injections -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).applies
+
+  definition income_a equals
+    Money.max of $0, (gross - (deductions_allowed + exemptions))
+
+  definition income_b equals
+    Money.max of $0,
+      (gross
+       - (output of StandardDeduction with {
+            -- world: world -- injections: injections -- taxpayer: taxpayer
+            -- taxable_year: taxable_year
+            -- child_of: child_of -- sibling_of: sibling_of
+            -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+            -- stepparent_of: stepparent_of
+            -- child_in_law_of: child_in_law_of
+            -- parent_in_law_of: parent_in_law_of
+            -- sibling_in_law_of: sibling_in_law_of }).amount
+       - exemptions)
+
+  ## §63 prefers (b) where it applies, and falls back to (a).
+  definition income equals if itemizes then income_a else income_b
+```
+
+## Query surfaces for (a), (b), (c)(1) and (d)(2)
+
+```catala-metadata
+## s63_a(Taxp,Taxy,Taxinc,_,_) and s63_b(Taxp,Taxy,Taxinc,_)
+declaration enumeration IncomeClause:
+  -- SubsectionA
+  -- SubsectionB
+
+declaration scope TaxableIncomeHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input clause content IncomeClause
+  input claimed content money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output holds content boolean
+
+## s63_c_1(Taxp,Taxy,Standed) and s63_c(Taxp,Taxy,Standed)
+declaration scope StandardDeductionHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output holds content boolean
+
+## s63_d_2(Taxp,Ded151,Taxy) -- `Ded151` is §151's *list* of exemption
+## amounts, not the total.
+declaration scope ExemptionListHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content list of money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  ## A grant of `s151/5` that leaves the list a Prolog variable unifies with
+  ## whatever the case then claims.
+  output granted_unconstrained content boolean
+  output holds content boolean
+```
+
+```catala
+scope TaxableIncomeHolds:
+  definition holds equals
+    (let ti equals
+       (output of TaxableIncome with {
+          -- world: world -- injections: injections -- taxpayer: taxpayer
+          -- taxable_year: taxable_year
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+          -- stepparent_of: stepparent_of
+          -- child_in_law_of: child_in_law_of
+          -- parent_in_law_of: parent_in_law_of
+          -- sibling_in_law_of: sibling_in_law_of }) in
+     match clause with pattern
+     # (a) needs §63(d) to succeed, i.e. the taxpayer itemizes
+     -- SubsectionA: ti.itemizes and ti.income_a = claimed
+     # (b) needs it to fail
+     -- SubsectionB: (not ti.itemizes) and ti.income_b = claimed)
+
+scope StandardDeductionHolds:
+  definition holds equals
+    (output of StandardDeduction with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).amount = claimed
+
+scope ExemptionListHolds:
+  definition granted_unconstrained equals
+    exists inj among
+      (W.injections_for of injections, P.pred_s151_5,
+         [taxpayer.id; -1; -1; -1; W.num_key of taxable_year])
+    such that
+      (match (List.nth_element of inj.args, 4) with pattern
+       -- Absent: false
+       -- Present content k: k = -1)
+
+  definition holds equals
+    granted_unconstrained
+    or ((let ti equals
+           (output of TaxableIncome with {
+              -- world: world -- injections: injections -- taxpayer: taxpayer
+              -- taxable_year: taxable_year
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+              -- stepparent_of: stepparent_of
+              -- child_in_law_of: child_in_law_of
+              -- parent_in_law_of: parent_in_law_of
+              -- sibling_in_law_of: sibling_in_law_of }) in
+         # `s63_d_2(Taxp,Ded151,Taxy) :- s151(Taxp,_,_,Ded151,Taxy)`: with
+         # `s151/5` replaced and no row for this taxpayer the call fails, and
+         # an empty list of exemptions is not the same answer. See D39.
+         ti.applies and ti.exemption_amounts = claimed))
+```

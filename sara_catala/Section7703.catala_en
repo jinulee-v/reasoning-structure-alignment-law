@@ -1,0 +1,532 @@
+# §7703. Determination of marital status
+
+> Module Section7703
+
+> Using SaraWorld as W
+> Using SaraKinship as K
+> Using SaraPredicates as P
+
+Port of `section7703.pl`. §7703 decides whether an individual counts as married
+for a taxable year: subsection (a) is the general rule, and subsection (b) takes
+certain married individuals living apart *out* of that status.
+
+## The §152 ⇄ §7703 cycle, stratified
+
+§7703(b)(1) requires a child for whom the taxpayer gets a §151 deduction, which
+routes through §152; §152 in turn asks §7703 whether someone is married. Catala
+rejects cyclic definitions, so the port stratifies at the point where the cycle
+is thinnest:
+
+| level | computed from |
+|---|---|
+| 1. §7703(a) | events only — **no §152 dependency** |
+| 2. §152 | using level 1 as its marital-status input |
+| 3. §7703(b) | using level 2 as its dependency input |
+| 4. §7703 | level 1 and not level 3 |
+
+Level 1 is genuinely free of the cycle, which is what makes the stratification
+honest rather than arbitrary: subsection (a) reads only marriage, death and
+legal-separation events. The cut is recorded in `sara_port/README.md`.
+
+## Helpers
+
+```catala-metadata
+## An event's amount list, named so the (b)(2) sums read cleanly.
+declaration e_amounts content list of money
+  depends on ev content W.Event
+  equals ev.amounts
+```
+
+## (a)(1) Determination as of the close of the taxable year
+
+A marriage counts if it began on or before the last day of the year — the Prolog
+defaults a missing start to the first day of the year — and had not ended before
+the year closed. If the spouse died during the year, the determination is made
+as of the death instead.
+
+```catala-metadata
+## `is_before/2` compares with `=<`, so every window test here is inclusive.
+declaration scope MarriageStatus:
+  input world content W.World
+  input taxpayer content W.Entity
+  input spouse content W.Entity
+  input marriage content W.Event
+  input taxable_year content integer
+  ## The marriage's candidate start dates. SARA writes the default as a
+  ## *disjunction*, `( \+ start_(M,_), S = First_day_year ; start_(M,S) )`, so
+  ## with several recorded starts it backtracks over every one of them and the
+  ## clause holds if any satisfies the tests below. Reading one date here made
+  ## the port answer false where SARA retries and succeeds (DEVIATIONS.md D74).
+  output start_candidates content list of date
+  ## The spouse's death, if it falls inside the taxable year.
+  output spouse_died_on content optional of date
+  output holds_a_1 content boolean
+```
+
+```catala
+scope MarriageStatus:
+  definition start_candidates equals
+    if (number of marriage.starts) = 0
+    then [W.first_day_year of taxable_year]
+    else marriage.starts
+
+  definition spouse_died_on equals
+    List.first_element of
+      (combine all ds
+        among (map each ev among
+                (list of e among world.events
+                 such that e.kinds contains W.EventKind.Death
+                           and e.agents contains spouse)
+               to (list of d among ev.starts
+                   such that (W.first_day_year of taxable_year) <= d
+                             and d <= (W.last_day_year of taxable_year)))
+        in acc initially []
+        with acc ++ ds)
+
+  definition holds_a_1 equals
+    exists s among start_candidates such that
+    s <= (W.last_day_year of taxable_year)
+    and (match spouse_died_on with pattern
+         -- Present content death:
+             # determination made as of the time of death
+             s <= death
+             and ((number of marriage.ends) = 0
+                  or (exists e among marriage.ends such that death <= e))
+         -- Absent:
+             # otherwise the marriage must run into the next year
+             (if (number of marriage.ends) = 0
+              then
+                # No end date: the spouse's death is what ends the marriage, so
+                # it must fall on or after 1 January next year for the marriage
+                # to still be running at the close of the year.
+                #
+                # The test is on the death *event*, not on the death *dates*.
+                # SARA writes
+                #
+                #     ( death_(D), agent_(D,Spouse) )
+                #     ->  ( start_(D,End_time), is_before(First_day_next,End_time) )
+                #     ;   true
+                #
+                # so a death event carrying no date does not fall through to
+                # `true`: `start_/2` fails and the whole of (a)(1) fails with
+                # it. Collecting the dates first and asking whether the list is
+                # empty answers a different question, and made the port call a
+                # taxpayer married whose spouse had an undated death.
+                #
+                # `->` also commits to the first solution of its condition, so
+                # only the *first* such death event is consulted; a later dated
+                # one cannot rescue an earlier undated one.
+                (match (List.first_element of
+                          (list of e among world.events
+                           such that e.kinds contains W.EventKind.Death
+                                     and e.agents contains spouse)) with pattern
+                 -- Absent: true
+                 -- Present content dv:
+                     exists d among dv.starts such that
+                       (W.first_day_year of (taxable_year + 1)) <= d)
+              else
+                exists e among marriage.ends such that
+                  (W.first_day_year of (taxable_year + 1)) <= e))
+```
+
+## (a)(2) Legal separation
+
+A decree of divorce or of separate maintenance, entered on or before the last
+day of the year, whose patient is the marriage. The decree kind sits in the
+*agent* role, which is why `SaraWorld.EntityTag` carries it.
+
+```catala-metadata
+declaration scope LegalSeparation:
+  input world content W.World
+  input marriage content W.Event
+  input taxable_year content integer
+  output separated content boolean
+```
+
+```catala
+scope LegalSeparation:
+  definition separated equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.LegalSeparation
+      and (ev.patients contains marriage.ident)
+      and (exists a among ev.agents such that
+             a.tag = W.EntityTag.DecreeOfDivorce
+             or a.tag = W.EntityTag.DecreeOfSeparateMaintenance)
+      and (exists d among ev.starts such that
+             d <= (W.last_day_year of taxable_year))
+```
+
+## (a) General rule
+
+`s7703_a` holds for a taxpayer when some marriage satisfies (a)(1) and is not
+undone by (a)(2). The cases query it existentially — `s7703_a_1(alice,_,_,_,2012)`
+leaves both the spouse and the marriage unbound — so the scope reports whether
+any candidate qualifies, and which spouse.
+
+```catala-metadata
+declaration structure Candidate:
+  data spouse content W.Entity
+  data marriage content W.Event
+
+declaration scope MaritalStatusA:
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## Every (spouse, marriage) the taxpayer appears in.
+  output candidates content list of Candidate
+  ## s7703_a_1/5 — some candidate satisfies (a)(1)
+  output holds_a_1 content boolean
+  ## s7703_a_2/5 — some candidate marriage is legally separated
+  output holds_a_2 content boolean
+  ## s7703_a/4
+  output married content boolean
+  ## Every spouse the taxpayer is married to under (a). `s7703_a/4` is a
+  ## generator, and §151(b) asks about a *named* spouse, so the whole set is
+  ## reported rather than only the first.
+  output spouses content list of W.Entity
+  output spouse content optional of W.Entity
+```
+
+```catala
+scope MaritalStatusA:
+  definition candidates equals
+    combine all cs
+      among (map each ev among
+              (list of e among world.events
+               such that e.kinds contains W.EventKind.Marriage
+                         and e.agents contains taxpayer)
+             to (map each sp among
+                   (list of a among ev.agents such that a.id != taxpayer.id)
+                 to Candidate { -- spouse: sp -- marriage: ev }))
+      in acc initially []
+      with acc ++ cs
+
+  definition holds_a_1 equals
+    exists c among candidates such that
+      (output of MarriageStatus with {
+         -- world: world -- taxpayer: taxpayer -- spouse: c.spouse
+         -- marriage: c.marriage -- taxable_year: taxable_year }).holds_a_1
+
+  definition holds_a_2 equals
+    exists c among candidates such that
+      (output of LegalSeparation with {
+         -- world: world -- marriage: c.marriage
+         -- taxable_year: taxable_year }).separated
+
+  definition married equals
+    exists c among candidates such that
+      (output of MarriageStatus with {
+         -- world: world -- taxpayer: taxpayer -- spouse: c.spouse
+         -- marriage: c.marriage -- taxable_year: taxable_year }).holds_a_1
+      and not (output of LegalSeparation with {
+         -- world: world -- marriage: c.marriage
+         -- taxable_year: taxable_year }).separated
+
+  definition spouses equals
+    map each c among
+      (list of c among candidates such that
+        (output of MarriageStatus with {
+           -- world: world -- taxpayer: taxpayer -- spouse: c.spouse
+           -- marriage: c.marriage -- taxable_year: taxable_year }).holds_a_1
+        and not (output of LegalSeparation with {
+           -- world: world -- marriage: c.marriage
+           -- taxable_year: taxable_year }).separated)
+     to c.spouse
+
+  definition spouse equals List.first_element of spouses
+```
+
+## (b) Certain married individuals living apart
+
+All three paragraphs must hold. (b)(1) reaches §152, which is why this is
+level 3 of the stratification: the §152 verdict arrives as an input.
+
+### (b)(1) Maintains a home for a qualifying child for more than half the year
+
+```catala-metadata
+declaration scope LivingApartOne:
+  input world content W.World
+  input taxpayer content W.Entity
+  input household content W.Entity
+  input taxable_year content integer
+  ## §152(a)(1) for some dependant residing in this household -- supplied by
+  ## the caller at level 2 of the stratification.
+  input qualifying_dependants content list of W.Entity
+  output holds content boolean
+```
+
+```catala
+scope LivingApartOne:
+  definition holds equals
+    # files a separate return
+    (not (exists ev among world.events such that
+            ev.kinds contains W.EventKind.JointReturn
+            and ev.agents contains taxpayer
+            and ev.starts contains (W.first_day_year of taxable_year)
+            and ev.ends contains (W.last_day_year of taxable_year)))
+    # maintains as his home the household
+    and (exists rt among world.events such that
+           rt.kinds contains W.EventKind.Residence
+           and rt.agents contains taxpayer
+           and rt.patients contains household)
+    # which is the child's principal place of abode for more than half the year
+    and (exists dep among qualifying_dependants such that
+           (exists rc among
+             (list of e among world.events
+              such that e.kinds contains W.EventKind.Residence
+                        and e.agents contains dep
+                        and e.patients contains household)
+            such that
+              (exists st among rc.starts such that
+                 (let span_start equals
+                    (if st >= (W.first_day_year of taxable_year)
+                     then st else (W.first_day_year of taxable_year)) in
+                  let span_end equals
+                    (match (K.earliest of
+                             ((K.opt_dates of rc.ends)
+                              ++ [Present content (W.last_day_year of taxable_year)]))
+                     with pattern
+                     -- Absent: W.last_day_year of taxable_year
+                     -- Present content d: d) in
+                  (span_end - span_start) * 2
+                    >= ((W.last_day_year of taxable_year)
+                        - (W.first_day_year of taxable_year))))))
+```
+
+### (b)(2) Furnishes over half the cost of maintaining the household
+
+The two `findall`s differ in exactly one literal — the taxpayer's payments are
+those with `agent_(Payment,Taxp)`, the denominator drops that condition. A
+payment counts when its purpose names either the residence event or the
+household itself, and when its start date falls in the taxable year (the Prolog
+compares only the year part of the date string).
+
+```catala-metadata
+declaration payment_for_household content boolean
+  depends on ev content W.Event, world content W.World,
+             household content W.Entity, y content integer
+  equals
+    ev.kinds contains W.EventKind.Payment
+    and (ev.purposes contains (W.Purpose.PurposeEntity content household)
+         or (exists r among
+              (list of e among world.events
+               such that e.kinds contains W.EventKind.Residence
+                         and e.patients contains household)
+             such that ev.purposes contains
+                         (W.Purpose.PurposeEntity content r.ident)))
+    and (exists d among ev.starts such that Date.get_year of d = y)
+
+declaration scope LivingApartTwo:
+  input world content W.World
+  input taxpayer content W.Entity
+  input household content W.Entity
+  input taxable_year content integer
+  output cost content money
+  output furnished content money
+  output holds content boolean
+```
+
+```catala
+scope LivingApartTwo:
+  definition cost equals
+    Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that payment_for_household of e, world, household, taxable_year)
+       to Money.sum of e_amounts of ev)
+
+  definition furnished equals
+    Money.sum of
+      (map each ev among
+        (list of e among world.events
+         such that (payment_for_household of e, world, household, taxable_year)
+                   and e.agents contains taxpayer)
+       to Money.sum of e_amounts of ev)
+
+  definition holds equals cost > $0 and (furnished * (decimal of 2)) >= cost
+```
+
+### (b)(3) The spouse is not a member of the household in the last six months
+
+The Prolog enumerates day offsets 2 through 185 from 1 July — which SWI
+normalises through to 1 January of the next year — tests membership on each, and
+requires zero hits:
+
+```prolog
+between(2,185,Day_offset),
+date_time_stamp(date(Taxy,7,Day_offset,0,0,0,0,-,-), Stamp),
+... s7703_b_3_is_member_of_household(Spouse,Household,Day)
+```
+
+Membership on a day `D` means `start =< D` and, if the residence has an end,
+`D =< end`. So membership on *some* day of the window is exactly the residence
+interval meeting `[2 July, 1 January]`, and the day-by-day scan reduces to an
+interval intersection: `start =< 1 January` and, where there is an end,
+`end >= 2 July`. The port tests that closed form rather than enumerating 184
+days, which is the same predicate and does not need duration arithmetic Catala
+reserves for literals.
+
+```catala-metadata
+declaration scope LivingApartThree:
+  input world content W.World
+  input spouse content W.Entity
+  input household content W.Entity
+  input taxable_year content integer
+  output window_start content date
+  output window_end content date
+  output any_membership content boolean
+  output holds content boolean
+```
+
+```catala
+scope LivingApartThree:
+  definition window_start equals Date.of_year_month_day of taxable_year, 7, 2
+  definition window_end equals Date.of_year_month_day of (taxable_year + 1), 1, 1
+
+  definition any_membership equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Residence
+      and ev.agents contains spouse
+      and ev.patients contains household
+      and (exists st among ev.starts such that st <= window_end)
+      and ((number of ev.ends) = 0
+           or (exists en among ev.ends such that en >= window_start))
+
+  definition holds equals not any_membership
+```
+
+## (b) as a whole, and §7703 itself
+
+`s7703_b(Taxp,Spouse,Taxy)` requires all three paragraphs *of the same
+household*, and `s7703/4` is subsection (a) minus that. The household is
+generated from the taxpayer's own residence events, which is where the Prolog's
+`residence_(Taxp_residence), patient_(Taxp_residence,Household)` puts it.
+
+This is level 3–4 of the stratification at the top of this file: §152 arrives
+as `qualifying_dependants` rather than being computed here, so the module stays
+free of the cycle. `Section151` is the first caller that supplies it for real.
+
+```catala-metadata
+## `list_to_set` over the two sources of a spouse.
+declaration dedup_spouses content list of W.Entity
+  depends on l content list of W.Entity
+  equals
+    combine all x among l in acc initially []
+    with (if (exists a among acc such that a.id = x.id) then acc else acc ++ [x])
+
+declaration scope MaritalStatus:
+  input world content W.World
+  ## A case may *grant* `s7703/4` rather than model the marriage, and one that
+  ## grants it without declaring the predicate discontiguous has replaced the
+  ## whole of §7703: the derivation is gone and only the rows answer. See D65.
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## §152(a)(1) dependants, from level 2.
+  input qualifying_dependants content list of W.Entity
+  ## Every household the taxpayer resides at.
+  output households content list of W.Entity
+  ## The (a) spouses that (b) does *not* take back out.
+  output derived_spouses content list of W.Entity
+  ## ... and the ones a case named outright.
+  output granted_spouses content list of W.Entity
+  output spouses content list of W.Entity
+  output spouse content optional of W.Entity
+  ## s7703_b/3 — true when (a) held but (b) removed every spouse.
+  output living_apart content boolean
+  ## s7703/4
+  output married content boolean
+```
+
+```catala
+scope MaritalStatus:
+  definition households equals
+    combine all ps
+      among (map each ev among
+              (list of e among world.events
+               such that e.kinds contains W.EventKind.Residence
+                         and e.agents contains taxpayer)
+             to ev.patients)
+      in acc initially []
+      with acc ++ ps
+
+  definition derived_spouses equals
+    list of sp among
+      (output of MaritalStatusA with {
+         -- world: world -- taxpayer: taxpayer
+         -- taxable_year: taxable_year }).spouses
+    such that
+      not (exists h among households such that
+             (output of LivingApartOne with {
+                -- world: world -- taxpayer: taxpayer -- household: h
+                -- taxable_year: taxable_year
+                -- qualifying_dependants: qualifying_dependants }).holds
+             and (output of LivingApartTwo with {
+                    -- world: world -- taxpayer: taxpayer -- household: h
+                    -- taxable_year: taxable_year }).holds
+             and (output of LivingApartThree with {
+                    -- world: world -- spouse: sp -- household: h
+                    -- taxable_year: taxable_year }).holds)
+
+  definition granted_spouses equals
+    list of e among
+      (map each inj among
+        (W.injections_for of injections, P.pred_s7703_4,
+           [taxpayer.id; -1; -1; W.num_key of taxable_year])
+       to (match (W.injection_entity of inj, 2) with pattern
+           -- Absent: taxpayer
+           -- Present content sp: sp))
+    such that e.id != taxpayer.id
+
+  definition spouses equals
+    dedup_spouses of
+      ((if W.pred_overridden of injections, P.pred_s7703_4
+        then [] else derived_spouses)
+       ++ granted_spouses)
+
+  definition spouse equals List.first_element of spouses
+
+  definition married equals (number of spouses) > 0
+
+  definition living_apart equals
+    (output of MaritalStatusA with {
+       -- world: world -- taxpayer: taxpayer
+       -- taxable_year: taxable_year }).married
+    and (number of derived_spouses) = 0
+```
+
+## The spouse a joint return was filed with
+
+`gross_income/3` in `utils.pl` adds the spouse's income to the taxpayer's when
+the two filed a joint return covering the whole taxable year, and §63, §68 and
+§151(d)(3) all read gross income through it. The spouse has to survive the
+whole of §7703, so the test belongs here.
+
+```catala-metadata
+declaration scope JointFilingSpouse:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## §152(a)(1) dependants, for (b)(1) — as `MaritalStatus` takes them.
+  input qualifying_dependants content list of W.Entity
+  output spouse content optional of W.Entity
+```
+
+```catala
+scope JointFilingSpouse:
+  definition spouse equals
+    List.first_element of
+      (list of sp among
+        (output of MaritalStatus with {
+           -- world: world -- injections: injections -- taxpayer: taxpayer
+           -- taxable_year: taxable_year
+           -- qualifying_dependants: qualifying_dependants }).spouses
+       such that
+         exists jr among world.events such that
+           jr.kinds contains W.EventKind.JointReturn
+           and jr.agents contains taxpayer
+           and jr.agents contains sp
+           and jr.starts contains (W.first_day_year of taxable_year)
+           and jr.ends contains (W.last_day_year of taxable_year))
+```

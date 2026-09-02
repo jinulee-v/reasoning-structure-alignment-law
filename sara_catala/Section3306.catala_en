@@ -1,0 +1,2539 @@
+# §3306. Definitions
+
+> Module Section3306
+
+> Using SaraWorld as W
+> Using SaraKinship as K
+> Using SaraPredicates as P
+> Using Section7703 as S7703
+> Using Section152 as S152
+
+Port of `section3306.pl`, the definitions chapter 23 hangs on: who is an
+**employer** (a), what counts as **wages** (b), and what counts as
+**employment** (c). §3301 imposes the unemployment tax on (a) × (b) × (c), and
+`tax/3` adds that to §1, so this module is the last one the corpus needs.
+
+Three things make it unlike the income-tax sections.
+
+**It is arithmetic over multisets, not a yes/no test.** §3301 sums wages, and
+`sum_list` over a `findall` counts *solutions*, not facts: a remuneration with
+two `amount_` rows contributes twice, and a disjunction that both branches
+satisfy contributes twice again. Every generator here is therefore a list whose
+length is the Prolog's solution count, never a set.
+
+**It counts days and weeks.** (a)(1)(B) and (a)(2)(B) want ten days "each in a
+different calendar week", which SARA answers with `format_time/3` `%W`. That is
+reproduced exactly in `week_of` below, including the fact that the week key
+carries no year, so week 5 of one year and week 5 of the next collide.
+
+**It is the only section with a genuine dependency cycle inside itself**, since
+(c) excludes agricultural labor unless (a)(2) is satisfied, and (a)(2) asks (c)
+which days were worked. See "Cutting the two cycles" below.
+
+## Helpers
+
+```catala-metadata
+## `is_before/2` guards on `nonvar` for both arguments, so a comparison against
+## an unbound date *fails* rather than succeeding vacuously. Every query
+## argument that Prolog may leave unbound is an `optional` here, and this is
+## what "unbound" costs.
+declaration ent_ok content boolean
+  depends on want content optional of W.Entity, got content W.Entity
+  equals
+    match want with pattern
+    -- Absent: true
+    -- Present content e: e.id = got.id
+
+## The multiset of role fillers matching a (possibly unbound) query argument.
+## Its length is the number of ways the Prolog goal succeeds.
+declaration ent_hits content list of W.Entity
+  depends on want content optional of W.Entity, got content list of W.Entity
+  equals list of g among got such that (ent_ok of want, g)
+
+## `purpose_(E,P)`, counting the universally quantified facts the corpus
+## carries -- `purpose_(_, "agricultural labor")` applies to every event.
+declaration purpose_hits content list of W.Purpose
+  depends on world content W.World, ev content W.Event, p content W.Purpose
+  equals
+    (list of x among ev.purposes such that x = p)
+    ++ (list of x among world.universal_purposes such that x = p)
+
+declaration has_purpose content boolean
+  depends on world content W.World, ev content W.Event, p content W.Purpose
+  equals (number of (purpose_hits of world, ev, p)) > 0
+
+## `type_(E,T)`. type_ shares purpose_'s vocabulary; unlike purpose_ it has no
+## universally quantified rows.
+declaration has_type content boolean
+  depends on ev content W.Event, p content W.Purpose
+  equals ev.types contains p
+
+## (c)(1) and (c)(2) both ask "is this agricultural labor / domestic service",
+## reading purpose_ *or* type_. As a disjunction each side counts separately
+## where multiplicity matters.
+declaration agri_hits content list of W.Purpose
+  depends on world content W.World, ev content W.Event
+  equals
+    (purpose_hits of world, ev, W.Purpose.AgriculturalLabor)
+    ++ (list of x among ev.types such that x = W.Purpose.AgriculturalLabor)
+
+declaration is_agricultural content boolean
+  depends on world content W.World, ev content W.Event
+  equals (number of (agri_hits of world, ev)) > 0
+
+declaration is_domestic content boolean
+  depends on world content W.World, ev content W.Event
+  equals
+    (has_type of ev, W.Purpose.DomesticService)
+    or (has_purpose of world, ev, W.Purpose.DomesticService)
+
+## The same two tests for a service named only by id. A case that injects a
+## clause for `s3306_c/5` names services the event base never mentions, and
+## `purpose_(Service,"agricultural labor")` still succeeds for them when the
+## case carries the universally quantified row `purpose_(_,"agricultural
+## labor")` -- which is exactly how `s3306_a_2_B_pos` is written.
+declaration is_agricultural_id content boolean
+  depends on world content W.World, e content W.Entity
+  equals
+    (world.universal_purposes contains W.Purpose.AgriculturalLabor)
+    or (exists ev among world.events such that
+          ev.ident.id = e.id and (is_agricultural of world, ev))
+
+declaration is_domestic_id content boolean
+  depends on world content W.World, e content W.Entity
+  equals
+    (world.universal_purposes contains W.Purpose.DomesticService)
+    or (exists ev among world.events such that
+          ev.ident.id = e.id and (is_domestic of world, ev))
+
+## The event with this identifier, if the world has one. Several §3306 queries
+## name a service or a payment directly.
+declaration event_named content optional of W.Event
+  depends on world content W.World, id content W.Entity
+  equals List.first_element of (list of e among world.events such that e.ident.id = id.id)
+
+## `\+ end_(E,_) ; ( end_(E,T), is_before(Day,T) )` -- an open window, read at
+## a day that may itself be unbound.
+declaration open_at content boolean
+  depends on starts content list of date, ends content list of date,
+             at content optional of date
+  equals
+    match at with pattern
+    -- Absent: false
+    -- Present content d:
+        (exists s among starts such that s <= d)
+        and ((number of ends) = 0 or (exists e among ends such that d <= e))
+
+## The `%W` week number SARA gets out of `format_time/3`: weeks start on
+## Monday, and the days before the year's first Monday are week 0.
+##
+## `day_to_stamp/2` builds the stamp from `date(Y,M,D+1,0,0,0,0,-,-)`, i.e. UTC
+## midnight of the *next* day, and `format_time/3` then renders it in local
+## time. On any timezone west of UTC -- which is where the gold was produced --
+## the two shifts cancel and the week is that of the original day. This
+## reproduces that, and `sara_scripts/DEVIATIONS.md` records the dependence.
+declaration week_of content integer
+  depends on d content date
+  equals
+    let yday equals integer of ((d - (Date.first_day_of_year of d)) / 1 day) in
+    let monday_index equals
+      (match (Date.day_of_week of d) with pattern
+       -- Monday: 0
+       -- Tuesday: 1
+       -- Wednesday: 2
+       -- Thursday: 3
+       -- Friday: 4
+       -- Saturday: 5
+       -- Sunday: 6) in
+    integer of ((decimal of (yday + 7 - monday_index)) / 7.0)
+
+## `list_to_set/2`, which keeps the first occurrence of each element.
+declaration dedup_dates content list of date
+  depends on l content list of date
+  equals
+    combine all x among l in acc initially []
+    with (if acc contains x then acc else acc ++ [x])
+
+declaration dedup_ints content list of integer
+  depends on l content list of integer
+  equals
+    combine all x among l in acc initially []
+    with (if acc contains x then acc else acc ++ [x])
+
+declaration dedup_entities content list of W.Entity
+  depends on l content list of W.Entity
+  equals
+    combine all x among l in acc initially []
+    with (if (exists a among acc such that a.id = x.id) then acc else acc ++ [x])
+
+declaration flatten_entities content list of W.Entity
+  depends on nested content list of list of W.Entity
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+declaration flatten_money content list of money
+  depends on nested content list of list of money
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+declaration flatten_dates content list of date
+  depends on nested content list of list of date
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+## One row of a `findall` that collects an amount together with the employee
+## and service it was paid for -- §3306(a)(2)(A), (a)(3) and (c)(1)(A)(i) all
+## collect that shape.
+declaration structure AgriRow:
+  data amount content money
+  data employee content W.Entity
+  data service content W.Entity
+
+declaration flatten_agri content list of AgriRow
+  depends on nested content list of list of AgriRow
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+## `n` copies of one solution. Several goals in a §3306 conjunction can match
+## more than one fact, and `sum_list` over a `findall` counts every one of
+## them; collapsing to a set would understate the wages.
+declaration repeat_agri content list of AgriRow
+  depends on r content AgriRow, n content integer
+  equals map each i among (List.sequence of 1, (n + 1)) to r
+
+## `(\+ means_(P,_)) ; means_(P,"cash")` -- the number of ways a payment
+## counts as made in cash.
+declaration cash_ways content integer
+  depends on pay content W.Event
+  equals
+    if (number of pay.media) = 0
+    then 1
+    else (number of (list of m among pay.media such that m = W.Medium.Cash))
+```
+
+## Places and countries
+
+`s3306_c_A` asks whether a service was performed in the United States, and it
+answers by chasing `location_` to a place and `country_` from that place. A
+`Place` is an enumeration here, so getting from a place back to the entity that
+carries its `country_` rows takes one step.
+
+```catala-metadata
+## The entity a place names, where the world has facts about it. `Usa` is the
+## interned atom "usa", which the emitter tags.
+declaration entity_of_place content optional of W.Entity
+  depends on world content W.World, g content W.Place
+  equals
+    match g with pattern
+    -- NamedPlace content e: Present content e
+    -- Usa:
+        List.first_element of
+          (map each ev among
+            (list of e among world.events
+             such that e.ident.tag = W.EntityTag.UsaEntity)
+           to ev.ident)
+    -- PrivateHome: Absent
+    -- LocalCollegeClub: Absent
+    -- LocalCollegeFraternityChapter: Absent
+    -- LocalCollegeSororityChapter: Absent
+    -- UnitedStatesGovernment: Absent
+
+## `country_(G,C)` for a place.
+declaration countries_of_place content list of W.Entity
+  depends on world content W.World, g content W.Place
+  equals
+    match (entity_of_place of world, g) with pattern
+    -- Absent: []
+    -- Present content e:
+        flatten_entities of
+          (map each ev among
+            (list of x among world.events such that x.ident.id = e.id)
+           to ev.countries)
+
+## `G == "usa"`, the atom comparison the Prolog falls back on when the place
+## has no `country_` row at all.
+declaration place_is_usa content boolean
+  depends on g content W.Place
+  equals
+    match g with pattern
+    -- Usa: true
+    -- NamedPlace content e: e.tag = W.EntityTag.UsaEntity
+    -- PrivateHome: false
+    -- LocalCollegeClub: false
+    -- LocalCollegeFraternityChapter: false
+    -- LocalCollegeSororityChapter: false
+    -- UnitedStatesGovernment: false
+
+## `((country_(G,C), C=="usa") ; (\+ country_(G,_), G=="usa"))`.
+declaration place_in_usa content boolean
+  depends on world content W.World, g content W.Place
+  equals
+    (exists c among (countries_of_place of world, g)
+     such that c.tag = W.EntityTag.UsaEntity)
+    or ((number of (countries_of_place of world, g)) = 0
+        and (place_is_usa of g))
+
+## The same test with the sign flipped, as (B) writes it: a place that is in
+## some country other than the USA, or that is not the atom "usa".
+declaration place_outside_usa content boolean
+  depends on world content W.World, g content W.Place
+  equals
+    (exists c among (countries_of_place of world, g)
+     such that c.tag != W.EntityTag.UsaEntity)
+    or ((number of (countries_of_place of world, g)) = 0
+        and not (place_is_usa of g))
+
+## `location_(Service,G) ; (\+ location_(Service,_), G = "usa")` -- the places
+## a service was performed at, defaulting to the USA.
+declaration places_of content list of W.Place
+  depends on ev content W.Event
+  equals if (number of ev.places) = 0 then [W.Place.Usa] else ev.places
+```
+
+```catala-metadata
+## `location_(E, X)` where X is an entity rather than one of the named places.
+declaration place_is content boolean
+  depends on g content W.Place, e content W.Entity
+  equals
+    match g with pattern
+    -- NamedPlace content x: x.id = e.id
+    -- Usa: e.tag = W.EntityTag.UsaEntity
+    -- PrivateHome: false
+    -- LocalCollegeClub: false
+    -- LocalCollegeFraternityChapter: false
+    -- LocalCollegeSororityChapter: false
+    -- UnitedStatesGovernment: e.tag = W.EntityTag.UnitedStatesGovernmentEntity
+
+declaration place_ok content boolean
+  depends on g content W.Place, want content optional of W.Entity
+  equals
+    match want with pattern
+    -- Absent: true
+    -- Present content e: place_is of g, e
+
+## The four places §3306(c)(2) names as private domestic settings.
+declaration is_private_setting content boolean
+  depends on g content W.Place
+  equals
+    g = W.Place.PrivateHome or g = W.Place.LocalCollegeClub
+    or g = W.Place.LocalCollegeFraternityChapter
+    or g = W.Place.LocalCollegeSororityChapter
+```
+
+## (c) Employment — the exclusions
+
+Paragraphs (5) through (21) each take a service back *out* of "employment".
+Every one of them is a plain existence test, so each gets a scope reporting
+`holds`, and `s3306_c` requires all of them to fail.
+
+Four of them — (5), (10), (13) and (21) — test a date against `Workday`.
+`is_before/2` demands both arguments be bound, so when the caller left `Workday`
+unbound each of those tests *fails*, and the service is not excluded. That is
+not a rounding of the Prolog: it is what the Prolog does, and it is the reason
+`s3306_c` behaves differently depending on whether its caller named a day.
+
+### (6) The United States Government, and (7) a State
+
+```catala-metadata
+declaration scope ExclUsGovernment:
+  input world content W.World
+  input service content optional of W.Entity
+  ## s3306_c_6/1
+  output holds content boolean
+
+declaration scope ExclState:
+  input world content W.World
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  ## s3306_c_7/2
+  output holds content boolean
+
+declaration scope ExclForeignGovernment:
+  input world content W.World
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  ## s3306_c_11/2
+  output holds content boolean
+
+declaration scope ExclInternationalOrganization:
+  input world content W.World
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  ## s3306_c_16/2
+  output holds content boolean
+```
+
+```catala
+scope ExclUsGovernment:
+  ## The Prolog does not require `service_(Service)` here, only `patient_/2`.
+  definition holds equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             p.tag = W.EntityTag.UnitedStatesGovernmentEntity)
+
+scope ExclState:
+  ## `atom_prefix(Employer,"state of ")`, resolved by the emitter into a tag.
+  definition holds equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p) and p.tag = W.EntityTag.StateEntity)
+
+scope ExclForeignGovernment:
+  definition holds equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Service
+      and (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p)
+             and p.tag = W.EntityTag.ForeignGovernmentEntity)
+
+scope ExclInternationalOrganization:
+  definition holds equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Service
+      and (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p)
+             and (exists io among world.events such that
+                    io.kinds contains W.EventKind.InternationalOrganization
+                    and io.agents contains p))
+```
+
+### (21) A person committed to a penal institution
+
+```catala-metadata
+declaration scope ExclPenalInstitution:
+  input world content W.World
+  input service content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  ## s3306_c_21/4
+  output holds content boolean
+```
+
+```catala
+scope ExclPenalInstitution:
+  definition holds equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (exists a among ev.agents such that
+             (ent_ok of employee, a)
+             and (exists inc among world.events such that
+                    inc.kinds contains W.EventKind.Incarceration
+                    and inc.agents contains a
+                    and (exists jail among inc.patients such that
+                           exists pi among world.events such that
+                             pi.kinds contains W.EventKind.PenalInstitution
+                             and pi.agents contains jail)
+                    and (open_at of inc.starts, inc.ends, workday)))
+```
+
+### (13) A student nurse
+
+```catala-metadata
+declaration scope ExclStudentNurse:
+  input world content W.World
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  ## s3306_c_13/4
+  output holds content boolean
+```
+
+```catala
+scope ExclStudentNurse:
+  definition holds equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p)
+             # the employer is a nurses' training school or a hospital
+             and (exists h among world.events such that
+                    (h.kinds contains W.EventKind.NursesTrainingSchool
+                     or h.kinds contains W.EventKind.Hospital)
+                    and h.agents contains p))
+      and (exists a among ev.agents such that
+             (ent_ok of employee, a)
+             # enrolled at, and attending classes at, *some* nurses' training
+             # school -- not necessarily the employer, as the Prolog writes it
+             and (exists nts among world.events such that
+                    nts.kinds contains W.EventKind.NursesTrainingSchool
+                    and (exists school among nts.agents such that
+                           (exists en among world.events such that
+                              en.kinds contains W.EventKind.Enrollment
+                              and en.agents contains a
+                              and en.patients contains school
+                              and (open_at of en.starts, en.ends, workday))
+                           and (exists ac among world.events such that
+                                  ac.kinds contains W.EventKind.AttendingClasses
+                                  and ac.agents contains a
+                                  and (exists g among ac.places such that
+                                         place_is of g, school)
+                                  and (open_at of ac.starts, ac.ends, workday)))))
+```
+
+### (10) Students, their spouses, and hospital patients
+
+(A)(i) is the student test; (A)(ii) lets a student's spouse inherit it, which is
+the one place §3306 reaches back into §7703 and so into §152.
+
+```catala-metadata
+declaration scope Student:
+  input world content W.World
+  input student content optional of W.Entity
+  input employer content optional of W.Entity
+  input workday content optional of date
+  ## Which people satisfy the test, so (A) can compare them with the employee.
+  output students content list of W.Entity
+  ## s3306_c_10_A_i/3
+  output holds content boolean
+
+declaration scope StudentSpouse:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input spouse content W.Entity
+  input student content W.Entity
+  input workday content optional of date
+  ## s3306_c_10_A_ii/3
+  output holds content boolean
+
+declaration scope ExclStudent:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  ## s3306_c_10_A/4
+  output holds_a content boolean
+  ## s3306_c_10_B/4
+  output holds_b content boolean
+  ## s3306_c_10/4
+  output holds content boolean
+```
+
+```catala
+scope Student:
+  definition students equals
+    dedup_entities of
+      (flatten_entities of
+        (map each en among
+          (list of e among world.events
+           such that e.kinds contains W.EventKind.Enrollment
+                     and (open_at of e.starts, e.ends, workday))
+         to (list of st among en.agents such that
+               (ent_ok of student, st)
+               # enrolled at the employer ...
+               and (exists p among en.patients such that ent_ok of employer, p)
+               # ... and regularly attending classes there
+               and (exists ac among world.events such that
+                      ac.kinds contains W.EventKind.AttendingClasses
+                      and ac.agents contains st
+                      and (exists g among ac.places such that
+                             (place_ok of g, employer)
+                             and (exists p among en.patients such that
+                                    place_is of g, p))
+                      and (open_at of ac.starts, ac.ends, workday)))))
+
+  definition holds equals (number of students) > 0
+
+scope StudentSpouse:
+  ## `s7703(Student,Spouse,Marriage,Year)` -- the marriage has to be reported,
+  ## not just the fact of being married, because the window test below reads
+  ## its start and end. `Year` comes from the workday.
+  definition holds equals
+    match workday with pattern
+    -- Absent: false
+    -- Present content d:
+        (exists sp among
+           (output of S7703.MaritalStatus with {
+              -- injections: injections -- world: world -- taxpayer: student
+              -- taxable_year: Date.get_year of d
+              -- qualifying_dependants:
+                   (output of S152.QualifyingChildrenOf with {
+                      -- injections: injections -- world: world
+                      -- taxpayer: student
+                      -- taxable_year: Date.get_year of d
+                      -- child_of: child_of -- sibling_of: sibling_of
+                      -- descendent_of: descendent_of
+                      -- stepsibling_of: stepsibling_of }).children }).spouses
+         such that sp.id = spouse.id)
+        and (exists c among
+               (output of S7703.MaritalStatusA with {
+                  -- world: world -- taxpayer: student
+                  -- taxable_year: Date.get_year of d }).candidates
+             such that
+               c.spouse.id = spouse.id
+               # `\+ start_(M,_) ; is_before(Start,Workday)`, and likewise the end
+               and ((number of c.marriage.starts) = 0
+                    or (exists s among c.marriage.starts such that s <= d))
+               and ((number of c.marriage.ends) = 0
+                    or (exists e among c.marriage.ends such that d <= e)))
+        # and the spouse is themselves enrolled somewhere -- `Employer` is
+        # left unbound at this call site, so any institution will do
+        and (output of Student with {
+               -- world: world -- student: Present content spouse
+               -- employer: Absent -- workday: workday }).holds
+
+scope ExclStudent:
+  definition holds_a equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p)
+             and (exists ei among world.events such that
+                    ei.kinds contains W.EventKind.EducationalInstitution
+                    and ei.agents contains p)
+             and (exists a among ev.agents such that
+                    (ent_ok of employee, a)
+                    and (exists st among
+                           (output of Student with {
+                              -- world: world -- student: Absent
+                              -- employer: Present content p
+                              -- workday: workday }).students
+                         such that
+                           st.id = a.id
+                           or (output of StudentSpouse with {
+                                 -- world: world -- injections: injections
+                                 -- child_of: child_of
+                                 -- sibling_of: sibling_of
+                                 -- descendent_of: descendent_of
+                                 -- stepsibling_of: stepsibling_of
+                                 -- spouse: a -- student: st
+                                 -- workday: workday }).holds)))
+
+  definition holds_b equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Service
+      and (ent_ok of service, ev.ident)
+      and (exists p among ev.patients such that
+             (ent_ok of employer, p)
+             and (exists h among world.events such that
+                    h.kinds contains W.EventKind.Hospital and h.agents contains p)
+             and (exists a among ev.agents such that
+                    (ent_ok of employee, a)
+                    and (exists mp among world.events such that
+                           mp.kinds contains W.EventKind.MedicalPatient
+                           and mp.agents contains a
+                           and mp.patients contains p
+                           and (open_at of mp.starts, mp.ends, workday))))
+
+  definition holds equals holds_a or holds_b
+```
+
+### (5) Service within the family
+
+```catala-metadata
+declaration scope ExclFamily:
+  input world content W.World
+  input child_of content list of K.Kinship
+  input service content optional of W.Entity
+  #  `agent_(Service,Employee)` and `patient_(Service,Employer)`: the person
+  #  doing the work and the person they do it for. Named after the roles they
+  #  read rather than after the statute, because (A) and (B) swap which of the
+  #  two has to be the child.
+  input agent content optional of W.Entity
+  input patient content optional of W.Entity
+  input workday content optional of date
+  # s3306_c_5_A/4
+  output holds_a content boolean
+  # s3306_c_5_B/4
+  output holds_b content boolean
+  output holds content boolean
+```
+
+```catala
+scope ExclFamily:
+  definition holds_a equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Service
+      and (ent_ok of service, ev.ident)
+      and (exists a among ev.agents such that
+             (ent_ok of agent, a)
+             and (exists p among ev.patients such that
+                    (ent_ok of patient, p)
+                    and (
+                      # the employer is a child of the employee ...
+                      (exists k among child_of such that
+                         k.subject.id = p.id and k.object.id = a.id)
+                      # ... or they are married, on the workday
+                      or (exists m among world.events such that
+                            m.kinds contains W.EventKind.Marriage
+                            and m.agents contains p and m.agents contains a
+                            and p.id != a.id
+                            and (open_at of m.starts, m.ends, workday)))))
+
+  definition holds_b equals
+    exists ev among world.events such that
+      ev.kinds contains W.EventKind.Service
+      and (ent_ok of service, ev.ident)
+      and (exists a among ev.agents such that
+             (ent_ok of agent, a)
+             and (exists p among ev.patients such that
+                    (ent_ok of patient, p)
+                    and (exists k among child_of such that
+                           k.subject.id = a.id and k.object.id = p.id)
+                    and (match workday with pattern
+                         -- Absent: false
+                         -- Present content d:
+                             exists b among world.events such that
+                               b.kinds contains W.EventKind.Birth
+                               and b.agents contains a
+                               and (exists dob among b.starts such that
+                                      d < dob + 7671 day))))
+
+  definition holds equals holds_a or holds_b
+```
+
+`s3306_c_5_B` reads the twenty-first birthday as `date(Y, M, D + 7671)`, which
+SWI normalises: 7671 days past the date of birth. Twenty-one years is 7,670.25
+days, so this is the day of birth plus 21 years give or take a day, and the
+comparison is strict.
+
+### (1) Agricultural labor
+
+```catala-metadata
+declaration scope AgriculturalAlien:
+  input world content W.World
+  input service content optional of W.Entity
+  # s3306_c_1_B/2, which is itself a negation: the labor is *not* performed by
+  # an alien admitted to the United States to perform it.
+  output holds content boolean
+
+declaration scope AgriculturalWages:
+  input world content W.World
+  input employer content optional of W.Entity
+  input caly content integer
+  # The `(Amount, Employee, Service)` triples the findall collects, in order.
+  output rows content list of AgriRow
+  output total content money
+  # The second and third findalls project the same triples, so the employee
+  # list a case may name is this projection, duplicates and all.
+  output employees content list of W.Entity
+  # s3306_c_1_A_i/5
+  output holds content boolean
+```
+
+```catala
+scope AgriculturalAlien:
+  definition holds equals
+    not (exists ev among world.events such that
+           (ent_ok of service, ev.ident)
+           and (is_agricultural of world, ev)
+           and (exists cz among world.events such that
+                  cz.kinds contains W.EventKind.Citizenship
+                  and (exists person among cz.agents such that
+                         (exists country among cz.patients such that
+                            country.tag != W.EntityTag.UsaEntity)
+                         and (exists mg among world.events such that
+                                mg.kinds contains W.EventKind.Migration
+                                and mg.agents contains person
+                                and (exists dest among mg.destinations such that
+                                       place_is_usa of dest)
+                                and (has_purpose of world, mg,
+                                       W.Purpose.AgriculturalLabor)))))
+
+scope AgriculturalWages:
+  # `findall(Amount, (payment for agricultural service in Caly or Caly-1))`,
+  # then `sum_list` and a $20,000 threshold. The window spans two calendar
+  # years: from the first day of the preceding year to the last of this one.
+  #
+  # The nesting is the Prolog's conjunction, in its order, so the list length
+  # is the solution count rather than the number of distinct payments. Each
+  # goal that can match more than one fact multiplies the row.
+  definition rows equals
+    flatten_agri of
+      (map each pay among
+        (list of e among world.events such that e.kinds contains W.EventKind.Payment)
+       to (flatten_agri of
+            (map each er among (ent_hits of employer, pay.agents)
+             to (flatten_agri of
+                  (map each ee among pay.patients
+                   to (flatten_agri of
+                        (map each svc among
+                          (list of s among world.events
+                           such that s.kinds contains W.EventKind.Service)
+                         to (flatten_agri of
+                              (map each amt among pay.amounts
+                               to (repeat_agri of
+                                    AgriRow { -- amount: amt -- employee: ee
+                                              -- service: svc.ident },
+                               ((number of (list of a among svc.agents
+                                            such that a.id = ee.id))
+                                * (number of (list of q among svc.patients
+                                              such that q.id = er.id))
+                                * (number of (agri_hits of world, svc))
+                                * (number of (purpose_hits of world, pay,
+                                     (W.Purpose.PurposeEntity content svc.ident)))
+                                * (number of (list of t among pay.starts such that
+                                     (W.first_day_year of (caly - 1)) <= t
+                                     and t <= (W.last_day_year of caly)))
+                                * (cash_ways of pay))))))))))))
+
+  definition total equals Money.sum of (map each r among rows to r.amount)
+
+  definition employees equals map each r among rows to r.employee
+
+  definition holds equals total >= $20,000
+```
+
+## Cutting the two cycles
+
+Subsection (c) excludes agricultural labor unless (a)(2) is satisfied, and
+(a)(2) asks (c) which days were worked. It excludes domestic service unless
+(a)(3) is satisfied, and (a)(3) asks (b) for wages, which asks (c). Both are
+cycles Catala rejects statically, and both are cut here — the first by the
+Prolog's own guard, the second by measurement.
+
+**(c)(1)(A) → (a)(2)(B) → (c).** `s3306_c_1_A` opens with `nonvar(Caly)`, and
+`s3306_a_2_is_day_of_employment` calls `s3306_c` with the calendar year
+*unbound*. So the inner call can never re-enter (c)(1)(A): the recursion is one
+level deep by construction. `EmploymentInner` below is that inner level, and it
+is a separate scope precisely so the dependency graph stays a DAG.
+Instrumenting the Prolog over all 376 cases traverses this edge 30 times, in 6
+cases, and never nested — which is what that guard predicts.
+
+**(c)(2) → (a)(3) → (b) → (c).** Nothing cuts this one, and with `Caly` unbound
+`s3306_a_3` raises an instantiation error rather than failing. The same
+instrumentation traverses the edge **zero** times: (c)(2) also demands the
+service be located in a private home or a college club, and no live case has a
+service that is both. (The two cases that would test it, `s3306_c_2_pos` and
+`s3306_c_2_neg`, are the corpus's two inert files — an unterminated clause
+swallows the query.) So `s3306_c_2` here is its guard alone, which is the
+stricter reading: it excludes a service the full test might have kept.
+
+```catala-metadata
+## One solution of `s3306_c/5`. `workday` and `caly` travel with the row
+## because a case may inject a *rule* for `s3306_c/5` that binds them, and
+## (a)(1)(B) and (a)(2)(B) then count the days it yields.
+declaration structure Emp:
+  data service content W.Entity
+  data employer content W.Entity
+  data employee content W.Entity
+  data workday content optional of date
+  data caly content optional of integer
+
+declaration flatten_emp content list of Emp
+  depends on nested content list of list of Emp
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+## An argument recovered from an injected row, falling back on what the query
+## asked for when the row left that position a don't-care.
+declaration ent_from content W.Entity
+  depends on got content optional of W.Entity, want content optional of W.Entity
+  equals
+    match got with pattern
+    -- Present content e: e
+    -- Absent:
+        (match want with pattern
+         -- Present content e: e
+         -- Absent: W.Entity { -- id: -1 -- tag: W.EntityTag.PlainEntity })
+
+## The match key for a (possibly unbound) entity argument.
+declaration key_of content integer
+  depends on want content optional of W.Entity
+  equals
+    match want with pattern
+    -- Absent: -1
+    -- Present content e: e.id
+
+declaration date_key_of content integer
+  depends on want content optional of date
+  equals
+    match want with pattern
+    -- Absent: -1
+    -- Present content d: 2000000 + (integer of ((d - |0001-01-01|) / 1 day)) + 1
+
+declaration num_key_of content integer
+  depends on want content optional of integer
+  equals
+    match want with pattern
+    -- Absent: -1
+    -- Present content n: W.num_key of n
+```
+
+The `+ 1` in `date_key_of` is the difference between Catala's day count from
+`0001-01-01` and Python's `date.toordinal()`, which the emitter uses; the two
+differ by one because `toordinal` is 1-based.
+
+## (c)(A) and (c)(B): where the service was performed
+
+(A) keeps service performed in the United States; (B) keeps service performed
+abroad by a US citizen for an American employer. Both are generators, and their
+solution *count* is what §3301 sums over, so each way a goal can match is one
+row rather than one flag.
+
+(B) has a mode artifact worth naming. `Location` is unbound at every call site,
+so `country_(Location,Country), Country \== "usa"` ranges over every
+`country_` fact in the world — it never looks at where *this* service was
+performed. And when the world holds no `country_` facts at all, the second
+branch succeeds with `Location` still unbound, so `Location \== "usa"` compares
+a free variable against an atom and is true. Both are reproduced.
+
+```catala-metadata
+declaration repeat_emp content list of Emp
+  depends on e content Emp, n content integer
+  equals map each i among (List.sequence of 1, (n + 1)) to e
+
+## `((country_(G,C), C=="usa") ; (\+ country_(G,_), G=="usa"))`, counted.
+declaration usa_ways content integer
+  depends on world content W.World, g content W.Place
+  equals
+    (number of (list of c among (countries_of_place of world, g)
+                such that c.tag = W.EntityTag.UsaEntity))
+    + (if (number of (countries_of_place of world, g)) = 0 and (place_is_usa of g)
+       then 1 else 0)
+
+## Every entity carrying a `country_` row, once per row.
+declaration country_rows content list of W.Entity
+  depends on world content W.World
+  equals
+    flatten_entities of
+      (map each ev among world.events to (map each c among ev.countries to ev.ident))
+
+## Is there an unemployment compensation agreement between the USA and this
+## place? With `Location` unbound the third goal matches any agent at all.
+declaration uca_with content boolean
+  depends on world content W.World, loc content optional of W.Entity
+  equals
+    exists ag among world.events such that
+      ag.kinds contains W.EventKind.UnemploymentCompensationAgreement
+      and (exists a among ag.agents such that a.tag = W.EntityTag.UsaEntity)
+      and (exists a among ag.agents such that ent_ok of loc, a)
+
+## The ways (B)'s location test can succeed.
+declaration foreign_ways content integer
+  depends on world content W.World
+  equals
+    (number of
+      (list of ev among world.events such that
+         (exists c among ev.countries such that c.tag != W.EntityTag.UsaEntity)
+         and not (uca_with of world, (Present content ev.ident))))
+    + (if (number of (country_rows of world)) = 0
+          and not (uca_with of world, Absent)
+       then 1 else 0)
+
+## `american_employer_(X), agent_(X,Employer)`, counted.
+declaration american_employer_ways content integer
+  depends on world content W.World, employer content W.Entity
+  equals
+    Integer.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.AmericanEmployer)
+       to (number of (list of a among ev.agents such that a.id = employer.id)))
+
+## `citizenship_(X), agent_(X,Employee), patient_(X,"usa")`, counted.
+declaration us_citizen_ways content integer
+  depends on world content W.World, employee content W.Entity
+  equals
+    Integer.sum of
+      (map each ev among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Citizenship)
+       to ((number of (list of a among ev.agents such that a.id = employee.id))
+           * (number of (list of q among ev.patients
+                         such that q.tag = W.EntityTag.UsaEntity))))
+
+declaration abroad_ways content integer
+  depends on world content W.World, employer content W.Entity, employee content W.Entity
+  equals
+    (foreign_ways of world)
+    * (american_employer_ways of world, employer)
+    * (us_citizen_ways of world, employee)
+```
+
+## (c) Employment — the exclusions applied
+
+```catala-metadata
+declaration scope Excluded:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  ## Everything `s3306_c` excludes except paragraph (1), which differs between
+  ## the two levels and so stays with the caller.
+  output holds content boolean
+  ## s3306_c_2/3, its guard alone — see "Cutting the two cycles" above.
+  output domestic_excluded content boolean
+```
+
+```catala
+scope Excluded:
+  definition domestic_excluded equals
+    exists ev among world.events such that
+      (ent_ok of service, ev.ident)
+      and (is_domestic of world, ev)
+      and (number of ev.patients) > 0
+      and (exists g among ev.places such that is_private_setting of g)
+
+  definition holds equals
+    domestic_excluded
+    or (output of ExclFamily with {
+          -- world: world -- child_of: child_of -- service: service
+          -- agent: employee -- patient: employer
+          -- workday: workday }).holds
+    or (output of ExclUsGovernment with {
+          -- world: world -- service: service }).holds
+    or (output of ExclState with {
+          -- world: world -- service: service -- employer: Absent }).holds
+    or (output of ExclStudent with {
+          -- world: world -- injections: injections
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+          -- service: service -- employer: employer -- employee: employee
+          -- workday: workday }).holds
+    or (output of ExclForeignGovernment with {
+          -- world: world -- service: service -- employer: employer }).holds
+    or (output of ExclStudentNurse with {
+          -- world: world -- service: service -- employer: employer
+          -- employee: employee -- workday: workday }).holds
+    or (output of ExclInternationalOrganization with {
+          -- world: world -- service: service -- employer: employer }).holds
+    or (output of ExclPenalInstitution with {
+          -- world: world -- service: service -- employee: employee
+          -- workday: workday }).holds
+```
+
+## Injected employment
+
+Eight cases add a *clause* for `s3306_c/5` rather than facts — one of them
+generates twelve workdays and their employees out of a `member/2` over a list.
+The grounder expands each into rows, and they enter here as extra solutions
+alongside the derived ones, exactly as an extra Prolog clause would.
+
+```catala-metadata
+declaration injected_employment content list of Emp
+  depends on injections content list of W.Injection,
+             service content optional of W.Entity,
+             employer content optional of W.Entity,
+             employee content optional of W.Entity,
+             workday content optional of date,
+             caly content optional of integer
+  equals
+    map each inj among
+      (W.injections_for of injections, P.pred_s3306_c_5,
+        [(key_of of service); (key_of of employer); (key_of of employee);
+         (date_key_of of workday); (num_key_of of caly)])
+    to Emp {
+      -- service: ent_from of (W.injection_entity of inj, 1), service
+      -- employer: ent_from of (W.injection_entity of inj, 2), employer
+      -- employee: ent_from of (W.injection_entity of inj, 3), employee
+      -- workday:
+           (match (W.injection_date of inj, 4) with pattern
+            -- Present content d: Present content d
+            -- Absent: workday)
+      -- caly:
+           (match (W.injection_num of inj, 5) with pattern
+            -- Present content n: Present content n
+            -- Absent: caly) }
+```
+
+## (c) Employment — the inner level
+
+```catala-metadata
+declaration scope EmploymentCandidates:
+  input world content W.World
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  ## s3306_c_A/3 — performed in the United States
+  output from_a content list of Emp
+  ## s3306_c_B/4 — performed abroad by a US citizen for an American employer
+  output from_b content list of Emp
+  output every content list of Emp
+  output holds_a content boolean
+  output holds_b content boolean
+
+declaration scope EmploymentLower:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  input caly content optional of integer
+  ## The calendar year the clause actually uses: named by the caller, unless a
+  ## workday was named, in which case it is that day's year.
+  output effective_caly content optional of integer
+  output solutions content list of Emp
+  output holds content boolean
+```
+
+```catala
+scope EmploymentCandidates:
+  definition from_a equals
+    flatten_emp of
+      (map each ev among
+        (list of e among world.events such that ent_ok of service, e.ident)
+       to (flatten_emp of
+            (map each a among (ent_hits of employee, ev.agents)
+             to (flatten_emp of
+                  (map each p among (ent_hits of employer, ev.patients)
+                   to (flatten_emp of
+                        (map each g among (places_of of ev)
+                         to (repeat_emp of
+                               Emp { -- service: ev.ident -- employer: p
+                                     -- employee: a -- workday: Absent
+                                     -- caly: Absent },
+                               (usa_ways of world, g)))))))))
+
+  definition from_b equals
+    flatten_emp of
+      (map each ev among
+        (list of e among world.events such that ent_ok of service, e.ident)
+       to (flatten_emp of
+            (map each a among (ent_hits of employee, ev.agents)
+             to (flatten_emp of
+                  (map each p among (ent_hits of employer, ev.patients)
+                   to (repeat_emp of
+                         Emp { -- service: ev.ident -- employer: p
+                               -- employee: a -- workday: Absent
+                               -- caly: Absent },
+                         (abroad_ways of world, p, a)))))))
+
+  definition every equals from_a ++ from_b
+
+  definition holds_a equals (number of from_a) > 0
+
+  definition holds_b equals (number of from_b) > 0
+
+scope EmploymentLower:
+  definition effective_caly equals
+    match workday with pattern
+    -- Present content d: Present content (Date.get_year of d)
+    -- Absent: caly
+
+  definition solutions equals
+    (if (caly_conflict of workday, caly)
+        # A grant made without `discontiguous` replaces (c) and the derived
+        # solutions are gone. See D69.
+        or (W.pred_overridden of injections, P.pred_s3306_c_5) then [] else
+      (list of e among
+         (output of EmploymentCandidates with {
+            -- world: world -- service: service
+            -- employer: employer -- employee: employee }).every
+       such that
+         (exists ev among world.events such that
+            ev.ident.id = e.service.id and ev.kinds contains W.EventKind.Service)
+         and not (output of AgriculturalExcluded with {
+                    -- world: world -- service: Present content e.service
+                    -- caly: effective_caly
+                    # This is the lower level: `s3306_c_1_A_ii` is
+                    # `s3306_a_2_B`, which asks (c) back. See "Cutting the two
+                    # cycles"; here it is hardwired false.
+                    -- agri_employers: [] }).holds
+         and not (output of Excluded with {
+                    -- world: world -- injections: injections
+                    -- child_of: child_of -- sibling_of: sibling_of
+                    -- descendent_of: descendent_of
+                    -- stepsibling_of: stepsibling_of
+                    -- service: Present content e.service
+                    -- employer: Present content e.employer
+                    -- employee: Present content e.employee
+                    -- workday: workday }).holds))
+    ++ (injected_employment of injections, service, employer, employee,
+          workday, caly)
+
+  definition holds equals (number of solutions) > 0
+```
+
+## (c)(1) as a whole, and the upper level of (c)
+
+```catala-metadata
+## `s3306_c` unifies its `Caly` argument with the year of its `Workday` when
+## the caller named one. If the caller named both and they disagree, the clause
+## has no solutions.
+declaration caly_conflict content boolean
+  depends on workday content optional of date, caly content optional of integer
+  equals
+    match workday with pattern
+    -- Absent: false
+    -- Present content d:
+        (match caly with pattern
+         -- Absent: false
+         -- Present content y: y != (Date.get_year of d))
+
+## An employer who satisfies (a)(2)(B) in a given calendar year. Threaded into
+## (c)(1)(A)(ii) from outside so that (c) and (a)(2) stay a DAG.
+declaration structure AgriYear:
+  data employer content W.Entity
+  data caly content integer
+
+declaration scope AgriculturalExcluded:
+  input world content W.World
+  input service content optional of W.Entity
+  input caly content optional of integer
+  input agri_employers content list of AgriYear
+  ## s3306_c_1_A/3
+  output subparagraph_a content boolean
+  ## s3306_c_1/2
+  output holds content boolean
+
+declaration scope Employment:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input agri_employers content list of AgriYear
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input workday content optional of date
+  input caly content optional of integer
+  output effective_caly content optional of integer
+  ## s3306_c/5
+  output solutions content list of Emp
+  output holds content boolean
+```
+
+```catala
+scope AgriculturalExcluded:
+  # Guarded on the agricultural-labor test that `holds` applies anyway, so
+  # that the $20,000 findall below is not evaluated for every service in the
+  # world: `and` is not lazy, but `if` is.
+  definition subparagraph_a equals
+    if not (exists ev among world.events such that
+              (ent_ok of service, ev.ident) and (is_agricultural of world, ev))
+    then false
+    else
+    match caly with pattern
+    -- Absent: false
+    -- Present content y:
+        exists ev among world.events such that
+          ev.kinds contains W.EventKind.Service
+          and (ent_ok of service, ev.ident)
+          and (exists p among ev.patients such that
+                 (output of AgriculturalWages with {
+                    -- world: world -- employer: Present content p
+                    -- caly: y }).holds
+                 or (exists ay among agri_employers such that
+                       ay.employer.id = p.id and ay.caly = y))
+
+  definition holds equals
+    (exists ev among world.events such that
+       (ent_ok of service, ev.ident) and (is_agricultural of world, ev))
+    and not (subparagraph_a
+             and (output of AgriculturalAlien with {
+                    -- world: world -- service: service }).holds)
+
+scope Employment:
+  definition effective_caly equals
+    match workday with pattern
+    -- Present content d: Present content (Date.get_year of d)
+    -- Absent: caly
+
+  definition solutions equals
+    (if (caly_conflict of workday, caly)
+        # A grant made without `discontiguous` replaces (c) and the derived
+        # solutions are gone. See D69.
+        or (W.pred_overridden of injections, P.pred_s3306_c_5) then [] else
+      (list of e among
+         (output of EmploymentCandidates with {
+            -- world: world -- service: service
+            -- employer: employer -- employee: employee }).every
+       such that
+         (exists ev among world.events such that
+            ev.ident.id = e.service.id and ev.kinds contains W.EventKind.Service)
+         and not (output of AgriculturalExcluded with {
+                    -- world: world -- service: Present content e.service
+                    -- caly: effective_caly
+                    -- agri_employers: agri_employers }).holds
+         and not (output of Excluded with {
+                    -- world: world -- injections: injections
+                    -- child_of: child_of -- sibling_of: sibling_of
+                    -- descendent_of: descendent_of
+                    -- stepsibling_of: stepsibling_of
+                    -- service: Present content e.service
+                    -- employer: Present content e.employer
+                    -- employee: Present content e.employee
+                    -- workday: workday }).holds))
+    ++ (injected_employment of injections, service, employer, employee,
+          workday, caly)
+
+  definition holds equals (number of solutions) > 0
+```
+
+## (a)(1)(B) and (a)(2)(B): ten days in ten different weeks
+
+Both paragraphs collect the days somebody was employed, keep those falling in
+the calendar year or the one before it, and demand ten distinct days spread
+over ten distinct calendar weeks.
+
+Neither can ever fire on a purely derived world. `s3306_c` reads its `Workday`
+argument and never binds it, so the `findall` generator leaves `Day` unbound
+and the `is_before` that follows fails. The days come from cases that inject a
+clause for `s3306_c/5` — which is exactly the shape of the eight cases that do.
+
+```catala-metadata
+## s3306_a_1_is_day_of_employment/3 — a day of non-agricultural,
+## non-domestic employment.
+declaration scope GeneralDays:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input employer content W.Entity
+  output days content list of date
+  output employees content list of W.Entity
+
+## s3306_a_2_is_day_of_employment/4 — five or more individuals in agricultural
+## labor on one day.
+declaration scope AgriDay:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input employer content W.Entity
+  input at content date
+  output individuals content list of W.Entity
+  output holds content boolean
+
+declaration scope EmployerDays:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input employer content W.Entity
+  input caly content integer
+  ## The candidate days, before the ten-day and ten-week tests.
+  output workdays content list of date
+  output employees content list of W.Entity
+  ## s3306_a_1_B/4
+  output holds_general content boolean
+  ## s3306_a_2_B/6 — the agricultural variant, five individuals a day
+  output agri_workdays content list of date
+  output agri_employees content list of W.Entity
+  output holds_agricultural content boolean
+```
+
+```catala
+scope GeneralDays:
+  definition days equals
+    map each e among
+      (list of x among
+        (output of EmploymentLower with {
+           -- world: world -- injections: injections
+           -- child_of: child_of -- sibling_of: sibling_of
+           -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+           -- service: Absent -- employer: Present content employer
+           -- employee: Absent -- workday: Absent -- caly: Absent }).solutions
+       such that
+         (match x.workday with pattern -- Absent: false -- Present content d: true)
+         and not ((is_agricultural_id of world, x.service)
+                  or (is_domestic_id of world, x.service)))
+    to (match e.workday with pattern
+        -- Present content d: d
+        -- Absent: |0001-01-01|)
+
+  definition employees equals
+    map each e among
+      (list of x among
+        (output of EmploymentLower with {
+           -- world: world -- injections: injections
+           -- child_of: child_of -- sibling_of: sibling_of
+           -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+           -- service: Absent -- employer: Present content employer
+           -- employee: Absent -- workday: Absent -- caly: Absent }).solutions
+       such that
+         (match x.workday with pattern -- Absent: false -- Present content d: true)
+         and not ((is_agricultural_id of world, x.service)
+                  or (is_domestic_id of world, x.service)))
+    to e.employee
+
+scope AgriDay:
+  definition individuals equals
+    dedup_entities of
+      (map each e among
+        (list of x among
+          (output of EmploymentLower with {
+             -- world: world -- injections: injections
+             -- child_of: child_of -- sibling_of: sibling_of
+             -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+             -- service: Absent -- employer: Present content employer
+             -- employee: Absent -- workday: Present content at
+             -- caly: Absent }).solutions
+         such that is_agricultural_id of world, x.service)
+       to e.employee)
+
+  definition holds equals (number of individuals) >= 5
+
+scope EmployerDays:
+  definition workdays equals
+    list of d among
+      (output of GeneralDays with {
+         -- world: world -- injections: injections
+         -- child_of: child_of -- sibling_of: sibling_of
+         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+         -- employer: employer }).days
+    such that (W.first_day_year of (caly - 1)) <= d and d <= (W.last_day_year of caly)
+
+  definition employees equals
+    (output of GeneralDays with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- employer: employer }).employees
+
+  definition holds_general equals
+    (number of (dedup_dates of workdays)) >= 10
+    and (number of (dedup_ints of (map each d among workdays to (week_of of d)))) >= 10
+
+  definition agri_workdays equals
+    list of d among
+      (dedup_dates of
+        (map each e among
+          (list of x among
+            (output of EmploymentLower with {
+               -- world: world -- injections: injections
+               -- child_of: child_of -- sibling_of: sibling_of
+               -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+               -- service: Absent -- employer: Present content employer
+               -- employee: Absent -- workday: Absent -- caly: Absent }).solutions
+           such that
+             (match x.workday with pattern -- Absent: false -- Present content d: true))
+         to (match e.workday with pattern
+             -- Present content d: d
+             -- Absent: |0001-01-01|)))
+    such that
+      (W.first_day_year of (caly - 1)) <= d and d <= (W.last_day_year of caly)
+      and (output of AgriDay with {
+             -- world: world -- injections: injections
+             -- child_of: child_of -- sibling_of: sibling_of
+             -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+             -- employer: employer -- at: d }).holds
+
+  definition agri_employees equals
+    flatten_entities of
+      (map each d among agri_workdays
+       to (output of AgriDay with {
+             -- world: world -- injections: injections
+             -- child_of: child_of -- sibling_of: sibling_of
+             -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+             -- employer: employer -- at: d }).individuals)
+
+  definition holds_agricultural equals
+    (number of agri_workdays) >= 10
+    and (number of (dedup_ints of (map each d among agri_workdays to (week_of of d)))) >= 10
+```
+
+## (b) Wages
+
+`s3306_b/8` is the section's other generator, and the one §3301 sums. Every
+goal in its conjunction that can match more than one fact multiplies the row,
+because `findall`+`sum_list` counts solutions: a payment carrying two
+`amount_` rows is counted twice, and so is one paid in two media.
+
+```catala-metadata
+declaration structure WageRow:
+  data wages content money
+  data remuneration content W.Entity
+  data employment content W.Entity
+  data payer content W.Entity
+  data payee content W.Entity
+  data employer content W.Entity
+  data employee content W.Entity
+
+declaration flatten_wage content list of WageRow
+  depends on nested content list of list of WageRow
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+declaration repeat_wage content list of WageRow
+  depends on r content WageRow, n content integer
+  equals map each i among (List.sequence of 1, (n + 1)) to r
+
+## `((\+ means_(R,_)) ; means_(R,Medium))` with `Medium` unbound: one solution
+## when the payment names no medium, otherwise one per medium named.
+declaration medium_ways content integer
+  depends on r content W.Event
+  equals if (number of r.media) = 0 then 1 else (number of r.media)
+
+declaration is_plan content boolean
+  depends on world content W.World, e content W.Entity
+  equals
+    exists ev among world.events such that
+      ev.ident.id = e.id and ev.kinds contains W.EventKind.Plan
+
+declaration beneficiaries_of content list of W.Entity
+  depends on world content W.World, e content W.Entity
+  equals
+    flatten_entities of
+      (map each ev among (list of x among world.events such that x.ident.id = e.id)
+       to ev.beneficiaries)
+
+## `(patient_(R,Payee), \+ plan_(Payee)) ; (patient_(R,Plan), plan_(Plan),
+## beneficiary_(Plan,Payee))` -- a payment made to somebody, or into a plan
+## somebody benefits from.
+declaration structure PayeeRow:
+  data payee content W.Entity
+  data plan content optional of W.Entity
+
+declaration flatten_payee content list of PayeeRow
+  depends on nested content list of list of PayeeRow
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+
+declaration payee_rows content list of PayeeRow
+  depends on world content W.World, r content W.Event
+  equals
+    (map each q among (list of x among r.patients such that not (is_plan of world, x))
+     to PayeeRow { -- payee: q -- plan: Absent })
+    ++ (flatten_payee of
+         (map each pl among (list of x among r.patients such that is_plan of world, x)
+          to (map each b among (beneficiaries_of of world, pl)
+              to PayeeRow { -- payee: b -- plan: Present content pl })))
+
+## `end_(E,T)` for an event named by id rather than held in hand.
+declaration ends_of content list of date
+  depends on world content W.World, e content W.Entity
+  equals
+    flatten_dates of
+      (map each ev among (list of x among world.events such that x.ident.id = e.id)
+       to ev.ends)
+
+## The event ids in a role, so an `\+` can be written over them.
+declaration events_with_kind content list of W.Event
+  depends on world content W.World, k content W.EventKind
+  equals list of e among world.events such that e.kinds contains k
+```
+
+### (b)(2), (b)(7), (b)(10), (b)(11) and (b)(15): what wages are not
+
+```catala-metadata
+declaration scope PlanPurpose:
+  input world content W.World
+  input plan content optional of W.Entity
+  ## s3306_b_2_A/1 — sickness or accident disability
+  output holds_a content boolean
+  ## s3306_b_2_C/1 — death
+  output holds_c content boolean
+
+declaration scope ExcludedPlanPayment:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input remuneration content optional of W.Entity
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input plan content optional of W.Entity
+  ## s3306_b_2/6
+  output holds content boolean
+
+declaration scope ExcludedNonCashOutsideBusiness:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input remuneration content optional of W.Entity
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  ## s3306_b_7/6
+  output holds content boolean
+
+declaration scope ExcludedTerminationPayment:
+  input world content W.World
+  input remuneration content optional of W.Entity
+  input employment content optional of W.Entity
+  input employee content optional of W.Entity
+  input employer content optional of W.Entity
+  ## s3306_b_10_A/6
+  output holds content boolean
+
+declaration scope ExcludedTerminationPlan:
+  input world content W.World
+  input employer content optional of W.Entity
+  input remuneration content optional of W.Entity
+  input plan content optional of W.Entity
+  ## s3306_b_10_B/3
+  output holds content boolean
+
+declaration scope ExcludedDeathBenefit:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input remuneration content optional of W.Entity
+  input service content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  input payee content optional of W.Entity
+  input plan content optional of W.Entity
+  ## s3306_b_10/6
+  output holds content boolean
+
+declaration scope ExcludedAgriculturalInKind:
+  input world content W.World
+  input remuneration content optional of W.Entity
+  input service content optional of W.Entity
+  ## s3306_b_11/3
+  output holds content boolean
+
+declaration scope ExcludedSurvivorPayment:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input remuneration content optional of W.Entity
+  input employer content optional of W.Entity
+  input payee content optional of W.Entity
+  input employee content optional of W.Entity
+  ## s3306_b_15/5
+  output holds content boolean
+```
+
+```catala
+scope PlanPurpose:
+  definition holds_a equals
+    exists ev among world.events such that
+      (ent_ok of plan, ev.ident)
+      and ((has_purpose of world, ev, W.Purpose.ProvisionSickness)
+           or (has_purpose of world, ev, W.Purpose.ProvisionAccidentDisability))
+
+  definition holds_c equals
+    exists ev among world.events such that
+      (ent_ok of plan, ev.ident)
+      and (has_purpose of world, ev, W.Purpose.ProvisionDeath)
+
+scope ExcludedPlanPayment:
+  definition holds equals
+    (output of EmploymentLower with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- service: service -- employer: employer -- employee: employee
+       -- workday: Absent -- caly: Absent }).holds
+    and (exists rem among world.events such that
+           rem.kinds contains W.EventKind.Payment
+           and (ent_ok of remuneration, rem.ident)
+           and (exists er among rem.agents such that ent_ok of employer, er)
+           and (exists pl among world.events such that
+                  pl.kinds contains W.EventKind.Plan
+                  and (ent_ok of plan, pl.ident)
+                  and ((output of PlanPurpose with {
+                          -- world: world
+                          -- plan: Present content pl.ident }).holds_a
+                       or (output of PlanPurpose with {
+                             -- world: world
+                             -- plan: Present content pl.ident }).holds_c)
+                  and (exists ben among pl.beneficiaries such that
+                         # `Employee == Payee` -- the §152 alternative raises an
+                         # instantiation error in SWI, because it calls
+                         # `s152/3` with the taxable year unbound. See
+                         # DEVIATIONS.md; it is unreachable in the corpus.
+                         (ent_ok of employee, ben)
+                         and ((rem.patients contains pl.ident)
+                              or ((exists m among rem.media such that
+                                     m = (W.Medium.MediumEntity content pl.ident))
+                                  and (exists q among rem.patients such that
+                                         q.id = ben.id))))))
+
+scope ExcludedNonCashOutsideBusiness:
+  # `s3306_c(Service,Employer,Employee,_,_)` binds the service and the employer,
+  # and the two goals after it reuse both: `agent_(Employers_business,Employer)`
+  # and `type_(Service,Type_service)`. Asking each against the query's own
+  # arguments -- unbound in every case that reaches this -- let a business run
+  # by one person be weighed against an employment held by another. Same shape
+  # as D36; see D52.
+  definition holds equals
+    exists emp among
+      (output of EmploymentLower with {
+         -- world: world -- injections: injections
+         -- child_of: child_of -- sibling_of: sibling_of
+         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+         -- service: service -- employer: employer -- employee: employee
+         -- workday: Absent -- caly: Absent }).solutions
+    such that
+      (exists rem among world.events such that
+         (ent_ok of remuneration, rem.ident)
+         and (exists m among rem.media such that m != W.Medium.Cash))
+      and (exists biz among world.events such that
+             biz.kinds contains W.EventKind.Business
+             and biz.agents contains emp.employer
+             and (exists bt among biz.types such that
+                    exists svc among world.events such that
+                      svc.ident.id = emp.service.id
+                      and (exists st among svc.types such that st != bt)))
+
+scope ExcludedTerminationPayment:
+  definition holds equals
+    exists rem among world.events such that
+      (ent_ok of remuneration, rem.ident)
+      and (exists sr among rem.starts such that
+             exists term among world.events such that
+               term.kinds contains W.EventKind.Termination
+               and (exists a among term.agents such that ent_ok of employer, a)
+               and (exists emp among term.patients such that
+                      (ent_ok of employment, emp)
+                      and (exists st among
+                             (term.starts ++ (ends_of of world, emp))
+                           such that st <= sr))
+               and (exists reason among term.reasons such that
+                      exists rev among world.events such that
+                        rev.ident.id = reason.id
+                        and (rev.kinds contains W.EventKind.Disability
+                             or rev.kinds contains W.EventKind.Death)
+                        and (exists a among rev.agents such that ent_ok of employee, a)))
+
+scope ExcludedTerminationPlan:
+  definition holds equals
+    exists rem among world.events such that
+      (ent_ok of remuneration, rem.ident)
+      and (exists m among rem.media such that
+             match m with pattern
+             -- Cash: false
+             -- MediumEntity content pl:
+                 (ent_ok of plan, pl)
+                 and (exists ev among world.events such that
+                        ev.ident.id = pl.id
+                        and ev.kinds contains W.EventKind.Plan
+                        and (exists a among ev.agents such that ent_ok of employer, a)
+                        and (has_purpose of world, ev,
+                               W.Purpose.ProvisionEmployeesOrDependents)))
+
+scope ExcludedDeathBenefit:
+  definition holds equals
+    (output of EmploymentLower with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- service: service -- employer: employer -- employee: employee
+       -- workday: Absent -- caly: Absent }).holds
+    and (exists rem among world.events such that
+           (ent_ok of remuneration, rem.ident)
+           and (number of rem.starts) > 0
+           and (exists a among rem.agents such that ent_ok of employer, a)
+           and (exists q among rem.patients such that
+                  (ent_ok of payee, q)
+                  and ((ent_ok of employee, q)
+                       or (exists rd among rem.starts such that
+                             match employee with pattern
+                             -- Absent: false
+                             -- Present content ee:
+                                 (output of S152.IsDependent with {
+                                    -- injections: injections -- world: world
+                                    -- dependant: ee -- taxpayer: q
+                                    # the payee is bound from the remuneration
+                                    # event before §152 is reached
+                                    -- taxpayer_generated: false
+                                    -- dependant_generated: false
+                                    -- taxable_year: Date.get_year of rd
+                                    -- child_of: child_of
+                                    -- sibling_of: sibling_of
+                                    -- descendent_of: descendent_of
+                                    -- stepsibling_of: stepsibling_of
+                                    -- stepparent_of: []
+                                    -- child_in_law_of: child_in_law_of
+                                    -- parent_in_law_of: parent_in_law_of
+                                    -- sibling_in_law_of: sibling_in_law_of }).holds))))
+    and (output of ExcludedTerminationPayment with {
+           -- world: world -- remuneration: remuneration
+           -- employment: service -- employee: employee
+           -- employer: employer }).holds
+    and (output of ExcludedTerminationPlan with {
+           -- world: world -- employer: employer
+           -- remuneration: remuneration -- plan: plan }).holds
+
+scope ExcludedAgriculturalInKind:
+  definition holds equals
+    exists svc among world.events such that
+      svc.kinds contains W.EventKind.Service
+      and (ent_ok of service, svc.ident)
+      and (has_purpose of world, svc, W.Purpose.AgriculturalLabor)
+      and (exists er among svc.patients such that
+             exists ee among svc.agents such that
+               exists rem among world.events such that
+                 (ent_ok of remuneration, rem.ident)
+                 and rem.agents contains er
+                 and rem.patients contains ee
+                 and (has_purpose of world, rem,
+                        (W.Purpose.PurposeEntity content svc.ident))
+                 and (exists m among rem.media such that m != W.Medium.Cash))
+
+scope ExcludedSurvivorPayment:
+  # `s3306_c(_,Employer,Employee,_,_)` *binds* the employer and the employee,
+  # and every later goal reuses those bindings: `agent_(Remuneration,Employer)`,
+  # `agent_(Edeath,Employee)`, `agent_(Emar,Employee)`. Asking each of them
+  # separately whether *some* agent fits the query's own (usually unbound)
+  # employer and employee is a weaker question, and it let a remuneration paid
+  # by one person count against an employment held by another. Iterating
+  # `solutions` keeps one row's pair throughout, which is what the shared
+  # variables mean. `holds` is `(number of solutions) > 0`, so the existential
+  # subsumes the conjunct this replaced.
+  definition holds equals
+    exists emp among
+      (output of EmploymentLower with {
+         -- world: world -- injections: injections
+         -- child_of: child_of -- sibling_of: sibling_of
+         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+         -- service: Absent -- employer: employer -- employee: employee
+         -- workday: Absent -- caly: Absent }).solutions
+    such that
+      (exists rem among world.events such that
+         (ent_ok of remuneration, rem.ident)
+         and (rem.agents contains emp.employer)
+         # `patient_(Remuneration,Payee)` *binds* the payee and
+         # `agent_(Emar,Payee)` reuses it: the person paid has to be the one
+         # the employee was married to. Testing each against the query's own
+         # payee -- unbound in every case that reaches this -- asked only that
+         # the employee was married to somebody. See D63.
+         and (exists q among rem.patients such that
+                (ent_ok of payee, q)
+                and (exists sr among rem.starts such that
+                       exists death among world.events such that
+                         death.kinds contains W.EventKind.Death
+                         and (death.agents contains emp.employee)
+                         and (exists td among death.starts such that
+                                (exists mar among world.events such that
+                                   mar.kinds contains W.EventKind.Marriage
+                                   and (mar.agents contains emp.employee)
+                                   and (exists b among mar.agents such that
+                                          b.id = q.id)
+                                   and ((number of mar.ends) = 0
+                                        or mar.ends contains td))
+                                # `Year_remuneration @> Caly` compares the two
+                                # year strings, which for four-digit years is
+                                # the numeric comparison.
+                                and (Date.get_year of sr)
+                                      > (Date.get_year of td)))))
+```
+
+### (b) itself
+
+```catala-metadata
+## How many ways `s3306_c(Employment,_,_,_,Year)` succeeds for one service,
+## summed over its end dates -- which is the pair of goals `end_(E,T),
+## s3306_c(E,_,_,_,year(T))` in `s3306_b`. Hoisted out of the wage generator
+## because it does not depend on the payment, and (c) is the expensive half of
+## this module.
+declaration structure ServiceYear:
+  data service content W.Entity
+  data ways content integer
+
+declaration ways_of content integer
+  depends on table content list of ServiceYear, target content W.Entity
+  equals
+    match (List.first_element of
+             (list of r among table such that r.service.id = target.id)) with pattern
+    -- Absent: 0
+    -- Present content r: r.ways
+
+## The rows a case grants outright. Eight cases assert `s3306_b/8` directly
+## rather than supplying the payment and service it would be derived from.
+declaration injected_wages content list of WageRow
+  depends on injections content list of W.Injection,
+             remuneration content optional of W.Entity,
+             employment content optional of W.Entity,
+             payer content optional of W.Entity,
+             payee content optional of W.Entity,
+             employer content optional of W.Entity,
+             employee content optional of W.Entity
+  equals
+    map each inj among
+      (W.injections_for of injections, P.pred_s3306_b_8,
+        [-1; (key_of of remuneration); (key_of of employment); (key_of of payer);
+         (key_of of payee); (key_of of employer); (key_of of employee); -1])
+    to WageRow {
+      -- wages:
+           (match (W.injection_num of inj, 1) with pattern
+            -- Present content n: money of n
+            -- Absent: $0)
+      -- remuneration: ent_from of (W.injection_entity of inj, 2), remuneration
+      -- employment: ent_from of (W.injection_entity of inj, 3), employment
+      -- payer: ent_from of (W.injection_entity of inj, 4), payer
+      -- payee: ent_from of (W.injection_entity of inj, 5), payee
+      -- employer: ent_from of (W.injection_entity of inj, 6), employer
+      -- employee: ent_from of (W.injection_entity of inj, 7), employee }
+
+declaration scope Wages:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input agri_employers content list of AgriYear
+  input remuneration content optional of W.Entity
+  input employment content optional of W.Entity
+  input payer content optional of W.Entity
+  input payee content optional of W.Entity
+  input employer content optional of W.Entity
+  input employee content optional of W.Entity
+  ## `end_(E,T), s3306_c(E,_,_,_,year(T))` for every service in the world.
+  output employment_ways content list of ServiceYear
+  ## Before the five exclusions of (b)(2)–(b)(15).
+  output raw_rows content list of WageRow
+  ## One row per solution of `s3306_b/8`.
+  output rows_available content boolean
+  output rows content list of WageRow
+  output holds content boolean
+```
+
+```catala
+scope Wages:
+  definition employment_ways equals
+    map each emp among (events_with_kind of world, W.EventKind.Service)
+    to ServiceYear {
+         -- service: emp.ident
+         -- ways:
+              Integer.sum of
+                (map each endd among emp.ends
+                 to (number of
+                      (output of Employment with {
+                         -- world: world -- injections: injections
+                         -- child_of: child_of -- sibling_of: sibling_of
+                         -- descendent_of: descendent_of
+                         -- stepsibling_of: stepsibling_of
+                         -- agri_employers: agri_employers
+                         -- service: Present content emp.ident
+                         -- employer: Absent -- employee: Absent
+                         -- workday: Absent
+                         -- caly: Present content (Date.get_year of endd)
+                       }).solutions)) }
+
+  # The Prolog's conjunction, in its order. `purpose_(Remuneration,Employment)`
+  # drives the search for the service rather than being checked after one: the
+  # multiset is the same, since event ids are unique, and it turns a quadratic
+  # scan into a linear one.
+  definition raw_rows equals
+    flatten_wage of
+      (map each rem among
+        (list of e among world.events
+         such that e.kinds contains W.EventKind.Payment
+                   and (ent_ok of remuneration, e.ident))
+       to (flatten_wage of
+            (map each pyr among (ent_hits of payer, rem.agents)
+             to (flatten_wage of
+                  (map each pr among
+                    (list of x among (payee_rows of world, rem)
+                     such that ent_ok of payee, x.payee)
+                   to (flatten_wage of
+                        (map each pu among rem.purposes
+                         to (flatten_wage of
+                              (map each emp among
+                                (list of e among world.events such that
+                                   e.kinds contains W.EventKind.Service
+                                   and (ent_ok of employment, e.ident)
+                                   and pu = (W.Purpose.PurposeEntity content e.ident))
+                               to (flatten_wage of
+                                    (map each ee among (ent_hits of employee, emp.agents)
+                                     to (flatten_wage of
+                                          (map each er among
+                                            (ent_hits of employer, emp.patients)
+                                           to (flatten_wage of
+                                                (map each amt among rem.amounts
+                                                 to (repeat_wage of
+                                                      WageRow {
+                                                        -- wages: Money.min of $7,000, amt
+                                                        -- remuneration: rem.ident
+                                                        -- employment: emp.ident
+                                                        -- payer: pyr
+                                                        -- payee: pr.payee
+                                                        -- employer: er
+                                                        -- employee: ee },
+                                                      ((ways_of of employment_ways, emp.ident)
+                                                       * (medium_ways of rem))))))))))))))))))
+
+  definition rows equals
+    (list of r among raw_rows such that
+       not (output of ExcludedPlanPayment with {
+              -- world: world -- injections: injections
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+              -- remuneration: Present content r.remuneration
+              -- service: Present content r.employment
+              -- employer: Present content r.payer
+              -- employee: Present content r.payee
+              -- plan: Absent }).holds
+       and not (output of ExcludedNonCashOutsideBusiness with {
+                  -- world: world -- injections: injections
+                  -- child_of: child_of -- sibling_of: sibling_of
+                  -- descendent_of: descendent_of
+                  -- stepsibling_of: stepsibling_of
+                  -- remuneration: Present content r.remuneration
+                  -- service: Present content r.employment
+                  -- employer: Present content r.payer
+                  -- employee: Present content r.payee }).holds
+       and not (output of ExcludedDeathBenefit with {
+                  -- world: world -- injections: injections
+                  -- child_of: child_of -- sibling_of: sibling_of
+                  -- descendent_of: descendent_of
+                  -- stepsibling_of: stepsibling_of
+                  -- child_in_law_of: child_in_law_of
+                  -- parent_in_law_of: parent_in_law_of
+                  -- sibling_in_law_of: sibling_in_law_of
+                  -- remuneration: Present content r.remuneration
+                  -- service: Present content r.employment
+                  -- employer: Present content r.payer
+                  -- employee: Present content r.payee
+                  -- payee: Present content r.payee
+                  -- plan: Absent }).holds
+       and not (output of ExcludedAgriculturalInKind with {
+                  -- world: world
+                  -- remuneration: Present content r.remuneration
+                  -- service: Present content r.employment }).holds
+       and not (output of ExcludedSurvivorPayment with {
+                  -- world: world -- injections: injections
+                  -- child_of: child_of -- sibling_of: sibling_of
+                  -- descendent_of: descendent_of
+                  -- stepsibling_of: stepsibling_of
+                  -- remuneration: Present content r.remuneration
+                  -- employer: Present content r.employer
+                  -- payee: Present content r.payee
+                  -- employee: Present content r.employee }).holds)
+    ++ (injected_wages of injections, remuneration, employment, payer, payee,
+          employer, employee)
+
+  # A case that grants `s3306_b/8` without declaring the predicate
+  # discontiguous has replaced (b) outright: the derived rows are gone and only
+  # the granted ones are wages. See D69.
+  definition rows_available equals
+    not (W.pred_overridden of injections, P.pred_s3306_b_8)
+
+  exception definition rows
+    under condition (not rows_available)
+    consequence equals
+      injected_wages of injections, remuneration, employment, payer, payee,
+        employer, employee
+
+  definition holds equals (number of rows) > 0
+```
+
+## (a) Employer
+
+Three independent routes to being an employer: paragraph (1) for employment
+generally, (2) for agricultural labor, (3) for domestic service. Each of (1)
+and (2) has a dollar test and a ten-day test; (3) has only a dollar test. Every
+dollar test looks at the calendar year *and the one before it*, which the two
+disjuncts of each `findall` cover as two adjacent windows.
+
+```catala-metadata
+declaration starts_of content list of date
+  depends on world content W.World, e content W.Entity
+  equals
+    flatten_dates of
+      (map each ev among (list of x among world.events such that x.ident.id = e.id)
+       to ev.starts)
+
+## `start_(Remuneration,Time)` where the row left `Remuneration` *unbound* --
+## which is what `s3306_a_1_A_pos` does, injecting
+## `s3306_b(3200,_,bob_works,alice,bob,alice,bob,_)`. An unbound first argument
+## makes `start_/2` a generator over every start date in the world, and the
+## wages are then counted once per date rather than once. A negative id is how
+## an injected don't-care arrives here.
+declaration starts_for content list of date
+  depends on world content W.World, e content W.Entity
+  equals
+    if e.id < 0
+    then flatten_dates of (map each ev among world.events to ev.starts)
+    else starts_of of world, e
+
+## The event a wage row's employment names, for reading its purposes back.
+declaration purposes_of content list of W.Purpose
+  depends on world content W.World, e content W.Entity
+  equals
+    combine all ps
+      among (map each ev among
+              (list of x among world.events such that x.ident.id = e.id)
+             to ev.purposes)
+      in acc initially [] with acc ++ ps
+
+declaration scope EmployerWages:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input agri_employers content list of AgriYear
+  input person content W.Entity
+  input caly content integer
+  ## Every `s3306_b/8` row this person paid.
+  output paid content list of WageRow
+  ## s3306_a_1_A/3
+  output general_total content money
+  output holds_1_A content boolean
+  ## The (amount, employee, service) rows (a)(2)(A) and (a)(3) collect.
+  internal agri_rows content list of AgriRow
+  internal domestic_rows content list of AgriRow
+  ## s3306_a_2_A/4
+  output agri_total content money
+  output agri_services content list of W.Entity
+  output holds_2_A content boolean
+  ## s3306_a_3/4
+  output domestic_total content money
+  output domestic_services content list of W.Entity
+  output holds_3 content boolean
+```
+
+```catala
+scope EmployerWages:
+  definition paid equals
+    (output of Wages with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers: agri_employers
+       -- remuneration: Absent -- employment: Absent
+       -- payer: Present content person -- payee: Absent
+       -- employer: Absent -- employee: Absent }).rows
+
+  definition general_total equals
+    Money.sum of
+      (flatten_money of
+        (map each r among
+          (list of x among paid such that
+             not ((purposes_of of world, x.employment)
+                    contains W.Purpose.AgriculturalLabor)
+             and not (world.universal_purposes
+                        contains W.Purpose.AgriculturalLabor)
+             and not ((purposes_of of world, x.employment)
+                        contains W.Purpose.DomesticService)
+             and not (world.universal_purposes
+                        contains W.Purpose.DomesticService))
+         to (map each t among (dates_in_window of
+                                 (starts_for of world, r.remuneration), caly)
+             to r.wages)))
+
+  definition holds_1_A equals general_total >= $1,500
+
+  definition agri_total equals
+    Money.sum of (map each r among agri_rows to r.amount)
+
+  definition agri_services equals map each r among agri_rows to r.service
+
+  definition holds_2_A equals agri_total >= $20,000
+
+  definition domestic_total equals
+    Money.sum of (map each r among domestic_rows to r.amount)
+
+  definition domestic_services equals map each r among domestic_rows to r.service
+
+  definition holds_3 equals domestic_total >= $1,000
+```
+
+`agri_rows` and `domestic_rows` are the same shape, and the `Service` list the
+two paragraphs report is the projection of those rows, so both are built once
+below.
+
+```catala-metadata
+declaration dates_in_window content list of date
+  depends on ds content list of date, caly content integer
+  equals
+    list of d among ds such that
+      (W.first_day_year of (caly - 1)) <= d and d <= (W.last_day_year of caly)
+
+## §3306(a)(1)(A) reaches back a year -- "during the calendar year or the
+## preceding calendar year" -- but `total_wages_employer/6` does not: §3301 is
+## handed `first_day_year(Caly)` and `last_day_year(Caly)` and tests the
+## remuneration against those. A payment made in the year before the one taxed
+## makes its payer an employer without being wages of that year. See D53.
+declaration dates_in_year content list of date
+  depends on ds content list of date, caly content integer
+  equals
+    list of d among ds such that
+      (W.first_day_year of caly) <= d and d <= (W.last_day_year of caly)
+```
+
+```catala
+scope EmployerWages:
+  definition agri_rows equals
+    flatten_agri of
+      (map each r among paid
+       to (flatten_agri of
+            (map each t among (dates_in_window of
+                                 (starts_for of world, r.remuneration), caly)
+             to (repeat_agri of
+                   AgriRow { -- amount: r.wages -- employee: r.payee
+                             -- service: r.employment },
+                   (number of (agri_purpose_hits of world, r.employment))))))
+
+  definition domestic_rows equals
+    flatten_agri of
+      (map each r among paid
+       to (flatten_agri of
+            (map each t among (dates_in_window of
+                                 (starts_for of world, r.remuneration), caly)
+             to (repeat_agri of
+                   AgriRow { -- amount: r.wages -- employee: r.payee
+                             -- service: r.employment },
+                   ((number of (domestic_purpose_hits of world, r.employment))
+                    * (cash_ways_of of world, r.remuneration))))))
+```
+
+## (a) as a whole
+
+```catala-metadata
+declaration agri_purpose_hits content list of W.Purpose
+  depends on world content W.World, e content W.Entity
+  equals
+    (list of x among (purposes_of of world, e)
+     such that x = W.Purpose.AgriculturalLabor)
+    ++ (list of x among world.universal_purposes
+        such that x = W.Purpose.AgriculturalLabor)
+
+declaration domestic_purpose_hits content list of W.Purpose
+  depends on world content W.World, e content W.Entity
+  equals
+    (list of x among (purposes_of of world, e)
+     such that x = W.Purpose.DomesticService)
+    ++ (list of x among world.universal_purposes
+        such that x = W.Purpose.DomesticService)
+
+declaration cash_ways_of content integer
+  depends on world content W.World, e content W.Entity
+  equals
+    match (event_named of world, e) with pattern
+    -- Absent: 1
+    -- Present content ev: cash_ways of ev
+
+declaration scope Employer:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input agri_employers content list of AgriYear
+  input person content W.Entity
+  input caly content integer
+  ## s3306_a_1/2
+  output holds_1 content boolean
+  ## s3306_a_2/2
+  output holds_2 content boolean
+  ## s3306_a_3/4
+  output holds_3 content boolean
+  ## s3306_a/2
+  output holds content boolean
+```
+
+```catala
+scope Employer:
+  definition holds_1 equals
+    (output of EmployerWages with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers: agri_employers
+       -- person: person -- caly: caly }).holds_1_A
+    or (output of EmployerDays with {
+          -- world: world -- injections: injections
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+          -- employer: person -- caly: caly }).holds_general
+
+  definition holds_2 equals
+    (output of EmployerWages with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers: agri_employers
+       -- person: person -- caly: caly }).holds_2_A
+    or (output of EmployerDays with {
+          -- world: world -- injections: injections
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+          -- employer: person -- caly: caly }).holds_agricultural
+
+  definition holds_3 equals
+    (output of EmployerWages with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers: agri_employers
+       -- person: person -- caly: caly }).holds_3
+
+  # `s3306_a/2` granted by the case, as the two §3301 cases do — and a grant
+  # made without `discontiguous` replaces the three paragraphs outright, so
+  # nobody the rows do not name is an employer at all. See D73.
+  definition holds equals
+    (not (W.pred_overridden of injections, P.pred_s3306_a_2))
+    and (holds_1 or holds_2 or holds_3)
+
+  exception definition holds
+    under condition
+      W.injected_holds of injections, P.pred_s3306_a_2,
+        [person.id; W.num_key of caly]
+    consequence equals true
+```
+
+## The (a)(2)(B) table
+
+`s3306_c_1_A_ii` is `s3306_a_2_B`, and every scope that reaches (c) therefore
+needs to know which employers satisfy (a)(2)(B) in which year. Computing that
+here, once, and threading it in as `agri_employers` is what keeps the module a
+DAG — see "Cutting the two cycles".
+
+The candidate employers are exactly those named in an injected `s3306_c/5`
+row. That is not a shortcut: (a)(2)(B) counts days, `s3306_c` reads its
+`Workday` argument and never binds it, and the generator that feeds the count
+calls it with the workday unbound. So a day can only ever come from a case that
+injects a clause for `s3306_c/5`, and only the employers in those rows can
+qualify.
+
+```catala-metadata
+declaration scope AgriEmployerYears:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input taxable_year content integer
+  ## The years any caller can ask about: the one named, and the year of every
+  ## date the world mentions.
+  output years content list of integer
+  output candidates content list of W.Entity
+  output pairs content list of AgriYear
+```
+
+```catala
+scope AgriEmployerYears:
+  definition years equals
+    dedup_ints of
+      ([taxable_year]
+       ++ (map each d among
+             (flatten_dates of
+               (map each ev among world.events to (ev.starts ++ ev.ends)))
+           to (Date.get_year of d))
+       ++ (map each e among
+             (injected_employment of injections, Absent, Absent, Absent,
+                Absent, Absent)
+           to (match e.workday with pattern
+               -- Present content d: Date.get_year of d
+               -- Absent: taxable_year)))
+
+  definition candidates equals
+    dedup_entities of
+      (map each e among
+        (injected_employment of injections, Absent, Absent, Absent, Absent, Absent)
+       to e.employer)
+
+  definition pairs equals
+    flatten_agri_year of
+      (map each p among candidates
+       to (map each y among
+             (list of y among years such that
+                (output of EmployerDays with {
+                   -- world: world -- injections: injections
+                   -- child_of: child_of -- sibling_of: sibling_of
+                   -- descendent_of: descendent_of
+                   -- stepsibling_of: stepsibling_of
+                   -- employer: p -- caly: y }).holds_agricultural)
+           to AgriYear { -- employer: p -- caly: y }))
+```
+
+```catala-metadata
+declaration flatten_agri_year content list of AgriYear
+  depends on nested content list of list of AgriYear
+  equals combine all inner among nested in acc initially [] with acc ++ inner
+```
+
+## §3301. Rate of tax
+
+```catala-metadata
+## `total_wages_employer/6`: the individuals an employer paid over a window,
+## each one's wages summed and then capped at $7,000 by §3306(b)(1), and the
+## capped totals added.
+declaration structure IndividualWage:
+  data individual content W.Entity
+  data total content money
+
+declaration scope TotalWages:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input agri_employers content list of AgriYear
+  input employer content W.Entity
+  input caly content integer
+  ## The `(Individual, Wages, Service)` triples, in order.
+  output rows content list of AgriRow
+  output individuals content list of W.Entity
+  output services content list of W.Entity
+  output capped content list of IndividualWage
+  output total content money
+  ## Did the goal succeed at all? An injected grant answers this directly.
+  output holds content boolean
+
+declaration scope UnemploymentTax:
+  input world content W.World
+  input injections content list of W.Injection
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  input employer content W.Entity
+  input caly content integer
+  ## s3306_a/2 — is this person an employer at all?
+  output is_employer content boolean
+  output wages content money
+  ## `Tax is round(0.06*Wages)` — s3301/6
+  output tax content money
+  output holds content boolean
+```
+
+```catala
+scope TotalWages:
+  definition rows equals
+    flatten_agri of
+      (map each r among
+        (output of Wages with {
+           -- world: world -- injections: injections
+           -- child_of: child_of -- sibling_of: sibling_of
+           -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+           -- child_in_law_of: child_in_law_of
+           -- parent_in_law_of: parent_in_law_of
+           -- sibling_in_law_of: sibling_in_law_of
+           -- agri_employers: agri_employers
+           -- remuneration: Absent -- employment: Absent
+           # `s3306_b(Wages,Rem,Service,Employer,Individual,Employer,_,_)`:
+           # the payer and the employer are the same person.
+           -- payer: Present content employer -- payee: Absent
+           -- employer: Present content employer -- employee: Absent }).rows
+       to (map each t among (dates_in_year of
+                               (starts_for of world, r.remuneration), caly)
+           to AgriRow { -- amount: r.wages -- employee: r.payee
+                        -- service: r.employment }))
+
+  definition individuals equals dedup_entities of (map each r among rows to r.employee)
+
+  definition services equals map each r among rows to r.service
+
+  definition capped equals
+    map each ind among individuals
+    to IndividualWage {
+         -- individual: ind
+         -- total:
+              Money.min of $7,000,
+                (Money.sum of
+                  (map each r among
+                    (list of x among rows such that x.employee.id = ind.id)
+                   to r.amount)) }
+
+  definition total equals Money.sum of (map each c among capped to c.total)
+
+  definition holds equals true
+
+  ## `total_wages_employer/6` granted by the case, which is how both §3301
+  ## cases supply their figure. The window is the whole calendar year.
+  exception definition total
+    under condition
+      W.injected_holds of injections, P.pred_total_wages_employer_6,
+        [employer.id; -1; -1; -1;
+         (date_key_of of (Present content (W.first_day_year of caly)));
+         (date_key_of of (Present content (W.last_day_year of caly)))]
+    consequence equals
+      (match (W.injected_money of injections, P.pred_total_wages_employer_6,
+                [employer.id; -1; -1; -1;
+                 (date_key_of of (Present content (W.first_day_year of caly)));
+                 (date_key_of of (Present content (W.last_day_year of caly)))],
+                2) with pattern
+       -- Absent: $0
+       -- Present content m: m)
+
+scope UnemploymentTax:
+  definition is_employer equals
+    (output of Employer with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers:
+            (output of AgriEmployerYears with {
+               -- world: world -- injections: injections
+               -- child_of: child_of -- sibling_of: sibling_of
+               -- descendent_of: descendent_of
+               -- stepsibling_of: stepsibling_of
+               -- taxable_year: caly }).pairs
+       -- person: employer -- caly: caly }).holds
+
+  definition wages equals
+    (output of TotalWages with {
+       -- world: world -- injections: injections
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of
+       -- agri_employers:
+            (output of AgriEmployerYears with {
+               -- world: world -- injections: injections
+               -- child_of: child_of -- sibling_of: sibling_of
+               -- descendent_of: descendent_of
+               -- stepsibling_of: stepsibling_of
+               -- taxable_year: caly }).pairs
+       -- employer: employer -- caly: caly }).total
+
+  definition tax equals money of (round of (decimal of (wages * 0.06)))
+
+  definition holds equals is_employer
+```

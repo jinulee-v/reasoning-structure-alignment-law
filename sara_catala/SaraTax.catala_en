@@ -1,0 +1,83 @@
+# tax/3 — the whole liability
+
+> Module SaraTax
+
+> Using SaraWorld as W
+> Using SaraKinship as K
+> Using Section1 as S1
+> Using Section3306 as S3306
+
+`utils.pl` closes the corpus with
+
+```prolog
+tax(Taxp,Taxy,Tax) :-
+    ( s1(Taxp,Taxy,_,Income_tax) ; (\+ s1(Taxp,Taxy,_,_), Income_tax is 0) ),
+    ( s3301(Taxp,Taxy,_,_,_,Employment_tax)
+    ; (\+ s3301(Taxp,Taxy,_,_,_,_), Employment_tax is 0) ),
+    Tax is Income_tax+Employment_tax.
+```
+
+which is the income tax of §1 plus the unemployment excise of §3301, each
+falling back to zero where the section does not apply. Both are read at their
+*first* solution, because `Income_tax` and `Employment_tax` arrive unbound and
+the conjunction never backtracks into them — nothing after them can fail except
+the final arithmetic, which cannot.
+
+One hundred of the 376 cases end here, and they are the only ones that ask for
+a number rather than a verdict.
+
+```catala-metadata
+declaration scope Total:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  ## §1
+  output income_tax content money
+  ## §3301
+  output employment_tax content money
+  output total content money
+```
+
+```catala
+scope Total:
+  definition income_tax equals
+    (output of S1.Tax with {
+       -- world: world -- injections: injections -- taxpayer: taxpayer
+       -- taxable_year: taxable_year
+       -- child_of: child_of -- sibling_of: sibling_of
+       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+       -- stepparent_of: stepparent_of
+       -- child_in_law_of: child_in_law_of
+       -- parent_in_law_of: parent_in_law_of
+       -- sibling_in_law_of: sibling_in_law_of }).tax
+
+  definition employment_tax equals
+    if not (output of S3306.UnemploymentTax with {
+              -- world: world -- injections: injections
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+              -- child_in_law_of: child_in_law_of
+              -- parent_in_law_of: parent_in_law_of
+              -- sibling_in_law_of: sibling_in_law_of
+              -- employer: taxpayer -- caly: taxable_year }).holds
+    then $0
+    else (output of S3306.UnemploymentTax with {
+            -- world: world -- injections: injections
+            -- child_of: child_of -- sibling_of: sibling_of
+            -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+            -- child_in_law_of: child_in_law_of
+            -- parent_in_law_of: parent_in_law_of
+            -- sibling_in_law_of: sibling_in_law_of
+            -- employer: taxpayer -- caly: taxable_year }).tax
+
+  definition total equals income_tax + employment_tax
+```
