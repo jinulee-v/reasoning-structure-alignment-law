@@ -47,12 +47,21 @@ log "SWI-Prolog $SWIPL_VERSION"
 
 # ---- OCaml + opam --------------------------------------------------------
 # gmp and pkg-config are here because conf-gmp builds against them and there is
-# no system gmp; git/unzip/rsync/make/m4 are opam's own build dependencies.
+# no system gmp; git/unzip/rsync/make/m4 are opam's own build dependencies;
+# ninja because clerk shells out to it and catala depends on conf-ninja.
+#
+# ninja is the one that has to be said out loud.  The first build of this tree
+# satisfied conf-ninja from `~/.pyenv/shims/ninja` --- a binary outside the
+# tree, on the machine by accident --- so the toolchain only looked
+# self-contained. Taking it from conda-forge is what makes it actually so.
 log "OCaml $OCAML_VERSION + opam"
 ENV="$T/envs/catala"
-"$MM" create -y -p "$ENV" -c conda-forge \
-    "ocaml=$OCAML_VERSION" opam gmp pkg-config make m4 unzip rsync git \
-    || die "catala env"
+PKGS=("ocaml=$OCAML_VERSION" opam gmp pkg-config make m4 unzip rsync git ninja)
+if [ -d "$ENV/conda-meta" ]; then
+    "$MM" install -y -p "$ENV" -c conda-forge "${PKGS[@]}" || die "catala env"
+else
+    "$MM" create -y -p "$ENV" -c conda-forge "${PKGS[@]}" || die "catala env"
+fi
 
 export PATH="$ENV/bin:$PATH"
 export CPATH="$ENV/include:${CPATH:-}"
@@ -65,12 +74,24 @@ export OPAMYES=1
 # ---- Catala --------------------------------------------------------------
 log "opam switch"
 opam init --bare --disable-sandboxing --no-setup || die "opam init"
+# opam resolves "external dependencies" through the OS package manager, so
+# conf-ninja makes it want `apt-get install ninja-build` and abort without
+# root.  Nothing here is a system package: ninja came from conda-forge above
+# and gmp with it, both on PATH.  Turning depext off is what lets opam use
+# them instead of insisting on apt.
+opam option --global depext=false || die "opam option depext"
 # `ocaml-system` would adopt the conda compiler and save the hour, but its
 # configuration does not satisfy every catala dependency here, so the switch
-# builds 4.14.2 itself and `ocaml-system` is only tried first.
-opam switch create catala ocaml-system \
-    || opam switch create catala "$OCAML_VERSION" \
-    || die "opam switch"
+# builds 4.14.2 itself and `ocaml-system` is only tried first.  Building the
+# compiler is nearly the whole runtime of this script, so an existing switch is
+# reused --- rerunning after a failed `opam install` costs minutes, not an hour.
+if opam switch list --short 2>/dev/null | grep -qx catala; then
+    echo "switch 'catala' already exists; reusing it"
+else
+    opam switch create catala ocaml-system \
+        || opam switch create catala "$OCAML_VERSION" \
+        || die "opam switch"
+fi
 eval "$(opam env --switch=catala --set-switch)"
 opam update || die "opam update"
 
