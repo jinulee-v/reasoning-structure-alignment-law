@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_1_airline_cases_46",
+ "domain": "airline",
+ "label": "2535",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Linda is a Premium Economy Class passenger flying from Boston to Athens with the following items: 1. A backpack: 20 x 13 x 6 inches, 6 lbs; 2. A backpack: 34 x 18 x 12 inches, 52 lbs; 3. A backpack: 50 x 30 x 28 inches, 52 lbs; 4. A backpack: 33 x 21 x 10 inches, 68 lbs; 5. A backpack: 40 x 19 x 15 inches, 62 lbs; 6. A backpack: 39 x 18 x 14 inches, 51 lbs; 7. A backpack: 46 x 23 x 18 inches, 51 lbs; 8. A backpack: 50 x 28 x 24 inches, 59 lbs; Linda's flight ticket is $655.",
+ "hard": false
+}

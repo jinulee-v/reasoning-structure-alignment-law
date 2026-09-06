@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_45",
+ "domain": "airline",
+ "label": "1337",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Karen is a Main Plus Class passenger flying from Dallas to Boston with the following items: 1. A backpack: 18 x 11 x 7 inches, 11 lbs; 2. A luggage box: 52 x 31 x 24 inches, 67 lbs; 3. A luggage box: 34 x 18 x 12 inches, 57 lbs; 4. A luggage box: 54 x 32 x 28 inches, 88 lbs; 5. A backpack: 53 x 27 x 28 inches, 59 lbs; Karen's flight ticket is $242.",
+ "hard": false
+}

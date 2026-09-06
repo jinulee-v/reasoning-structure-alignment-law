@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_24",
+ "domain": "airline",
+ "label": "1882",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "William is a Basic Economy Class passenger flying from Auckland to Atlanta with the following items: 1. A backpack: 20 x 14 x 8 inches, 10 lbs; 2. A luggage box: 49 x 26 x 23 inches, 51 lbs; 3. A backpack: 33 x 22 x 9 inches, 51 lbs; 4. A backpack: 36 x 21 x 10 inches, 59 lbs; 5. A backpack: 33 x 16 x 14 inches, 52 lbs; William's flight ticket is $847.",
+ "hard": false
+}

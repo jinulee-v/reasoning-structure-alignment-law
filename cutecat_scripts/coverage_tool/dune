@@ -1,0 +1,6 @@
+; Built by `cutecatlib.coverage`, against the libraries the CUTECat switch
+; installs.  Not part of the Catala source tree: the compiler is pinned to an
+; upstream commit and stays that way.
+(executable
+ (name catala_coverage)
+ (libraries catala.catala_utils catala.shared_ast))

@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_80",
+ "domain": "airline",
+ "label": "1227",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Elizabeth is a First Class passenger flying from Salt Lake City to Chicago with the following items: 1. A backpack: 20 x 12 x 6 inches, 9 lbs; 2. A backpack: 39 x 27 x 17 inches, 68 lbs; 3. A luggage box: 35 x 19 x 10 inches, 52 lbs; 4. A luggage box: 42 x 21 x 14 inches, 65 lbs; 5. A backpack: 39 x 13 x 15 inches, 51 lbs; Elizabeth's flight ticket is $247.",
+ "hard": false
+}

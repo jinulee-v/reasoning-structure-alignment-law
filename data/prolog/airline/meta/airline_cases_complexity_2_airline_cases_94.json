@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_2_airline_cases_94",
+ "domain": "airline",
+ "label": "3204",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Sarah is a Basic Economy Class passenger flying from Munich to Austin with the following items: 1. A backpack: 21 x 12 x 8 inches, 12 lbs; 2. A luggage box: 38 x 17 x 16 inches, 60 lbs; 3. A backpack: 36 x 20 x 9 inches, 51 lbs; 4. A luggage box: 45 x 31 x 20 inches, 57 lbs; 5. A luggage box: 35 x 20 x 9 inches, 53 lbs; 6. A backpack: 39 x 19 x 11 inches, 57 lbs; 7. A backpack: 51 x 29 x 22 inches, 52 lbs; 8. A luggage box: 46 x 33 x 23 inches, 64 lbs; 9. A luggage box: 48 x 28 x 26 inches, 52 lbs; 10. A backpack: 49 x 33 x 26 inches, 52 lbs; 11. A luggage box: 37 x 15 x 13 inches, 53 lbs; Sarah's flight ticket is $289.",
+ "hard": false
+}

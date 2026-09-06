@@ -1,0 +1,94 @@
+# Prologue : aides au logement
+
+Avant de présenter les textes réglementaires qui régissent le calcul des
+aides au logement, il est nécessaire de définir les structures de données
+informatiques qui modélisent la situation dont parlent ces textes législatifs.
+Vous pouvez passer cette section pour aller directement au textes législatifs
+dans les sections suivantes.
+
+## Types de données manipulées par le programme
+
+### Calcul et éligibilité des aides personnelles au logement
+
+#### Calcul et éligibilité pour le secteur locatif
+
+
+#### Calcul et éligibilité pour le secteur accession à la propriété
+
+
+#### Calcul et éligibilité pour le secteur logement-foyer
+
+
+#### Calcul et éligibilité pour tous les secteurs
+
+
+### Informations relatives aux impayés de dépense de logement
+
+
+## Déclarations des champs d'application
+
+### Éligibilité aux aides personnelles au logement
+
+
+### Éligibilité à l'aide personnalisée au logement
+
+
+### Éligibilité aux allocations de logement
+
+
+### Éligibilité à la prime de déménagement
+
+
+### Calcul des contributions sociales s'appliquant aux aides personnelles au logement
+
+
+### Calcul du montant de l'aide personnalisée au logement
+
+#### Secteur locatif
+
+
+#### Secteur logement-foyer
+
+
+#### Secteur accession à la propriété
+
+
+#### Tous secteurs
+
+
+## Calcul du montant de l'allocation logement
+
+### Secteur locatif
+
+
+### Secteur accession à la propriété
+
+
+### Secteur logement-foyer
+
+
+#### Tous secteurs
+
+
+### Date d'ouverture des droits à la retraite
+
+
+### Quantification des impayés de dépense de logement
+
+
+## Calcul de l'aide au logement effective
+
+### Calculette globale
+
+Le but de ce champ d'application est de réaliser le calcul automatique
+de l'éligibilité et du montant de l'aide au logement pour un ménage, en fonction
+de toutes les aides disponibles : APL, ALS, ALF.
+
+
+### Calculette avec garde alternée
+
+Afin de calculer l'impact de la garde alternée sur les aides au logement,
+il est nécessaire de réaliser une double liquidation du calcul des aides
+au logement. Voir le code Catala attaché à la décision n°398563 du conseil
+d'État.
+

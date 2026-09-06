@@ -1,0 +1,214 @@
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -208,6 +208,9 @@
+   ctx_z3structs : Z3.Sort.sort StructName.Map.t;
+   (* A map from Catala struct names to the corresponding Z3 sort, from which we
+      can retrieve the constructor and the accessors *)
++  ctx_z3options : (string, Z3.Sort.sort) Hashtbl.t;
++  (* Options are polymorphic in Catala but Z3 datatypes are monomorphic. Keep
++     one instantiated Optional datatype per payload sort. *)
+   ctx_z3unit : Z3.Sort.sort * s_expr;
+       (* A pair containing the Z3 encodings of the unit type, encoded as a tuple
+          of 0 elements, and the unit value *)
+@@ -355,14 +358,7 @@
+        of this order *)
+   | TTuple _ -> failwith "[translate_typ] TTuple not implemented"
+   | TEnum name -> find_or_create_enum ctx name
+-  | TOption _ ->
+-    ( ctx,
+-      ctx.ctx_dummy_sort
+-      (* Options are not yet encoded.  As for arrays below, an option nested
+-         in an otherwise-unused declaration must not prevent exploration of
+-         an unrelated scalar scope; evaluation remains incomplete if code
+-         actually reads it. *)
+-    )
++  | TOption ty -> find_or_create_option ctx ty
+   | TArrow ([(TLit TUnit, _)], (TDefault _, _)) ->
+     failwith "[translate_typ] no more thunk"
+     (* FIXME CONTEXT *)
+@@ -453,6 +449,29 @@
+     add_z3struct s z3_struct ctx, z3_struct
+ 
+ (* inspired by z3backend *)
++and find_or_create_option (ctx : context) (payload_ty : typ) :
++    context * Z3.Sort.sort =
++  let ctx, payload_sort = translate_typ ctx (Mark.remove payload_ty) in
++  let key = Z3.Sort.to_string payload_sort in
++  match Hashtbl.find_opt ctx.ctx_z3options key with
++  | Some sort -> ctx, sort
++  | None ->
++    let suffix = Digest.(to_hex (string key)) in
++    let constructor name payload =
++      Z3.Datatype.mk_constructor_s ctx.ctx_z3
++        ("mk!" ^ name ^ "!" ^ suffix)
++        (Z3.Symbol.mk_string ctx.ctx_z3 ("is!" ^ name ^ "!" ^ suffix))
++        [Z3.Symbol.mk_string ctx.ctx_z3 (name ^ "!0!" ^ suffix)]
++        [Some payload] [0]
++    in
++    let sort =
++      Z3.Datatype.mk_sort_s ctx.ctx_z3 ("Optional!" ^ suffix)
++        [ constructor "Absent" (fst ctx.ctx_z3unit);
++          constructor "Present" payload_sort ]
++    in
++    Hashtbl.add ctx.ctx_z3options key sort;
++    ctx, sort
++
+ and find_or_create_enum (ctx : context) (enum : EnumName.t) :
+     context * Z3.Sort.sort =
+   Message.debug "[Enum] Find or create enum %s"
+@@ -554,6 +573,7 @@
+     ctx_z3enums = EnumName.Map.empty;
+     (* ctx_z3matchsubsts = Var.Map.empty; *)
+     ctx_z3structs = StructName.Map.empty;
++    ctx_z3options = Hashtbl.create 17;
+     ctx_z3unit = create_z3unit z3_ctx;
+     ctx_z3round = create_z3round z3_ctx;
+     (* ctx_z3constraints = []; *)
+@@ -777,8 +797,13 @@
+     ctx
+     (name : EnumName.t)
+     (cons : EnumConstructor.t)
++    (enum_ty : typ)
+     (s : s_expr) =
+-  let sort = EnumName.Map.find name ctx.ctx_z3enums in
++  let sort =
++    match Mark.remove enum_ty with
++    | TOption payload_ty -> snd (find_or_create_option ctx payload_ty)
++    | _ -> EnumName.Map.find name ctx.ctx_z3enums
++  in
+   let constructors = EnumName.Map.find name ctx.ctx_decl.ctx_enums in
+   let z3_constructors = Z3.Datatype.get_constructors sort in
+ 
+@@ -803,7 +828,7 @@
+     (name : EnumName.t)
+     (cons : EnumConstructor.t)
+     (s : s_expr) =
+-  let sort = EnumName.Map.find name ctx.ctx_z3enums in
++  let sort = Z3.Expr.get_sort s in
+   let constructors = EnumName.Map.find name ctx.ctx_decl.ctx_enums in
+   (* [get_accessors] returns a list containing the list of accessors for each
+      constructor. In a Catala enum, each constructor has exactly (possibly
+@@ -833,7 +858,11 @@
+     (name : EnumName.t)
+     (cons : EnumConstructor.t)
+     (s : SymbExpr.t) : (SymbExpr.t * bool) list =
+-  let sort = EnumName.Map.find name ctx.ctx_z3enums in
++  let sort =
++    match s with
++    | Symb_z3 e -> Z3.Expr.get_sort e
++    | _ -> invalid_arg "[make_z3_arm_conditions] expected a Z3 expression"
++  in
+   let constructors = EnumName.Map.find name ctx.ctx_decl.ctx_enums in
+   let z3_recognizers = Z3.Datatype.get_recognizers sort in
+   let make_case_condition cstr_name z3_recognizer =
+@@ -1810,7 +1839,16 @@
+       let concrete = EInj { name; e; cons } in
+ 
+       let e_symb = get_symb_expr e in
+-      let symb_expr = SymbExpr.app_z3 (make_z3_enum_inj ctx name cons) e_symb in
++      let enum_ty =
++        match get_type (concrete, m) with
++        | Some ty -> ty
++        | None ->
++          Message.error ~pos
++            "An enumeration injection has no type during concolic evaluation"
++      in
++      let symb_expr =
++        SymbExpr.app_z3 (make_z3_enum_inj ctx name cons enum_ty) e_symb
++      in
+       let constraints = get_constraints e in
+ 
+       add_conc_info_m m symb_expr ~constraints concrete |> make_ok
+@@ -2895,7 +2933,12 @@
+       in
+       let cstr_e = default_expr_of_typ ctx (dummy_mark pos cstr_ty) cstr_ty in
+       Expr.einj ~name ~cons:cstr_name ~e:cstr_e mark
+-    | TOption _ -> failwith "[default_expr_of_typ] TOption not implemented"
++    | TOption _ ->
++      let pos = Expr.mark_pos mark in
++      let unit_ty = TLit TUnit, pos in
++      let payload = Expr.elit LUnit (dummy_mark pos unit_ty) in
++      Expr.einj ~name:ConstantNames.option_enum
++        ~cons:ConstantNames.none_constr ~e:payload mark
+     | TArray _ -> Expr.earray [] mark
+     | TDefault _ -> failwith "[default_expr_of_typ] TDefault not implemented"
+     | TForAll _ -> failwith "[default_expr_of_typ] TForAll not implemented"
+@@ -3007,7 +3050,31 @@
+       Message.error ~pos:(Expr.mark_pos mark)
+         "[value_of_symb_expr] should not be called on a context variable or a \
+          function. This should not happen if they were handled properly"
+-    | TOption _ -> failwith "[value_of_symb_expr] TOption not implemented"
++    | TOption payload_ty ->
++      let pos = Expr.mark_pos mark in
++      let sort = Z3.Expr.get_sort e in
++      let constructors = Z3.Datatype.get_constructors sort in
++      let e_constructor = Z3.Expr.get_func_decl e in
++      begin match constructors with
++      | [none_constructor; _some_constructor]
++        when Z3.FuncDecl.equal e_constructor none_constructor ->
++        let unit_ty = TLit TUnit, pos in
++        let payload = Expr.elit LUnit (dummy_mark pos unit_ty) in
++        Expr.einj ~name:ConstantNames.option_enum
++          ~cons:ConstantNames.none_constr ~e:payload mark
++      | [_; some_constructor]
++        when Z3.FuncDecl.equal e_constructor some_constructor ->
++        let payload_value = List.hd (Z3.Expr.get_args e) in
++        let payload =
++          value_of_symb_expr ctx model (dummy_mark pos payload_ty) payload_ty
++            payload_value payload_value
++        in
++        Expr.einj ~name:ConstantNames.option_enum
++          ~cons:ConstantNames.some_constr ~e:payload mark
++      | _ ->
++        failwith
++          "[value_of_symb_expr] option value has an unknown constructor"
++      end
+     | TArray _ -> failwith "[value_of_symb_expr] TArray not implemented"
+     | TDefault _ -> failwith "[value_of_symb_expr] TDefault not implemented"
+ 
+--- /dev/null
++++ b/tests/concolic/good/optional_input.catala_en
+@@ -0,0 +1,43 @@
++## Symbolic optional inputs
++
++```catala
++declaration scope OptionalInput:
++  input x content optional of integer
++  output result content integer
++
++scope OptionalInput:
++  definition result equals
++    match x with pattern
++    -- Absent: 0
++    -- Present content n: if n > 0 then 1 else -1
++
++declaration scope OptionalListInput:
++  input xs content list of optional of integer
++  output present_count content integer
++
++scope OptionalListInput:
++  definition present_count equals
++    combine all x among xs in count initially 0 with
++      count + (match x with pattern
++               -- Absent: 0
++               -- Present content n: if n > 0 then 1 else 2)
++
++declaration structure OptionalRecord:
++  data x content optional of integer
++
++declaration scope OptionalStructInput:
++  input record content OptionalRecord
++  output result content integer
++
++scope OptionalStructInput:
++  definition result equals
++    match record.x with pattern
++    -- Absent: 0
++    -- Present content n: if n > 0 then 1 else -1
++
++declaration scope NoInput:
++  output result content boolean
++
++scope NoInput:
++  definition result equals true
++```

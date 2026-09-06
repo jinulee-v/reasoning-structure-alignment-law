@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_2_airline_cases_23",
+ "domain": "airline",
+ "label": "1985",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Daniel is a Premium Economy Class passenger flying from Atlanta to Rio de Janeiro with the following items: 1. A backpack: 22 x 11 x 7 inches, 7 lbs; 2. A backpack: 37 x 23 x 12 inches, 53 lbs; 3. A luggage box: 44 x 23 x 18 inches, 53 lbs; 4. A luggage box: 34 x 19 x 11 inches, 70 lbs; 5. A luggage box: 51 x 33 x 28 inches, 53 lbs; 6. A luggage box: 36 x 16 x 13 inches, 66 lbs; Daniel's flight ticket is $735.",
+ "hard": false
+}

@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_27",
+ "domain": "airline",
+ "label": "963",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Michael is a Main Plus Class passenger flying from Roma to Washington D.C. with the following items: 1. A backpack: 20 x 13 x 9 inches, 5 lbs; 2. A backpack: 41 x 17 x 17 inches, 63 lbs; 3. A backpack: 37 x 14 x 14 inches, 53 lbs; 4. A luggage box: 35 x 16 x 14 inches, 70 lbs; 5. A backpack: 35 x 21 x 9 inches, 52 lbs; Michael's flight ticket is $253.",
+ "hard": false
+}

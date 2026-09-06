@@ -1,0 +1,37 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index e4114259..f15c5d53 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -575,6 +582,20 @@ let z3_of_lit ctx (l : lit) : s_expr =
+   | LDate date -> DateEncoding.encode_date ctx date
+   | LDuration dur -> DateEncoding.encode_duration ctx dur
+ 
++(** Truncation of a real towards zero, which is what [ToInt_rat] does
++    concretely ([o_toint_rat] is [Q.to_bigint]).  Z3's [mk_real2int] is floor,
++    which differs on negatives ([-1.5] truncates to [-1], floors to [-2]) and
++    would let the solver return an input whose re-execution takes another path,
++    so negatives are reflected through zero. *)
++let z3_trunc_to_int ctx (x : s_expr) : s_expr =
++  let zero = Z3.Arithmetic.Real.mk_numeral_i ctx 0 in
++  let floor e = Z3.Arithmetic.Real.mk_real2int ctx e in
++  Z3.Boolean.mk_ite ctx
++    (Z3.Arithmetic.mk_ge ctx x zero)
++    (floor x)
++    (Z3.Arithmetic.mk_unary_minus ctx
++       (floor (Z3.Arithmetic.mk_unary_minus ctx x)))
++
+ let symb_of_lit ctx (l : lit) : SymbExpr.t = SymbExpr.mk_z3 (z3_of_lit ctx l)
+ 
+ let _get_symb_expr_unsafe (e : ((yes, 'e) conc_interpr_kind, conc_info) gexpr) :
+@@ -1171,9 +1194,8 @@ let evaluate_operator
+       DateEncoding.minus_dur x e
+   | ToInt_mon, [(ELit (LMoney _x), _)] ->
+     failwith "ToInt_mon not implemented yet"
+-  | ToInt_rat, [(ELit (LRat _x), _)] ->
+-    failwith "ToInt_rat not implemented yet" (* ELit (LInt (o_toint_rat x)) *)
+-  (* is this used? should it be [round] or floor?*)
++  | ToInt_rat, [((ELit (LRat x), _) as e)] ->
++    op1 ctx m (fun x -> ELit (LInt (o_toint_rat x))) z3_trunc_to_int x e
+   | ToRat_int, [((ELit (LInt i), _) as e)] ->
+     (* TODO maybe write specific tests for this and other similar cases? *)
+     op1 ctx m (fun x -> ELit (LRat (o_torat_int x))) z3_force_real i e

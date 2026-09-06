@@ -1,0 +1,48 @@
+diff --git a/compiler/driver.ml b/compiler/driver.ml
+index db8322ea..b586188a 100644
+--- a/compiler/driver.ml
++++ b/compiler/driver.ml
+@@ -819,8 +819,8 @@ module Commands = struct
+           if code_coverage then
+             let interp () =
+               let res, cov =
+-                Interpreter.interpret_program_dcalc_with_coverage ?stdlib prg
+-                  scope
++                Interpreter.interpret_program_dcalc_with_coverage ?stdlib
++                  ?input:scope_input prg scope
+               in
+               res, Some cov
+             in
+diff --git a/compiler/shared_ast/interpreter.ml b/compiler/shared_ast/interpreter.ml
+index aca2ee72..605fbfd4 100644
+--- a/compiler/shared_ast/interpreter.ml
++++ b/compiler/shared_ast/interpreter.ml
+@@ -1236,6 +1236,7 @@ let interpret_program_dcalc ?input ?on_expr p s :
+        thunked arguments"
+ 
+ let interpret_program_dcalc_with_coverage
++    ?input
+     ?(stdlib : Global.raw_file option)
+     (p : (dcalc, 'm) gexpr program)
+     scope :
+@@ -1254,7 +1255,7 @@ let interpret_program_dcalc_with_coverage
+          later on *)
+     | _ -> coverage_map := Coverage.reached_pos (Expr.pos e) scope !coverage_map
+   in
+-  let r = interpret_program_dcalc ~on_expr p scope in
++  let r = interpret_program_dcalc ?input ~on_expr p scope in
+   Option.iter
+     (fun (stdlib_dir : Global.raw_file) ->
+       let stdlib_dir = Global.options.path_rewrite stdlib_dir in
+diff --git a/compiler/shared_ast/interpreter.mli b/compiler/shared_ast/interpreter.mli
+index 4de95cb7..1ce29a73 100644
+--- a/compiler/shared_ast/interpreter.mli
++++ b/compiler/shared_ast/interpreter.mli
+@@ -53,6 +53,7 @@ val interpret_program_dcalc :
+     the computed values for the scope variables of the executed scope. *)
+ 
+ val interpret_program_dcalc_with_coverage :
++  ?input:Yojson.Safe.t ->
+   ?stdlib:Global.raw_file ->
+   (dcalc, 'm) gexpr program ->
+   ScopeName.t ->

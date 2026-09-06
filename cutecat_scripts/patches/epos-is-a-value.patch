@@ -1,0 +1,21 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index e4114259..f15c5d53 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -1562,7 +1584,15 @@ let rec evaluate_expr :
+     | ETuple _ -> failwith "ETuple not implemented"
+     | ETupleAccess _ -> failwith "ETupleAccess not implemented"
+     | EBad -> assert false
+-    | EPos _ -> failwith "EPos not implemented"
++    | EPos _ as e ->
++      (* A reified source position, which the plain interpreter lists among its
++         values and only ever carries along for an error message: nothing
++         computes with it or branches on it.  [translate_typ_lit] maps [TPos] to
++         the unit sort, so reuse the unit constant as [z3_of_lit] does for
++         [LUnit].  Without this every date rule is unreachable, since
++         [Date.of_year_month_day] carries a position. *)
++      Message.debug "... it's an EPos";
++      add_conc_info_m m (SymbExpr.mk_z3 (snd ctx.ctx_z3unit)) ~constraints:[] e
+     | EInj { name; e; cons } ->
+       Message.debug "... it's an EInj";
+       propagate_generic_error (evaluate_expr ctx lang e) []

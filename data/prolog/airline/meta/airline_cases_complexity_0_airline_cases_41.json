@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_41",
+ "domain": "airline",
+ "label": "2735",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Charles is a Premium Economy Class passenger flying from Wuhan to New Orleans with the following items: 1. A backpack: 18 x 12 x 8 inches, 6 lbs; 2. A backpack: 41 x 26 x 22 inches, 53 lbs; 3. A backpack: 36 x 15 x 14 inches, 97 lbs; 4. A backpack: 44 x 27 x 22 inches, 52 lbs; 5. A backpack: 42 x 30 x 19 inches, 88 lbs; Charles's flight ticket is $1035.",
+ "hard": false
+}

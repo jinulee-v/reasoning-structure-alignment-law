@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_2_airline_cases_74",
+ "domain": "airline",
+ "label": "4812",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "William is a Basic Economy Class passenger flying from Salt Lake City to Seoul with the following items: 1. A backpack: 19 x 13 x 7 inches, 8 lbs; 2. A backpack: 36 x 17 x 12 inches, 51 lbs; 3. A backpack: 39 x 22 x 18 inches, 87 lbs; 4. A backpack: 34 x 21 x 9 inches, 96 lbs; 5. A luggage box: 36 x 15 x 14 inches, 66 lbs; 6. A luggage box: 38 x 22 x 15 inches, 51 lbs; 7. A luggage box: 48 x 30 x 24 inches, 52 lbs; 8. A backpack: 35 x 17 x 12 inches, 62 lbs; 9. A backpack: 38 x 15 x 10 inches, 92 lbs; 10. A backpack: 48 x 32 x 27 inches, 68 lbs; 11. A backpack: 37 x 16 x 11 inches, 90 lbs; William's flight ticket is $407.",
+ "hard": false
+}

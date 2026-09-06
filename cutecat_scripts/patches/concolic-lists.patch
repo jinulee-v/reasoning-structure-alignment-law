@@ -1,0 +1,1055 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index f15c5d5..f553f07 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -213,6 +213,8 @@ type context = {
+          of 0 elements, and the unit value *)
+   ctx_z3round : Z3.FuncDecl.func_decl;
+   ctx_optims : Optimizations.flag list; (* A list of optimizations to apply *)
++  ctx_max_list_length : int;
++  (* Global bound used when materialising symbolic list inputs. *)
+ }
+ 
+ (** adds the mapping between the Catala struct [s] and the corresponding Z3
+@@ -519,8 +521,10 @@ let create_z3round (ctx : Z3.context) : Z3.FuncDecl.func_decl =
+ let z3_round ctx = Z3_utils.z3_round_func ctx.ctx_z3round
+ 
+ (* taken from z3backend, but without the option check *)
+-let make_empty_context (decl_ctx : decl_ctx) (optims : Optimizations.flag list)
+-    : context =
++let make_empty_context
++    (decl_ctx : decl_ctx)
++    (optims : Optimizations.flag list)
++    (max_list_length : int) : context =
+   let z3_cfg = ["model", "true"; "proof", "false"] in
+   let z3_ctx = Z3.mk_context z3_cfg in
+   let z3_dummy_sort = Z3.Sort.mk_uninterpreted_s z3_ctx "!dummy_sort!" in
+@@ -549,6 +553,7 @@ let make_empty_context (decl_ctx : decl_ctx) (optims : Optimizations.flag list)
+     ctx_reentrant_sort = z3_reentrant_sort;
+     ctx_reentrant_const = z3_reentrant_const;
+     ctx_optims = optims;
++    ctx_max_list_length = max_list_length;
+   }
+ 
+ let init_context (ctx : context) : context =
+@@ -682,6 +687,7 @@ let make_z3_struct ctx (name : StructName.t) (es : conc_expr list) : s_expr =
+       match e_symb with
+       | Symb_z3 s -> s
+       | Symb_reentrant _ -> ctx.ctx_reentrant_const
++      | Symb_list _ -> ctx.ctx_dummy_const
+       | Symb_abs -> ctx.ctx_dummy_const
+       | Symb_none ->
+         Message.error ~pos:(Expr.pos e)
+@@ -713,6 +719,7 @@ let make_z3_struct_access
+        of the access to be the actual symbolic expression for the reentrant
+        variable and not a Z3 struct access (which would return a dummy) *)
+     field_expr
++  | Symb_list _ -> field_expr
+   | _ ->
+     let sort = StructName.Map.find name ctx.ctx_z3structs in
+     let fields = StructName.Map.find name ctx.ctx_decl.ctx_structs in
+@@ -932,6 +939,26 @@ let op2list
+   let symbolic_f_curry ctx e1 e2 = symbolic_f ctx [e1; e2] in
+   op2 ctx m concrete symbolic_f_curry e1 e2
+ 
++let list_length_constraints ctx pos (list : SymbExpr.symb_list) =
++  let int k = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 k in
++  let gt k = Z3.Arithmetic.mk_gt ctx.ctx_z3 list.len (int k) in
++  let continues =
++    List.init (List.length list.elts) (fun k ->
++        PathConstraint.mk_z3 (SymbExpr.mk_z3 (gt k)) pos true)
++  in
++  let stop =
++    PathConstraint.mk_z3
++      (SymbExpr.mk_z3
++         (Z3.Boolean.mk_not ctx.ctx_z3 (gt (List.length list.elts))))
++      pos false
++  in
++  stop :: List.rev continues
++
++let symbolic_list e =
++  match SymbExpr.as_list (get_symb_expr e) with
++  | Some l -> l
++  | None -> invalid_arg "[symbolic_list] expected a symbolic list"
++
+ let handle_division
+     ctx
+     m
+@@ -1024,12 +1051,11 @@ let evaluate_operator
+   let z3_round _ = z3_round ctx in
+   (* Mark.add m @@ *)
+   match op, args with
+-  | Length, [(EArray es, _)] ->
++  | Length, [((EArray es, _) as e)] ->
+     let l = Runtime.integer_of_int (List.length es) in
+-    let symb_expr = SymbExpr.incomplete in
+-    (* no constraints generated *)
+-    add_conc_info_m m symb_expr ~constraints:[] (ELit (LInt l))
+-    (* TODO INC *)
++    let list = symbolic_list e in
++    let constraints = list_length_constraints ctx (Expr.pos e) list in
++    add_conc_info_m m (SymbExpr.mk_z3 list.len) ~constraints (ELit (LInt l))
+   | Tag _, _ -> failwith "Tag evaluation not implemented"
+   | (FromClosureEnv | ToClosureEnv), _ ->
+     (* NOTE CONC used for typing only *)
+@@ -1038,7 +1064,24 @@ let evaluate_operator
+     let concrete = ELit (LBool (handle_eq ctx.ctx_decl opos e1 e2)) in
+     let s_e1 = get_symb_expr e1 in
+     let s_e2 = get_symb_expr e2 in
+-    let symb_expr = SymbExpr.app2_z3 (Z3.Boolean.mk_eq ctx.ctx_z3) s_e1 s_e2 in
++    let symb_expr =
++      match SymbExpr.as_list s_e1, SymbExpr.as_list s_e2 with
++      | Some l1, Some l2 ->
++        let equal a b = SymbExpr.app2_z3 (Z3.Boolean.mk_eq ctx.ctx_z3) a b in
++        let element_equalities =
++          if List.length l1.elts = List.length l2.elts then
++            List.map2 equal l1.elts l2.elts
++          else []
++        in
++        let length_equality =
++          SymbExpr.mk_z3 (Z3.Boolean.mk_eq ctx.ctx_z3 l1.len l2.len)
++        in
++        SymbExpr.applist_z3 (Z3.Boolean.mk_and ctx.ctx_z3)
++          (length_equality :: element_equalities)
++      | None, None ->
++        SymbExpr.app2_z3 (Z3.Boolean.mk_eq ctx.ctx_z3) s_e1 s_e2
++      | _ -> invalid_arg "[Eq] cannot compare a list with a non-list"
++    in
+     (* TODO catch errors here, or maybe propagate [None]? *)
+     add_conc_info_m m symb_expr ~constraints:[] concrete
+   | Lt, [e1; e2] ->
+@@ -1054,21 +1097,23 @@ let evaluate_operator
+   | Gte, [e1; e2] ->
+     let concrete = ELit (LBool (handle_compare ctx.ctx_decl opos e1 e2 >= 0)) in
+     op2 ctx m concrete Z3.Arithmetic.mk_ge e1 e2
+-  | Map, [f; (EArray es, _)] ->
+-    let concrete =
+-      EArray
+-        (List.map
++  | Map, [f; ((EArray es, _) as list_expr)] ->
++    let results =
++      List.map
+            (fun e' ->
+              evaluate_expr
+                (Mark.copy e'
+                   (EApp { f; args = [e']; tys = [Expr.maybe_ty (Mark.get e')] })))
+-           es)
++           es
+     in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete
+-  | Map2, [f; (EArray es1, _); (EArray es2, _)] ->
+-    let concrete =
+-      EArray
+-        (List.map2
++    propagate_generic_error_list results [] @@ fun results ->
++    let list = symbolic_list list_expr in
++    let symb = SymbExpr.mk_list list.len (List.map get_symb_expr results) in
++    let constraints = gather_constraints results @ list_length_constraints ctx pos list in
++    add_conc_info_m m symb ~constraints (EArray results) |> make_ok
++  | Map2, [f; ((EArray es1, _) as list1); ((EArray es2, _) as list2)] ->
++    let results =
++      List.map2
+            (fun e1 e2 ->
+              evaluate_expr
+                (Mark.add m
+@@ -1082,16 +1127,24 @@ let evaluate_operator
+                            Expr.maybe_ty (Mark.get e2);
+                          ];
+                      })))
+-           es1 es2)
++           es1 es2
+     in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete
+-  | Reduce, [_; default; (EArray [], _)] ->
++    propagate_generic_error_list results [] @@ fun results ->
++    let sl1 = symbolic_list list1 and sl2 = symbolic_list list2 in
++    let len = Z3.Boolean.mk_ite ctx.ctx_z3
++        (Z3.Arithmetic.mk_le ctx.ctx_z3 sl1.len sl2.len) sl1.len sl2.len in
++    let symb = SymbExpr.mk_list len (List.map get_symb_expr results) in
++    let constraints = gather_constraints results @ list_length_constraints ctx pos sl2
++      @ list_length_constraints ctx pos sl1 in
++    add_conc_info_m m symb ~constraints (EArray results) |> make_ok
++  | Reduce, [_; default; ((EArray [], _) as list_expr)] ->
+     let concrete = Mark.remove default in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete |> make_ok
+-  | Reduce, [f; _; (EArray (x0 :: xn), _)] ->
+-    let concrete =
+-      Mark.remove
+-        (List.fold_left
++    let list = symbolic_list list_expr in
++    add_conc_info_m m (get_symb_expr default)
++      ~constraints:(list_length_constraints ctx pos list) concrete |> make_ok
++  | Reduce, [f; _; ((EArray (x0 :: xn), _) as list_expr)] ->
++    let result =
++      List.fold_left
+            (fun acc x ->
+              propagate_generic_error acc []
+              @@ fun acc ->
+@@ -1107,37 +1160,53 @@ let evaluate_operator
+                            Expr.maybe_ty (Mark.get x);
+                          ];
+                      })))
+-           (make_ok x0) xn)
++           (make_ok x0) xn
+     in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete
+-  | Concat, [(EArray es1, _); (EArray es2, _)] ->
++    let list = symbolic_list list_expr in
++    add_conc_info_m m (get_symb_expr_r result)
++      ~constraints:
++        (get_constraints_r result @ list_length_constraints ctx pos list)
++      (Mark.remove result)
++  | Concat, [((EArray es1, _) as e1); ((EArray es2, _) as e2)] ->
+     let concrete = EArray (es1 @ es2) in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete |> make_ok
+-  | Filter, [f; (EArray es, _)] ->
+-    let concrete =
+-      EArray
+-        (List.filter
+-           (fun e' ->
+-             match
+-               evaluate_expr
+-                 (Mark.copy e'
+-                    (EApp
+-                       { f; args = [e']; tys = [Expr.maybe_ty (Mark.get e')] }))
+-             with
+-             | ELit (LBool b), _ -> b
+-             | _ ->
+-               Message.error
+-                 ~pos:(Expr.pos (List.nth args 0))
+-                 "%a" Format.pp_print_text
+-                 "This predicate evaluated to something else than a boolean \
+-                  (should not happen if the term was well-typed)")
+-           es)
++    let l1 = symbolic_list e1 and l2 = symbolic_list e2 in
++    let len = Z3.Arithmetic.mk_add ctx.ctx_z3 [l1.len; l2.len] in
++    let symb = SymbExpr.mk_list len (l1.elts @ l2.elts) in
++    let constraints = list_length_constraints ctx pos l2 @ list_length_constraints ctx pos l1 in
++    add_conc_info_m m symb ~constraints concrete |> make_ok
++  | Filter, [f; ((EArray es, _) as list_expr)] ->
++    let results =
++      List.map
++        (fun e' ->
++          evaluate_expr
++            (Mark.copy e'
++               (EApp { f; args = [e']; tys = [Expr.maybe_ty (Mark.get e')] })))
++        es
++    in
++    propagate_generic_error_list results [] @@ fun results ->
++    let step (kept, pcs) e' result =
++      let q = get_symb_expr result in
++      let own = get_constraints result in
++      match Mark.remove result with
++      | ELit (LBool true) ->
++        e' :: kept, PathConstraint.mk_z3 (SymbExpr.simplify q) (Expr.pos e') true :: own @ pcs
++      | ELit (LBool false) ->
++        let nq = SymbExpr.app_z3 (Z3.Boolean.mk_not ctx.ctx_z3) q |> SymbExpr.simplify in
++        kept, PathConstraint.mk_z3 nq (Expr.pos e') false :: own @ pcs
++      | _ -> Message.error ~pos:(Expr.pos (List.hd args))
++          "List filter predicate did not evaluate to a boolean"
+     in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete |> make_ok
+-  | Fold, [f; init; (EArray es, _)] ->
+-    let concrete =
+-      Mark.remove
+-        (List.fold_left
++    let kept, constraints = List.fold_left2 step ([], []) es results in
++    let kept = List.rev kept in
++    let list = symbolic_list list_expr in
++    let len = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 (List.length kept) in
++    let symb = SymbExpr.mk_list len (List.map get_symb_expr kept) in
++    add_conc_info_m m symb
++      ~constraints:(constraints @ list_length_constraints ctx pos list)
++      (EArray kept) |> make_ok
++  | Fold, [f; init; ((EArray es, _) as list_expr)] ->
++    let result =
++      List.fold_left
+            (fun acc e' ->
+              propagate_generic_error acc []
+              @@ fun acc ->
+@@ -1153,9 +1222,13 @@ let evaluate_operator
+                            Expr.maybe_ty (Mark.get e');
+                          ];
+                      })))
+-           (make_ok init) es)
++           (make_ok init) es
+     in
+-    add_conc_info_m m SymbExpr.incomplete ~constraints:[] concrete
++    let list = symbolic_list list_expr in
++    add_conc_info_m m (get_symb_expr_r result)
++      ~constraints:
++        (get_constraints_r result @ list_length_constraints ctx pos list)
++      (Mark.remove result)
+   | Find, [_f; (EArray _es, _)] ->
+     failwith "Find evaluation not implemented yet"
+   | Sort _, _ :: _ -> failwith "sort evaluation not implemented yet"
+@@ -1757,8 +1830,9 @@ let rec evaluate_expr :
+       @@ fun es ->
+       let constraints = gather_constraints es in
+       let es_concr = EArray es in
+-      add_conc_info_m m SymbExpr.incomplete ~constraints es_concr |> make_ok
+-      (* TODO INC *)
++      let len = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 (List.length es) in
++      let symb = SymbExpr.mk_list len (List.map get_symb_expr es) in
++      add_conc_info_m m symb ~constraints es_concr |> make_ok
+     | EAssert e' ->
+       (* TODO CONC REU *)
+       propagate_generic_error (evaluate_expr ctx lang e') []
+@@ -2087,6 +2161,19 @@ let make_input_mark ctx m field (ty : typ) : conc_info mark =
+         "This input of the scope is a function. This case is not handled by \
+          the concolic interpreter for now. You may want to call this scope \
+          from an other scope and provide a specific function as argument."
++    | TArray element_ty ->
++      let len =
++        Z3.Expr.mk_const_s ctx.ctx_z3 (name ^ "!len")
++          (Z3.Arithmetic.Integer.mk_sort ctx.ctx_z3)
++      in
++      let _, element_sort = translate_typ ctx (Mark.remove element_ty) in
++      let elts =
++        List.init ctx.ctx_max_list_length (fun i ->
++            SymbExpr.mk_z3
++              (Z3.Expr.mk_const_s ctx.ctx_z3
++                 (name ^ "!" ^ string_of_int i) element_sort))
++      in
++      SymbExpr.mk_list len elts
+     | _ ->
+       (* Other variales simply carry a symbol corresponding their name. *)
+       let symbol = Z3.Expr.mk_const_s ctx.ctx_z3 name sort in
+@@ -2141,6 +2228,22 @@ let make_soft_constraints ctx (input_marks : conc_info mark StructField.Map.t) :
+     (fun _ m acc -> soft_constraints_of_input_mark ctx m @ acc)
+     input_marks []
+ 
++let make_list_bounds ctx (input_marks : conc_info mark StructField.Map.t) =
++  let z3 = ctx.ctx_z3 in
++  let int n = Z3.Arithmetic.Integer.mk_numeral_i z3 n in
++  StructField.Map.fold
++    (fun _ mark acc ->
++      let (Custom { custom = { symb_expr; _ }; _ }) = mark in
++      match SymbExpr.as_list symb_expr with
++      | None -> acc
++      | Some list ->
++        let lower = Z3.Arithmetic.mk_ge z3 list.len (int 0) in
++        let upper =
++          Z3.Arithmetic.mk_le z3 list.len (int ctx.ctx_max_list_length)
++        in
++        PathConstraint.Pc_z3 lower :: PathConstraint.Pc_z3 upper :: acc)
++    input_marks []
++
+ (** Evaluation *)
+ 
+ (** Do a "pre-evaluation" of the program. It compiles the target scope to a
+@@ -2593,7 +2696,7 @@ struct
+       let cstr_e = default_expr_of_typ ctx (dummy_mark pos cstr_ty) cstr_ty in
+       Expr.einj ~name ~cons:cstr_name ~e:cstr_e mark
+     | TOption _ -> failwith "[default_expr_of_typ] TOption not implemented"
+-    | TArray _ -> failwith "[default_expr_of_typ] TArray not implemented"
++    | TArray _ -> Expr.earray [] mark
+     | TDefault _ -> failwith "[default_expr_of_typ] TDefault not implemented"
+     | TForAll _ -> failwith "[default_expr_of_typ] TForAll not implemented"
+     | TVar _ -> failwith "[default_expr_of_typ] TVar not implemented"
+@@ -2770,6 +2873,52 @@ struct
+         | Symb_z3 s ->
+           (* Input variable *)
+           make_term ctx m.model_z3 mk ty s
++        | Symb_list list -> begin
++          match Mark.remove ty with
++          | TArray element_ty ->
++            let n =
++              match interp_in_model m.model_z3 list.len with
++              | None -> 0
++              | Some value ->
++                integer_of_symb_expr value |> Z.to_int
++                |> max 0 |> min ctx.ctx_max_list_length
++            in
++            let rec take n xs =
++              match n, xs with
++              | 0, _ | _, [] -> []
++              | n, x :: xs -> x :: take (n - 1) xs
++            in
++            let symbols = take n list.elts in
++            let pos = Expr.mark_pos mk in
++            let elements =
++              List.map
++                (fun symbol ->
++                  match symbol with
++                  | SymbExpr.Symb_z3 s ->
++                    let emark =
++                      Custom
++                        {
++                          pos;
++                          custom =
++                            { symb_expr = symbol; constraints = [];
++                              ty = Some element_ty };
++                        }
++                    in
++                    make_term ctx m.model_z3 emark element_ty s
++                  | _ ->
++                    failwith
++                      "[inputs_of_model] nested symbolic lists are not implemented")
++                symbols
++            in
++            let list_mark =
++              map_conc_mark
++                ~symb_expr_f:(fun _ -> SymbExpr.mk_list list.len symbols)
++                mk
++            in
++            Expr.earray elements list_mark
++          | _ ->
++            failwith "[inputs_of_model] symbolic list has a non-list type"
++        end
+         | Symb_none ->
+           failwith "[inputs_of_model] input mark should not be none"
+         | Symb_incomplete ->
+@@ -2961,9 +3110,12 @@ let interpret_program_concolic
+     (print_stats : bool)
+     (optims : Optimizations.flag list)
+     (mutation_seed : int option)
++    (max_list_length : int)
+     (p : (dcalc, m) gexpr program)
+     s : (Uid.MarkedString.info * conc_expr) list =
+   Message.debug "=== Start concolic interpretation... ===";
++  if max_list_length < 0 then
++    Message.error "The maximum concolic list length must be non-negative";
+   Optimizations.check_optims_coherent optims;
+ 
+   (* output_name, out_fmt : string * Format.formatter) *)
+@@ -2972,7 +3124,7 @@ let interpret_program_concolic
+   let s_context_creation = Stats.start_step "create context" in
+   let decl_ctx = p.decl_ctx in
+   Message.debug "[CONC] Create empty context";
+-  let ctx = make_empty_context decl_ctx optims in
++  let ctx = make_empty_context decl_ctx optims max_list_length in
+   Message.debug "[CONC] Initialize context";
+   let ctx = init_context ctx in
+   let stats = Stats.stop_step s_context_creation |> Stats.add_stat_step stats in
+@@ -3035,6 +3187,7 @@ let interpret_program_concolic
+ 
+     (* TODO CONC should it be [mark_e] or something else? *)
+     let input_marks = StructField.Map.mapi (make_input_mark ctx mark_e) taus in
++    let hard_constraints = make_list_bounds ctx input_marks in
+     let soft_constraints =
+       if Optimizations.soft_constraints optims then
+         make_soft_constraints ctx input_marks
+@@ -3053,7 +3206,7 @@ let interpret_program_concolic
+       let optims = optims
+     end) in
+     (* add soft constraints to solver if it is incremental *)
+-    List.iter (Solver.push ctx) soft_constraints;
++    List.iter (Solver.push ctx) (hard_constraints @ soft_constraints);
+ 
+     let found_incomplete = ref false in
+ 
+@@ -3073,7 +3226,9 @@ let interpret_program_concolic
+         Stats.start_step "extract solver constraints"
+       in
+       let solver_constraints = constraint_list_of_path ctx previous_path in
+-      let solver_constraints = soft_constraints @ solver_constraints in
++      let solver_constraints =
++        hard_constraints @ soft_constraints @ solver_constraints
++      in
+       let exec =
+         Stats.stop_step s_extract_constraints |> Stats.add_exec_step exec
+       in
+diff --git a/compiler/concolic/interpreter.mli b/compiler/concolic/interpreter.mli
+index 54052dd..1068be1 100644
+--- a/compiler/concolic/interpreter.mli
++++ b/compiler/concolic/interpreter.mli
+@@ -26,6 +26,7 @@ val interpret_program_concolic :
+   bool ->
+   Optimizations.flag list ->
+   int option ->
++  int ->
+   (dcalc, 'm) gexpr program ->
+   ScopeName.t ->
+   (Uid.MarkedString.info * conc_expr) list
+diff --git a/compiler/concolic/symb_expr.ml b/compiler/concolic/symb_expr.ml
+index 6bf4e73..9580921 100644
+--- a/compiler/concolic/symb_expr.ml
++++ b/compiler/concolic/symb_expr.ml
+@@ -46,10 +46,13 @@ module SymbExpr = struct
+   type z3_symbol = Z3.Symbol.symbol
+   type reentrant = { name : StructField.t; symbol : z3_expr }
+ 
+-  type t =
++  type symb_list = { len : z3_expr; elts : t list }
++
++  and t =
+     | Symb_z3 of z3_expr
+     | Symb_reentrant of reentrant
+       (* only for the lambda expression corresponding to a reentrant variable *)
++    | Symb_list of symb_list
+     | Symb_none
+     | Symb_incomplete
+     | Symb_abs
+@@ -58,6 +61,8 @@ module SymbExpr = struct
+ 
+   let mk_z3 s = Symb_z3 s
+   let mk_reentrant name symbol = Symb_reentrant { name; symbol }
++  let mk_list len elts = Symb_list { len; elts }
++  let as_list = function Symb_list l -> Some l | _ -> None
+   let is_reentrant = function Symb_reentrant _ -> true | _ -> false
+   let none = Symb_none
+   let incomplete = Symb_incomplete
+@@ -118,7 +123,7 @@ module SymbExpr = struct
+     "<" ^ Mark.remove (StructField.get_info @@ name) ^ ">"
+ 
+   (* TODO formatter *)
+-  let to_string ?(typed : bool = false) e =
++  let rec to_string ?(typed : bool = false) e =
+     match e with
+     | Symb_z3 s ->
+       let str = Z3.Expr.to_string s in
+@@ -126,6 +131,9 @@ module SymbExpr = struct
+         "(" ^ str ^ ":" ^ (Z3.Sort.to_string @@ Z3.Expr.get_sort s) ^ ")"
+       else str
+     | Symb_reentrant r -> string_of_reentrant r
++    | Symb_list { len; elts } ->
++      let contents = String.concat "; " (List.map (to_string ~typed) elts) in
++      "[" ^ contents ^ " | len=" ^ Z3.Expr.to_string len ^ "]"
+     | Symb_none -> "None"
+     | Symb_incomplete -> "Incomplete"
+     | Symb_abs -> "Abs"
+diff --git a/compiler/concolic/symb_expr.mli b/compiler/concolic/symb_expr.mli
+index 74d2d98..9ddf70d 100644
+--- a/compiler/concolic/symb_expr.mli
++++ b/compiler/concolic/symb_expr.mli
+@@ -24,10 +24,13 @@ module SymbExpr : sig
+   type z3_symbol = Z3.Symbol.symbol
+   type reentrant = { name : StructField.t; symbol : z3_expr }
+ 
+-  type t =
++  type symb_list = { len : z3_expr; elts : t list }
++
++  and t =
+     | Symb_z3 of z3_expr
+     | Symb_reentrant of reentrant
+       (* only for the lambda expression corresponding to a reentrant variable *)
++    | Symb_list of symb_list
+     | Symb_none
+     | Symb_incomplete
+     | Symb_abs
+@@ -37,6 +40,8 @@ module SymbExpr : sig
+ 
+   val mk_z3 : z3_expr -> t
+   val mk_reentrant : StructField.t -> z3_expr -> t
++  val mk_list : z3_expr -> t list -> t
++  val as_list : t -> symb_list option
+   val is_reentrant : t -> bool
+   val none : t
+   val incomplete : t
+diff --git a/compiler/driver.ml b/compiler/driver.ml
+index b586188..ce45775 100644
+--- a/compiler/driver.ml
++++ b/compiler/driver.ml
+@@ -1374,6 +1374,7 @@ module Commands = struct
+       stats
+       conc_optims
+       mutation_seed
++      conc_max_list_length
+       includes
+       stdlib
+       optimize
+@@ -1389,7 +1390,7 @@ module Commands = struct
+     let scope = get_scope_uid prg.decl_ctx ex_scope in
+     let evaluate () =
+       ( Concolic.Interpreter.interpret_program_concolic stats conc_optims
+-          mutation_seed prg scope,
++          mutation_seed conc_max_list_length prg scope,
+         None )
+     in
+     let success =
+@@ -1422,6 +1423,14 @@ module Commands = struct
+       & opt (some int) None
+       & info ["seed"] ~docv:"SEED" ~doc:"Concolic mutation seed."
+     in
++    let conc_max_list_length =
++      let open Cmdliner.Arg in
++      value
++      & opt int 3
++      & info ["conc-max-list-length"] ~docv:"LENGTH"
++          ~doc:
++            "Maximum length of list inputs explored by concolic execution."
++    in
+     Cmd.v
+       (Cmd.info "concolic" ~doc:"Runs the concolic interpreter")
+       Term.(
+@@ -1431,6 +1440,7 @@ module Commands = struct
+         $ stats
+         $ conc_optims
+         $ mutation_seed
++        $ conc_max_list_length
+         $ Cli.Flags.include_dirs
+         $ Cli.Flags.stdlib_dir
+         $ Cli.Flags.optimize
+diff --git a/tests/concolic/good/list.catala_en b/tests/concolic/good/list.catala_en
+index 2af98f2..1f2f0b4 100644
+--- a/tests/concolic/good/list.catala_en
++++ b/tests/concolic/good/list.catala_en
+@@ -66,11 +66,20 @@ $ catala Concolic -s A
+ ┌─[RESULT]─
+ │ . o = 20
+ └─
+-┌─[WARNING]─
+-│
+-│  Concolic evaluation found an expression that cannot be encoded (a list or a date). The current
+-                           path will be dropped.
+-│
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . x_in = 4
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . o = 10
+ └─
+ ┌─[RESULT]─
+ │ 
+@@ -108,11 +117,6 @@ $ catala Concolic -s A
+ ┌─[RESULT]─
+ │ Concolic interpreter done
+ └─
+-┌─[WARNING]─
+-│
+-│  Please note that the concolic execution may be incomplete: it could systematically explore the whole program.
+-│
+-└─
+ ┌─[RESULT]─ A ─
+ │ Computation successful!
+ └─
+diff --git a/taiga/illinois/eng/cs/juliahmr/jinulee/formalization_rtf/.toolchain/src/catala-cutecat/tests/concolic/good/list_input.catala_en b/tests/concolic/good/list_input.catala_en
+new file mode 100644
+index 0000000..12f5655
+--- /dev/null
++++ b/tests/concolic/good/list_input.catala_en
+@@ -0,0 +1,423 @@
++## Symbolic list inputs
++
++```catala
++declaration scope ListInput:
++  input xs content list of integer
++  output length content integer
++  output positive_count content integer
++  output total content integer
++
++scope ListInput:
++  definition length equals number of xs
++  definition positive_count equals
++    number of (list of x among xs such that x > 0)
++  definition total equals
++    combine all x among xs in acc initially 0 with acc + x
++```
++
++```catala-test-cli
++$ catala Concolic --conc-max-list-length=3 -s ListInput
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = []
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 0
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 1
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 1
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 2
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 2
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 2
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 2
++└─
++┌─[RESULT]─
++│ . positive_count = 2
++└─
++┌─[RESULT]─
++│ . total = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 0; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 0; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 1; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0; 1; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 2
++└─
++┌─[RESULT]─
++│ . total = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 0; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 0; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 2
++└─
++┌─[RESULT]─
++│ . total = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 1; 0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 2
++└─
++┌─[RESULT]─
++│ . total = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1; 1; 1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 3
++└─
++┌─[RESULT]─
++│ . positive_count = 3
++└─
++┌─[RESULT]─
++│ . total = 3
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Concolic interpreter done
++└─
++┌─[RESULT]─ ListInput ─
++│ Computation successful!
++└─
++```
++
++The driver bound is configurable; reducing it to one prevents any longer list
++from being materialised.
++
++```catala-test-cli
++$ catala Concolic --conc-max-list-length=1 -s ListInput
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = []
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 0
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [0]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 1
++└─
++┌─[RESULT]─
++│ . positive_count = 0
++└─
++┌─[RESULT]─
++│ . total = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . xs_in = [1]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 1
++└─
++┌─[RESULT]─
++│ . positive_count = 1
++└─
++┌─[RESULT]─
++│ . total = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Concolic interpreter done
++└─
++┌─[RESULT]─ ListInput ─
++│ Computation successful!
++└─
++```
+

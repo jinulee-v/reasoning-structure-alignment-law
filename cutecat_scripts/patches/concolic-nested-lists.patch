@@ -1,0 +1,726 @@
+diff --git aa/compiler/concolic/interpreter.ml bb/compiler/concolic/interpreter.ml
+index 8e38e61..a59f155 100644
+--- aa/compiler/concolic/interpreter.ml
++++ bb/compiler/concolic/interpreter.ml
+@@ -215,6 +215,11 @@ type context = {
+   ctx_optims : Optimizations.flag list; (* A list of optimizations to apply *)
+   ctx_max_list_length : int;
+   (* Global bound used when materialising symbolic list inputs. *)
++  ctx_nested_lists : (string, SymbExpr.symb_list) Hashtbl.t;
++  (* Symbolic lists stored below structure fields, keyed by the symbolic Z3
++     accessor for that field. *)
++  ctx_lengths_demanded : (string, unit) Hashtbl.t;
++  (* Avoid emitting the same lazy length decision twice in one execution. *)
+ }
+ 
+ (** adds the mapping between the Catala struct [s] and the corresponding Z3
+@@ -554,6 +559,8 @@ let make_empty_context
+     ctx_reentrant_const = z3_reentrant_const;
+     ctx_optims = optims;
+     ctx_max_list_length = max_list_length;
++    ctx_nested_lists = Hashtbl.create 31;
++    ctx_lengths_demanded = Hashtbl.create 31;
+   }
+ 
+ let init_context (ctx : context) : context =
+@@ -719,7 +726,6 @@ let make_z3_struct_access
+        of the access to be the actual symbolic expression for the reentrant
+        variable and not a Z3 struct access (which would return a dummy) *)
+     field_expr
+-  | Symb_list _ -> field_expr
+   | _ ->
+     let sort = StructName.Map.find name ctx.ctx_z3structs in
+     let fields = StructName.Map.find name ctx.ctx_decl.ctx_structs in
+@@ -738,9 +744,29 @@ let make_z3_struct_access
+     (* Same as the Symb_reentrant _ case of the match *)
+     if range = ctx.ctx_reentrant_sort then field_expr
+     else
+-      SymbExpr.app_z3
+-        (fun s -> Z3.Expr.mk_app ctx.ctx_z3 z3_accessor [s])
+-        struct_expr
++      let access =
++        SymbExpr.app_z3
++          (fun s -> Z3.Expr.mk_app ctx.ctx_z3 z3_accessor [s])
++          struct_expr
++      in
++      match access with
++      | Symb_z3 e -> begin
++        let key = Z3.Expr.to_string e in
++        match Hashtbl.find_opt ctx.ctx_nested_lists key with
++        | Some list ->
++          Message.debug "Using nested symbolic list %s" key;
++          let elts =
++            match field_expr with
++            | Symb_list concrete -> concrete.elts
++            | _ -> list.elts
++          in
++          Symb_list { list with elts }
++        | None -> begin match field_expr with
++          | Symb_list _ -> field_expr
++          | _ -> access
++          end
++        end
++      | _ -> access
+ 
+ let make_z3_enum_inj
+     ctx
+@@ -940,6 +966,9 @@ let op2list
+   op2 ctx m concrete symbolic_f_curry e1 e2
+ 
+ let list_length_constraints ctx pos (list : SymbExpr.symb_list) =
++  let key = Z3.Expr.to_string list.len in
++  if Hashtbl.mem ctx.ctx_lengths_demanded key then [] else begin
++  Hashtbl.add ctx.ctx_lengths_demanded key ();
+   let int k = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 k in
+   let gt k = Z3.Arithmetic.mk_gt ctx.ctx_z3 list.len (int k) in
+   let continues =
+@@ -953,6 +982,7 @@ let list_length_constraints ctx pos (list : SymbExpr.symb_list) =
+       pos false
+   in
+   stop :: List.rev continues
++  end
+ 
+ let symbolic_list e =
+   match SymbExpr.as_list (get_symb_expr e) with
+@@ -2238,6 +2268,61 @@ and handle_default ctx lang m pos nonempty_count excepts just cons =
+ (** The following functions gather methods to generate input values for concolic
+     execution, be it from a model or from hardcoded default values. *)
+ 
++let nested_list_key (e : s_expr) = Z3.Expr.to_string e
++
++let rec make_symbolic_input_value ctx name (ty : typ) : SymbExpr.t =
++  match Mark.remove ty with
++  | TArray element_ty ->
++    let len =
++      Z3.Expr.mk_const_s ctx.ctx_z3 (name ^ "!len")
++        (Z3.Arithmetic.Integer.mk_sort ctx.ctx_z3)
++    in
++    let elts =
++      List.init ctx.ctx_max_list_length (fun i ->
++          make_symbolic_input_value ctx (name ^ "!" ^ string_of_int i)
++            element_ty)
++    in
++    SymbExpr.mk_list len elts
++  | _ ->
++    let _, sort = translate_typ ctx (Mark.remove ty) in
++    let symbol = Z3.Expr.mk_const_s ctx.ctx_z3 name sort in
++    register_nested_lists ctx name ty (SymbExpr.mk_z3 symbol);
++    SymbExpr.mk_z3 symbol
++
++and register_nested_lists ctx name (ty : typ) (symb : SymbExpr.t) : unit =
++  match Mark.remove ty, symb with
++  | TStruct struct_name, Symb_z3 _ ->
++    let fields = StructName.Map.find struct_name ctx.ctx_decl.ctx_structs in
++    StructField.Map.iter
++      (fun field field_ty ->
++        let field_name = Mark.remove (StructField.get_info field) in
++        let field_symb =
++          make_z3_struct_access ctx struct_name field symb SymbExpr.none
++        in
++        match Mark.remove field_ty with
++        | TArray element_ty ->
++          let list =
++            match make_symbolic_input_value ctx (name ^ "!" ^ field_name)
++                    field_ty with
++            | Symb_list list -> list
++            | _ -> assert false
++          in
++          begin match field_symb with
++          | Symb_z3 access ->
++            let key = nested_list_key access in
++            Message.debug "Registering nested symbolic list %s" key;
++            Hashtbl.replace ctx.ctx_nested_lists key list
++          | _ -> assert false
++          end;
++          (* [make_symbolic_input_value] recursively registers lists below
++             every structure-valued element. *)
++          ignore element_ty
++        | _ ->
++          register_nested_lists ctx (name ^ "!" ^ field_name) field_ty
++            field_symb)
++      fields
++  | _ -> ()
++
+ (** Create the mark of an input field from its name [field] and its type [ty].
+     Note that this function guarantees that the type information will be present
+     when calling [inputs_of_model] *)
+@@ -2265,21 +2350,12 @@ let make_input_mark ctx m field (ty : typ) : conc_info mark =
+          the concolic interpreter for now. You may want to call this scope \
+          from an other scope and provide a specific function as argument."
+     | TArray element_ty ->
+-      let len =
+-        Z3.Expr.mk_const_s ctx.ctx_z3 (name ^ "!len")
+-          (Z3.Arithmetic.Integer.mk_sort ctx.ctx_z3)
+-      in
+-      let _, element_sort = translate_typ ctx (Mark.remove element_ty) in
+-      let elts =
+-        List.init ctx.ctx_max_list_length (fun i ->
+-            SymbExpr.mk_z3
+-              (Z3.Expr.mk_const_s ctx.ctx_z3
+-                 (name ^ "!" ^ string_of_int i) element_sort))
+-      in
+-      SymbExpr.mk_list len elts
++      ignore element_ty;
++      make_symbolic_input_value ctx name ty
+     | _ ->
+       (* Other variales simply carry a symbol corresponding their name. *)
+       let symbol = Z3.Expr.mk_const_s ctx.ctx_z3 name sort in
++      register_nested_lists ctx name ty (SymbExpr.mk_z3 symbol);
+       SymbExpr.mk_z3 symbol
+   in
+   let pos = Expr.mark_pos m in
+@@ -2334,18 +2410,33 @@ let make_soft_constraints ctx (input_marks : conc_info mark StructField.Map.t) :
+ let make_list_bounds ctx (input_marks : conc_info mark StructField.Map.t) =
+   let z3 = ctx.ctx_z3 in
+   let int n = Z3.Arithmetic.Integer.mk_numeral_i z3 n in
+-  StructField.Map.fold
+-    (fun _ mark acc ->
+-      let (Custom { custom = { symb_expr; _ }; _ }) = mark in
+-      match SymbExpr.as_list symb_expr with
+-      | None -> acc
+-      | Some list ->
++  let seen = Hashtbl.create 31 in
++  let rec add symb_expr acc =
++    match SymbExpr.as_list symb_expr with
++    | None -> acc
++    | Some list ->
++      let key = nested_list_key list.len in
++      if Hashtbl.mem seen key then acc
++      else begin
++        Hashtbl.add seen key ();
+         let lower = Z3.Arithmetic.mk_ge z3 list.len (int 0) in
+         let upper =
+           Z3.Arithmetic.mk_le z3 list.len (int ctx.ctx_max_list_length)
+         in
+-        PathConstraint.Pc_z3 lower :: PathConstraint.Pc_z3 upper :: acc)
+-    input_marks []
++        List.fold_left (fun acc elt -> add elt acc)
++          (PathConstraint.Pc_z3 lower :: PathConstraint.Pc_z3 upper :: acc)
++          list.elts
++      end
++  in
++  let bounds =
++    StructField.Map.fold
++      (fun _ mark acc ->
++        let (Custom { custom = { symb_expr; _ }; _ }) = mark in
++        add symb_expr acc)
++      input_marks []
++  in
++  Hashtbl.fold (fun _ list acc -> add (SymbExpr.Symb_list list) acc)
++    ctx.ctx_nested_lists bounds
+ 
+ (** Evaluation *)
+ 
+@@ -2833,7 +2924,7 @@ struct
+       the caller, and this function gives a concrete value corresponding to
+       symbolic value [e]. This function is expected to be called from
+       [inputs_of_model] when Z3 has given a value for an input field. *)
+-  let rec value_of_symb_expr ctx model mark ty (e : s_expr) =
++  let rec value_of_symb_expr ctx model mark ty (origin : s_expr) (e : s_expr) =
+     match Mark.remove ty with
+     | TLit tl ->
+       let lit = value_of_symb_expr_lit tl e in
+@@ -2851,15 +2942,22 @@ struct
+       let pos = Expr.mark_pos mark in
+       let fields_typ = StructName.Map.find name ctx.ctx_decl.ctx_structs in
+       let expr_of_fd fd ty =
+-        let access =
++        let concrete_access =
+           make_z3_struct_access ctx name fd (SymbExpr.mk_z3 e) SymbExpr.none
+         in
+-        match access with
+-        | Symb_z3 access ->
++        let symbolic_access =
++          make_z3_struct_access ctx name fd (SymbExpr.mk_z3 origin)
++            SymbExpr.none
++        in
++        match concrete_access, symbolic_access, Mark.remove ty with
++        | Symb_z3 _, Symb_list list, TArray _ ->
++          value_of_symb_value ctx model (dummy_mark pos ty) ty
++            (SymbExpr.Symb_list list)
++        | Symb_z3 access, Symb_z3 symbolic_access, _ ->
+           (* TODO check that there is no reentrant here *)
+           let ev = Option.get (Z3.Model.eval model access true) in
+           (* TODO catch error *)
+-          value_of_symb_expr ctx model (dummy_mark pos ty) ty ev
++          value_of_symb_expr ctx model (dummy_mark pos ty) ty symbolic_access ev
+         (* See [default_expr_of_typ] for an explanation on the dummy mark *)
+         | _ ->
+           failwith
+@@ -2896,6 +2994,7 @@ struct
+       let e_arg = List.hd (Z3.Expr.get_args e) in
+       let arg =
+         value_of_symb_expr ctx model (dummy_mark pos cstr_ty) cstr_ty e_arg
++          e_arg
+       in
+       Expr.einj ~name ~cons:cstr_name ~e:arg mark
+     | TArrow _ ->
+@@ -2906,12 +3005,66 @@ struct
+     | TArray _ -> failwith "[value_of_symb_expr] TArray not implemented"
+     | TDefault _ -> failwith "[value_of_symb_expr] TDefault not implemented"
+ 
++  and value_of_symb_value ctx model mark ty symb =
++    match symb with
++    | SymbExpr.Symb_z3 symbol ->
++      let value = interp_in_model model symbol in
++      begin match value, Mark.remove ty with
++      | Some value, _ -> value_of_symb_expr ctx model mark ty symbol value
++      | None, TStruct _ ->
++        (* A constraint may mention only a separately encoded list field, so
++           Z3 can leave the enclosing structure itself uninterpreted. Build a
++           completed default structure while still materialising its nested
++           symbolic lists from their own length and element symbols. *)
++        let value = Option.get (Z3.Model.eval model symbol true) in
++        value_of_symb_expr ctx model mark ty symbol value
++      | None, _ -> default_expr_of_typ ctx mark ty
++      end
++    | SymbExpr.Symb_list list -> value_of_symb_list ctx model mark ty list
++    | _ -> failwith "[value_of_symb_value] unsupported symbolic input"
++
++  and value_of_symb_list ctx model mark ty (list : SymbExpr.symb_list) =
++    match Mark.remove ty with
++    | TArray element_ty ->
++      let n =
++        match interp_in_model model list.len with
++        | None -> 0
++        | Some value ->
++          integer_of_symb_expr value |> Z.to_int
++          |> max 0 |> min ctx.ctx_max_list_length
++      in
++      let rec take n xs =
++        match n, xs with
++        | 0, _ | _, [] -> []
++        | n, x :: xs -> x :: take (n - 1) xs
++      in
++      let symbols = take n list.elts in
++      let pos = Expr.mark_pos mark in
++      let elements =
++        List.map
++          (fun symbol ->
++            let emark =
++              Custom
++                {
++                  pos;
++                  custom =
++                    { symb_expr = symbol; constraints = [];
++                      ty = Some element_ty };
++                }
++            in
++            value_of_symb_value ctx model emark element_ty symbol)
++          symbols
++      in
++      let list_mark =
++        map_conc_mark
++          ~symb_expr_f:(fun _ -> SymbExpr.mk_list list.len symbols)
++          mark
++      in
++      Expr.earray elements list_mark
++    | _ -> failwith "[value_of_symb_list] symbolic list has a non-list type"
++
+   let make_term ctx z3_model mk ty symb_expr =
+-    let symb_expr_opt = interp_in_model z3_model symb_expr in
+-    Option.fold
+-      ~none:(default_expr_of_typ ctx mk ty)
+-      ~some:(value_of_symb_expr ctx z3_model mk ty)
+-      symb_expr_opt
++    value_of_symb_value ctx z3_model mk ty (SymbExpr.mk_z3 symb_expr)
+ 
+   let make_reentrant_input ctx name z3_model empty_reentrants mk ty symb_expr :
+       conc_boxed_expr =
+@@ -2977,50 +3130,7 @@ struct
+           (* Input variable *)
+           make_term ctx m.model_z3 mk ty s
+         | Symb_list list -> begin
+-          match Mark.remove ty with
+-          | TArray element_ty ->
+-            let n =
+-              match interp_in_model m.model_z3 list.len with
+-              | None -> 0
+-              | Some value ->
+-                integer_of_symb_expr value |> Z.to_int
+-                |> max 0 |> min ctx.ctx_max_list_length
+-            in
+-            let rec take n xs =
+-              match n, xs with
+-              | 0, _ | _, [] -> []
+-              | n, x :: xs -> x :: take (n - 1) xs
+-            in
+-            let symbols = take n list.elts in
+-            let pos = Expr.mark_pos mk in
+-            let elements =
+-              List.map
+-                (fun symbol ->
+-                  match symbol with
+-                  | SymbExpr.Symb_z3 s ->
+-                    let emark =
+-                      Custom
+-                        {
+-                          pos;
+-                          custom =
+-                            { symb_expr = symbol; constraints = [];
+-                              ty = Some element_ty };
+-                        }
+-                    in
+-                    make_term ctx m.model_z3 emark element_ty s
+-                  | _ ->
+-                    failwith
+-                      "[inputs_of_model] nested symbolic lists are not implemented")
+-                symbols
+-            in
+-            let list_mark =
+-              map_conc_mark
+-                ~symb_expr_f:(fun _ -> SymbExpr.mk_list list.len symbols)
+-                mk
+-            in
+-            Expr.earray elements list_mark
+-          | _ ->
+-            failwith "[inputs_of_model] symbolic list has a non-list type"
++          value_of_symb_list ctx m.model_z3 mk ty list
+         end
+         | Symb_none ->
+           failwith "[inputs_of_model] input mark should not be none"
+@@ -3364,6 +3474,7 @@ let interpret_program_concolic
+         let exec = Stats.stop_step s_inputs |> Stats.add_exec_step exec in
+ 
+         let s_eval = Stats.start_step "eval" in
++        Hashtbl.clear ctx.ctx_lengths_demanded;
+         let res = eval_conc_with_input ctx p.lang s_in scope_e mark_e inputs in
+         let exec = Stats.stop_step s_eval |> Stats.add_exec_step exec in
+ 
+
+diff --git ab/tests/concolic/good/nested_list_input.catala_en bb/tests/concolic/good/nested_list_input.catala_en
+new file mode 100644
+index 0000000..a1c5eb1
+--- /dev/null
++++ bb/tests/concolic/good/nested_list_input.catala_en
+@@ -0,0 +1,329 @@
++## Nested symbolic list inputs
++
++```catala
++declaration structure Box:
++  data values content list of integer
++
++declaration scope NestedListInput:
++  input box content Box
++  output length content integer
++
++scope NestedListInput:
++  definition length equals number of box.values
++
++declaration scope ListOfListsInput:
++  input values content list of list of integer
++  output outer_length content integer
++  output flattened_length content integer
++
++scope ListOfListsInput:
++  definition outer_length equals number of values
++  definition flattened_length equals
++    number of (combine all inner among values in acc initially []
++               with acc ++ inner)
++```
++
++```catala-test-cli
++$ catala Concolic --conc-max-list-length=2 -s NestedListInput
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . box_in = { Box values = []; }
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . box_in = { Box values = [0]; }
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . box_in = { Box values = [0; 0]; }
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Concolic interpreter done
++└─
++┌─[RESULT]─ NestedListInput ─
++│ Computation successful!
++└─
++```
++
++```catala-test-cli
++$ catala Concolic --conc-max-list-length=2 -s ListOfListsInput
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = []
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 0
++└─
++┌─[RESULT]─
++│ . outer_length = 0
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 0
++└─
++┌─[RESULT]─
++│ . outer_length = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 1
++└─
++┌─[RESULT]─
++│ . outer_length = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0; 0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 2
++└─
++┌─[RESULT]─
++│ . outer_length = 1
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[]; []]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 0
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[]; [0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 1
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[]; [0; 0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 2
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0]; []]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 1
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0]; [0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 2
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0]; [0; 0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 3
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0; 0]; []]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 2
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0; 0]; [0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 3
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Evaluating with inputs:
++└─
++┌─[RESULT]─
++│ . values_in = [[0; 0]; [0; 0]]
++└─
++┌─[RESULT]─
++│ Output of scope after evaluation:
++└─
++┌─[RESULT]─
++│ . flattened_length = 4
++└─
++┌─[RESULT]─
++│ . outer_length = 2
++└─
++┌─[RESULT]─
++│ 
++└─
++┌─[RESULT]─
++│ Concolic interpreter done
++└─
++┌─[RESULT]─ ListOfListsInput ─
++│ Computation successful!
++└─
++```
+

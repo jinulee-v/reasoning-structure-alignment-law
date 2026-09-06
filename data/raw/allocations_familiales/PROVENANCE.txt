@@ -1,0 +1,9 @@
+Source: https://github.com/CatalaLang/catala-examples/tree/master/allocations_familiales
+Commit: 761902db14af85d7015e9457bc48dee2a79e7c8c
+Extracted: 2026-09-05
+
+Each file is derived from the like-named top-level .catala_fr file. Extraction
+removes Catala module/include directives (lines beginning with ">") and all
+fenced Catala, metadata, and test blocks. All remaining prose is preserved in
+its original order. Tests and the composition-only
+Allocations_familiales.catala_fr entry point are omitted.

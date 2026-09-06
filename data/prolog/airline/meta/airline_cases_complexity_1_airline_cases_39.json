@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_1_airline_cases_39",
+ "domain": "airline",
+ "label": "1565",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Michael is a First Class passenger flying from Philadelphia to Mexico City with the following items: 1. A backpack: 21 x 12 x 6 inches, 6 lbs; 2. A backpack: 33 x 18 x 12 inches, 76 lbs; 3. A backpack: 34 x 19 x 13 inches, 61 lbs; 4. A backpack: 33 x 16 x 14 inches, 79 lbs; 5. A luggage box: 38 x 14 x 13 inches, 72 lbs; 6. A luggage box: 37 x 16 x 15 inches, 71 lbs; Michael's flight ticket is $165.",
+ "hard": false
+}

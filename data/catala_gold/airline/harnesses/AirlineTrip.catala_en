@@ -1,0 +1,72 @@
+# The whole fee computation, over a one-item trip
+
+> Module AirlineTrip
+
+> Using AirlineWorld as W
+> Using Airline as A
+
+A concolic harness for the whole fee computation, included in the generator's
+default target set now that CUTECat can symbolically execute bounded lists.
+
+`Airline.Trip` takes a `W.Itinerary`, whose `items` field is a list. The scope
+builds a one-item itinerary from scalar symbolic inputs. List construction,
+mapping, filtering, concatenation and folding are now retained symbolically,
+so the gazetteer, fee tables, allowance and acceptance branches remain visible
+to the concolic path search. A directly symbolic `W.Itinerary` input is still
+outside the current implementation because its list is nested inside a struct.
+
+```catala-metadata
+declaration scope FullTrip:
+  input origin content W.City
+  input destination content W.City
+  input cabin content W.Cabin
+  input ticket content money
+  input status_at_ticketing content W.EliteStatus
+  input status_at_checkin content W.EliteStatus
+  input cardmember content boolean
+  input military content W.MilitaryStatus
+  input flagship content boolean
+  input children content integer
+  ## The single item is spread out because list values nested inside a symbolic
+  ## structure input are not yet materialised recursively.
+  input kind content W.ItemKind
+  input length content integer
+  input width content integer
+  input height content integer
+  input weight content integer
+
+  internal trip content A.Trip
+  output base_fees content money
+  output excess_fees content money
+  output total content money
+  output accepted content boolean
+```
+
+```catala
+scope FullTrip:
+  definition trip equals
+    output of A.Trip with { -- itinerary: W.Itinerary {
+      -- origin: origin
+      -- destination: destination
+      -- cabin: cabin
+      -- ticket: ticket
+      -- items: [W.Item {
+           -- kind: kind
+           -- length: length
+           -- width: width
+           -- height: height
+           -- weight: weight
+         }]
+      -- status_at_ticketing: status_at_ticketing
+      -- status_at_checkin: status_at_checkin
+      -- cardmember: cardmember
+      -- military: military
+      -- flagship: flagship
+      -- children: children
+    } }
+
+  definition base_fees equals trip.base_fees
+  definition excess_fees equals trip.excess_fees
+  definition total equals trip.total_cost
+  definition accepted equals trip.accepted
+```

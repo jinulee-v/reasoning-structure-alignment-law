@@ -1,0 +1,19 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index 70d7907d..af0fab43 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -344,6 +344,13 @@ let rec translate_typ (ctx : context) (t : naked_typ) : context * Z3.Sort.sort =
+   | TTuple _ -> failwith "[translate_typ] TTuple not implemented"
+   | TEnum name -> find_or_create_enum ctx name
+-  | TOption _ -> failwith "[translate_typ] TOption not implemented"
++  | TOption _ ->
++    ( ctx,
++      ctx.ctx_dummy_sort
++      (* Options are not yet encoded.  As for arrays below, an option nested
++         in an otherwise-unused declaration must not prevent exploration of
++         an unrelated scalar scope; evaluation remains incomplete if code
++         actually reads it. *)
++    )
+   | TArrow ([(TLit TUnit, _)], (TDefault _, _)) ->
+     failwith "[translate_typ] no more thunk"
+     (* FIXME CONTEXT *)

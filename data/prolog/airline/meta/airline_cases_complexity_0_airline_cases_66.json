@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_66",
+ "domain": "airline",
+ "label": "1702",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Linda is a First Class passenger flying from Doha to Miami with the following items: 1. A backpack: 22 x 11 x 8 inches, 7 lbs; 2. A luggage box: 34 x 21 x 10 inches, 59 lbs; 3. A backpack: 51 x 31 x 30 inches, 52 lbs; 4. A luggage box: 44 x 23 x 19 inches, 70 lbs; 5. A backpack: 40 x 19 x 18 inches, 62 lbs; Linda's flight ticket is $1022.",
+ "hard": true
+}

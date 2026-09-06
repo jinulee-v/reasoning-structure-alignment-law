@@ -1,0 +1,166 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index f553f07..8e38e61 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -1056,6 +1056,21 @@ let evaluate_operator
+     let list = symbolic_list e in
+     let constraints = list_length_constraints ctx (Expr.pos e) list in
+     add_conc_info_m m (SymbExpr.mk_z3 list.len) ~constraints (ELit (LInt l))
++  | ConstructorCheck (name, expected),
++      [((EInj { cons; _ }, _) as enum_expr)] ->
++    let concrete = EnumConstructor.equal expected cons in
++    let symb =
++      match get_symb_expr enum_expr with
++      | Symb_z3 _ as enum_symb ->
++        make_z3_arm_conditions ctx name expected enum_symb
++        |> List.find (fun (_, is_expected) -> is_expected)
++        |> fst
++      | Symb_incomplete ->
++        SymbExpr.mk_z3 (Z3.Boolean.mk_val ctx.ctx_z3 concrete)
++      | _ ->
++        invalid_arg "[ConstructorCheck] expected a symbolic enumeration"
++    in
++    add_conc_info_m m symb ~constraints:[] (ELit (LBool concrete))
+   | Tag _, _ -> failwith "Tag evaluation not implemented"
+   | (FromClosureEnv | ToClosureEnv), _ ->
+     (* NOTE CONC used for typing only *)
+@@ -1229,11 +1244,70 @@ let evaluate_operator
+       ~constraints:
+         (get_constraints_r result @ list_length_constraints ctx pos list)
+       (Mark.remove result)
+-  | Find, [_f; (EArray _es, _)] ->
+-    failwith "Find evaluation not implemented yet"
++  | Find, [f; ((EArray es, _) as list_expr)] ->
++    let list = symbolic_list list_expr in
++    let rec find constraints = function
++      | [] ->
++        let unit =
++          add_conc_info_m m (symb_of_lit ctx LUnit) ~constraints:[] (ELit LUnit)
++        in
++        add_conc_info_m m Symb_incomplete
++          ~constraints:(constraints @ list_length_constraints ctx pos list)
++          (EInj
++             {
++               name = ConstantNames.option_enum;
++               cons = ConstantNames.none_constr;
++               e = unit;
++             })
++        |> make_ok
++      | element :: rest ->
++        let predicate =
++          evaluate_expr
++            (Mark.copy element
++               (EApp
++                  {
++                    f;
++                    args = [element];
++                    tys = [Expr.maybe_ty (Mark.get element)];
++                  }))
++        in
++        propagate_generic_error predicate constraints @@ fun predicate ->
++        let q = get_symb_expr predicate |> SymbExpr.simplify in
++        let own = get_constraints predicate in
++        begin match Mark.remove predicate with
++        | ELit (LBool true) ->
++          let pc = PathConstraint.mk_z3 q (Expr.pos element) true in
++          add_conc_info_m m Symb_incomplete
++            ~constraints:
++              (pc :: own @ constraints @ list_length_constraints ctx pos list)
++            (EInj
++               {
++                 name = ConstantNames.option_enum;
++                 cons = ConstantNames.some_constr;
++                 e = element;
++               })
++          |> make_ok
++        | ELit (LBool false) ->
++          let nq =
++            SymbExpr.app_z3 (Z3.Boolean.mk_not ctx.ctx_z3) q
++            |> SymbExpr.simplify
++          in
++          let pc = PathConstraint.mk_z3 nq (Expr.pos element) false in
++          find (pc :: own @ constraints) rest
++        | _ ->
++          Message.error ~pos:(Expr.pos f)
++            "List find predicate did not evaluate to a boolean"
++        end
++    in
++    find [] es
+   | Sort _, _ :: _ -> failwith "sort evaluation not implemented yet"
+-  | ArrayAccess _i, [(EArray _es, _)] ->
+-    failwith "ArrayAccess evaluation not implemented yet"
++  | ArrayAccess i, [((EArray es, _) as list_expr)] ->
++    let element = List.nth es i in
++    let list = symbolic_list list_expr in
++    let symb = List.nth list.elts i in
++    add_conc_info_m m symb
++      ~constraints:(list_length_constraints ctx pos list)
++      (Mark.remove element) |> make_ok
+   | ( ( Length | Eq | Map | Map2 | Concat | Filter | Fold | Reduce | Find
+       | Sort _ | ArrayAccess _ ),
+       _ ) ->
+@@ -1552,10 +1626,32 @@ let rec evaluate_expr :
+             (Bindlib.mbinder_arity binder)
+             (List.length args)
+       | ECustom _ ->
+-        (* failwith "EExternal not implemented" *)
+-        let e = Concrete.evaluate_expr ctx.ctx_decl lang e in
+-        add_conc_info_e Symb_incomplete e |> make_ok
+-        (* failwith "EApp of ECustom not implemented" *)
++        (* External list helpers still execute concretely, but their returned
++           list elements and option payloads may carry symbolic marks from the
++           arguments. Preserve those instead of poisoning all downstream list
++           combinators. The option constructor itself remains concrete. *)
++        let concrete = Concrete.evaluate_expr ctx.ctx_decl lang e in
++        begin match Mark.remove concrete with
++        | EArray elements ->
++          let elements = List.map (evaluate_expr ctx lang) elements in
++          propagate_generic_error_list elements [] @@ fun elements ->
++          let len =
++            Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3
++              (List.length elements)
++          in
++          let symb =
++            SymbExpr.mk_list len (List.map get_symb_expr elements)
++          in
++          add_conc_info_e symb (EArray elements, Mark.get concrete)
++          |> make_ok
++        | EInj { name; cons; e = payload } ->
++          propagate_generic_error (evaluate_expr ctx lang payload) []
++          @@ fun payload ->
++          add_conc_info_e Symb_incomplete
++            (EInj { name; cons; e = payload }, Mark.get concrete)
++          |> make_ok
++        | _ -> add_conc_info_e Symb_incomplete concrete |> make_ok
++        end
+       | _ ->
+         Message.error ~pos
+           "function has not been reduced to a lambda at evaluation (should not \
+@@ -1713,8 +1809,11 @@ let rec evaluate_expr :
+            symbolic value of [e]. *)
+         let e_symb = get_symb_expr e in
+         let e1_symb =
+-          SymbExpr.app_z3 (make_z3_enum_access ctx name cons) e_symb
+-          (* TODO catch error *)
++          match e_symb with
++          | Symb_incomplete -> get_symb_expr e1
++          | _ ->
++            SymbExpr.app_z3 (make_z3_enum_access ctx name cons) e_symb
++            (* TODO catch error *)
+         in
+         let e1_constraints = get_constraints e1 in
+         (* Here we have to explicitely "force" the new symbolic value, keep the
+@@ -1728,7 +1827,11 @@ let rec evaluate_expr :
+            every other arm [A], it encodes the fact that [e] is not an [A], and
+            thus is a "false" path branch. *)
+         let e_constraints = get_constraints e in
+-        let arm_conditions = make_z3_arm_conditions ctx name cons e_symb in
++        let arm_conditions =
++          match e_symb with
++          | Symb_incomplete -> []
++          | _ -> make_z3_arm_conditions ctx name cons e_symb
++        in
+         let arm_path_constraints =
+           List.map
+             (fun (s, b) ->
+

@@ -1,0 +1,496 @@
+diff --git a/compiler/concolic/interpreter.ml b/compiler/concolic/interpreter.ml
+index 8814861..470121e 100644
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -86,6 +86,24 @@ let map_conc_mark
+   let pos = pos_f pos in
+   Custom { custom = { symb_expr; constraints; ty }; pos }
+ 
++(** Replace concolic information even when the expression already carries a
++    symbolic marker.  [add_conc_info_e] deliberately preserves existing
++    symbolic information, which is normally what evaluation wants.  Concrete
++    external calls, however, initially return [Symb_incomplete]; once their
++    array elements have been evaluated we know a strictly better symbolic
++    representation and must overwrite that placeholder. *)
++let replace_conc_info_e
++    (symb_expr : SymbExpr.t)
++    ~(constraints : PathConstraint.naked_path)
++    (x : ('a, conc_info) marked) : ('a, conc_info) marked =
++  let mark =
++    map_conc_mark
++      ~symb_expr_f:(fun _ -> SymbExpr.simplify symb_expr)
++      ~constraints_f:(fun _ -> constraints)
++      (Mark.get x)
++  in
++  Mark.add mark (Mark.remove x)
++
+ (* Typing shenanigan to [EGenericError] terms to the AST type. Inspired by
+    [Concrete.addcustom]. *)
+ let add_genericerror e =
+@@ -222,7 +240,14 @@ type context = {
+   (* Symbolic lists stored below structure fields, keyed by the symbolic Z3
+      accessor for that field. *)
+   ctx_lengths_demanded : (string, unit) Hashtbl.t;
+-  (* Avoid emitting the same lazy length decision twice in one execution. *)
++  (* Avoid emitting the same lazy length decision twice in one execution.
++     Equivalent non-constant length expressions share one decision. Fixed
++     lengths need no solver decision and are deliberately excluded, avoiding
++     the old collision between unrelated lists whose length was [1]. *)
++  ctx_list_length_guards : (int, s_expr) Hashtbl.t;
++  (* Additional bounds for lists derived from scalar inputs. Input-list bounds
++     are hard solver constraints, but an external [sequence] needs its bound
++     attached to every flippable traversal decision. *)
+   ctx_on_expr : (conc_expr -> unit) ref;
+   (* Optional instrumentation installed only around concrete path evaluation.
+      Keeping it disabled during simplification avoids crediting expressions
+@@ -452,6 +477,10 @@ and find_or_create_struct (ctx : context) (s : StructName.t) :
+ and find_or_create_option (ctx : context) (payload_ty : typ) :
+     context * Z3.Sort.sort =
+   let ctx, payload_sort = translate_typ ctx (Mark.remove payload_ty) in
++  find_or_create_option_sort ctx payload_sort
++
++and find_or_create_option_sort (ctx : context) (payload_sort : Z3.Sort.sort) :
++    context * Z3.Sort.sort =
+   let key = Z3.Sort.to_string payload_sort in
+   match Hashtbl.find_opt ctx.ctx_z3options key with
+   | Some sort -> ctx, sort
+@@ -585,6 +614,7 @@ let make_empty_context
+     ctx_max_list_length = max_list_length;
+     ctx_nested_lists = Hashtbl.create 31;
+     ctx_lengths_demanded = Hashtbl.create 31;
++    ctx_list_length_guards = Hashtbl.create 31;
+     ctx_on_expr = ref (fun _ -> ());
+   }
+ 
+@@ -801,7 +831,15 @@ let make_z3_enum_inj
+     (s : s_expr) =
+   let sort =
+     match Mark.remove enum_ty with
+-    | TOption payload_ty -> snd (find_or_create_option ctx payload_ty)
++    | TOption payload_ty ->
++      (* Polymorphic standard-library helpers can leave a [TVar] on their
++         internal [Present] injection even after the application itself has
++         been instantiated.  The evaluated payload has the authoritative Z3
++         sort in that case.  Using it prevents constructing, for example, an
++         [Optional<t>] constructor and applying it to an encoded date [Int]. *)
++      if EnumConstructor.equal cons ConstantNames.some_constr then
++        snd (find_or_create_option_sort ctx (Z3.Expr.get_sort s))
++      else snd (find_or_create_option ctx payload_ty)
+     | _ -> EnumName.Map.find name ctx.ctx_z3enums
+   in
+   let constructors = EnumName.Map.find name ctx.ctx_decl.ctx_enums in
+@@ -1000,11 +1038,24 @@ let op2list
+   op2 ctx m concrete symbolic_f_curry e1 e2
+ 
+ let list_length_constraints ctx pos (list : SymbExpr.symb_list) =
+-  let key = Z3.Expr.to_string list.len in
+-  if Hashtbl.mem ctx.ctx_lengths_demanded key then [] else begin
++  let simplified_len = Z3.Expr.simplify list.len None in
++  let fixed_length =
++    try
++      ignore (Z3.Arithmetic.Integer.get_big_int simplified_len);
++      true
++    with Z3.Error _ | Invalid_argument _ -> false
++  in
++  let key = Z3.Expr.to_string simplified_len in
++  if fixed_length || Hashtbl.mem ctx.ctx_lengths_demanded key then []
++  else begin
+   Hashtbl.add ctx.ctx_lengths_demanded key ();
+   let int k = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 k in
+-  let gt k = Z3.Arithmetic.mk_gt ctx.ctx_z3 list.len (int k) in
++  let gt k =
++    let longer = Z3.Arithmetic.mk_gt ctx.ctx_z3 list.len (int k) in
++    match Hashtbl.find_opt ctx.ctx_list_length_guards list.id with
++    | None -> longer
++    | Some guard -> Z3.Boolean.mk_and ctx.ctx_z3 [guard; longer]
++  in
+   let continues =
+     List.init (List.length list.elts) (fun k ->
+         PathConstraint.mk_z3 (SymbExpr.mk_z3 (gt k)) pos true)
+@@ -1018,10 +1069,24 @@ let list_length_constraints ctx pos (list : SymbExpr.symb_list) =
+   stop :: List.rev continues
+   end
+ 
+-let symbolic_list e =
++let concrete_symbolic_list ctx es =
++  let len = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 (List.length es) in
++  match SymbExpr.mk_list len (List.map get_symb_expr es) with
++  | Symb_list list -> list
++  | _ -> assert false
++
++let symbolic_list ctx e =
+   match SymbExpr.as_list (get_symb_expr e) with
+   | Some l -> l
+-  | None -> invalid_arg "[symbolic_list] expected a symbolic list"
++  | None -> begin
++    (* Lists created by concrete runtime helpers can retain the helper's
++       [Symb_incomplete] marker even though the returned array and all its
++       elements are available. Such a list has a fixed concrete length for
++       this execution, but its elements may still be symbolic. *)
++    match Mark.remove e with
++    | EArray es -> concrete_symbolic_list ctx es
++    | _ -> invalid_arg "[symbolic_list] expected a symbolic list"
++    end
+ 
+ let handle_division
+     ctx
+@@ -1117,7 +1182,7 @@ let evaluate_operator
+   match op, args with
+   | Length, [((EArray es, _) as e)] ->
+     let l = Runtime.integer_of_int (List.length es) in
+-    let list = symbolic_list e in
++    let list = symbolic_list ctx e in
+     let constraints = list_length_constraints ctx (Expr.pos e) list in
+     add_conc_info_m m (SymbExpr.mk_z3 list.len) ~constraints (ELit (LInt l))
+   | ConstructorCheck (name, expected),
+@@ -1186,8 +1251,11 @@ let evaluate_operator
+            es
+     in
+     propagate_generic_error_list results [] @@ fun results ->
+-    let list = symbolic_list list_expr in
+-    let symb = SymbExpr.mk_list list.len (List.map get_symb_expr results) in
++    let list = symbolic_list ctx list_expr in
++    let symb =
++      SymbExpr.Symb_list
++        { list with elts = List.map get_symb_expr results }
++    in
+     let constraints = gather_constraints results @ list_length_constraints ctx pos list in
+     add_conc_info_m m symb ~constraints (EArray results) |> make_ok
+   | Map2, [f; ((EArray es1, _) as list1); ((EArray es2, _) as list2)] ->
+@@ -1209,7 +1277,7 @@ let evaluate_operator
+            es1 es2
+     in
+     propagate_generic_error_list results [] @@ fun results ->
+-    let sl1 = symbolic_list list1 and sl2 = symbolic_list list2 in
++    let sl1 = symbolic_list ctx list1 and sl2 = symbolic_list ctx list2 in
+     let len = Z3.Boolean.mk_ite ctx.ctx_z3
+         (Z3.Arithmetic.mk_le ctx.ctx_z3 sl1.len sl2.len) sl1.len sl2.len in
+     let symb = SymbExpr.mk_list len (List.map get_symb_expr results) in
+@@ -1218,7 +1286,7 @@ let evaluate_operator
+     add_conc_info_m m symb ~constraints (EArray results) |> make_ok
+   | Reduce, [_; default; ((EArray [], _) as list_expr)] ->
+     let concrete = Mark.remove default in
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     add_conc_info_m m (get_symb_expr default)
+       ~constraints:(list_length_constraints ctx pos list) concrete |> make_ok
+   | Reduce, [f; _; ((EArray (x0 :: xn), _) as list_expr)] ->
+@@ -1241,14 +1309,14 @@ let evaluate_operator
+                      })))
+            (make_ok x0) xn
+     in
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     add_conc_info_m m (get_symb_expr_r result)
+       ~constraints:
+         (get_constraints_r result @ list_length_constraints ctx pos list)
+       (Mark.remove result)
+   | Concat, [((EArray es1, _) as e1); ((EArray es2, _) as e2)] ->
+     let concrete = EArray (es1 @ es2) in
+-    let l1 = symbolic_list e1 and l2 = symbolic_list e2 in
++    let l1 = symbolic_list ctx e1 and l2 = symbolic_list ctx e2 in
+     let len = Z3.Arithmetic.mk_add ctx.ctx_z3 [l1.len; l2.len] in
+     let symb = SymbExpr.mk_list len (l1.elts @ l2.elts) in
+     let constraints = list_length_constraints ctx pos l2 @ list_length_constraints ctx pos l1 in
+@@ -1277,7 +1345,7 @@ let evaluate_operator
+     in
+     let kept, constraints = List.fold_left2 step ([], []) es results in
+     let kept = List.rev kept in
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     let len = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 (List.length kept) in
+     let symb = SymbExpr.mk_list len (List.map get_symb_expr kept) in
+     add_conc_info_m m symb
+@@ -1303,13 +1371,13 @@ let evaluate_operator
+                      })))
+            (make_ok init) es
+     in
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     add_conc_info_m m (get_symb_expr_r result)
+       ~constraints:
+         (get_constraints_r result @ list_length_constraints ctx pos list)
+       (Mark.remove result)
+   | Find, [f; ((EArray es, _) as list_expr)] ->
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     let rec find constraints = function
+       | [] ->
+         let unit =
+@@ -1367,7 +1435,7 @@ let evaluate_operator
+   | Sort _, _ :: _ -> failwith "sort evaluation not implemented yet"
+   | ArrayAccess i, [((EArray es, _) as list_expr)] ->
+     let element = List.nth es i in
+-    let list = symbolic_list list_expr in
++    let list = symbolic_list ctx list_expr in
+     let symb = List.nth list.elts i in
+     add_conc_info_m m symb
+       ~constraints:(list_length_constraints ctx pos list)
+@@ -1590,6 +1658,158 @@ let evaluate_operator
+       _ ) ->
+     err ()
+ 
++(** Recognise external standard-library functions by their registered runtime
++    object, rather than by a source position that can be shared by many calls. *)
++let is_runtime_function obj runtime_module name =
++  try obj == Runtime.lookup_value (runtime_module, name) with Not_found -> false
++
++let z3_of_symb = function SymbExpr.Symb_z3 e -> Some e | _ -> None
++
++(** [List_internal.sequence start stop] returns [start, ..., stop - 1]. *)
++let eval_external_sequence ctx pos args concrete : conc_result =
++  match args, Mark.remove concrete with
++  | [start; stop], EArray elements -> begin
++    match z3_of_symb (get_symb_expr start), z3_of_symb (get_symb_expr stop) with
++    | Some start_z3, Some stop_z3 ->
++      let zero = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 0 in
++      let positive = Z3.Arithmetic.mk_gt ctx.ctx_z3 stop_z3 start_z3 in
++      let difference = Z3.Arithmetic.mk_sub ctx.ctx_z3 [stop_z3; start_z3] in
++      let len =
++        Z3.Boolean.mk_ite ctx.ctx_z3 positive difference zero
++      in
++      let maximum =
++        Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3
++          ctx.ctx_max_list_length
++      in
++      let elements =
++        List.mapi
++          (fun i element ->
++            let offset = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 i in
++            let symbol =
++              Z3.Arithmetic.mk_add ctx.ctx_z3 [start_z3; offset]
++              |> SymbExpr.mk_z3
++            in
++            replace_conc_info_e symbol ~constraints:[] element)
++          elements
++      in
++      let symb = SymbExpr.mk_list len (List.map get_symb_expr elements) in
++      begin match symb with
++      | Symb_list list ->
++        Hashtbl.replace ctx.ctx_list_length_guards list.id
++          (Z3.Arithmetic.mk_le ctx.ctx_z3 len maximum)
++      | _ -> assert false
++      end;
++      let constraints =
++        if List.length elements <= ctx.ctx_max_list_length then []
++        else [PathConstraint.mk_z3 SymbExpr.incomplete pos true]
++      in
++      replace_conc_info_e symb ~constraints
++        (EArray elements, Mark.get concrete)
++      |> make_ok
++    | _ ->
++      replace_conc_info_e SymbExpr.incomplete
++        ~constraints:[PathConstraint.mk_z3 SymbExpr.incomplete pos true]
++        concrete
++      |> make_ok
++    end
++  | _ ->
++    Message.error ~pos
++      "Unexpected arguments or result for List_internal.sequence"
++
++(** Exact path condition and payload provenance for the primitive underlying
++    both [List.nth_element] and [List.first_element]. When its elements have Z3
++    representations, the optional result contains a bounded symbolic selector.
++    Otherwise an explicit validity constraint is retained and the option is
++    conservatively marked incomplete. *)
++let eval_external_nth_element ctx pos args concrete : conc_result =
++  match args, Mark.remove concrete with
++  | [((EArray elements, _) as list_expr); index],
++    EInj { name; cons; e = concrete_payload } -> begin
++    match SymbExpr.as_list (get_symb_expr list_expr),
++          z3_of_symb (get_symb_expr index), Mark.remove index with
++    | Some list, Some index_z3, ELit (LInt concrete_index) ->
++      let int n = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 n in
++      let valid =
++        Z3.Boolean.mk_and ctx.ctx_z3
++          [ Z3.Arithmetic.mk_ge ctx.ctx_z3 index_z3 (int 1);
++            Z3.Arithmetic.mk_le ctx.ctx_z3 index_z3 list.len ]
++      in
++      let present =
++        EnumConstructor.equal cons ConstantNames.some_constr
++      in
++      let decision =
++        if present then valid else Z3.Boolean.mk_not ctx.ctx_z3 valid
++      in
++      let concrete_payload =
++        if present then
++          let i = Z.to_int concrete_index - 1 in
++          if i < 0 || i >= List.length elements then
++            Message.error ~pos
++              "List_internal.nth_element returned Present outside its list"
++          else List.nth elements i
++        else concrete_payload
++      in
++      let element_symbols =
++        List.filter_map (fun e -> z3_of_symb (get_symb_expr e)) elements
++      in
++      if element_symbols <> []
++         && List.length element_symbols = List.length elements
++      then begin
++        let selected =
++          List.mapi (fun i symbol -> i + 1, symbol) element_symbols
++          |> List.fold_left
++               (fun selected (i, symbol) ->
++                 let at_i =
++                   Z3.Boolean.mk_eq ctx.ctx_z3 index_z3 (int i)
++                 in
++                 Z3.Boolean.mk_ite ctx.ctx_z3 at_i symbol selected)
++               (List.hd element_symbols)
++        in
++        let payload =
++          if present then
++            replace_conc_info_e (SymbExpr.mk_z3 selected) ~constraints:[]
++              concrete_payload
++          else concrete_payload
++        in
++        let enum_ty = Option.get (get_type concrete) in
++        let present_value =
++          make_z3_enum_inj ctx name ConstantNames.some_constr enum_ty selected
++        in
++        let absent_value =
++          let option_sort = Z3.Expr.get_sort present_value in
++          let absent_constructor =
++            List.hd (Z3.Datatype.get_constructors option_sort)
++          in
++          Z3.Expr.mk_app ctx.ctx_z3 absent_constructor [z3_of_lit ctx LUnit]
++        in
++        let option_value =
++          Z3.Boolean.mk_ite ctx.ctx_z3 valid present_value absent_value
++          |> SymbExpr.mk_z3
++        in
++        replace_conc_info_e option_value
++          ~constraints:(list_length_constraints ctx pos list)
++          (EInj { name; cons; e = payload }, Mark.get concrete)
++        |> make_ok
++      end
++      else
++        let decision_pc =
++          PathConstraint.mk_z3
++            (SymbExpr.mk_z3 decision |> SymbExpr.simplify) pos present
++        in
++        replace_conc_info_e SymbExpr.incomplete
++          ~constraints:(decision_pc :: list_length_constraints ctx pos list)
++          (EInj { name; cons; e = concrete_payload }, Mark.get concrete)
++        |> make_ok
++    | _ ->
++      replace_conc_info_e SymbExpr.incomplete
++        ~constraints:[PathConstraint.mk_z3 SymbExpr.incomplete pos true]
++        concrete
++      |> make_ok
++    end
++  | _ ->
++    Message.error ~pos
++      "Unexpected arguments or result for List_internal.nth_element"
++
+ let rec evaluate_expr :
+     context -> Global.backend_lang -> conc_expr -> conc_result =
+  fun ctx lang e ->
+@@ -1690,24 +1910,24 @@ let rec evaluate_expr :
+             "wrong function call, expected %d arguments, got %d"
+             (Bindlib.mbinder_arity binder)
+             (List.length args)
+-      | ECustom _ ->
++      | ECustom { obj; _ } ->
+         (* External list helpers still execute concretely, but their returned
+            list elements and option payloads may carry symbolic marks from the
+            arguments. Preserve those instead of poisoning all downstream list
+            combinators. The option constructor itself remains concrete. *)
+         let concrete = Concrete.evaluate_expr ctx.ctx_decl lang e in
+-        begin match Mark.remove concrete with
++        if is_runtime_function obj "List_internal" "sequence" then
++          eval_external_sequence ctx pos args concrete
++        else if is_runtime_function obj "List_internal" "nth_element" then
++          eval_external_nth_element ctx pos args concrete
++        else begin match Mark.remove concrete with
+         | EArray elements ->
+           let elements = List.map (evaluate_expr ctx lang) elements in
+           propagate_generic_error_list elements [] @@ fun elements ->
+-          let len =
+-            Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3
+-              (List.length elements)
+-          in
+-          let symb =
+-            SymbExpr.mk_list len (List.map get_symb_expr elements)
+-          in
+-          add_conc_info_e symb (EArray elements, Mark.get concrete)
++          let list = concrete_symbolic_list ctx elements in
++          let constraints = gather_constraints elements in
++          replace_conc_info_e (SymbExpr.Symb_list list) ~constraints
++            (EArray elements, Mark.get concrete)
+           |> make_ok
+         | EInj { name; cons; e = payload } ->
+           propagate_generic_error (evaluate_expr ctx lang payload) []
+@@ -1815,8 +2035,28 @@ let rec evaluate_expr :
+           "The expression %a should be a struct %a but is not (should not \
+            happen if the term was well-typed)"
+           (Print.expr ()) e StructName.format s)
+-    | ETuple _ -> failwith "ETuple not implemented"
+-    | ETupleAccess _ -> failwith "ETupleAccess not implemented"
++    | ETuple es ->
++      let es = List.map (evaluate_expr ctx lang) es in
++      propagate_generic_error_list es [] @@ fun es ->
++      let constraints = gather_constraints es in
++      add_conc_info_m m SymbExpr.none ~constraints (ETuple es) |> make_ok
++    | ETupleAccess { e; index; size } ->
++      propagate_generic_error (evaluate_expr ctx lang e) [] @@ fun tuple ->
++      begin match Mark.remove tuple with
++      | ETuple es when List.length es = size ->
++        let selected = List.nth es index in
++        add_conc_info_m m (get_symb_expr selected)
++          ~constraints:(get_constraints tuple) (Mark.remove selected)
++        |> make_ok
++      | ETuple _ ->
++        Message.error ~pos
++          "Tuple access expected %d components (should not happen if the term \
++           was well-typed)" size
++      | _ ->
++        Message.error ~pos
++          "Tuple access expected a tuple (should not happen if the term was \
++           well-typed)"
++      end
+     | EBad -> assert false
+     | EPos _ as e ->
+       (* A reified source position, which the plain interpreter lists among its
+@@ -2007,9 +2247,13 @@ let rec evaluate_expr :
+       @@ fun es ->
+       let constraints = gather_constraints es in
+       let es_concr = EArray es in
+-      let len = Z3.Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 (List.length es) in
+-      let symb = SymbExpr.mk_list len (List.map get_symb_expr es) in
+-      add_conc_info_m m symb ~constraints es_concr |> make_ok
++      let array = es_concr, m in
++      let symb =
++        match SymbExpr.as_list (get_symb_expr array) with
++        | Some list -> SymbExpr.Symb_list list
++        | None -> SymbExpr.Symb_list (concrete_symbolic_list ctx es)
++      in
++      replace_conc_info_e symb ~constraints array |> make_ok
+     | EAssert e' ->
+       (* TODO CONC REU *)
+       propagate_generic_error (evaluate_expr ctx lang e') []
+@@ -2459,7 +2703,7 @@ let make_list_bounds ctx (input_marks : conc_info mark StructField.Map.t) =
+     match SymbExpr.as_list symb_expr with
+     | None -> acc
+     | Some list ->
+-      let key = nested_list_key list.len in
++      let key = list.id in
+       if Hashtbl.mem seen key then acc
+       else begin
+         Hashtbl.add seen key ();
+@@ -3130,7 +3374,7 @@ struct
+       in
+       let list_mark =
+         map_conc_mark
+-          ~symb_expr_f:(fun _ -> SymbExpr.mk_list list.len symbols)
++          ~symb_expr_f:(fun _ -> SymbExpr.Symb_list { list with elts = symbols })
+           mark
+       in
+       Expr.earray elements list_mark
+@@ -3568,6 +3812,7 @@ let interpret_program_concolic
+ 
+         let s_eval = Stats.start_step "eval" in
+         Hashtbl.clear ctx.ctx_lengths_demanded;
++        Hashtbl.clear ctx.ctx_list_length_guards;
+         let path_coverage = ref Coverage.empty in
+         if code_coverage then
+           ctx.ctx_on_expr := (fun e ->

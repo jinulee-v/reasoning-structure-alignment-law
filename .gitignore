@@ -6,14 +6,20 @@ __pycache__/
 .ruff_cache/
 
 # Userspace toolchain: micromamba envs (swipl, ocaml) and the opam switch that
-# carries Catala 1.2.  Rebuilt by `sara_scripts/install_toolchain.sh`.
+# carries Catala 1.2.  Rebuilt by `install_toolchain.sh`.
 /.toolchain/
 
-# Generated in its entirety by `python3 sara_scripts/generate_test_cases.py`;
-# only DEVIATIONS.md and the reports under it are written by hand.
-/sara_port/
-/sara_catala/_build/
-/sara_catala/_targets/
+# Everything generated lives here: the two differential-testing ports, written
+# by `python3 prolog_to_catala/<port>/generate_test_cases.py`, and the two
+# concolic trees, written by `python3 cutecat_scripts/generate_dataset.py` ---
+# build directories, the raw capture of CUTECat's output and the JSONL alike.
+# `rm -rf .port` is always safe: every script here puts its own back.
+/.port/
+
+# The compiled Catala modules of either port; the sources are tracked.
+/data/catala_gold/*/_build/
+/data/catala_gold/*/_targets/
+/data/catala_gold/*/cases/
 
 # Editor and OS files
 .idea/
@@ -22,7 +28,7 @@ __pycache__/
 *~
 .DS_Store
 
-# Snapshots of sara_catala/ taken before git existed here.  Kept on disk,
+# Snapshots of the SARA port taken before git existed here.  Kept on disk,
 # out of history: git is the backup now.
 /sara_catala_backup/
 

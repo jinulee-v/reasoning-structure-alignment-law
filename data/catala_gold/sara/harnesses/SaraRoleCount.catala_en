@@ -1,0 +1,29 @@
+# SARA role multiplicity over a symbolic list
+
+> Module SaraRoleCount
+
+> Using SaraWorld as W
+> Using SaraIncome as I
+> Using Section152 as S152
+
+This concolic harness adds no rule of its own. It exposes
+`SaraIncome.role_count`, which implements the multiplicity of an entity in an
+event-role list, and `Section152.dates_or`, whose empty/non-empty choice is a
+real SARA branch, through a scope so CUTECat can supply bounded symbolic lists.
+
+```catala-metadata
+declaration scope RoleCount:
+  input roles content list of W.Entity
+  input sought content W.Entity
+  input dates content list of date
+  input fallback content date
+  output count content integer
+  output selected_date_count content integer
+```
+
+```catala
+scope RoleCount:
+  definition count equals I.role_count of roles, sought
+  definition selected_date_count equals
+    number of (S152.dates_or of dates, fallback)
+```

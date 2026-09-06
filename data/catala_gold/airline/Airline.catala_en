@@ -1,0 +1,698 @@
+# Airline checked-bag policy
+
+> Module Airline
+
+> Using AirlineWorld as W
+
+Port of `data/_raw/deonticbench/airline/statutes/section1_non_textual` --- the
+published American Airlines bag-fee policy, which is DeonticBench's *airline*
+statute. Written from the statute text; the Prolog is the differential oracle,
+never the source.
+
+Unlike SARA, DeonticBench ships **no shared formalization**: each of the 300
+cases carries its own self-contained Prolog program, statute rules and case
+facts together. So the port is validated in two steps rather than one --- a
+single generic Prolog oracle is checked against all 300 per-case programs, and
+this Catala is then checked against that oracle over the seed worlds and over
+fuzzed ones. See `deontic_scripts/README.md`.
+
+## Carry-on bags
+
+  "You're allowed 1 carry-on bag and 1 personal item in all cabins." The
+  carry-on "cannot exceed 22 x 14 x 9 inches"; the personal item's
+  "dimensions should not exceed 18 x 14 x 8 inches".
+
+The corpus's Prolog reads this as a *property of a bag*, not as an allowance of
+one: every item within the carry-on box is left uncharged, and the personal
+item is never modelled at all. Measured over all 300 cases, exactly **one**
+item fits the box in each, so no case can tell the two readings apart, and the
+45 items that also fit the personal-item box are that same item every time.
+The port follows the Prolog, which is the bug-compatible choice; the statute's
+contrary reading is recorded in `deontic_scripts/DEVIATIONS.md` A1.
+
+```catala-metadata
+## An ordinary bag must fit the box --- "cannot exceed 22 x 14 x 9 inches".
+## A soft-sided garment bag has its own limit and it is a *sum*, not a box:
+## "cannot exceed 51 inches / 130 cm (length + width + height)".  The exempt
+## kinds are not carry-on at all; `item_exempt` handles them.
+declaration carry_on_fits content boolean
+  depends on it content W.Item
+  equals
+    match it.kind with pattern
+    -- OrdinaryBag: it.length <= 22 and it.width <= 14 and it.height <= 9
+    -- SoftSidedGarmentBag: (W.size_sum of it) <= 51
+    -- DiaperBag: false
+    -- BreastPump: false
+    -- BreastMilkCooler: false
+    -- ChildSafetySeat: false
+    -- Stroller: false
+    -- MedicalOrMobilityDevice: false
+```
+
+  "These don't count as your personal item or carry-on: diaper bags (1 per
+  child), breast pump, small soft-sided cooler of breast milk, child safety
+  seats, strollers and medical or mobility devices."
+
+Not counting as the carry-on is not the same as being free: the statute puts
+these outside the carry-on allowance, and says nothing about charging for them,
+so the port carries them at no fee and does not count them as checked bags
+either. The diaper bag is the one with a number attached, and the number is per
+child, so it is the only exempt kind whose *position* among the items matters.
+
+```catala-metadata
+## The diaper bag is allowanced rather than exempt --- one per child --- so it
+## is false here and handled by position in `Trip.checked`.
+## Which diaper bag this is, counting from the first: 1 for the first, 2 for
+## the second.  "Diaper bags (1 per child)" is the only allowance in the
+## carry-on section with a number, and the number is not per bag.
+declaration diaper_rank content integer
+  depends on t content W.Itinerary, pos content integer
+  equals
+    number of
+      (list of j among (List.sequence of 1, (pos + 1))
+       such that
+         (match (List.nth_element of t.items, j) with pattern
+          -- Absent: false
+          -- Present content it: it.kind = W.ItemKind.DiaperBag))
+
+declaration item_exempt content boolean
+  depends on it content W.Item
+  equals
+    match it.kind with pattern
+    -- BreastPump: true
+    -- BreastMilkCooler: true
+    -- ChildSafetySeat: true
+    -- Stroller: true
+    -- MedicalOrMobilityDevice: true
+    -- DiaperBag: false
+    -- OrdinaryBag: false
+    -- SoftSidedGarmentBag: false
+```
+
+## Checked bags
+
+The four fee tables are keyed by a *position* --- first, second, third,
+fourth-and-beyond --- and a cabin column. Main Plus is not a column: the
+footnote makes it Main Cabin plus one extra free bag, so it reads the Main
+Cabin column and takes its allowance separately, below.
+
+```catala-metadata
+declaration fee_cabin content W.Cabin
+  depends on t content W.Itinerary
+  equals
+    match t.cabin with pattern
+    -- MainPlus: W.Cabin.MainCabin
+    -- BasicEconomy: W.Cabin.BasicEconomy
+    -- MainCabin: W.Cabin.MainCabin
+    -- PremiumEconomy: W.Cabin.PremiumEconomy
+    -- Business: W.Cabin.Business
+    -- First: W.Cabin.First
+
+## The cabins that pay a first- or second-bag fee at all. Premium Economy,
+## Business and First are $0 in every row of both tables; the rows where
+## Premium Economy is written "---" (not offered) are read as $0 too, which no
+## case reaches --- see DEVIATIONS A2.
+declaration pays_early_bag_fee content boolean
+  depends on t content W.Itinerary
+  equals
+    match (fee_cabin of t) with pattern
+    -- BasicEconomy: true
+    -- MainCabin: true
+    -- PremiumEconomy: false
+    -- Business: false
+    -- First: false
+    -- MainPlus: false
+
+declaration us_pr content list of W.Country
+  equals [W.Country.UnitedStates; W.Country.PuertoRico; W.Country.USVirginIslands]
+
+declaration us_pr_canada content list of W.Country
+  equals [W.Country.UnitedStates; W.Country.PuertoRico;
+          W.Country.USVirginIslands; W.Country.Canada]
+
+## "Between Guyana, Suriname and U.S., Puerto Rico, U.S. Virgin Islands,
+## Canada, Mexico, Caribbean ..., Central America ..." --- its own row in both
+## the First and Second Bag tables.
+declaration guyana_suriname content list of W.Country
+  equals [W.Country.Guyana; W.Country.Suriname]
+
+## The Caribbean countries the corpus reaches. Both are named as exceptions in
+## nearly every row that mentions the Caribbean, so they are only ever used
+## through the explicit Cuba and Haiti tests below.
+declaration caribbean content list of W.Country
+  equals [W.Country.Cuba; W.Country.Haiti]
+
+declaration andean content list of W.Country
+  equals [W.Country.Colombia; W.Country.Ecuador; W.Country.Peru]
+
+declaration other_south_america content list of W.Country
+  equals [W.Country.Argentina; W.Country.Brazil]
+
+declaration south_america content list of W.Country
+  equals [W.Country.Colombia; W.Country.Ecuador; W.Country.Peru;
+          W.Country.Argentina; W.Country.Brazil]
+
+declaration europe_israel_qatar content list of W.Country
+  equals [W.Country.Europe; W.Country.Israel; W.Country.Qatar]
+
+## "To or from India, China, Japan, South Korea, Hong Kong" --- the row that
+## carries the $450 overweight cell, which Australia and New Zealand do not.
+declaration asia content list of W.Country
+  equals [W.Country.India; W.Country.China; W.Country.Japan;
+          W.Country.SouthKorea; W.Country.HongKong]
+
+declaration australasia content list of W.Country
+  equals [W.Country.Australia; W.Country.NewZealand]
+
+## "To or from India, China, Japan, South Korea, Hong Kong, Australia and New
+## Zealand" --- the row of the First, Second, Third and Fourth Bag tables.
+declaration long_haul_pacific content list of W.Country
+  equals [W.Country.India; W.Country.China; W.Country.Japan;
+          W.Country.SouthKorea; W.Country.HongKong;
+          W.Country.Australia; W.Country.NewZealand]
+
+declaration to_cuba content boolean
+  depends on t content W.Itinerary
+  equals (W.destination_country of t) = W.Country.Cuba
+
+declaration from_cuba content boolean
+  depends on t content W.Itinerary
+  equals (W.origin_country of t) = W.Country.Cuba
+```
+
+### First Bag
+
+The table's rows are tried in the order the statute prints them, so that a
+route matching two rows takes the earlier one. Only the Basic Economy and Main
+Cabin columns are ever non-zero.
+
+```catala-metadata
+declaration first_bag_fee content money
+  depends on t content W.Itinerary
+  equals
+    if not (pays_early_bag_fee of t) then $0
+    else
+    # Within and between U.S., Puerto Rico and U.S. Virgin Islands
+    if W.within of t, us_pr then $40
+    # Within and between Canada and U.S., Puerto Rico and U.S. Virgin Islands
+    else if W.within of t, us_pr_canada then $35
+    # From ... to Cuba / From Cuba to ...
+    else if to_cuba of t then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $35
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    else if from_cuba of t then $0
+    # To or from Haiti
+    else if W.touches of t, [W.Country.Haiti] then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $35
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    # Between Mexico, Caribbean (excluding Cuba/Haiti), Central America
+    # (excluding Panama) and U.S., Puerto Rico, U.S. Virgin Islands, Canada
+    else if W.touches of t, [W.Country.Mexico] then $35
+    # Between Guyana, Suriname and U.S., Puerto Rico, USVI, Canada, Mexico,
+    # Caribbean, Central America
+    else if W.touches of t, guyana_suriname then $35
+    # Between Panama, Colombia, Ecuador, Peru and ...
+    else if W.touches of t, ([W.Country.Panama] ++ andean) then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $45
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    # Between South America (excluding Colombia, Ecuador, Peru, Guyana,
+    # Suriname) and ...
+    else if W.touches of t, other_south_america then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $60
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    # Between Israel / Qatar / Europe and ...
+    else if W.touches of t, europe_israel_qatar then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $75
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    # To or from India, China, Japan, South Korea, Hong Kong, Australia and
+    # New Zealand
+    else if W.touches of t, long_haul_pacific then
+      (match (fee_cabin of t) with pattern
+       -- BasicEconomy: $75
+       -- MainCabin: $0
+       -- PremiumEconomy: $0 -- Business: $0 -- First: $0 -- MainPlus: $0)
+    else $0
+```
+
+### Second Bag
+
+```catala-metadata
+declaration second_bag_fee content money
+  depends on t content W.Itinerary
+  equals
+    if not (pays_early_bag_fee of t) then $0
+    # Within and between U.S., Canada, Puerto Rico and U.S. Virgin Islands
+    else if W.within of t, us_pr_canada then $45
+    # Between Honduras and U.S., Puerto Rico, USVI, Canada, Mexico, Caribbean
+    # (excluding Cuba/Haiti), Central America (excluding Panama)
+    else if W.touches of t, [W.Country.Honduras] then $45
+    # Between Haiti and ...
+    else if W.touches of t, [W.Country.Haiti] then $65
+    # From all regions to Cuba / From Cuba to all regions
+    else if to_cuba of t then $150
+    else if from_cuba of t then $0
+    # Between Mexico, Caribbean (excluding Cuba/Haiti) or Central America
+    # (excluding Panama and Honduras) and U.S., Puerto Rico, USVI, Canada
+    else if W.touches of t, [W.Country.Mexico] then $45
+    # Between Panama and ...
+    else if W.touches of t, [W.Country.Panama] then $100
+    # Between Guyana, Suriname and ...
+    else if W.touches of t, guyana_suriname then $45
+    # Between South America (excluding Guyana, Suriname) and ...
+    else if W.touches of t, south_america then $100
+    # Between Europe, Israel, Qatar and ...
+    else if W.touches of t, europe_israel_qatar then $100
+    # To or from India, China, Japan, South Korea, Hong Kong, Australia and
+    # New Zealand
+    else if W.touches of t, long_haul_pacific then $100
+    else $0
+```
+
+### Third Bag
+
+Unlike the first two tables, this one charges every cabin. First is $0
+everywhere except the domestic row.
+
+```catala-metadata
+declaration third_bag_fee content money
+  depends on t content W.Itinerary
+  equals
+    if W.within of t, us_pr_canada then $150
+    else if (fee_cabin of t) = W.Cabin.First then $0
+    else $200
+```
+
+### Fourth Bag +
+
+  "$200" in every cell of every row.
+
+```catala-metadata
+declaration fourth_bag_fee content money
+  depends on t content W.Itinerary
+  equals $200
+
+## The published fee for the checked bag in position `pos`, before any
+## complimentary allowance is applied.
+declaration table_fee content money
+  depends on t content W.Itinerary, pos content integer
+  equals
+    if pos = 1 then first_bag_fee of t
+    else if pos = 2 then second_bag_fee of t
+    else if pos = 3 then third_bag_fee of t
+    else fourth_bag_fee of t
+```
+
+### Complimentary Bags
+
+  "^Main Plus includes 1 extra free checked bag in addition to the Main Cabin
+  allowance (max of 2)."
+
+The Main Cabin allowance is not stated as a number anywhere; it is read off the
+tables, as the number of leading positions the Main Cabin column already prices
+at $0. Domestically that is none, so Main Plus gets one free bag; on every
+route where the Main Cabin first bag is free it is one, so Main Plus gets two
+--- which is exactly where the footnote's cap binds.
+
+Only the *count* moves. A free bag does not renumber the ones behind it: in
+`airline_cases_complexity_0_airline_cases_12` a Main Plus passenger with four
+checked bags pays $0 + $45 + $150 + $200, not $0 + $40 + $45 + $150.
+
+```catala-metadata
+declaration main_cabin_allowance content integer
+  depends on t content W.Itinerary
+  equals
+    if (first_bag_fee of t) != $0 then 0
+    else if (second_bag_fee of t) != $0 then 1
+    else 2
+
+declaration main_plus_allowance content integer
+  depends on t content W.Itinerary
+  equals
+    match t.cabin with pattern
+    -- MainPlus:
+        (if (main_cabin_allowance of t) + 1 > 2 then 2
+         else (main_cabin_allowance of t) + 1)
+    -- BasicEconomy: 0
+    -- MainCabin: 0
+    -- PremiumEconomy: 0
+    -- Business: 0
+    -- First: 0
+```
+
+### Complimentary Bags, the rest of it
+
+  "In some cases, you won't have to pay the fees for up to 3 bags ... If you
+  qualify for complimentary bags based on your AAdvantage or oneworld status,
+  the benefits are based on your highest status level at time of ticketing or
+  check-in."
+
+This is the part of the statute **no case in the corpus can state and no
+reference program formalizes** --- 0 of 300, measured by
+`check_shipped_rules.py`, because a case says only a cabin, a route, some boxes
+and a price. It is written here anyway, on the reading below, and it is the one
+part of the port with no oracle behind it of any kind: see DEVIATIONS C1.
+Everything else in this file answers to something --- the 300 reference
+programs, the rules recovered from them, RuleArena. This section answers only
+to the reading below, and the differential suite can check it for consistency
+between the two systems and for nothing more.
+
+Two readings had to be chosen, and the statute settles both:
+
+- **The grounds do not stack.** "the benefits are based on your **highest**
+  status level" --- a passenger who is Executive Platinum *and* on military
+  orders gets the better of 3 and 5, not 8. So the allowance is a maximum.
+- **Ticketing and check-in resolve to the higher.** The statute's two bullets
+  say what to do when they differ, and both come to the same thing: higher at
+  ticketing, show the receipt and get it; lower at ticketing, current benefits
+  apply. Either way the better of the two is what the passenger receives.
+
+```catala-metadata
+declaration status_rank content integer
+  depends on s content W.EliteStatus
+  equals
+    match s with pattern
+    -- NoStatus: 0
+    -- Gold: 1
+    -- Platinum: 2
+    -- PlatinumPro: 3
+    -- ExecutivePlatinum: 4
+
+declaration effective_status content W.EliteStatus
+  depends on t content W.Itinerary
+  equals
+    if (status_rank of t.status_at_ticketing) >= (status_rank of t.status_at_checkin)
+    then t.status_at_ticketing else t.status_at_checkin
+
+## "1st checked bag is complimentary for AAdvantage Gold status, oneworld
+## Ruby"; "1st and 2nd for AAdvantage Platinum, oneworld Sapphire";
+## "1st, 2nd and 3rd for AAdvantage Executive Platinum, AAdvantage Platinum
+## Pro, oneworld Emerald".
+declaration status_free_bags content integer
+  depends on s content W.EliteStatus
+  equals
+    match s with pattern
+    -- NoStatus: 0
+    -- Gold: 1
+    -- Platinum: 2
+    -- PlatinumPro: 3
+    -- ExecutivePlatinum: 3
+
+## "Active U.S. military and / or dependents with ID traveling on orders
+## (1st - 5th bags free of charge)"; "Active U.S. military with ID on personal
+## travel" sits in the 1st--3rd tier.
+declaration military_free_bags content integer
+  depends on m content W.MilitaryStatus
+  equals
+    match m with pattern
+    -- NotMilitary: 0
+    -- OnOrders: 5
+    -- PersonalTravel: 3
+
+## "Confirmed Domestic First customers, Confirmed Business customers,
+## Confirmed Premium Economy customers" get the 1st and 2nd; "Confirmed
+## Flagship First and Flagship Business Plus customers" get the 1st, 2nd and
+## 3rd. The first of those is **redundant with the fee tables**, which already
+## price those cabins' first two bags at $0 --- encoded anyway, because the
+## statute states it in its own section and a reader should find it here.
+declaration cabin_free_bags content integer
+  depends on t content W.Itinerary
+  equals
+    match t.cabin with pattern
+    -- First: (if t.flagship then 3 else 2)
+    -- Business: (if t.flagship then 3 else 2)
+    -- PremiumEconomy: 2
+    -- BasicEconomy: 0
+    -- MainCabin: 0
+    -- MainPlus: 0
+
+## "or when traveling to these destinations (excluding Basic Economy)".
+## Chile, El Salvador, Paraguay and Uruguay are in the statute's list and in no
+## case's vocabulary; "Transatlantic" is read as Europe.
+declaration complimentary_first_destinations content list of W.Country
+  equals [W.Country.Argentina; W.Country.Australia; W.Country.Brazil;
+          W.Country.China; W.Country.Colombia; W.Country.Cuba;
+          W.Country.Ecuador; W.Country.Haiti; W.Country.HongKong;
+          W.Country.India; W.Country.Israel; W.Country.Japan;
+          W.Country.NewZealand; W.Country.Panama; W.Country.Peru;
+          W.Country.Qatar; W.Country.SouthKorea; W.Country.Europe]
+
+declaration destination_free_bags content integer
+  depends on t content W.Itinerary
+  equals
+    if (fee_cabin of t) = W.Cabin.BasicEconomy then 0
+    else if complimentary_first_destinations contains
+            (W.destination_country of t) then 1
+    else 0
+
+## "Eligible AAdvantage Aviator and Citi / AAdvantage cardmembers (on domestic
+## American Airlines operated itineraries)" --- the 1st bag, domestic only.
+declaration cardmember_free_bags content integer
+  depends on t content W.Itinerary
+  equals if t.cardmember and (W.within of t, us_pr_canada) then 1 else 0
+
+## The allowance the passenger actually receives: the best of the grounds, not
+## their sum.
+declaration free_checked_bags content integer
+  depends on t content W.Itinerary
+  equals
+    combine all g among
+      [main_plus_allowance of t;
+       status_free_bags of (effective_status of t);
+       military_free_bags of t.military;
+       cabin_free_bags of t;
+       destination_free_bags of t;
+       cardmember_free_bags of t]
+      in best initially 0
+      with (if g > best then g else best)
+
+## The fee actually charged for position `pos`: what the table prices it at,
+## waived when the position falls inside the allowance.
+##
+## Stated in that order deliberately. Written the other way round --- $0 when
+## the position is inside the allowance, the table otherwise --- it computes
+## the same thing, but the allowance *shadows* the table, because
+## `cabin_free_bags` grants First, Business and Premium Economy two bags that
+## the tables already price at $0. The oracle's branch coverage caught it:
+## those tables' clauses stopped being executed for those cabins entirely.
+declaration position_fee content money
+  depends on t content W.Itinerary, pos content integer
+  equals
+    if pos <= (free_checked_bags of t) then $0 else table_fee of t, pos
+```
+
+## Weight and Size
+
+  "For all regions, except to / from Australia or New Zealand ... Weight:
+  50 lbs. For First / Business, weight is 70 lbs for complimentary bags and
+  50 lbs for excess charged bags. For all confirmed customers on flights to /
+  from Australia or New Zealand: 70 lbs for complimentary bags and 50 lbs for
+  excess charged bags."
+
+So the 70 lb allowance attaches to a bag that is *complimentary* --- one whose
+position is priced at $0 --- and only in First, Business, or on an Australia /
+New Zealand route. Everywhere else the allowance is 50 lbs for every bag.
+
+```catala-metadata
+declaration complimentary_weight_allowance content integer
+  depends on t content W.Itinerary
+  equals
+    if (fee_cabin of t) = W.Cabin.First
+       or (fee_cabin of t) = W.Cabin.Business
+       or (W.touches of t, australasia)
+    then 70 else 50
+```
+
+### Oversize Bags
+
+```catala-metadata
+declaration oversize_fee content money
+  depends on t content W.Itinerary, dim content integer
+  equals
+    if dim <= 62 then $0
+    else if dim <= 65 then $30
+    # Panama / South America (except Guyana / Suriname), and Europe, Israel,
+    # Qatar, are the two $150 rows; every other row is $200.
+    else if W.touches of t, ([W.Country.Panama] ++ south_america ++ europe_israel_qatar)
+    then $150
+    else $200
+```
+
+### Overweight Bags
+
+  "More than one fee may apply per bag that exceeds standard dimensions for
+  both weight and size. The higher fee between oversize and overweight
+  applies, in addition to the checked bag fee."
+
+The three weight bands are $30 (to 53 lbs), $100 (to 70), and $200 (to 100),
+with two rows departing from them: to / from Cuba is $200 in the middle band,
+and India / China / Japan / South Korea / Hong Kong is $450 in the top one.
+
+Europe / Israel / Qatar and Australia / New Zealand read "Not accepted" in the
+top band, which is not a fee at all, and above 100 lbs the table simply stops.
+This function answers anyway, because it has to answer *something*, and what
+carries the statute's meaning is `bag_accepted` below, false in exactly those
+cases.
+
+What it answers there is not arbitrary. The top band is carried upward rather
+than capped, which is what `compute_answer.py` does in RuleArena --- the
+independently written reference this corpus descends from, and the only
+implementation that speaks where the statute is silent. A cross-check over the
+fuzzed suite found the two worlds that distinguish the two readings, both with
+a 101 lb bag. See DEVIATIONS A3.
+
+```catala-metadata
+declaration overweight_fee content money
+  depends on t content W.Itinerary, weight content integer, allowance content integer
+  equals
+    if weight <= allowance then $0
+    else if weight <= 53 then $30
+    else if weight <= 70 then
+      (if (to_cuba of t) or (from_cuba of t) then $200 else $100)
+    else (if W.touches of t, asia then $450 else $200)
+
+## A bag the policy will not carry at all: over 115 in, over 100 lbs, or in the
+## 70--100 lb band on a route whose cell reads "Not accepted". No case in the
+## corpus reaches any of these --- weights run 5--100 lbs and sizes 35--115 in,
+## and no Europe or Australasia case has a bag over 70 lbs --- so this is the
+## port's own reading and the oracle is written to match it. DEVIATIONS A3.
+declaration bag_accepted content boolean
+  depends on t content W.Itinerary, it content W.Item
+  equals
+    (W.size_sum of it) <= 115
+    and it.weight <= 100
+    and not (it.weight > 70
+             and ((W.touches of t, europe_israel_qatar)
+                  or (W.touches of t, australasia)))
+```
+
+## The charge for one bag, and for the trip
+
+A bag's excess charge is the higher of its oversize and overweight fees, and
+the overweight fee depends on whether this bag is one of the complimentary
+ones. Since the passenger may say which bags those are, and the statute gives
+no rule for choosing, the policy is read the way the corpus's Prolog reads it:
+**the allocation that costs the passenger least.**
+
+That minimisation needs no search. The base fees do not depend on the
+allocation --- a complimentary bag pays $0 wherever it sits --- so the only
+thing to choose is which bags get the 70 lb allowance, and the saving each bag
+would make is independent of the others. Taking the largest savings is
+therefore optimal, and the port ranks the bags rather than enumerating the
+allocations, which is what `airline_cases_complexity_0_airline_cases_14` does
+with `choose_two/3` and `min_list/2` over all pairs.
+
+```catala-metadata
+declaration structure Bag:
+  data position content integer
+  data item content W.Item
+  ## the excess charge if this bag is charged (50 lb allowance)
+  data charged content money
+  ## the excess charge if this bag is complimentary
+  data complimentary content money
+
+declaration bag_saving content money
+  depends on b content Bag
+  equals b.charged - b.complimentary
+```
+
+```catala-metadata
+declaration scope Trip:
+  input itinerary content W.Itinerary
+  ## The items that are not carry-on, in the order the case lists them.
+  internal checked content list of W.Item
+  internal bags content list of Bag
+  ## How many of the checked bags are priced at $0.
+  internal complimentary_count content integer
+  output base_fees content money
+  output excess_fees content money
+  ## False when some bag exceeds what the policy will carry.
+  output accepted content boolean
+  output total_cost content money
+```
+
+```catala
+scope Trip:
+  ## Everything that is neither exempt, nor a diaper bag inside the one-per-
+  ## child allowance, nor within a carry-on limit.  The diaper-bag allowance is
+  ## the only rule here that has to count, so it is done by position: the first
+  ## `children` diaper bags are free and any beyond them are checked.
+  definition checked equals
+    map each i among
+      (list of j among (List.sequence of 1, ((number of itinerary.items) + 1))
+       such that
+         (match (List.nth_element of itinerary.items, j) with pattern
+          -- Absent: false
+          -- Present content it:
+              not (item_exempt of it)
+              and not (carry_on_fits of it)
+              and not (it.kind = W.ItemKind.DiaperBag
+                       and (diaper_rank of itinerary, j) <= itinerary.children)))
+    to (match (List.nth_element of itinerary.items, i) with pattern
+        -- Absent: W.Item { -- kind: W.ItemKind.OrdinaryBag
+                            -- length: 0 -- width: 0 -- height: 0 -- weight: 0 }
+        -- Present content it: it)
+
+  definition complimentary_count equals
+    number of (list of pos among
+                 (List.sequence of 1, ((number of checked) + 1))
+               such that (position_fee of itinerary, pos) = $0)
+
+  definition base_fees equals
+    Money.sum of
+      (map each pos among (List.sequence of 1, ((number of checked) + 1))
+       to (position_fee of itinerary, pos))
+
+  definition bags equals
+    map each pos among (List.sequence of 1, ((number of checked) + 1))
+    to (match (List.nth_element of checked, pos) with pattern
+        -- Absent:
+             Bag { -- position: pos
+                   -- item: W.Item { -- kind: W.ItemKind.OrdinaryBag
+                                     -- length: 0 -- width: 0
+                                     -- height: 0 -- weight: 0 }
+                   -- charged: $0 -- complimentary: $0 }
+        -- Present content it:
+             Bag { -- position: pos
+                   -- item: it
+                   -- charged:
+                        (if (oversize_fee of itinerary, (W.size_sum of it))
+                            > (overweight_fee of itinerary, it.weight, 50)
+                         then oversize_fee of itinerary, (W.size_sum of it)
+                         else overweight_fee of itinerary, it.weight, 50)
+                   -- complimentary:
+                        (if (oversize_fee of itinerary, (W.size_sum of it))
+                            > (overweight_fee of itinerary, it.weight,
+                               (complimentary_weight_allowance of itinerary))
+                         then oversize_fee of itinerary, (W.size_sum of it)
+                         else overweight_fee of itinerary, it.weight,
+                              (complimentary_weight_allowance of itinerary))})
+
+  ## A bag takes the complimentary allowance when fewer than
+  ## `complimentary_count` bags save strictly more by taking it --- ties broken
+  ## by position, which cannot change the total because only the multiset of
+  ## savings is summed.
+  definition excess_fees equals
+    Money.sum of
+      (map each b among bags
+       to (if (number of (list of o among bags
+                          such that (bag_saving of o) > (bag_saving of b)
+                                    or ((bag_saving of o) = (bag_saving of b)
+                                        and o.position < b.position)))
+              < complimentary_count
+           then b.complimentary else b.charged))
+
+  definition accepted equals
+    for all b among bags we have bag_accepted of itinerary, b.item
+
+  definition total_cost equals itinerary.ticket + base_fees + excess_fees
+```

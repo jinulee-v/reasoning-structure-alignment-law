@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_1_airline_cases_98",
+ "domain": "airline",
+ "label": "2364",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Daniel is a Premium Economy Class passenger flying from Charlotte to Panama City with the following items: 1. A backpack: 21 x 14 x 8 inches, 7 lbs; 2. A backpack: 50 x 33 x 24 inches, 51 lbs; 3. A backpack: 37 x 15 x 12 inches, 87 lbs; 4. A luggage box: 34 x 19 x 12 inches, 74 lbs; 5. A backpack: 34 x 17 x 12 inches, 95 lbs; 6. A backpack: 38 x 25 x 13 inches, 96 lbs; 7. A luggage box: 34 x 20 x 10 inches, 54 lbs; 8. A backpack: 47 x 29 x 20 inches, 52 lbs; Daniel's flight ticket is $164.",
+ "hard": false
+}

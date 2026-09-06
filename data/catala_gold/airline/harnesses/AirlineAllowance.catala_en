@@ -1,0 +1,58 @@
+# The complimentary-bag ladders
+
+> Module AirlineAllowance
+
+> Using AirlineWorld as W
+> Using Airline as A
+
+A concolic harness, not part of the port.
+
+The Complimentary Bags section grades an allowance by elite status and by
+military status, and both ladders are functions of one enumeration.  Neither
+touches an itinerary, so both are encodable, and between them CUTECat has to
+find every rung: five statuses and three military tiers.
+
+`effective_status` --- "the benefits are based on your highest status level at
+time of ticketing or check-in" --- is the one rule here that takes a whole
+itinerary, so its comparison is restated over the two statuses directly rather
+than called.  This is the one place in this file where the harness computes
+something instead of calling the port, and it is a two-line rule that
+`Airline.effective_status` states the same way.
+
+```catala-metadata
+declaration scope Allowance:
+  input status_at_ticketing content W.EliteStatus
+  input status_at_checkin content W.EliteStatus
+  input military content W.MilitaryStatus
+  output ticketing_rank content integer
+  output checkin_rank content integer
+  ## The better of the two, per "highest status level at time of ticketing or
+  ## check-in".
+  output effective_rank content integer
+  ## Free bags on the elite ladder, at the effective status.
+  output status_bags content integer
+  ## "1st - 5th bags free of charge" on orders; 1st--3rd on personal travel.
+  output military_bags content integer
+  ## The allowance the passenger receives on these two grounds: the best of
+  ## them, not their sum.
+  output free_bags content integer
+```
+
+```catala
+scope Allowance:
+  definition ticketing_rank equals A.status_rank of status_at_ticketing
+  definition checkin_rank equals A.status_rank of status_at_checkin
+
+  definition effective_rank equals
+    if ticketing_rank >= checkin_rank then ticketing_rank else checkin_rank
+
+  definition status_bags equals
+    if ticketing_rank >= checkin_rank
+    then A.status_free_bags of status_at_ticketing
+    else A.status_free_bags of status_at_checkin
+
+  definition military_bags equals A.military_free_bags of military
+
+  definition free_bags equals
+    if status_bags >= military_bags then status_bags else military_bags
+```

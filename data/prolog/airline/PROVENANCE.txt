@@ -1,0 +1,26 @@
+DeonticBench (Dou et al. 2026), *airline* domain.
+
+  https://huggingface.co/datasets/gydou/DeonticBench
+  revision 805fb0529d7ae295679c5c1730765ec07d2c20ac
+  https://github.com/guangyaodou/DeonticBench   (code; the statute text)
+
+Fetched 2026-09-01.  The `whole` split is the corpus (300 cases); `hard` is a
+subset of 80, flagged per case in INDEX.json rather than stored separately.
+Files under airline/ are verbatim from those parquets; never edit them.
+
+  airline/cases/<id>.pl      the case's own reference Prolog program
+  airline/meta/<id>.json     text, question, label, hard flag
+  airline/statutes/          section1_non_textual, identical across all 300
+                             cases and stored once
+
+DeonticBench's other four domains are not here.  sara_numeric and sara_binary
+are SARA, already ported under sara_catala/.  housing was not requested.
+uscis-aao was downloaded, measured and dropped: its 242 reference programs
+share no formalization to port --- the mean pairwise Jaccard overlap of their
+predicate vocabularies is 0.021 and 94.4% of the 6,080 predicates they use
+appear in exactly one case --- so there is no statute there to write once and
+test against, only 242 unrelated programs.  See deontic_scripts/README.md.
+
+sha256:
+c3ab7ffc403929dc3c5ac3851c784656f0d8b93d0b4e573661928a598361c6bb  airline/whole-00000-of-00001.parquet  (413921 bytes)
+e45cad6c5f1719baaf52fde3aaa6daf626dbec4cd3ad6a731d2a868c38db85e8  airline/hard-00000-of-00001.parquet  (122780 bytes)

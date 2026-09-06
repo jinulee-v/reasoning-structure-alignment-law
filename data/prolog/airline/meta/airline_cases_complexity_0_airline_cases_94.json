@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_94",
+ "domain": "airline",
+ "label": "599",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Emily is a Basic Economy Class passenger flying from Charlotte to Havana with the following items: 1. A backpack: 21 x 13 x 6 inches, 7 lbs; 2. A backpack: 37 x 15 x 12 inches, 53 lbs; 3. A backpack: 34 x 16 x 13 inches, 61 lbs; Emily's flight ticket is $184.",
+ "hard": false
+}

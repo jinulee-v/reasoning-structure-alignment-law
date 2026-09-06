@@ -1,0 +1,198 @@
+--- a/compiler/concolic/interpreter.ml
++++ b/compiler/concolic/interpreter.ml
+@@ -220,6 +220,10 @@
+      accessor for that field. *)
+   ctx_lengths_demanded : (string, unit) Hashtbl.t;
+   (* Avoid emitting the same lazy length decision twice in one execution. *)
++  ctx_on_expr : (conc_expr -> unit) ref;
++  (* Optional instrumentation installed only around concrete path evaluation.
++     Keeping it disabled during simplification avoids crediting expressions
++     that merely become part of a closure. *)
+ }
+ 
+ (** adds the mapping between the Catala struct [s] and the corresponding Z3
+@@ -561,6 +565,7 @@
+     ctx_max_list_length = max_list_length;
+     ctx_nested_lists = Hashtbl.create 31;
+     ctx_lengths_demanded = Hashtbl.create 31;
++    ctx_on_expr = ref (fun _ -> ());
+   }
+ 
+ let init_context (ctx : context) : context =
+@@ -1559,6 +1564,7 @@
+ let rec evaluate_expr :
+     context -> Global.backend_lang -> conc_expr -> conc_result =
+  fun ctx lang e ->
++  !(ctx.ctx_on_expr) e;
+   Message.debug "@[<v 0>eval %a@,symbolic: %a@]" (Print.expr ()) e
+     SymbExpr.formatter (get_symb_expr e);
+   (*  Message.debug "eval symbolic: %a"
+@@ -2443,12 +2449,12 @@
+ (** Do a "pre-evaluation" of the program. It compiles the target scope to a
+     function that takes the input struct of the scope and returns its output
+     struct *)
+-let simplify_program ctx (p : (dcalc, 'm) gexpr program) s : conc_expr =
++let simplify_program ?on_expr ctx (p : (dcalc, 'm) gexpr program) s : conc_expr =
+   Message.debug "[CONC] Make program expression concolic";
+   let e = Expr.unbox (Program.to_expr p s) in
+ 
+   Message.debug "[CONC] Pre-compute program concretely";
+-  let result = Concrete.evaluate_expr ctx.ctx_decl p.lang e in
++  let result = Concrete.evaluate_expr ?on_expr ctx.ctx_decl p.lang e in
+   init_conc_expr result
+ 
+ (** Evaluate pre-compiled scope [e] with its input struct [name] populated with
+@@ -3324,6 +3330,7 @@
+     (optims : Optimizations.flag list)
+     (mutation_seed : int option)
+     (max_list_length : int)
++    (code_coverage : bool)
+     (p : (dcalc, m) gexpr program)
+     s : (Uid.MarkedString.info * conc_expr) list =
+   Message.debug "=== Start concolic interpretation... ===";
+@@ -3343,7 +3350,19 @@
+   let stats = Stats.stop_step s_context_creation |> Stats.add_stat_step stats in
+ 
+   let s_simplify = Stats.start_step "simplify" in
+-  let scope_e = simplify_program ctx p s in
++  let initial_coverage = ref Coverage.empty in
++  let on_initial_expr e =
++    match Mark.remove e with
++    | EDefault _ -> ()
++    | _ ->
++      initial_coverage :=
++        Coverage.reached_pos (Expr.pos e) s !initial_coverage
++  in
++  let scope_e =
++    simplify_program
++      ?on_expr:(if code_coverage then Some on_initial_expr else None)
++      ctx p s
++  in
+ 
+   let ast_stats = Mutation.get_stats scope_e in
+ 
+@@ -3415,6 +3434,13 @@
+ 
+     let total_tests = ref 0 in
+ 
++    if code_coverage then
++      Message.result "CONCOLIC_COVERAGE_REACHABLE %a"
++        Coverage.format_coverage_hex_dump (Coverage.reachable_positions p);
++    if code_coverage then
++      Message.result "CONCOLIC_COVERAGE_INITIAL %a"
++        Coverage.format_coverage_hex_dump !initial_coverage;
++
+     let module Solver = Solver (struct
+       let optims = optims
+     end) in
+@@ -3475,7 +3501,20 @@
+ 
+         let s_eval = Stats.start_step "eval" in
+         Hashtbl.clear ctx.ctx_lengths_demanded;
+-        let res = eval_conc_with_input ctx p.lang s_in scope_e mark_e inputs in
++        let path_coverage = ref Coverage.empty in
++        if code_coverage then
++          ctx.ctx_on_expr := (fun e ->
++            match Mark.remove e with
++            | EDefault _ -> ()
++            | _ ->
++              path_coverage :=
++                Coverage.reached_pos (Expr.pos e) s !path_coverage);
++        let res =
++          Fun.protect
++            ~finally:(fun () -> ctx.ctx_on_expr := (fun _ -> ()))
++            (fun () ->
++              eval_conc_with_input ctx p.lang s_in scope_e mark_e inputs)
++        in
+         let exec = Stats.stop_step s_eval |> Stats.add_exec_step exec in
+ 
+         Message.result "Output of scope after evaluation:";
+@@ -3499,6 +3538,9 @@
+             "The concolic interpretation of a program should always yield a \
+              struct corresponding to the scope variables"
+         end;
++        if code_coverage then
++          Message.result "CONCOLIC_COVERAGE_PATH %d %a" !total_tests
++            Coverage.format_coverage_hex_dump !path_coverage;
+         incr total_tests;
+ 
+         let incomplete =
+--- a/compiler/concolic/interpreter.mli
++++ b/compiler/concolic/interpreter.mli
+@@ -27,6 +27,7 @@
+   Optimizations.flag list ->
+   int option ->
+   int ->
++  bool ->
+   (dcalc, 'm) gexpr program ->
+   ScopeName.t ->
+   (Uid.MarkedString.info * conc_expr) list
+--- a/compiler/driver.ml
++++ b/compiler/driver.ml
+@@ -1375,6 +1375,7 @@
+       conc_optims
+       mutation_seed
+       conc_max_list_length
++      conc_code_coverage
+       includes
+       stdlib
+       optimize
+@@ -1390,7 +1391,7 @@
+     let scope = get_scope_uid prg.decl_ctx ex_scope in
+     let evaluate () =
+       ( Concolic.Interpreter.interpret_program_concolic stats conc_optims
+-          mutation_seed conc_max_list_length prg scope,
++          mutation_seed conc_max_list_length conc_code_coverage prg scope,
+         None )
+     in
+     let success =
+@@ -1431,6 +1432,15 @@
+           ~doc:
+             "Maximum length of list inputs explored by concolic execution."
+     in
++    let conc_code_coverage =
++      let open Cmdliner.Arg in
++      value
++      & flag
++      & info ["conc-code-coverage"]
++          ~doc:
++            "Record compiler-native coverage while each concolic test is \
++             evaluated."
++    in
+     Cmd.v
+       (Cmd.info "concolic" ~doc:"Runs the concolic interpreter")
+       Term.(
+@@ -1441,6 +1451,7 @@
+         $ conc_optims
+         $ mutation_seed
+         $ conc_max_list_length
++        $ conc_code_coverage
+         $ Cli.Flags.include_dirs
+         $ Cli.Flags.stdlib_dir
+         $ Cli.Flags.optimize
+--- a/compiler/shared_ast/interpreter.ml
++++ b/compiler/shared_ast/interpreter.ml
+@@ -1280,11 +1280,11 @@
+    external functions), straying away from the DCalc and LCalc ASTS. [addcustom]
+    and [delcustom] are needed to expand and shrink the type of the terms to
+    reflect that. *)
+-let evaluate_expr ctx lang e =
++let evaluate_expr ?on_expr ctx lang e =
+   Fun.protect ~finally:Runtime.reset_trace
+   @@ fun () ->
+   let dummy_scope = ScopeName.fresh [] ("dummy", Pos.void) in
+-  evaluate_expr_safe ctx lang dummy_scope (addcustom e)
++  evaluate_expr_safe ?on_expr ctx lang dummy_scope (addcustom e)
+ 
+ let loaded_modules = Hashtbl.create 17
+ 
+--- a/compiler/shared_ast/interpreter.mli
++++ b/compiler/shared_ast/interpreter.mli
+@@ -35,6 +35,7 @@
+     operator. *)
+ 
+ val evaluate_expr :
++  ?on_expr:((('a, 'b, yes) interpr_kind, 'm) gexpr -> unit) ->
+   decl_ctx ->
+   Global.backend_lang ->
+   (('a, 'b, _) interpr_kind, 'm) gexpr ->

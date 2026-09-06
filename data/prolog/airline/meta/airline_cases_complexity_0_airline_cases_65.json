@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_65",
+ "domain": "airline",
+ "label": "1496",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Jennifer is a Main Cabin Class passenger flying from Las Vegas to Quito with the following items: 1. A backpack: 22 x 11 x 9 inches, 11 lbs; 2. A backpack: 45 x 19 x 20 inches, 88 lbs; 3. A backpack: 43 x 22 x 16 inches, 67 lbs; 4. A luggage box: 33 x 19 x 13 inches, 51 lbs; 5. A luggage box: 51 x 32 x 23 inches, 52 lbs; Jennifer's flight ticket is $466.",
+ "hard": false
+}

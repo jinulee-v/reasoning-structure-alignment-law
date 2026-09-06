@@ -1,0 +1,8 @@
+{
+ "id": "airline_cases_complexity_0_airline_cases_49",
+ "domain": "airline",
+ "label": "1419",
+ "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+ "text": "Emily is a First Class passenger flying from Washington D.C. to San Francisco with the following items: 1. A backpack: 20 x 14 x 9 inches, 6 lbs; 2. A backpack: 36 x 18 x 10 inches, 76 lbs; 3. A backpack: 41 x 28 x 19 inches, 60 lbs; 4. A backpack: 34 x 20 x 9 inches, 74 lbs; 5. A backpack: 46 x 19 x 22 inches, 68 lbs; Emily's flight ticket is $269.",
+ "hard": false
+}
