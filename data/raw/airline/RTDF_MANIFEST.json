@@ -1,0 +1,608 @@
+{
+  "version": 3,
+  "corpus": "airline",
+  "documents": [
+    {
+      "document_id": "airline/section1_non_textual",
+      "path": "section1_non_textual.catala_en",
+      "method": "markdown-policy-units",
+      "original_sha256": "24d38221ec6d4eff4b8d81312e4e9e1542bc141891cab128d9d7b13c19311c71",
+      "provisions": [
+        {
+          "provision_id": "airline/section1_non_textual:p0001",
+          "original_source_lines": [
+            2,
+            2
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0002",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0003",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0004",
+          "original_source_lines": [
+            10,
+            14
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0005",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0006",
+          "original_source_lines": [
+            20,
+            20
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0007",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0008",
+          "original_source_lines": [
+            26,
+            26
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0009",
+          "original_source_lines": [
+            28,
+            28
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0010",
+          "original_source_lines": [
+            30,
+            30
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0011",
+          "original_source_lines": [
+            32,
+            32
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0012",
+          "original_source_lines": [
+            36,
+            50
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0013",
+          "original_source_lines": [
+            52,
+            52
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0014",
+          "original_source_lines": [
+            56,
+            68
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0015",
+          "original_source_lines": [
+            70,
+            70
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0016",
+          "original_source_lines": [
+            74,
+            79
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0017",
+          "original_source_lines": [
+            83,
+            88
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0018",
+          "original_source_lines": [
+            92,
+            92
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0019",
+          "original_source_lines": [
+            94,
+            96
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0020",
+          "original_source_lines": [
+            98,
+            98
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0021",
+          "original_source_lines": [
+            100,
+            104
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0022",
+          "original_source_lines": [
+            106,
+            128
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0023",
+          "original_source_lines": [
+            130,
+            135
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0024",
+          "original_source_lines": [
+            137,
+            143
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0025",
+          "original_source_lines": [
+            146,
+            146
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0026",
+          "original_source_lines": [
+            148,
+            151
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0027",
+          "original_source_lines": [
+            153,
+            155
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0028",
+          "original_source_lines": [
+            159,
+            159
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0029",
+          "original_source_lines": [
+            163,
+            165
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0030",
+          "original_source_lines": [
+            169,
+            176
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0031",
+          "original_source_lines": [
+            180,
+            186
+          ]
+        },
+        {
+          "provision_id": "airline/section1_non_textual:p0032",
+          "original_source_lines": [
+            190,
+            196
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "airline/section1_non_textual:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0001",
+          "original_source_lines": [
+            2,
+            2
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0002",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0003",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0004",
+          "original_source_lines": [
+            10,
+            14
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0005",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0006",
+          "original_source_lines": [
+            20,
+            20
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0007",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0008",
+          "original_source_lines": [
+            26,
+            26
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0009",
+          "original_source_lines": [
+            28,
+            28
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0010",
+          "original_source_lines": [
+            30,
+            30
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0011",
+          "original_source_lines": [
+            32,
+            32
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0012",
+          "original_source_lines": [
+            36,
+            50
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0013",
+          "original_source_lines": [
+            52,
+            52
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0014",
+          "original_source_lines": [
+            56,
+            68
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0015",
+          "original_source_lines": [
+            70,
+            70
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0016",
+          "original_source_lines": [
+            74,
+            79
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0017",
+          "original_source_lines": [
+            83,
+            88
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0018",
+          "original_source_lines": [
+            92,
+            92
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0019",
+          "original_source_lines": [
+            94,
+            96
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0020",
+          "original_source_lines": [
+            98,
+            98
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0021",
+          "original_source_lines": [
+            100,
+            104
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0022",
+          "original_source_lines": [
+            106,
+            128
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0025",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0023",
+          "original_source_lines": [
+            130,
+            135
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0026",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0024",
+          "original_source_lines": [
+            137,
+            143
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0027",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0025",
+          "original_source_lines": [
+            146,
+            146
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0028",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0026",
+          "original_source_lines": [
+            148,
+            151
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0029",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0027",
+          "original_source_lines": [
+            153,
+            155
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0030",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0028",
+          "original_source_lines": [
+            159,
+            159
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0031",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0029",
+          "original_source_lines": [
+            163,
+            165
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0032",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0030",
+          "original_source_lines": [
+            169,
+            176
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0033",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0031",
+          "original_source_lines": [
+            180,
+            186
+          ]
+        },
+        {
+          "block_id": "airline/section1_non_textual:b0034",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "airline/section1_non_textual:p0032",
+          "original_source_lines": [
+            190,
+            196
+          ]
+        }
+      ]
+    }
+  ]
+}

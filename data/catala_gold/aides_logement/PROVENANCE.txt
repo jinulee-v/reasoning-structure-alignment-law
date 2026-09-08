@@ -1,6 +1,0 @@
-Source: https://github.com/CatalaLang/catala-examples/tree/master/aides_logement
-Commit: 761902db14af85d7015e9457bc48dee2a79e7c8c
-Imported: 2026-09-05
-
-The upstream directory was copied verbatim. This provenance file is the only
-addition.

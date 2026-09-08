@@ -1,0 +1,310 @@
+<!-- rtdf-document-id: sara/section63 -->
+
+<!-- rtdf-block-id: sara/section63:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: sara/section63:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+§63. Taxable income defined
+
+(a) In general
+
+Except as provided in subsection (b), for purposes of this subtitle, the term "taxable income" means gross income minus the deductions allowed by this chapter (other than the standard deduction).
+
+
+<!-- rtdf-block-id: sara/section63:b0003; role: provision; provision-id: sara/section63(a); source-lines: 3-5; relation: formalizes-preceding -->
+```catala
+```
+
+(b) Individuals who do not itemize their deductions
+
+In the case of an individual who does not elect to itemize his deductions for the taxable year, for purposes of this subtitle, the term "taxable income" means adjusted gross income, minus-
+
+
+<!-- rtdf-block-id: sara/section63:b0004; role: provision; provision-id: sara/section63(b); source-lines: 7-9; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) the standard deduction, and
+
+
+<!-- rtdf-block-id: sara/section63:b0005; role: provision; provision-id: sara/section63(b)(1); source-lines: 11-11; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) the deduction for personal exemptions provided in section 151.
+
+
+<!-- rtdf-block-id: sara/section63:b0006; role: provision; provision-id: sara/section63(b)(2); source-lines: 13-13; relation: formalizes-preceding -->
+```catala
+```
+
+(c) Standard deduction
+
+For purposes of this subtitle-
+
+
+<!-- rtdf-block-id: sara/section63:b0007; role: provision; provision-id: sara/section63(c); source-lines: 15-17; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) In general
+
+    Except as otherwise provided in this subsection, the term "standard deduction" means the sum of-
+
+
+<!-- rtdf-block-id: sara/section63:b0008; role: provision; provision-id: sara/section63(c)(1); source-lines: 19-21; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) the basic standard deduction, and
+
+
+<!-- rtdf-block-id: sara/section63:b0009; role: provision; provision-id: sara/section63(c)(1)(A); source-lines: 23-23; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) the additional standard deduction.
+
+
+<!-- rtdf-block-id: sara/section63:b0010; role: provision; provision-id: sara/section63(c)(1)(B); source-lines: 25-25; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) Basic standard deduction
+
+    For purposes of paragraph (1), the basic standard deduction is-
+
+
+<!-- rtdf-block-id: sara/section63:b0011; role: provision; provision-id: sara/section63(c)(2); source-lines: 27-29; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) 200 percent of the dollar amount in effect under subparagraph (C) for the taxable year in the case of-
+
+
+<!-- rtdf-block-id: sara/section63:b0012; role: provision; provision-id: sara/section63(c)(2)(A); source-lines: 31-31; relation: formalizes-preceding -->
+```catala
+```
+
+            (i) a joint return, or
+
+
+<!-- rtdf-block-id: sara/section63:b0013; role: provision; provision-id: sara/section63(c)(2)(A)(i); source-lines: 33-33; relation: formalizes-preceding -->
+```catala
+```
+
+            (ii) a surviving spouse (as defined in section 2(a)),
+
+
+<!-- rtdf-block-id: sara/section63:b0014; role: provision; provision-id: sara/section63(c)(2)(A)(ii); source-lines: 35-35; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) $4,400 in the case of a head of household (as defined in section 2(b)), or
+
+
+<!-- rtdf-block-id: sara/section63:b0015; role: provision; provision-id: sara/section63(c)(2)(B); source-lines: 37-37; relation: formalizes-preceding -->
+```catala
+```
+
+        (C) $3,000 in any other case.
+
+
+<!-- rtdf-block-id: sara/section63:b0016; role: provision; provision-id: sara/section63(c)(2)(C); source-lines: 39-39; relation: formalizes-preceding -->
+```catala
+```
+
+    (3) Additional standard deduction for aged and blind
+
+    For purposes of paragraph (1), the additional standard deduction is the sum of each additional amount to which the taxpayer is entitled under subsection (f).
+
+
+<!-- rtdf-block-id: sara/section63:b0017; role: provision; provision-id: sara/section63(c)(3); source-lines: 41-43; relation: formalizes-preceding -->
+```catala
+```
+
+    (5) Limitation on basic standard deduction in the case of certain dependents
+
+    In the case of an individual with respect to whom a deduction under section 151 is allowable to another taxpayer for a taxable year beginning in the calendar year in which the individual's taxable year begins, the basic standard deduction applicable to such individual for such individual's taxable year shall not exceed the greater of-
+
+
+<!-- rtdf-block-id: sara/section63:b0018; role: provision; provision-id: sara/section63(c)(5); source-lines: 45-47; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) $500, or
+
+
+<!-- rtdf-block-id: sara/section63:b0019; role: provision; provision-id: sara/section63(c)(5)(A); source-lines: 49-49; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) the sum of $250 and such individual's earned income.
+
+
+<!-- rtdf-block-id: sara/section63:b0020; role: provision; provision-id: sara/section63(c)(5)(B); source-lines: 51-51; relation: formalizes-preceding -->
+```catala
+```
+
+    (6) Certain individuals, etc., not eligible for standard deduction
+
+    In the case of-
+
+
+<!-- rtdf-block-id: sara/section63:b0021; role: provision; provision-id: sara/section63(c)(6); source-lines: 53-55; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) a married individual filing a separate return where either spouse itemizes deductions,
+
+
+<!-- rtdf-block-id: sara/section63:b0022; role: provision; provision-id: sara/section63(c)(6)(A); source-lines: 57-57; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) a nonresident alien individual, or
+
+
+<!-- rtdf-block-id: sara/section63:b0023; role: provision; provision-id: sara/section63(c)(6)(B); source-lines: 59-59; relation: formalizes-preceding -->
+```catala
+```
+
+        (D) an estate or trust, common trust fund, or partnership,
+
+
+<!-- rtdf-block-id: sara/section63:b0024; role: provision; provision-id: sara/section63(c)(6)(D); source-lines: 61-61; relation: formalizes-preceding -->
+```catala
+```
+
+    the standard deduction shall be zero.
+
+
+<!-- rtdf-block-id: sara/section63:b0025; role: provision; provision-id: sara/section63(c)(6):flush; source-lines: 63-63; relation: formalizes-preceding -->
+```catala
+```
+
+    (7) Special rules for taxable years 2018 through 2025
+
+    In the case of a taxable year beginning after December 31, 2017, and before January 1, 2026-
+
+    Paragraph (2) shall be applied-
+
+
+<!-- rtdf-block-id: sara/section63:b0026; role: provision; provision-id: sara/section63(c)(7); source-lines: 65-69; relation: formalizes-preceding -->
+```catala
+```
+
+        (i) by substituting "$18,000" for "$4,400" in subparagraph (B), and
+
+
+<!-- rtdf-block-id: sara/section63:b0027; role: provision; provision-id: sara/section63(c)(7)(i); source-lines: 71-71; relation: formalizes-preceding -->
+```catala
+```
+
+        (ii) by substituting "$12,000" for "$3,000" in subparagraph (C).
+
+
+<!-- rtdf-block-id: sara/section63:b0028; role: provision; provision-id: sara/section63(c)(7)(ii); source-lines: 73-73; relation: formalizes-preceding -->
+```catala
+```
+
+(d) Itemized deductions
+
+For purposes of this subtitle, the term "itemized deductions" means the deductions allowable under this chapter other than-
+
+
+<!-- rtdf-block-id: sara/section63:b0029; role: provision; provision-id: sara/section63(d); source-lines: 75-77; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) the deductions allowable in arriving at adjusted gross income, and
+
+
+<!-- rtdf-block-id: sara/section63:b0030; role: provision; provision-id: sara/section63(d)(1); source-lines: 79-79; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) the deduction for personal exemptions provided by section 151.
+
+
+<!-- rtdf-block-id: sara/section63:b0031; role: provision; provision-id: sara/section63(d)(2); source-lines: 81-81; relation: formalizes-preceding -->
+```catala
+```
+
+(f) Aged or blind additional amounts
+
+    (1) Additional amounts for the aged
+
+    The taxpayer shall be entitled to an additional amount of $600-
+
+
+<!-- rtdf-block-id: sara/section63:b0032; role: provision; provision-id: sara/section63(f)(1); source-lines: 85-87; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) for himself if he has attained age 65 before the close of his taxable year, and
+
+
+<!-- rtdf-block-id: sara/section63:b0033; role: provision; provision-id: sara/section63(f)(1)(A); source-lines: 89-89; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) for the spouse of the taxpayer if the spouse has attained age 65 before the close of the taxable year and an additional exemption is allowable to the taxpayer for such spouse under section 151(b).
+
+
+<!-- rtdf-block-id: sara/section63:b0034; role: provision; provision-id: sara/section63(f)(1)(B); source-lines: 91-91; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) Additional amount for blind
+
+    The taxpayer shall be entitled to an additional amount of $600-
+
+
+<!-- rtdf-block-id: sara/section63:b0035; role: provision; provision-id: sara/section63(f)(2); source-lines: 93-95; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) for himself if he is blind at the close of the taxable year, and
+
+
+<!-- rtdf-block-id: sara/section63:b0036; role: provision; provision-id: sara/section63(f)(2)(A); source-lines: 97-97; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) for the spouse of the taxpayer if the spouse is blind as of the close of the taxable year and an additional exemption is allowable to the taxpayer for such spouse under section 151(b).
+
+
+<!-- rtdf-block-id: sara/section63:b0037; role: provision; provision-id: sara/section63(f)(2)(B); source-lines: 99-99; relation: formalizes-preceding -->
+```catala
+```
+
+    For purposes of subparagraph (B), if the spouse dies during the taxable year the determination of whether such spouse is blind shall be made as of the time of such death.
+
+
+<!-- rtdf-block-id: sara/section63:b0038; role: provision; provision-id: sara/section63(f)(2):flush; source-lines: 101-101; relation: formalizes-preceding -->
+```catala
+```
+
+    (3) Higher amount for certain unmarried individuals
+
+    In the case of an individual who is not married and is not a surviving spouse, paragraphs (1) and (2) shall be applied by substituting "$750" for "$600".
+
+
+<!-- rtdf-block-id: sara/section63:b0039; role: provision; provision-id: sara/section63(f)(3); source-lines: 103-105; relation: formalizes-preceding -->
+```catala
+```
+
+(g) Marital status
+
+For purposes of this section, marital status shall be determined under section 7703.
+
+<!-- rtdf-block-id: sara/section63:b0040; role: provision; provision-id: sara/section63(g); source-lines: 107-109; relation: formalizes-preceding -->
+```catala
+```
+

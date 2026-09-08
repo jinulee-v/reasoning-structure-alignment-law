@@ -1,0 +1,3606 @@
+{
+  "version": 3,
+  "corpus": "sara",
+  "documents": [
+    {
+      "document_id": "sara/section1",
+      "path": "section1.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "3b106554678fb02fbd300c88c47c1b757fc25a2d5bf9c30c31d04ef0b114eb5b",
+      "provisions": [
+        {
+          "provision_id": "sara/section1(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a):flush",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(i)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(ii)",
+          "original_source_lines": [
+            14,
+            14
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(iii)",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(iv)",
+          "original_source_lines": [
+            16,
+            16
+          ]
+        },
+        {
+          "provision_id": "sara/section1(a)(v)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)(i)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)(ii)",
+          "original_source_lines": [
+            24,
+            24
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)(iii)",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)(iv)",
+          "original_source_lines": [
+            26,
+            26
+          ]
+        },
+        {
+          "provision_id": "sara/section1(b)(v)",
+          "original_source_lines": [
+            27,
+            27
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)",
+          "original_source_lines": [
+            29,
+            31
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)(i)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)(ii)",
+          "original_source_lines": [
+            34,
+            34
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)(iii)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)(iv)",
+          "original_source_lines": [
+            36,
+            36
+          ]
+        },
+        {
+          "provision_id": "sara/section1(c)(v)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)",
+          "original_source_lines": [
+            39,
+            41
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)(i)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)(ii)",
+          "original_source_lines": [
+            44,
+            44
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)(iii)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)(iv)",
+          "original_source_lines": [
+            46,
+            46
+          ]
+        },
+        {
+          "provision_id": "sara/section1(d)(v)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section1:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section1:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section1:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a):flush",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(i)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(ii)",
+          "original_source_lines": [
+            14,
+            14
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(iii)",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(iv)",
+          "original_source_lines": [
+            16,
+            16
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(a)(v)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)(i)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)(ii)",
+          "original_source_lines": [
+            24,
+            24
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)(iii)",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)(iv)",
+          "original_source_lines": [
+            26,
+            26
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(b)(v)",
+          "original_source_lines": [
+            27,
+            27
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)",
+          "original_source_lines": [
+            29,
+            31
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)(i)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)(ii)",
+          "original_source_lines": [
+            34,
+            34
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)(iii)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)(iv)",
+          "original_source_lines": [
+            36,
+            36
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(c)(v)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)",
+          "original_source_lines": [
+            39,
+            41
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0025",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)(i)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0026",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)(ii)",
+          "original_source_lines": [
+            44,
+            44
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0027",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)(iii)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0028",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)(iv)",
+          "original_source_lines": [
+            46,
+            46
+          ]
+        },
+        {
+          "block_id": "sara/section1:b0029",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section1(d)(v)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section151",
+      "path": "section151.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "19b77bd75903c923ceed3ec1547ef6ce22b6a70f9b6030cd8e47fc883e8f3fdb",
+      "provisions": [
+        {
+          "provision_id": "sara/section151(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section151(b)",
+          "original_source_lines": [
+            7,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section151(c)",
+          "original_source_lines": [
+            11,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(1)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(2)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(3)",
+          "original_source_lines": [
+            27,
+            27
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(3)(A)",
+          "original_source_lines": [
+            29,
+            31
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(3)(B)",
+          "original_source_lines": [
+            33,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section151(d)(5)",
+          "original_source_lines": [
+            37,
+            39
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section151:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section151:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section151:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(b)",
+          "original_source_lines": [
+            7,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(c)",
+          "original_source_lines": [
+            11,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(1)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(2)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(3)",
+          "original_source_lines": [
+            27,
+            27
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(3)(A)",
+          "original_source_lines": [
+            29,
+            31
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(3)(B)",
+          "original_source_lines": [
+            33,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section151:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section151(d)(5)",
+          "original_source_lines": [
+            37,
+            39
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section152",
+      "path": "section152.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "eef7ebd24155cdd0e1dad2c109a82dafcb49725a41826ebd6ec470c15cd6ba50",
+      "provisions": [
+        {
+          "provision_id": "sara/section152(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section152(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section152(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section152(b)",
+          "original_source_lines": [
+            11,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section152(b)(1)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section152(b)(2)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(1)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(1)(A)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(1)(B)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(1)(C)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(1)(E)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(2)",
+          "original_source_lines": [
+            39,
+            41
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(2)(A)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(2)(B)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "provision_id": "sara/section152(c)(3)",
+          "original_source_lines": [
+            47,
+            49
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)",
+          "original_source_lines": [
+            51,
+            53
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(1)",
+          "original_source_lines": [
+            55,
+            57
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(1)(A)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(1)(B)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(1)(D)",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)",
+          "original_source_lines": [
+            65,
+            67
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(A)",
+          "original_source_lines": [
+            69,
+            69
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(B)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(C)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(D)",
+          "original_source_lines": [
+            75,
+            75
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(E)",
+          "original_source_lines": [
+            77,
+            77
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(F)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(G)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "provision_id": "sara/section152(d)(2)(H)",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section152:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section152:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section152:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(b)",
+          "original_source_lines": [
+            11,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(b)(1)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(b)(2)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(1)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(1)(A)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(1)(B)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(1)(C)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(1)(E)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(2)",
+          "original_source_lines": [
+            39,
+            41
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(2)(A)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(2)(B)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(c)(3)",
+          "original_source_lines": [
+            47,
+            49
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)",
+          "original_source_lines": [
+            51,
+            53
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(1)",
+          "original_source_lines": [
+            55,
+            57
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(1)(A)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(1)(B)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(1)(D)",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)",
+          "original_source_lines": [
+            65,
+            67
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0025",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(A)",
+          "original_source_lines": [
+            69,
+            69
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0026",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(B)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0027",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(C)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0028",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(D)",
+          "original_source_lines": [
+            75,
+            75
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0029",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(E)",
+          "original_source_lines": [
+            77,
+            77
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0030",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(F)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0031",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(G)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "block_id": "sara/section152:b0032",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section152(d)(2)(H)",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section2",
+      "path": "section2.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "903c744f46ff575b729040106a42604f60ce160a80c0a1fadcb5b7551eef4a17",
+      "provisions": [
+        {
+          "provision_id": "sara/section2(a)(1)",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(1)(A)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(1)(B)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(1):flush",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(2)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(2)(A)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "provision_id": "sara/section2(a)(2)(B)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)",
+          "original_source_lines": [
+            25,
+            27
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(A)",
+          "original_source_lines": [
+            29,
+            29
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(A)(i)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(A)(i)(I)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(A)(i)(II)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(A)(ii)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1)(B)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(1):flush",
+          "original_source_lines": [
+            41,
+            41
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(2)",
+          "original_source_lines": [
+            43,
+            45
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(2)(A)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(2)(B)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(2)(C)",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(3)",
+          "original_source_lines": [
+            53,
+            55
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(3)(A)",
+          "original_source_lines": [
+            57,
+            57
+          ]
+        },
+        {
+          "provision_id": "sara/section2(b)(3)(B)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section2:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section2:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section2:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(1)",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(1)(A)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(1)(B)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(1):flush",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(2)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(2)(A)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(a)(2)(B)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)",
+          "original_source_lines": [
+            25,
+            27
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(A)",
+          "original_source_lines": [
+            29,
+            29
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(A)(i)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(A)(i)(I)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(A)(i)(II)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(A)(ii)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1)(B)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(1):flush",
+          "original_source_lines": [
+            41,
+            41
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(2)",
+          "original_source_lines": [
+            43,
+            45
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(2)(A)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(2)(B)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(2)(C)",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(3)",
+          "original_source_lines": [
+            53,
+            55
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(3)(A)",
+          "original_source_lines": [
+            57,
+            57
+          ]
+        },
+        {
+          "block_id": "sara/section2:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section2(b)(3)(B)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section3301",
+      "path": "section3301.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "1c80b838dcae648a097ec1b1eb78bdd9ddb26a670697cd508117f7920445326b",
+      "provisions": [
+        {
+          "provision_id": "sara/section3301",
+          "original_source_lines": [
+            3,
+            3
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section3301:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section3301:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section3301:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3301",
+          "original_source_lines": [
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section3306",
+      "path": "section3306.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "cf05cdf1f27dc8d8a848bb7d41db413875b0358ceb30c63754dc08296c73c654",
+      "provisions": [
+        {
+          "provision_id": "sara/section3306(a)(1)",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(1)(A)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(1)(B)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(1):flush",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(2)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(2)(A)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(2)(B)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(3)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(a)(4)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)",
+          "original_source_lines": [
+            31,
+            33
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(1)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(2)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(2)(A)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(2)(C)",
+          "original_source_lines": [
+            41,
+            41
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(7)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(10)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(10)(A)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(10)(B)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(10):flush",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(11)",
+          "original_source_lines": [
+            53,
+            53
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(b)(15)",
+          "original_source_lines": [
+            55,
+            55
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)",
+          "original_source_lines": [
+            57,
+            59
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(A)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(B)",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(1)",
+          "original_source_lines": [
+            65,
+            65
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(1)(A)",
+          "original_source_lines": [
+            67,
+            67
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(1)(A)(i)",
+          "original_source_lines": [
+            69,
+            69
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(1)(A)(ii)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(1)(B)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(2)",
+          "original_source_lines": [
+            75,
+            75
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(5)(A)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(5)(B)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(6)",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(7)",
+          "original_source_lines": [
+            85,
+            85
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(10)(A)",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(10)(A)(i)",
+          "original_source_lines": [
+            91,
+            91
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(10)(A)(ii)",
+          "original_source_lines": [
+            93,
+            93
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(10)(B)",
+          "original_source_lines": [
+            95,
+            95
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(11)",
+          "original_source_lines": [
+            97,
+            97
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(13)",
+          "original_source_lines": [
+            99,
+            99
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(16)",
+          "original_source_lines": [
+            101,
+            101
+          ]
+        },
+        {
+          "provision_id": "sara/section3306(c)(21)",
+          "original_source_lines": [
+            103,
+            103
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section3306:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section3306:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section3306:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(1)",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(1)(A)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(1)(B)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(1):flush",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(2)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(2)(A)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(2)(B)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(3)",
+          "original_source_lines": [
+            23,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(a)(4)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)",
+          "original_source_lines": [
+            31,
+            33
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(1)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(2)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(2)(A)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(2)(C)",
+          "original_source_lines": [
+            41,
+            41
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(7)",
+          "original_source_lines": [
+            43,
+            43
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(10)",
+          "original_source_lines": [
+            45,
+            45
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(10)(A)",
+          "original_source_lines": [
+            47,
+            47
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(10)(B)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(10):flush",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(11)",
+          "original_source_lines": [
+            53,
+            53
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(b)(15)",
+          "original_source_lines": [
+            55,
+            55
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)",
+          "original_source_lines": [
+            57,
+            59
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0025",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(A)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0026",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(B)",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0027",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(1)",
+          "original_source_lines": [
+            65,
+            65
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0028",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(1)(A)",
+          "original_source_lines": [
+            67,
+            67
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0029",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(1)(A)(i)",
+          "original_source_lines": [
+            69,
+            69
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0030",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(1)(A)(ii)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0031",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(1)(B)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0032",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(2)",
+          "original_source_lines": [
+            75,
+            75
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0033",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(5)(A)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0034",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(5)(B)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0035",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(6)",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0036",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(7)",
+          "original_source_lines": [
+            85,
+            85
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0037",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(10)(A)",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0038",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(10)(A)(i)",
+          "original_source_lines": [
+            91,
+            91
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0039",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(10)(A)(ii)",
+          "original_source_lines": [
+            93,
+            93
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0040",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(10)(B)",
+          "original_source_lines": [
+            95,
+            95
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0041",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(11)",
+          "original_source_lines": [
+            97,
+            97
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0042",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(13)",
+          "original_source_lines": [
+            99,
+            99
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0043",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(16)",
+          "original_source_lines": [
+            101,
+            101
+          ]
+        },
+        {
+          "block_id": "sara/section3306:b0044",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section3306(c)(21)",
+          "original_source_lines": [
+            103,
+            103
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section63",
+      "path": "section63.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "1bd818a6b6a3915152a2f5f515947d2a93d749c354ef97dc24ffeb7322b623a1",
+      "provisions": [
+        {
+          "provision_id": "sara/section63(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section63(b)",
+          "original_source_lines": [
+            7,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section63(b)(1)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "provision_id": "sara/section63(b)(2)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(1)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(1)(A)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(1)(B)",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)(A)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)(A)(i)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)(A)(ii)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)(B)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(2)(C)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(3)",
+          "original_source_lines": [
+            41,
+            43
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(5)",
+          "original_source_lines": [
+            45,
+            47
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(5)(A)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(5)(B)",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(6)",
+          "original_source_lines": [
+            53,
+            55
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(6)(A)",
+          "original_source_lines": [
+            57,
+            57
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(6)(B)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(6)(D)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(6):flush",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(7)",
+          "original_source_lines": [
+            65,
+            69
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(7)(i)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "provision_id": "sara/section63(c)(7)(ii)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "provision_id": "sara/section63(d)",
+          "original_source_lines": [
+            75,
+            77
+          ]
+        },
+        {
+          "provision_id": "sara/section63(d)(1)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "provision_id": "sara/section63(d)(2)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(1)",
+          "original_source_lines": [
+            85,
+            87
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(1)(A)",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(1)(B)",
+          "original_source_lines": [
+            91,
+            91
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(2)",
+          "original_source_lines": [
+            93,
+            95
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(2)(A)",
+          "original_source_lines": [
+            97,
+            97
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(2)(B)",
+          "original_source_lines": [
+            99,
+            99
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(2):flush",
+          "original_source_lines": [
+            101,
+            101
+          ]
+        },
+        {
+          "provision_id": "sara/section63(f)(3)",
+          "original_source_lines": [
+            103,
+            105
+          ]
+        },
+        {
+          "provision_id": "sara/section63(g)",
+          "original_source_lines": [
+            107,
+            109
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section63:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section63:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section63:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(b)",
+          "original_source_lines": [
+            7,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(b)(1)",
+          "original_source_lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(b)(2)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)",
+          "original_source_lines": [
+            15,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(1)",
+          "original_source_lines": [
+            19,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(1)(A)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(1)(B)",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)(A)",
+          "original_source_lines": [
+            31,
+            31
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)(A)(i)",
+          "original_source_lines": [
+            33,
+            33
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)(A)(ii)",
+          "original_source_lines": [
+            35,
+            35
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)(B)",
+          "original_source_lines": [
+            37,
+            37
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(2)(C)",
+          "original_source_lines": [
+            39,
+            39
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(3)",
+          "original_source_lines": [
+            41,
+            43
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(5)",
+          "original_source_lines": [
+            45,
+            47
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(5)(A)",
+          "original_source_lines": [
+            49,
+            49
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(5)(B)",
+          "original_source_lines": [
+            51,
+            51
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(6)",
+          "original_source_lines": [
+            53,
+            55
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(6)(A)",
+          "original_source_lines": [
+            57,
+            57
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0023",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(6)(B)",
+          "original_source_lines": [
+            59,
+            59
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0024",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(6)(D)",
+          "original_source_lines": [
+            61,
+            61
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0025",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(6):flush",
+          "original_source_lines": [
+            63,
+            63
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0026",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(7)",
+          "original_source_lines": [
+            65,
+            69
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0027",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(7)(i)",
+          "original_source_lines": [
+            71,
+            71
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0028",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(c)(7)(ii)",
+          "original_source_lines": [
+            73,
+            73
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0029",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(d)",
+          "original_source_lines": [
+            75,
+            77
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0030",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(d)(1)",
+          "original_source_lines": [
+            79,
+            79
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0031",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(d)(2)",
+          "original_source_lines": [
+            81,
+            81
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0032",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(1)",
+          "original_source_lines": [
+            85,
+            87
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0033",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(1)(A)",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0034",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(1)(B)",
+          "original_source_lines": [
+            91,
+            91
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0035",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(2)",
+          "original_source_lines": [
+            93,
+            95
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0036",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(2)(A)",
+          "original_source_lines": [
+            97,
+            97
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0037",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(2)(B)",
+          "original_source_lines": [
+            99,
+            99
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0038",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(2):flush",
+          "original_source_lines": [
+            101,
+            101
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0039",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(f)(3)",
+          "original_source_lines": [
+            103,
+            105
+          ]
+        },
+        {
+          "block_id": "sara/section63:b0040",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section63(g)",
+          "original_source_lines": [
+            107,
+            109
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section68",
+      "path": "section68.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "fa8da4ed50222067a2e98501a2c3f9b1b83ea48ad0887db0239536b7fb77281d",
+      "provisions": [
+        {
+          "provision_id": "sara/section68(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section68(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section68(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1)",
+          "original_source_lines": [
+            13,
+            15
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1)(A)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1)(B)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1)(C)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1)(D)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "provision_id": "sara/section68(b)(1):flush",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "provision_id": "sara/section68(f)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section68:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section68:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section68:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(a)",
+          "original_source_lines": [
+            3,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(a)(1)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(a)(2)",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1)",
+          "original_source_lines": [
+            13,
+            15
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1)(A)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1)(B)",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1)(C)",
+          "original_source_lines": [
+            21,
+            21
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1)(D)",
+          "original_source_lines": [
+            23,
+            23
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(b)(1):flush",
+          "original_source_lines": [
+            25,
+            25
+          ]
+        },
+        {
+          "block_id": "sara/section68:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section68(f)",
+          "original_source_lines": [
+            27,
+            29
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "sara/section7703",
+      "path": "section7703.catala_en",
+      "method": "irc-provision-boundaries",
+      "original_sha256": "6bd8dea671d2991df57cc2cff2fe9afb6f09f2460a9be3e186a0505db621c34e",
+      "provisions": [
+        {
+          "provision_id": "sara/section7703(a)(1)",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(a)(2)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(b)",
+          "original_source_lines": [
+            9,
+            11
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(b)(1)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(b)(2)",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(b)(3)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "provision_id": "sara/section7703(b):flush",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "sara/section7703:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section7703:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "sara/section7703:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(a)(1)",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(a)(2)",
+          "original_source_lines": [
+            7,
+            7
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(b)",
+          "original_source_lines": [
+            9,
+            11
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(b)(1)",
+          "original_source_lines": [
+            13,
+            13
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(b)(2)",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(b)(3)",
+          "original_source_lines": [
+            17,
+            17
+          ]
+        },
+        {
+          "block_id": "sara/section7703:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "sara/section7703(b):flush",
+          "original_source_lines": [
+            19,
+            19
+          ]
+        }
+      ]
+    }
+  ]
+}

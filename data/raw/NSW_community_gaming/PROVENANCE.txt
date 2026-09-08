@@ -1,8 +1,0 @@
-Source: https://github.com/CatalaLang/catala-examples/tree/master/NSW_community_gaming
-Commit: 761902db14af85d7015e9457bc48dee2a79e7c8c
-Extracted: 2026-09-05
-
-Each file is derived from the like-named top-level .catala_en file. Extraction
-removes Catala module/include directives (lines beginning with ">") and all
-fenced Catala, metadata, and test blocks. All remaining prose is preserved in
-its original order. Tests are not raw source material and are omitted.

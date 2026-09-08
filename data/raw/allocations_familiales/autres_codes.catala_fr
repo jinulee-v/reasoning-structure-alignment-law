@@ -1,0 +1,36 @@
+<!-- rtdf-document-id: allocations_familiales/autres_codes -->
+
+<!-- rtdf-block-id: allocations_familiales/autres_codes:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: allocations_familiales/autres_codes:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+# Code de la construction et de l'habitation
+
+## Partie législative
+
+### Livre VIII : Aides personnelles au logement
+
+#### Titre II : Dispositions communes aux aides personnelles au logement
+
+##### Chapitre Ier : Principes généraux
+
+###### Section 2 : Règles de non-cumul
+
+####### Sous-section 1 : Aides personnelles au logement
+
+######## Article L821-3 | LEGIARTI000038814972
+
+Lorsqu'un enfant est bénéficiaire, à titre personnel, de l'aide
+personnelle au logement, il n'est pas pris en compte, comme enfant
+à charge, pour le bénéfice des prestations familiales.
+
+
+<!-- rtdf-block-id: allocations_familiales/autres_codes:b0003; role: provision; provision-id: allocations_familiales/autres_codes:p0001; source-lines: 1-19; relation: formalizes-preceding -->
+```catala
+```
+

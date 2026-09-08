@@ -1,0 +1,728 @@
+{
+  "version": 3,
+  "corpus": "NSW_community_gaming",
+  "documents": [
+    {
+      "document_id": "NSW_community_gaming/nsw_art_union",
+      "path": "nsw_art_union.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "ea822aabd65c7ec0b234dac81095cebd2742519d2da7765df06c8f9cf662d002",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0001",
+          "original_source_lines": [
+            2,
+            9
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0002",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0003",
+          "original_source_lines": [
+            11,
+            12
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0004",
+          "original_source_lines": [
+            13,
+            14
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0001",
+          "original_source_lines": [
+            2,
+            9
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0002",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0003",
+          "original_source_lines": [
+            11,
+            12
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_art_union:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_art_union:p0004",
+          "original_source_lines": [
+            13,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_charity_housie",
+      "path": "nsw_charity_housie.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "1226109322e7df533da3f6916f291499dcdb323d150fac9ba8be18b5b89fd682",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0001",
+          "original_source_lines": [
+            1,
+            1
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0002",
+          "original_source_lines": [
+            3,
+            3
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0003",
+          "original_source_lines": [
+            4,
+            4
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0004",
+          "original_source_lines": [
+            5,
+            6
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0005",
+          "original_source_lines": [
+            7,
+            8
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0006",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0003",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0001",
+          "original_source_lines": [
+            1,
+            1
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0002",
+          "original_source_lines": [
+            3,
+            3
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0003",
+          "original_source_lines": [
+            4,
+            4
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0004",
+          "original_source_lines": [
+            5,
+            6
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0005",
+          "original_source_lines": [
+            7,
+            8
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_charity_housie:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_charity_housie:p0006",
+          "original_source_lines": [
+            9,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_club_bingo",
+      "path": "nsw_club_bingo.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "99d5b41f28480a50b2120f12ed459c18d7b80653d221cd1d8482713d9a3ef4b7",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0001",
+          "original_source_lines": [
+            1,
+            1
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0002",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0003",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0004",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0005",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0003",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0001",
+          "original_source_lines": [
+            1,
+            1
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0002",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0003",
+          "original_source_lines": [
+            5,
+            5
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0004",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_club_bingo:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_club_bingo:p0005",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_draw_lottery",
+      "path": "nsw_draw_lottery.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "01c5629af7267b9ef1b64d9aa2bebe1d62a20494c70c24963b58dd6e17cf4fcf",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0001",
+          "original_source_lines": [
+            2,
+            6
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0002",
+          "original_source_lines": [
+            7,
+            8
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0003",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_draw_lottery:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_draw_lottery:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_draw_lottery:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0001",
+          "original_source_lines": [
+            2,
+            6
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_draw_lottery:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0002",
+          "original_source_lines": [
+            7,
+            8
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_draw_lottery:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_draw_lottery:p0003",
+          "original_source_lines": [
+            10,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_no_draw_lottery",
+      "path": "nsw_no_draw_lottery.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "ad852f4fe8817b40760aacab3282abde8ac908b7cae5130335eb5253859816b8",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0001",
+          "original_source_lines": [
+            2,
+            5
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0002",
+          "original_source_lines": [
+            6,
+            7
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0003",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0004",
+          "original_source_lines": [
+            9,
+            10
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0001",
+          "original_source_lines": [
+            2,
+            5
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0002",
+          "original_source_lines": [
+            6,
+            7
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0003",
+          "original_source_lines": [
+            8,
+            8
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_no_draw_lottery:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_no_draw_lottery:p0004",
+          "original_source_lines": [
+            9,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_progressive_lottery",
+      "path": "nsw_progressive_lottery.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "bddaa295d9a8691a5a8ad30e097de506ecefdd52815f7ddffe0efe86679979a7",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_progressive_lottery:p0001",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_progressive_lottery:p0002",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_progressive_lottery:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_progressive_lottery:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_progressive_lottery:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_progressive_lottery:p0001",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_progressive_lottery:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_progressive_lottery:p0002",
+          "original_source_lines": [
+            5,
+            7
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "NSW_community_gaming/nsw_social_housie",
+      "path": "nsw_social_housie.catala_en",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "5e00758822aeae71c2305192037c19ffaf61b5b2be3f85fda88fee15a6ace03a",
+      "provisions": [
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0001",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0002",
+          "original_source_lines": [
+            7,
+            14
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0003",
+          "original_source_lines": [
+            16,
+            17
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0004",
+          "original_source_lines": [
+            19,
+            20
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0005",
+          "original_source_lines": [
+            22,
+            23
+          ]
+        },
+        {
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0006",
+          "original_source_lines": [
+            25,
+            27
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0003",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0001",
+          "original_source_lines": [
+            2,
+            4
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0002",
+          "original_source_lines": [
+            7,
+            14
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0003",
+          "original_source_lines": [
+            16,
+            17
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0004",
+          "original_source_lines": [
+            19,
+            20
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0005",
+          "original_source_lines": [
+            22,
+            23
+          ]
+        },
+        {
+          "block_id": "NSW_community_gaming/nsw_social_housie:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "NSW_community_gaming/nsw_social_housie:p0006",
+          "original_source_lines": [
+            25,
+            27
+          ]
+        }
+      ]
+    }
+  ]
+}

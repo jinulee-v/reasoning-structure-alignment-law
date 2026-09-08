@@ -1,0 +1,193 @@
+<!-- rtdf-document-id: sara/section1 -->
+
+<!-- rtdf-block-id: sara/section1:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: sara/section1:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+§1. Tax imposed
+
+(a) Married individuals filing joint returns and surviving spouses
+
+There is hereby imposed on the taxable income of-
+
+
+<!-- rtdf-block-id: sara/section1:b0003; role: provision; provision-id: sara/section1(a); source-lines: 3-5; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) every married individual (as defined in section 7703) who makes a single return jointly with his spouse, and
+
+
+<!-- rtdf-block-id: sara/section1:b0004; role: provision; provision-id: sara/section1(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) every surviving spouse (as defined in section 2(a)),
+
+
+<!-- rtdf-block-id: sara/section1:b0005; role: provision; provision-id: sara/section1(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
+```catala
+```
+
+a tax determined in accordance with the following:
+
+
+<!-- rtdf-block-id: sara/section1:b0006; role: provision; provision-id: sara/section1(a):flush; source-lines: 11-11; relation: formalizes-preceding -->
+```catala
+```
+
+    (i) 15% of taxable income if the taxable income is not over $36,900;
+
+<!-- rtdf-block-id: sara/section1:b0007; role: provision; provision-id: sara/section1(a)(i); source-lines: 13-13; relation: formalizes-preceding -->
+```catala
+```
+
+    (ii) $5,535, plus 28% of the excess over $36,900 if the taxable income is over $36,900 but not over $89,150;
+
+<!-- rtdf-block-id: sara/section1:b0008; role: provision; provision-id: sara/section1(a)(ii); source-lines: 14-14; relation: formalizes-preceding -->
+```catala
+```
+
+    (iii) $20,165, plus 31% of the excess over $89,150 if the taxable income is over $89,150 but not over $140,000;
+
+<!-- rtdf-block-id: sara/section1:b0009; role: provision; provision-id: sara/section1(a)(iii); source-lines: 15-15; relation: formalizes-preceding -->
+```catala
+```
+
+    (iv) $35,928.50, plus 36% of the excess over $140,000 if the taxable income is over $140,000 but not over $250,000;
+
+<!-- rtdf-block-id: sara/section1:b0010; role: provision; provision-id: sara/section1(a)(iv); source-lines: 16-16; relation: formalizes-preceding -->
+```catala
+```
+
+    (v) $75,528.50, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
+
+
+<!-- rtdf-block-id: sara/section1:b0011; role: provision; provision-id: sara/section1(a)(v); source-lines: 17-17; relation: formalizes-preceding -->
+```catala
+```
+
+(b) Heads of households
+
+There is hereby imposed on the taxable income of every head of a household (as defined in section 2(b)) a tax determined in accordance with the following:
+
+
+<!-- rtdf-block-id: sara/section1:b0012; role: provision; provision-id: sara/section1(b); source-lines: 19-21; relation: formalizes-preceding -->
+```catala
+```
+
+    (i) 15% of taxable income if the taxable income is not over $29,600;
+
+<!-- rtdf-block-id: sara/section1:b0013; role: provision; provision-id: sara/section1(b)(i); source-lines: 23-23; relation: formalizes-preceding -->
+```catala
+```
+
+    (ii) $4,440, plus 28% of the excess over $29,600 if the taxable income is over $29,600 but not over $76,400;
+
+<!-- rtdf-block-id: sara/section1:b0014; role: provision; provision-id: sara/section1(b)(ii); source-lines: 24-24; relation: formalizes-preceding -->
+```catala
+```
+
+    (iii) $17,544, plus 31% of the excess over $76,400 if the taxable income is over $76,400 but not over $127,500;
+
+<!-- rtdf-block-id: sara/section1:b0015; role: provision; provision-id: sara/section1(b)(iii); source-lines: 25-25; relation: formalizes-preceding -->
+```catala
+```
+
+    (iv) $33,385, plus 36% of the excess over $127,500 if the taxable income is over $127,500 but not over $250,000;
+
+<!-- rtdf-block-id: sara/section1:b0016; role: provision; provision-id: sara/section1(b)(iv); source-lines: 26-26; relation: formalizes-preceding -->
+```catala
+```
+
+    (v) $77,485, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
+
+
+<!-- rtdf-block-id: sara/section1:b0017; role: provision; provision-id: sara/section1(b)(v); source-lines: 27-27; relation: formalizes-preceding -->
+```catala
+```
+
+(c) Unmarried individuals (other than surviving spouses and heads of households)
+
+There is hereby imposed on the taxable income of every individual (other than a surviving spouse as defined in section 2(a) or the head of a household as defined in section 2(b)) who is not a married individual (as defined in section 7703) a tax determined in accordance with the following:
+
+
+<!-- rtdf-block-id: sara/section1:b0018; role: provision; provision-id: sara/section1(c); source-lines: 29-31; relation: formalizes-preceding -->
+```catala
+```
+
+    (i) 15% of taxable income if the taxable income is not over $22,100;
+
+<!-- rtdf-block-id: sara/section1:b0019; role: provision; provision-id: sara/section1(c)(i); source-lines: 33-33; relation: formalizes-preceding -->
+```catala
+```
+
+    (ii) $3,315, plus 28% of the excess over $22,100 if the taxable income is over $22,100 but not over $53,500;
+
+<!-- rtdf-block-id: sara/section1:b0020; role: provision; provision-id: sara/section1(c)(ii); source-lines: 34-34; relation: formalizes-preceding -->
+```catala
+```
+
+    (iii) $12,107, plus 31% of the excess over $53,500 if the taxable income is over $53,500 but not over $115,000;
+
+<!-- rtdf-block-id: sara/section1:b0021; role: provision; provision-id: sara/section1(c)(iii); source-lines: 35-35; relation: formalizes-preceding -->
+```catala
+```
+
+    (iv) $31,172, plus 36% of the excess over $115,000 if the taxable income is over $115,000 but not over $250,000;
+
+<!-- rtdf-block-id: sara/section1:b0022; role: provision; provision-id: sara/section1(c)(iv); source-lines: 36-36; relation: formalizes-preceding -->
+```catala
+```
+
+    (v) $79,772, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
+
+
+<!-- rtdf-block-id: sara/section1:b0023; role: provision; provision-id: sara/section1(c)(v); source-lines: 37-37; relation: formalizes-preceding -->
+```catala
+```
+
+(d) Married individuals filing separate returns
+
+There is hereby imposed on the taxable income of every married individual (as defined in section 7703) who does not make a single return jointly with his spouse, a tax determined in accordance with the following:
+
+
+<!-- rtdf-block-id: sara/section1:b0024; role: provision; provision-id: sara/section1(d); source-lines: 39-41; relation: formalizes-preceding -->
+```catala
+```
+
+    (i) 15% of taxable income if the taxable income is not over $18,450;
+
+<!-- rtdf-block-id: sara/section1:b0025; role: provision; provision-id: sara/section1(d)(i); source-lines: 43-43; relation: formalizes-preceding -->
+```catala
+```
+
+    (ii) $2,767.50, plus 28% of the excess over $18,450 if the taxable income is over $18,450 but not over $44,575;
+
+<!-- rtdf-block-id: sara/section1:b0026; role: provision; provision-id: sara/section1(d)(ii); source-lines: 44-44; relation: formalizes-preceding -->
+```catala
+```
+
+    (iii) $10,082.50, plus 31% of the excess over $44,575 if the taxable income is over $44,575 but not over $70,000;
+
+<!-- rtdf-block-id: sara/section1:b0027; role: provision; provision-id: sara/section1(d)(iii); source-lines: 45-45; relation: formalizes-preceding -->
+```catala
+```
+
+    (iv) $17,964.25, plus 36% of the excess over $70,000 if the taxable income is over $70,000 but not over $125,000;
+
+<!-- rtdf-block-id: sara/section1:b0028; role: provision; provision-id: sara/section1(d)(iv); source-lines: 46-46; relation: formalizes-preceding -->
+```catala
+```
+
+    (v) $37,764.25, plus 39.6% of the excess over $125,000 if the taxable income is over $125,000
+
+<!-- rtdf-block-id: sara/section1:b0029; role: provision; provision-id: sara/section1(d)(v); source-lines: 47-47; relation: formalizes-preceding -->
+```catala
+```
+

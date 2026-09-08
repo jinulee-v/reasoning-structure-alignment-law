@@ -1,0 +1,1466 @@
+{
+  "version": 3,
+  "corpus": "allocations_familiales",
+  "documents": [
+    {
+      "document_id": "allocations_familiales/autres_codes",
+      "path": "autres_codes.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "75870e7e1d16f80022caf3bb7b041423f5d3b6e5154b31f9b588c6b315b17a32",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/autres_codes:p0001",
+          "original_source_lines": [
+            1,
+            19
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/autres_codes:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/autres_codes:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/autres_codes:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/autres_codes:p0001",
+          "original_source_lines": [
+            1,
+            19
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/decrets_divers",
+      "path": "decrets_divers.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "5522a0ca72c6f244ccc0897bb2824e9976622151bfb6bcf9aca67dceb6d364b9",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0001",
+          "original_source_lines": [
+            1,
+            17
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0002",
+          "original_source_lines": [
+            20,
+            34
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0003",
+          "original_source_lines": [
+            37,
+            51
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0004",
+          "original_source_lines": [
+            54,
+            62
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0005",
+          "original_source_lines": [
+            65,
+            69
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0006",
+          "original_source_lines": [
+            72,
+            80
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0007",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0008",
+          "original_source_lines": [
+            85,
+            85
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0009",
+          "original_source_lines": [
+            87,
+            87
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0010",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/decrets_divers:p0011",
+          "original_source_lines": [
+            91,
+            133
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0001",
+          "original_source_lines": [
+            1,
+            17
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0002",
+          "original_source_lines": [
+            20,
+            34
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0003",
+          "original_source_lines": [
+            37,
+            51
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0004",
+          "original_source_lines": [
+            54,
+            62
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0005",
+          "original_source_lines": [
+            65,
+            69
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0006",
+          "original_source_lines": [
+            72,
+            80
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0007",
+          "original_source_lines": [
+            83,
+            83
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0008",
+          "original_source_lines": [
+            85,
+            85
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0009",
+          "original_source_lines": [
+            87,
+            87
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0010",
+          "original_source_lines": [
+            89,
+            89
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/decrets_divers:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/decrets_divers:p0011",
+          "original_source_lines": [
+            91,
+            133
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/epilogue",
+      "path": "epilogue.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "f7f039b155a49474c40197aeadba263359e0a3c18b0735b55651b89086c40b3a",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/epilogue:p0001",
+          "original_source_lines": [
+            1,
+            8
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/epilogue:p0002",
+          "original_source_lines": [
+            11,
+            18
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/epilogue:p0003",
+          "original_source_lines": [
+            21,
+            29
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/epilogue:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/epilogue:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/epilogue:b0003",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/epilogue:p0001",
+          "original_source_lines": [
+            1,
+            8
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/epilogue:b0004",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/epilogue:p0002",
+          "original_source_lines": [
+            11,
+            18
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/epilogue:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/epilogue:p0003",
+          "original_source_lines": [
+            21,
+            29
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/prologue",
+      "path": "prologue.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "69499aeceec3b295a00d0430f6d25db6684b47202b0187460a13fb6fb05f102b",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/prologue:p0001",
+          "original_source_lines": [
+            1,
+            7
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/prologue:p0002",
+          "original_source_lines": [
+            10,
+            12
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/prologue:p0003",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/prologue:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/prologue:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/prologue:b0003",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/prologue:p0001",
+          "original_source_lines": [
+            1,
+            7
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/prologue:b0004",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/prologue:p0002",
+          "original_source_lines": [
+            10,
+            12
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/prologue:b0005",
+          "kind": "catala-metadata",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/prologue:p0003",
+          "original_source_lines": [
+            15,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/securite_sociale_D",
+      "path": "securite_sociale_D.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "d3ea9e2f6c97cfe2d7ea12844d0e8326273dc337a05d5b37b57fe0b2d9d53683",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0001",
+          "original_source_lines": [
+            1,
+            13
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0002",
+          "original_source_lines": [
+            16,
+            21
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0003",
+          "original_source_lines": [
+            24,
+            25
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0004",
+          "original_source_lines": [
+            28,
+            34
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0005",
+          "original_source_lines": [
+            37,
+            38
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0006",
+          "original_source_lines": [
+            41,
+            46
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0007",
+          "original_source_lines": [
+            49,
+            50
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0008",
+          "original_source_lines": [
+            53,
+            63
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0009",
+          "original_source_lines": [
+            66,
+            66
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0010",
+          "original_source_lines": [
+            69,
+            75
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0011",
+          "original_source_lines": [
+            78,
+            82
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0012",
+          "original_source_lines": [
+            85,
+            88
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0013",
+          "original_source_lines": [
+            91,
+            98
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0014",
+          "original_source_lines": [
+            101,
+            102
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0015",
+          "original_source_lines": [
+            105,
+            108
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0016",
+          "original_source_lines": [
+            111,
+            112
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0017",
+          "original_source_lines": [
+            115,
+            118
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0018",
+          "original_source_lines": [
+            121,
+            131
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0019",
+          "original_source_lines": [
+            134,
+            136
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_D:p0020",
+          "original_source_lines": [
+            139,
+            141
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0001",
+          "original_source_lines": [
+            1,
+            13
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0002",
+          "original_source_lines": [
+            16,
+            21
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0003",
+          "original_source_lines": [
+            24,
+            25
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0004",
+          "original_source_lines": [
+            28,
+            34
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0005",
+          "original_source_lines": [
+            37,
+            38
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0006",
+          "original_source_lines": [
+            41,
+            46
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0007",
+          "original_source_lines": [
+            49,
+            50
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0008",
+          "original_source_lines": [
+            53,
+            63
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0009",
+          "original_source_lines": [
+            66,
+            66
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0010",
+          "original_source_lines": [
+            69,
+            75
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0011",
+          "original_source_lines": [
+            78,
+            82
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0012",
+          "original_source_lines": [
+            85,
+            88
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0013",
+          "original_source_lines": [
+            91,
+            98
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0014",
+          "original_source_lines": [
+            101,
+            102
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0015",
+          "original_source_lines": [
+            105,
+            108
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0016",
+          "original_source_lines": [
+            111,
+            112
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0017",
+          "original_source_lines": [
+            115,
+            118
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0018",
+          "original_source_lines": [
+            121,
+            131
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0019",
+          "original_source_lines": [
+            134,
+            136
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_D:b0022",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_D:p0020",
+          "original_source_lines": [
+            139,
+            141
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/securite_sociale_L",
+      "path": "securite_sociale_L.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "d4d492086dfc31bd4d8b91b21c2d9b4a5b62b7e5ab9efb2676f2c0a94e343b29",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0001",
+          "original_source_lines": [
+            1,
+            49
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0002",
+          "original_source_lines": [
+            52,
+            53
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0003",
+          "original_source_lines": [
+            56,
+            58
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0004",
+          "original_source_lines": [
+            61,
+            80
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0005",
+          "original_source_lines": [
+            83,
+            89
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0006",
+          "original_source_lines": [
+            92,
+            102
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0007",
+          "original_source_lines": [
+            105,
+            113
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0008",
+          "original_source_lines": [
+            116,
+            122
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0009",
+          "original_source_lines": [
+            125,
+            128
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0010",
+          "original_source_lines": [
+            131,
+            141
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0011",
+          "original_source_lines": [
+            144,
+            153
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0012",
+          "original_source_lines": [
+            156,
+            167
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0013",
+          "original_source_lines": [
+            170,
+            172
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0014",
+          "original_source_lines": [
+            175,
+            183
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0015",
+          "original_source_lines": [
+            186,
+            197
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0016",
+          "original_source_lines": [
+            200,
+            210
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0017",
+          "original_source_lines": [
+            213,
+            224
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0018",
+          "original_source_lines": [
+            227,
+            233
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_L:p0019",
+          "original_source_lines": [
+            235,
+            236
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0001",
+          "original_source_lines": [
+            1,
+            49
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0002",
+          "original_source_lines": [
+            52,
+            53
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0003",
+          "original_source_lines": [
+            56,
+            58
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0004",
+          "original_source_lines": [
+            61,
+            80
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0005",
+          "original_source_lines": [
+            83,
+            89
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0006",
+          "original_source_lines": [
+            92,
+            102
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0007",
+          "original_source_lines": [
+            105,
+            113
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0008",
+          "original_source_lines": [
+            116,
+            122
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0009",
+          "original_source_lines": [
+            125,
+            128
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0010",
+          "original_source_lines": [
+            131,
+            141
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0011",
+          "original_source_lines": [
+            144,
+            153
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0012",
+          "original_source_lines": [
+            156,
+            167
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0013",
+          "original_source_lines": [
+            170,
+            172
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0014",
+          "original_source_lines": [
+            175,
+            183
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0017",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0015",
+          "original_source_lines": [
+            186,
+            197
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0018",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0016",
+          "original_source_lines": [
+            200,
+            210
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0019",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0017",
+          "original_source_lines": [
+            213,
+            224
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0020",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0018",
+          "original_source_lines": [
+            227,
+            233
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_L:b0021",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_L:p0019",
+          "original_source_lines": [
+            235,
+            236
+          ]
+        }
+      ]
+    },
+    {
+      "document_id": "allocations_familiales/securite_sociale_R",
+      "path": "securite_sociale_R.catala_fr",
+      "method": "stripped-gold-fence-locations",
+      "original_sha256": "a39b2c75a89dff075e21b03bf32f013cb3f1083e001ff38bac22fba47ad52c40",
+      "provisions": [
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0001",
+          "original_source_lines": [
+            1,
+            13
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0002",
+          "original_source_lines": [
+            16,
+            18
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0003",
+          "original_source_lines": [
+            21,
+            23
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0004",
+          "original_source_lines": [
+            26,
+            33
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0005",
+          "original_source_lines": [
+            36,
+            37
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0006",
+          "original_source_lines": [
+            40,
+            42
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0007",
+          "original_source_lines": [
+            45,
+            55
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0008",
+          "original_source_lines": [
+            58,
+            61
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0009",
+          "original_source_lines": [
+            64,
+            70
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0010",
+          "original_source_lines": [
+            73,
+            78
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0011",
+          "original_source_lines": [
+            81,
+            83
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0012",
+          "original_source_lines": [
+            86,
+            90
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0013",
+          "original_source_lines": [
+            93,
+            94
+          ]
+        },
+        {
+          "provision_id": "allocations_familiales/securite_sociale_R:p0014",
+          "original_source_lines": [
+            97,
+            108
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0001",
+          "kind": "catala-metadata",
+          "role": "preamble-metadata",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0002",
+          "kind": "catala",
+          "role": "preamble-definitions",
+          "relation": "preamble",
+          "provision_id": null,
+          "original_source_lines": null
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0003",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0001",
+          "original_source_lines": [
+            1,
+            13
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0004",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0002",
+          "original_source_lines": [
+            16,
+            18
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0005",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0003",
+          "original_source_lines": [
+            21,
+            23
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0006",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0004",
+          "original_source_lines": [
+            26,
+            33
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0007",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0005",
+          "original_source_lines": [
+            36,
+            37
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0008",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0006",
+          "original_source_lines": [
+            40,
+            42
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0009",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0007",
+          "original_source_lines": [
+            45,
+            55
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0010",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0008",
+          "original_source_lines": [
+            58,
+            61
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0011",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0009",
+          "original_source_lines": [
+            64,
+            70
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0012",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0010",
+          "original_source_lines": [
+            73,
+            78
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0013",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0011",
+          "original_source_lines": [
+            81,
+            83
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0014",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0012",
+          "original_source_lines": [
+            86,
+            90
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0015",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0013",
+          "original_source_lines": [
+            93,
+            94
+          ]
+        },
+        {
+          "block_id": "allocations_familiales/securite_sociale_R:b0016",
+          "kind": "catala",
+          "role": "provision",
+          "relation": "formalizes-preceding",
+          "provision_id": "allocations_familiales/securite_sociale_R:p0014",
+          "original_source_lines": [
+            97,
+            108
+          ]
+        }
+      ]
+    }
+  ]
+}

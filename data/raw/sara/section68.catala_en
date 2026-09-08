@@ -1,0 +1,90 @@
+<!-- rtdf-document-id: sara/section68 -->
+
+<!-- rtdf-block-id: sara/section68:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: sara/section68:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+§68. Overall limitation on itemized deductions
+
+(a) General rule
+
+In the case of an individual whose adjusted gross income exceeds the applicable amount, the amount of the itemized deductions otherwise allowable for the taxable year shall be reduced by the lesser of-
+
+
+<!-- rtdf-block-id: sara/section68:b0003; role: provision; provision-id: sara/section68(a); source-lines: 3-5; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) 3 percent of the excess of adjusted gross income over the applicable amount, or
+
+
+<!-- rtdf-block-id: sara/section68:b0004; role: provision; provision-id: sara/section68(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) 80 percent of the amount of the itemized deductions otherwise allowable for such taxable year.
+
+
+<!-- rtdf-block-id: sara/section68:b0005; role: provision; provision-id: sara/section68(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
+```catala
+```
+
+(b) Applicable amount
+
+    (1) In general
+
+    For purposes of this section, the term "applicable amount" means-
+
+
+<!-- rtdf-block-id: sara/section68:b0006; role: provision; provision-id: sara/section68(b)(1); source-lines: 13-15; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) $300,000 in the case of a joint return or a surviving spouse (as defined in section 2(a)),
+
+
+<!-- rtdf-block-id: sara/section68:b0007; role: provision; provision-id: sara/section68(b)(1)(A); source-lines: 17-17; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) $275,000 in the case of a head of household (as defined in section 2(b)),
+
+
+<!-- rtdf-block-id: sara/section68:b0008; role: provision; provision-id: sara/section68(b)(1)(B); source-lines: 19-19; relation: formalizes-preceding -->
+```catala
+```
+
+        (C) $250,000 in the case of an individual who is not married and who is not a surviving spouse or head of household, and
+
+
+<!-- rtdf-block-id: sara/section68:b0009; role: provision; provision-id: sara/section68(b)(1)(C); source-lines: 21-21; relation: formalizes-preceding -->
+```catala
+```
+
+        (D) 1/2 the amount applicable under subparagraph (A) in the case of a married individual filing a separate return.
+
+
+<!-- rtdf-block-id: sara/section68:b0010; role: provision; provision-id: sara/section68(b)(1)(D); source-lines: 23-23; relation: formalizes-preceding -->
+```catala
+```
+
+    For purposes of this paragraph, marital status shall be determined under section 7703.
+
+
+<!-- rtdf-block-id: sara/section68:b0011; role: provision; provision-id: sara/section68(b)(1):flush; source-lines: 25-25; relation: formalizes-preceding -->
+```catala
+```
+
+(f) Section not to apply
+
+This section shall not apply to any taxable year beginning after December 31, 2017, and before January 1, 2026.
+
+<!-- rtdf-block-id: sara/section68:b0012; role: provision; provision-id: sara/section68(f); source-lines: 27-29; relation: formalizes-preceding -->
+```catala
+```
+

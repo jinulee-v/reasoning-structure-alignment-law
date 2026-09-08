@@ -1,0 +1,41 @@
+<!-- rtdf-document-id: NSW_community_gaming/nsw_no_draw_lottery -->
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+
+A no-draw lottery is a permitted gaming activity for the purposes of section 10 of the
+Act if the following requirements are complied with—
+(a) the gaming activity is conducted by or on behalf of a charitable organisation
+or a non-profit organisation,
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0003; role: provision; provision-id: NSW_community_gaming/nsw_no_draw_lottery:p0001; source-lines: 2-5; relation: formalizes-preceding -->
+```catala
+```
+
+(b) not less than 40% of the gross proceeds of the gaming activity are paid to the
+benefiting organisation,
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0004; role: provision; provision-id: NSW_community_gaming/nsw_no_draw_lottery:p0002; source-lines: 6-7; relation: formalizes-preceding -->
+```catala
+```
+
+(c) the total value of all of the prizes does not exceed $5,000,
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0005; role: provision; provision-id: NSW_community_gaming/nsw_no_draw_lottery:p0003; source-lines: 8-8; relation: formalizes-preceding -->
+```catala
+```
+
+(d) the total number of tickets produced or obtained for sale for the lottery does
+not exceed 3,000.
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_no_draw_lottery:b0006; role: provision; provision-id: NSW_community_gaming/nsw_no_draw_lottery:p0004; source-lines: 9-10; relation: formalizes-preceding -->
+```catala
+```
+

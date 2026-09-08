@@ -1,0 +1,445 @@
+<!-- rtdf-document-id: aides_logement/autres_sources -->
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+# Montants revalorisés de l'allocation de solidarité aux personnes âgées
+
+Les montants de l'allocation de solidarité aux personnes âgées pour
+2021 et 2022 n'ont pas fait l'objet de publication législative ou réglementaire.
+La raison nous en a été apportée par le bureau BRS de la 6° sous-direction
+de la direction du budget le 12/08/2022:
+
+"- L’article L. 815-4 renvoie à un décret (D. 815-1) la fixation des montants,
+en l’espèce ceux applicables à compter du 1er janvier 2020 (date de la dernière
+revalorisation ayant dérogé au principe de la revalorisation annuelle) ;
+
+- L’article L. 816-2 prévoit le principe de la revalorisation annuelle au 1er
+janvier de chaque année en fonction de l’inflation, par renvoi à l’article
+L. 161-25 ;
+
+- Il n’est nul besoin de prendre un décret chaque année en l’absence de renvoi
+de ce dernier article. Nous prenons une circulaire chaque année à des fins de
+clarification des montants applicables, qui n’a qu’une valeur interprétative.""
+
+À noter que l'article L161-25 doit être interprété de la manière suivante
+pour revaloriser correctement : au 1er janvier de l'année N, on calcule la moyenne
+de l'indice des prix hors-tabac d'octobre N-1 à novembre N-2, que l'on divise
+par cette même moyenne mais cette fois-ci calculée d'octobre N-2 à novembre N-3.
+Cela nous donne le coefficient de revalorisation à appliquer à allocation de
+solidarité aux personnes âgées. Cette méthode nous a été précisément confirmée par
+le bureau BRS de la 6° sous-direction de la direction du budget le 31/08/2022.
+
+Pour éviter de refaire les calculs de revalorisation en Catala, nous prendrons
+comme référence les valeurs de la CNAV rappelées dans des circulaires internes.
+
+## Circulaire de la CNAV 2023-3 du 09/01/2022 "Revalorisation à compter du 1er janvier 2023"
+
+[Lien vers le texte](https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2023_03_09012023.pdf)
+
+Le montant de l’Aspa s’élève, à compter du 1er janvier 2023, à :
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- ---------------
+Personne seule 11 533,02 €    961,08 €
+Couple marié   17 905,06 €    1 492,08 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0003; role: provision; provision-id: aides_logement/autres_sources:p0001; source-lines: 1-40; relation: formalizes-preceding -->
+```catala
+```
+
+
+Pour prétendre à cette allocation non contributive, les plafonds de ressources sont fixés à:
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- -----------------
+Personne seule 11 533,02 €    961,08 €
+Couple marié   17 905,06 €    1 492,08 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0004; role: provision; provision-id: aides_logement/autres_sources:p0002; source-lines: 43-48; relation: formalizes-preceding -->
+```catala
+```
+
+
+## Circulaire de la CNAV 2022-3 du 11/01/2022 "Revalorisation à compter du 1er janvier 2022"
+
+[Lien vers le texte](https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2022_03_11012022.pdf)
+
+Le montant de l’Aspa s’élève, à compter du 1er janvier 2022, à :
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- ---------------
+Personne seule 11 001,44 €    916,78 €
+Couple marié   17 079,77 €    1 423,31 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0005; role: provision; provision-id: aides_logement/autres_sources:p0003; source-lines: 51-60; relation: formalizes-preceding -->
+```catala
+```
+
+
+Pour prétendre à cette allocation non contributive, les plafonds de ressources sont fixés à:
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- -----------------
+Personne seule 11 001,44€     916,78 €
+Couple marié   17 079,77 €    1 423,31 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0006; role: provision; provision-id: aides_logement/autres_sources:p0004; source-lines: 63-68; relation: formalizes-preceding -->
+```catala
+```
+
+
+## Circulaire de la CNAV 2021-1 du 11/01/2021 "Revalorisation à compter du 1er janvier 2021"
+
+[Lien vers le texte](https://legislation.lassuranceretraite.fr/Pdf/circulaire_cnav_2021_01_11012021.pdf)
+
+Le montant de l’Aspa s’élève, à compter du 1er janvier 2022, à :
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- ---------------
+Personne seule 10 881,75 €    906,81 €
+Couple marié   16 893,94 €    1 407,82 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0007; role: provision; provision-id: aides_logement/autres_sources:p0005; source-lines: 71-80; relation: formalizes-preceding -->
+```catala
+```
+
+
+Pour prétendre à cette allocation non contributive, les plafonds de ressources sont fixés à:
+
+Bénéficiaire   Montant annuel Montant mensuel
+-------------- -------------- -----------------
+Personne seule 10 881,75 €    906,81 €
+Couple marié   16 893,94 €    1 407,82 €
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0008; role: provision; provision-id: aides_logement/autres_sources:p0006; source-lines: 83-88; relation: formalizes-preceding -->
+```catala
+```
+
+
+# Ordonnance n° 96-50 du 24 janvier 1996 relative au remboursement de la dette sociale
+
+## Chapitre II : Des contributions pour le remboursement de la dette sociale.
+
+### Article 14 | LEGIARTI000038834962
+
+I.-Il est institué une contribution assise sur les revenus d'activité et de
+remplacement mentionnés à la section 1 du chapitre 4 du titre 3 du livre 1
+du code de la sécurité sociale perçus par les personnes physiques désignées
+à ce même article. Cette contribution est soumise aux conditions prévues aux
+articles L. 136-1-1 à L. 136-4 du même code.
+
+Elle est due jusqu'à l'extinction des missions prévues à l'article 2 de la
+présente ordonnance.
+
+II.-Lorsqu'ils n'entrent pas dans le champ d'application du I, sont également
+soumis à la contribution dans les mêmes conditions et selon les mêmes
+modalités :
+
+7° Les aides personnelles au logement mentionnées à l'article L. 821-1 du
+code de la construction et de l'habitation ;
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0009; role: provision; provision-id: aides_logement/autres_sources:p0007; source-lines: 91-111; relation: formalizes-preceding -->
+```catala
+```
+
+
+8° Les prestations visées à l'article L. 511-1 et au chapitre V du titre V
+du livre VII du code de la sécurité sociale, à l'exception de l'allocation
+d'éducation de l'enfant handicapé ;
+
+9° La prime d'activité mentionnée à l' article L. 841-1 du code de la sécurité
+sociale .
+
+III.-La contribution due sur les prestations visées aux 7°, 8° et 9° du II est
+précomptée par l'organisme débiteur dans les conditions prévues à l' article
+L. 131-1 du code de la sécurité sociale .
+
+La contribution prévue au I est recouvrée et contrôlée dans les conditions et
+sous les garanties et sanctions visées à l' article L. 136-5 du code de la
+sécurité sociale .
+
+IV.-Les prestations visées au 8° du II, à l'exception de l'allocation logement
+mentionnée aux articles L. 542-1 et L. 755-21 du code de la sécurité sociale,
+ne sont assujetties à la contribution qu'à compter du 1er janvier 1997.
+
+NOTA :
+Conformément aux dispositions de l'article 16 de l'ordonnance n° 2018-474 du
+12 juin 2018, les dispositions de la présente ordonnance s'appliquent aux
+cotisations et contributions dues pour les périodes courant à compter du
+1er septembre 2018.
+
+### Article 19 | LEGIARTI000041466982
+
+Le taux des contributions instituées par les articles 14 à 17 est fixé à 0,5 %.
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0010; role: provision; provision-id: aides_logement/autres_sources:p0008; source-lines: 114-141; relation: formalizes-preceding -->
+```catala
+```
+
+
+Le taux de la contribution instituée au I de l'article 18 est fixé à 2,2 %.
+Le taux de la contribution instituée au III de l'article 18 est fixé à 3 %.
+
+NOTA :
+
+Conformément aux dispositions du VIII de l'article 138 de la loi n° 2019-486 du
+22 mai 2019, ces dispositions entrent en vigueur le 1er janvier 2020.
+
+Conformément au A du VI de l'article 28 de la loi n° 2019-1479 du 28 décembre 2019,
+ces dispositions entrent en vigueur le 1er janvier 2020.
+
+
+# Conseil d'État, 5ème - 4ème chambres réunies, 21/07/2017, 398563 | CETATEXT000035260342
+
+Vu la procédure suivante :
+
+M. A...B...a demandé au tribunal administratif de Rennes d'annuler la décision
+du 15 octobre 2014 par laquelle la caisse d'allocations familiales les
+Côtes-d'Armor, après avis de la commission de recours amiable, a refusé de
+lui accorder le bénéfice de l'aide personnalisée au logement. Par un jugement
+n° 1405338 du 4 février 2016, le tribunal administratif a fait droit à cette
+demande.
+
+Par un pourvoi sommaire et un mémoire complémentaire, enregistrés au secrétariat
+du contentieux du Conseil d'Etat le 6 avril et le 5 juillet 2016, le ministre
+du logement et de l'habitat durable demande au Conseil d'Etat d'annuler ce
+jugement.
+
+Vu les autres pièces du dossier ;
+
+Vu :
+
+- le code civil ;
+- le code de la construction et de l'habitation ;
+- le code de la sécurité sociale ;
+- le code de justice administrative ;
+
+Après avoir entendu en séance publique :
+
+- le rapport de M. Alain Seban, conseiller d'Etat,
+- les conclusions de M. Nicolas Polge, rapporteur public.
+
+1. Considérant qu'il ressort des pièces du dossier soumis au juge du fond que
+M. B... a sollicité de la caisse d'allocations familiales des Côtes d'Armor le
+bénéfice de l'aide personnalisée au logement ; que cette demande a été rejetée
+par une décision du 16 mai 2014, confirmée sur recours amiable le 15 octobre
+2014 ; que le ministre du logement et de l'habitat durable se pourvoit en
+cassation contre le jugement du 4 février 2016 par lequel le magistrat délégué
+par le président du tribunal administratif de Rennes a annulé cette décision
+au motif que la caisse d'allocations familiales n'avait pu légalement se fonder
+sur la circonstance que la fille de l'intéressé résidait alternativement chez
+ses deux parents séparés pour refuser de la prendre en compte pour l'application
+du barème de l'aide ;
+
+2. Considérant que l'article L. 351-3 du code de la construction et de
+l'habitation dispose que l'aide personnalisée au logement est calculée en
+fonction d'un barème qui prend notamment en compte " la situation de famille
+du demandeur de l'aide occupant le logement et le nombre de personnes à charge
+vivant habituellement au foyer " ; qu'aux termes de l'article R. 351-8 du même
+code : " Sont considérés comme personnes à charge au sens des titres III à V du
+présent livre, sous réserve qu'ils vivent habituellement au foyer : /
+1° Les enfants ouvrant droit aux prestations familiales (...) " ;
+
+3. Considérant, d'une part, qu'aux termes du deuxième alinéa de l'article
+L. 521-2 du code de la sécurité sociale : " En cas de résidence alternée de
+l'enfant au domicile de chacun des parents telle que prévue à l'article 373-2-9
+du code civil, mise en oeuvre de manière effective, (...) la charge de l'enfant
+pour le calcul des allocations familiales est partagée par moitié entre les deux
+parents soit sur demande conjointe des parents, soit si les parents sont en
+désaccord sur la désignation de l'allocataire " ; qu'il résulte de ces
+dispositions que les enfants en situation de résidence alternée sont pris en
+compte pour le calcul des allocations familiales ; qu'ainsi, le ministre n'est
+pas fondé à soutenir qu'un " principe d'unicité de l'allocataire " s'opposerait
+à la prise en compte de ces enfants pour la détermination du montant de l'aide
+personnalisée au logement ;
+
+4. Considérant, d'autre part, que, pour l'application des articles L. 351-3 et
+R. 351-8 du code de la construction et de l'habitation cités ci-dessus, les
+enfants en situation de garde alternée doivent être regardés comme vivant
+habituellement au foyer de chacun de leurs deux parents ; qu'ils doivent,
+par suite, être pris en compte pour le calcul de l'aide personnalisée au
+logement sollicitée, le cas échéant, par chacun des deux parents, qui ne peut
+toutefois prétendre à une aide déterminée sur cette base qu'au titre de la
+période cumulée pendant laquelle il accueille l'enfant à son domicile au cours
+de l'année ;
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0011; role: provision; provision-id: aides_logement/autres_sources:p0009; source-lines: 144-228; relation: formalizes-preceding -->
+```catala
+```
+
+
+5. Considérant qu'il résulte de ce qui précède que le ministre du logement et
+de l'habitat durable n'est pas fondé à demander l'annulation du jugement qu'il
+attaque ;
+
+D E C I D E :
+
+--------------
+
+Article 1er : Le pourvoi du ministre du logement et de l'habitat durable est rejeté.
+
+Article 2 : La présente décision sera notifiée au ministre de la cohésion
+des territoires, à M. A... B...et à la caisse d'allocations familiales des Côtes-d'Armor.
+
+ECLI:FR:CECHR:2017:398563.20170721
+
+# Règlement (CE) n°2866/98 du conseil du 31 décembre 1998 concernant les taux de conversion entre l'euro et les monnaies des États membres adoptant l'euro
+
+## Article premier
+
+1 euro = 6,55957 francs français
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0012; role: provision; provision-id: aides_logement/autres_sources:p0010; source-lines: 231-250; relation: formalizes-preceding -->
+```catala
+```
+
+
+# Décret n° 2021-1750 du 21 décembre 2021 portant diverses mesures sur les aides personnelles au logement et relatif aux aides personnelles au logement à Saint-Pierre-et-Miquelon
+
+## Article 6 | JORFARTI000044547640
+
+Les dispositions du présent décret s'appliquent aux contributions et aux prestations dues
+à compter du 1er janvier 2022, sous réserve du 2° et 3° de l'article 1er et du 3° de l'article
+6 quater du décret n° 2002-120 du 30 janvier 2002 susvisé dans sa rédaction résultant de l'article
+3 qui entrent en vigueur le 1er janvier 2023 ainsi que des dispositions de l'article 7.
+
+## Article 7 | JORFARTI000044547643
+
+Par dérogation aux dispositions de l'article D. 823-9 du code de la construction et de l'habitation
+issues de l'article 2 du présent décret, pour les ménages bénéficiaires des aides personnelles au
+logement à Saint-Pierre-et-Miquelon mentionnées à cet article, le montant mensuel de l'aide due au
+titre du mois de janvier 2022 jusqu'au mois de décembre 2025 est calculé selon la formule suivante :
+
+ALspm = ALt × (1 - (2026-n) / 8)
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0013; role: provision; provision-id: aides_logement/autres_sources:p0011; source-lines: 253-269; relation: formalizes-preceding -->
+```catala
+```
+
+
+Dans laquelle :
+
+1° « ALspm » est l'aide mensuelle due aux bénéficiaires de l'aide personnelle au logement à
+Saint-Pierre-et-Miquelon au titre du mois considéré, entre janvier 2022 et décembre 2025 ;
+
+2° « ALt » est l'aide mensuelle théorique calculée en application des dispositions du livre VIII du
+code précité, le cas échéant adaptées selon les dispositions de l'article 2 du présent décret ;
+
+3° « n » correspond à l'année au titre de laquelle l'aide est due. Les dispositions du présent article
+peuvent être modifiées par décret.
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0014; role: provision; provision-id: aides_logement/autres_sources:p0012; source-lines: 272-281; relation: formalizes-preceding -->
+```catala
+```
+
+
+# Code général des collectivités territoriales
+
+## Partie législative
+
+### Sixième partie : collectivités d'outre-mer régies par l'article 74 de la constitution
+
+#### Livre IV : Saint-Pierre-et-Miquelon
+
+##### Titre Ier : Dispositions générales
+
+###### Chapitre IV : Compétences
+
+####### Article LO6414-1 | LEGIARTI000006394300
+
+I. – La collectivité exerce les compétences dévolues par les lois et
+règlements en vigueur aux départements et aux régions, à l'exception de celles
+relatives :
+
+1° A la construction et à l'entretien général et technique ainsi qu'au
+fonctionnement des collèges et des lycées, à l'accueil, à la restauration et à
+l'hébergement dans ces établissements, au recrutement et à la gestion des
+personnels techniciens et ouvriers de service exerçant ces missions dans les
+collèges et les lycées ;
+
+2° A la construction, à l'aménagement, à l'entretien et à la gestion de la
+voirie classée en route nationale ;
+
+3° A la lutte contre les maladies vectorielles ;
+
+4° A la police de la circulation sur le domaine de la collectivité ;
+
+5° Aux bibliothèques régionales et bibliothèques de prêt départementales ;
+
+6° Au financement des moyens des services d'incendie et de secours.
+
+II. – La collectivité fixe les règles applicables dans les matières suivantes
+:
+
+1° Impôts, droits et taxes ; cadastre ;
+
+
+<!-- rtdf-block-id: aides_logement/autres_sources:b0015; role: provision; provision-id: aides_logement/autres_sources:p0013; source-lines: 284-322; relation: formalizes-preceding -->
+```catala
+```
+
+
+2° Régime douanier, à l'exclusion des prohibitions à l'importation et à
+l'exportation qui relèvent de l'ordre public et des engagements internationaux
+de la France et des règles relatives à la recherche, à la constatation des
+infractions pénales et à la procédure contentieuse ;
+
+3° Urbanisme ; construction ; habitation ; logement ;
+
+4° Création et organisation des services et des établissements publics de la
+collectivité.
+
+Par dérogation au 3°, les autorités de l'Etat délivrent, dans le cadre de la
+réglementation applicable à Saint-Pierre-et-Miquelon et après avis du conseil
+exécutif, les autorisations ou actes relatifs à l'utilisation et à
+l'occupation du sol concernant les constructions, installations ou travaux
+réalisés pour le compte de l'Etat et ses établissements publics.
+
+III. – Dans les conditions prévues à l'article LO 6461-3 , la collectivité peut
+édicter des peines contraventionnelles destinées à réprimer les infractions
+pénales aux règles qu'elle édicte dans les matières mentionnées au II.
+
+IV. – Dans les conditions prévues à l'article LO 6461-5 , la collectivité peut
+adapter les lois et règlements en vigueur localement.
+
+V. – 1. Une convention entre l'Etat et la collectivité détermine, aux fins
+notamment d'éviter les doubles impositions et de prévenir l'évasion fiscale,
+les obligations de la collectivité en matière de communication d'informations
+à des fins fiscales. La collectivité transmet à l'Etat toute information utile
+pour l'application de sa réglementation relative aux impôts, droits et taxes,
+ainsi que pour l'exécution des clauses d'échange de renseignements prévues par
+les conventions fiscales conclues par la France avec d'autres Etats ou
+territoires.
+
+2. Sans préjudice de l'exercice par la collectivité de sa compétence en
+   matière d'impôts, droits et taxes, l'Etat peut instituer des taxes
+   destinées à être perçues à l'occasion de l'exercice des missions d'intérêt
+   général qui lui incombent dans le cadre de ses compétences.
+
+Une convention conclue entre l'Etat et la collectivité précise les modalités
+d'application du présent 2 afin de déterminer les modalités de recouvrement et
+de gestion des recettes destinées au financement de la sécurité aérienne.
+
+VI. – La réglementation particulière à Saint-Pierre-et-Miquelon relative au
+contrôle sanitaire, vétérinaire et phytosanitaire et au fonctionnement des
+stations de quarantaine animale ne peut être modifiée qu'après avis du conseil
+territorial.

@@ -1,0 +1,324 @@
+<!-- rtdf-document-id: sara/section3306 -->
+
+<!-- rtdf-block-id: sara/section3306:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: sara/section3306:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+§3306. Definitions
+
+(a) Employer
+
+    (1) In general
+
+    The term "employer" means, with respect to any calendar year, any person who-
+
+
+<!-- rtdf-block-id: sara/section3306:b0003; role: provision; provision-id: sara/section3306(a)(1); source-lines: 5-7; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) during the calendar year or the preceding calendar year paid wages of $1,500 or more, or
+
+
+<!-- rtdf-block-id: sara/section3306:b0004; role: provision; provision-id: sara/section3306(a)(1)(A); source-lines: 9-9; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) on each of some 10 days during the calendar year or during the preceding calendar year, each day being in a different calendar week, employed at least one individual in employment for some portion of the day.
+
+
+<!-- rtdf-block-id: sara/section3306:b0005; role: provision; provision-id: sara/section3306(a)(1)(B); source-lines: 11-11; relation: formalizes-preceding -->
+```catala
+```
+
+    For purposes of this paragraph, there shall not be taken into account any wages paid to, or employment of, an employee performing domestic services referred to in paragraph (3).
+
+
+<!-- rtdf-block-id: sara/section3306:b0006; role: provision; provision-id: sara/section3306(a)(1):flush; source-lines: 13-13; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) Agricultural labor
+
+    In the case of agricultural labor, the term "employer" means, with respect to any calendar year, any person who-
+
+
+<!-- rtdf-block-id: sara/section3306:b0007; role: provision; provision-id: sara/section3306(a)(2); source-lines: 15-17; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) during the calendar year or the preceding calendar year paid wages of $20,000 or more for agricultural labor, or
+
+
+<!-- rtdf-block-id: sara/section3306:b0008; role: provision; provision-id: sara/section3306(a)(2)(A); source-lines: 19-19; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) on each of some 10 days during the calendar year or during the preceding calendar year, each day being in a different calendar week, employed at least 5 individuals in employment in agricultural labor for some portion of the day.
+
+
+<!-- rtdf-block-id: sara/section3306:b0009; role: provision; provision-id: sara/section3306(a)(2)(B); source-lines: 21-21; relation: formalizes-preceding -->
+```catala
+```
+
+    (3) Domestic service
+
+    In the case of domestic service in a private home, local college club, or local chapter of a college fraternity or sorority, the term "employer" means, with respect to any calendar year, any person who during the calendar year or the preceding calendar year paid wages in cash of $1,000 or more for such service.
+
+
+<!-- rtdf-block-id: sara/section3306:b0010; role: provision; provision-id: sara/section3306(a)(3); source-lines: 23-25; relation: formalizes-preceding -->
+```catala
+```
+
+    (4) Special rule
+
+    A person treated as an employer under paragraph (3) shall not be treated as an employer with respect to wages paid for any service other than domestic service referred to in paragraph (3) unless such person is treated as an employer under paragraph (1) or (2) with respect to such other service.
+
+
+<!-- rtdf-block-id: sara/section3306:b0011; role: provision; provision-id: sara/section3306(a)(4); source-lines: 27-29; relation: formalizes-preceding -->
+```catala
+```
+
+(b) Wages
+
+For purposes of this chapter, the term "wages" means all remuneration for employment, including the cash value of all remuneration (including benefits) paid in any medium other than cash; except that such term shall not include-
+
+
+<!-- rtdf-block-id: sara/section3306:b0012; role: provision; provision-id: sara/section3306(b); source-lines: 31-33; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) that part of the remuneration which, after remuneration (other than remuneration referred to in the succeeding paragraphs of this subsection) equal to $7,000 with respect to employment has been paid to an individual by an employer during any calendar year, is paid to such individual by such employer during such calendar year;
+
+
+<!-- rtdf-block-id: sara/section3306:b0013; role: provision; provision-id: sara/section3306(b)(1); source-lines: 35-35; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) the amount of any payment (including any amount paid by an employer for insurance or annuities, or into a fund, to provide for any such payment) made to, or on behalf of, an employee or any of his dependents under a plan or system established by an employer which makes provision for his employees generally (or for his employees generally and their dependents) or for a class or classes of his employees (or for a class or classes of his employees and their dependents), on account of-
+
+
+<!-- rtdf-block-id: sara/section3306:b0014; role: provision; provision-id: sara/section3306(b)(2); source-lines: 37-37; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) sickness or accident disability, or
+
+
+<!-- rtdf-block-id: sara/section3306:b0015; role: provision; provision-id: sara/section3306(b)(2)(A); source-lines: 39-39; relation: formalizes-preceding -->
+```catala
+```
+
+        (C) death;
+
+
+<!-- rtdf-block-id: sara/section3306:b0016; role: provision; provision-id: sara/section3306(b)(2)(C); source-lines: 41-41; relation: formalizes-preceding -->
+```catala
+```
+
+    (7) remuneration paid in any medium other than cash to an employee for service not in the course of the employer's trade or business;
+
+
+<!-- rtdf-block-id: sara/section3306:b0017; role: provision; provision-id: sara/section3306(b)(7); source-lines: 43-43; relation: formalizes-preceding -->
+```catala
+```
+
+    (10) any payment or series of payments by an employer to an employee or any of his dependents which is paid-
+
+
+<!-- rtdf-block-id: sara/section3306:b0018; role: provision; provision-id: sara/section3306(b)(10); source-lines: 45-45; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) upon or after the termination of an employee's employment relationship because of (i) death, or (ii) retirement for disability, and
+
+
+<!-- rtdf-block-id: sara/section3306:b0019; role: provision; provision-id: sara/section3306(b)(10)(A); source-lines: 47-47; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) under a plan established by the employer which makes provision for his employees generally or a class or classes of his employees (or for such employees or class or classes of employees and their dependents),
+
+
+<!-- rtdf-block-id: sara/section3306:b0020; role: provision; provision-id: sara/section3306(b)(10)(B); source-lines: 49-49; relation: formalizes-preceding -->
+```catala
+```
+
+    other than any such payment or series of payments which would have been paid if the employee's employment relationship had not been so terminated;
+
+
+<!-- rtdf-block-id: sara/section3306:b0021; role: provision; provision-id: sara/section3306(b)(10):flush; source-lines: 51-51; relation: formalizes-preceding -->
+```catala
+```
+
+    (11) remuneration for agricultural labor paid in any medium other than cash;
+
+
+<!-- rtdf-block-id: sara/section3306:b0022; role: provision; provision-id: sara/section3306(b)(11); source-lines: 53-53; relation: formalizes-preceding -->
+```catala
+```
+
+    (15) any payment made by an employer to a survivor or the estate of a former employee after the calendar year in which such employee died;
+
+
+<!-- rtdf-block-id: sara/section3306:b0023; role: provision; provision-id: sara/section3306(b)(15); source-lines: 55-55; relation: formalizes-preceding -->
+```catala
+```
+
+(c) Employment
+
+For purposes of this chapter, the term "employment" means any service, of whatever nature,
+
+
+<!-- rtdf-block-id: sara/section3306:b0024; role: provision; provision-id: sara/section3306(c); source-lines: 57-59; relation: formalizes-preceding -->
+```catala
+```
+
+    (A) performed by an employee for the person employing him, irrespective of the citizenship or residence of either, within the United States, and
+
+
+<!-- rtdf-block-id: sara/section3306:b0025; role: provision; provision-id: sara/section3306(c)(A); source-lines: 61-61; relation: formalizes-preceding -->
+```catala
+```
+
+    (B) performed outside the United States (except in a contiguous country with which the United States has an agreement relating to unemployment compensation) by a citizen of the United States as an employee of an American employer, except-
+
+
+<!-- rtdf-block-id: sara/section3306:b0026; role: provision; provision-id: sara/section3306(c)(B); source-lines: 63-63; relation: formalizes-preceding -->
+```catala
+```
+
+    (1) agricultural labor unless-
+
+
+<!-- rtdf-block-id: sara/section3306:b0027; role: provision; provision-id: sara/section3306(c)(1); source-lines: 65-65; relation: formalizes-preceding -->
+```catala
+```
+
+        (A) such labor is performed for a person who-
+
+
+<!-- rtdf-block-id: sara/section3306:b0028; role: provision; provision-id: sara/section3306(c)(1)(A); source-lines: 67-67; relation: formalizes-preceding -->
+```catala
+```
+
+            (i) during the calendar year or the preceding calendar year paid remuneration in cash of $20,000 or more to individuals employed in agricultural labor (including labor performed by an alien referred to in subparagraph (B)), or
+
+
+<!-- rtdf-block-id: sara/section3306:b0029; role: provision; provision-id: sara/section3306(c)(1)(A)(i); source-lines: 69-69; relation: formalizes-preceding -->
+```catala
+```
+
+            (ii) on each of some 10 days during the calendar year or the preceding calendar year, each day being in a different calendar week, employed in agricultural labor (including labor performed by an alien referred to in subparagraph (B)) for some portion of the day (whether or not at the same moment of time) 5 or more individuals; and
+
+
+<!-- rtdf-block-id: sara/section3306:b0030; role: provision; provision-id: sara/section3306(c)(1)(A)(ii); source-lines: 71-71; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) such labor is not agricultural labor performed by an individual who is an alien admitted to the United States to perform agricultural labor pursuant to sections 214(c) and 101(a)(15)(H) of the Immigration and Nationality Act.
+
+
+<!-- rtdf-block-id: sara/section3306:b0031; role: provision; provision-id: sara/section3306(c)(1)(B); source-lines: 73-73; relation: formalizes-preceding -->
+```catala
+```
+
+    (2) domestic service in a private home, local college club, or local chapter of a college fraternity or sorority unless performed for a person who paid cash remuneration of $1,000 or more to individuals employed in such domestic service in the calendar year or the preceding calendar year;
+
+
+<!-- rtdf-block-id: sara/section3306:b0032; role: provision; provision-id: sara/section3306(c)(2); source-lines: 75-75; relation: formalizes-preceding -->
+```catala
+```
+
+    (5) 
+
+        (A) service performed by an individual in the employ of his son, daughter, or spouse;
+
+
+<!-- rtdf-block-id: sara/section3306:b0033; role: provision; provision-id: sara/section3306(c)(5)(A); source-lines: 79-79; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) service performed by a child under the age of 21 in the employ of his father or mother;
+
+
+<!-- rtdf-block-id: sara/section3306:b0034; role: provision; provision-id: sara/section3306(c)(5)(B); source-lines: 81-81; relation: formalizes-preceding -->
+```catala
+```
+
+    (6) service performed in the employ of the United States Government
+
+
+<!-- rtdf-block-id: sara/section3306:b0035; role: provision; provision-id: sara/section3306(c)(6); source-lines: 83-83; relation: formalizes-preceding -->
+```catala
+```
+
+    (7) service performed in the employ of a State, or any political subdivision thereof.
+
+
+<!-- rtdf-block-id: sara/section3306:b0036; role: provision; provision-id: sara/section3306(c)(7); source-lines: 85-85; relation: formalizes-preceding -->
+```catala
+```
+
+    (10)
+
+        (A) service performed in the employ of a school, college, or university, if such service is performed
+
+
+<!-- rtdf-block-id: sara/section3306:b0037; role: provision; provision-id: sara/section3306(c)(10)(A); source-lines: 89-89; relation: formalizes-preceding -->
+```catala
+```
+
+            (i) by a student who is enrolled and is regularly attending classes at such school, college, or university, or
+
+
+<!-- rtdf-block-id: sara/section3306:b0038; role: provision; provision-id: sara/section3306(c)(10)(A)(i); source-lines: 91-91; relation: formalizes-preceding -->
+```catala
+```
+
+            (ii) by the spouse of such a student, or
+
+
+<!-- rtdf-block-id: sara/section3306:b0039; role: provision; provision-id: sara/section3306(c)(10)(A)(ii); source-lines: 93-93; relation: formalizes-preceding -->
+```catala
+```
+
+        (B) service performed in the employ of a hospital, if such service is performed by a patient of such hospital;
+
+
+<!-- rtdf-block-id: sara/section3306:b0040; role: provision; provision-id: sara/section3306(c)(10)(B); source-lines: 95-95; relation: formalizes-preceding -->
+```catala
+```
+
+    (11) service performed in the employ of a foreign government (including service as a consular or other officer or employee or a nondiplomatic representative);
+
+
+<!-- rtdf-block-id: sara/section3306:b0041; role: provision; provision-id: sara/section3306(c)(11); source-lines: 97-97; relation: formalizes-preceding -->
+```catala
+```
+
+    (13) service performed as a student nurse in the employ of a hospital or a nurses' training school by an individual who is enrolled and is regularly attending classes in a nurses' training school;
+
+
+<!-- rtdf-block-id: sara/section3306:b0042; role: provision; provision-id: sara/section3306(c)(13); source-lines: 99-99; relation: formalizes-preceding -->
+```catala
+```
+
+    (16) service performed in the employ of an international organization;
+
+
+<!-- rtdf-block-id: sara/section3306:b0043; role: provision; provision-id: sara/section3306(c)(16); source-lines: 101-101; relation: formalizes-preceding -->
+```catala
+```
+
+    (21) service performed by a person committed to a penal institution.
+
+<!-- rtdf-block-id: sara/section3306:b0044; role: provision; provision-id: sara/section3306(c)(21); source-lines: 103-103; relation: formalizes-preceding -->
+```catala
+```
+

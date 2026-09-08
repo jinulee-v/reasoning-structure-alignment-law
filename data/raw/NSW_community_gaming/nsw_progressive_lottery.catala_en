@@ -1,0 +1,28 @@
+<!-- rtdf-document-id: NSW_community_gaming/nsw_progressive_lottery -->
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_progressive_lottery:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+```catala-metadata
+```
+
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_progressive_lottery:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+```
+
+
+  A progressive lottery is a permitted gaming activity for the purposes of section 10 of
+  the Act if the following requirements are complied with—
+  (a) the maximum amount of money payable as a prize does not exceed $7,000,
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_progressive_lottery:b0003; role: provision; provision-id: NSW_community_gaming/nsw_progressive_lottery:p0001; source-lines: 2-4; relation: formalizes-preceding -->
+```catala
+```
+
+  (b) if the total value of all the prizes exceeds $30,000, the person conducting the
+  activity holds an authority to do so that is in force and the activity is conducted
+  in accordance with the authority.
+
+<!-- rtdf-block-id: NSW_community_gaming/nsw_progressive_lottery:b0004; role: provision; provision-id: NSW_community_gaming/nsw_progressive_lottery:p0002; source-lines: 5-7; relation: formalizes-preceding -->
+```catala
+```
+
