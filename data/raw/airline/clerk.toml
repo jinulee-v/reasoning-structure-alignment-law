@@ -1,0 +1,4 @@
+[project]
+build_dir = "_build"
+target_dir = "_targets"
+include_dirs = ["."]

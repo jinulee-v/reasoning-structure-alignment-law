@@ -17,3 +17,5 @@ _minted*
 *.py
 *.xdv
 *.json
+
+# We intentially remove archive.catala_fr for tractability.
