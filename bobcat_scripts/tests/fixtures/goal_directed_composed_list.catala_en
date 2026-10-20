@@ -1,0 +1,17 @@
+# Filter-map-reduce composition uses one symbolic bounded-list semantics.
+
+```catala
+declaration scope ComposedListGoal:
+  input values content list of integer
+  output result content integer
+
+scope ComposedListGoal:
+  definition result equals
+    if (minimum of
+          (map each value among
+             (list of value among values such that value >= 0)
+           to (if value > 10 then 100 else value))
+        or if list empty then -1) > 5
+    then 1
+    else 0
+```

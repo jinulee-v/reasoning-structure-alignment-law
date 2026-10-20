@@ -1,5 +1,5 @@
 % Text
-% Alice paid Bob for agricultural labor from Feb 1st, 2019 to November 19th, 2019, paying him $27371 in 2019. On November 25th, Bob died from a heart attack. On January 20th, 2020, Alice paid Charlie, Bob's surviving spouse, Bob's outstanding wages of $24500. In 2020, Alice's gross income was $372109. Alice receives a deduction of $25000 for donating goods to a food bank.
+% Alice paid Bob for agricultural labor from Feb 1st, 2019 to November 19th, 2019, paying him $27371 in 2019. On November 25th, Bob died from a heart attack. On January 20th, 2020, Alice paid Charlie, Bob's surviving spouse, Bob's outstanding wages of $24500. In 2020, Alice's gross income was $372109. Alice receives a deduction of $25000 for donating goods to a food bank. Alice elects to itemize her deductions for 2020.
 
 % Question
 % How much tax does Alice have to pay in 2020? $118227

@@ -1,5 +1,5 @@
 % Text
-% Alice has paid $4512 to Bob for work done from Feb 1st, 2005 to Sep 2nd, 2005. In 2005, Alice was paid $133200. Alice is allowed itemized deductions of $2939 and $8744.
+% Alice has paid $4512 to Bob for work done from Feb 1st, 2005 to Sep 2nd, 2005. In 2005, Alice was paid $133200. Alice is allowed itemized deductions of $2939 and $8744. Alice elects to itemize her deductions for 2005.
 
 % Question
 % How much tax does Alice have to pay in 2005? $33069

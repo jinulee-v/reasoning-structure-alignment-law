@@ -1,0 +1,9 @@
+; Built by `cutecatlib.branches`, against the libraries the CUTECat switch
+; installs.  A Catala plugin, so that it sees exactly the dcalc program that
+; `catala interpret --code-coverage` measures --- same pass, same options,
+; therefore the same source positions on both sides of the join.
+(executable
+ (name catala_branches)
+ (modes plugin)
+ (flags (-linkall))
+ (libraries catala.shared_ast catala.driver))

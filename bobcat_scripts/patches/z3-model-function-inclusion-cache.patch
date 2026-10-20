@@ -1,0 +1,34 @@
+--- a/src/smt/smt_model_generator.cpp
++++ b/src/smt/smt_model_generator.cpp
+@@ -401,6 +401,18 @@
+        The "else" is missing.
+     */
+     void model_generator::mk_func_interps() {
++        // The solver context is fixed throughout this model-construction phase.
++        // In particular, datatype eligibility scans all applications of f;
++        // recomputing it for each occurrence makes this phase quadratic.
++        obj_map<func_decl, bool> inclusion_cache;
++        auto include = [&](func_decl* f) {
++            bool result;
++            if (inclusion_cache.find(f, result))
++                return result;
++            result = include_func_interp(f);
++            inclusion_cache.insert(f, result);
++            return result;
++        };
+         unsigned sz = m_context->get_num_e_internalized();
+         for (unsigned i = 0; i < sz; i++) {
+             expr * t  = m_context->get_e_internalized(i);
+@@ -409,10 +421,10 @@
+             enode * n         = m_context->get_enode(t);
+             unsigned num_args = n->get_num_args();
+             func_decl * f     = n->get_decl();
+-            if (num_args == 0 && include_func_interp(f)) {
++            if (num_args == 0 && include(f)) {
+                 m_model->register_decl(f, get_value(n));
+             }
+-            else if (num_args > 0 && n->get_cg() == n && include_func_interp(f)) {
++            else if (num_args > 0 && n->get_cg() == n && include(f)) {
+                 ptr_buffer<expr> args;
+                 expr * result = get_value(n);
+                 SASSERT(result);

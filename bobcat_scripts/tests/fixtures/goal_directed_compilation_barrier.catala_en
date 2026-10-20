@@ -1,0 +1,13 @@
+# A goal encountered before a later assertion must not be solved against a
+# partially compiled formula.
+
+```catala
+declaration scope CompilationBarrierGoal:
+  input value content integer
+  output result content integer
+
+scope CompilationBarrierGoal:
+  definition result equals
+    if value = 0 then 1 else 2
+  assertion value != 0
+```

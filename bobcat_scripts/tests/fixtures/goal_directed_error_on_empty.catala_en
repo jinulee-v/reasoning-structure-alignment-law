@@ -1,0 +1,11 @@
+# A bare reduction inserts ErrorOnEmpty and therefore requires a nonempty list.
+
+```catala
+declaration scope ErrorOnEmptyGoal:
+  input values content list of integer
+  output result content integer
+
+scope ErrorOnEmptyGoal:
+  definition result equals
+    if minimum of values < 0 then 1 else 0
+```

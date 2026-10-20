@@ -1,0 +1,13 @@
+# BOBCat output-rooted slicing regression fixture
+
+```catala
+declaration scope OutputSlice:
+  input choose_left content boolean
+  input choose_right content boolean
+  output left content integer
+  output right content integer
+
+scope OutputSlice:
+  definition left equals if choose_left then 1 else 2
+  definition right equals if choose_right then 3 else 4
+```

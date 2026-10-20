@@ -1,0 +1,13 @@
+# A value outside the branch slice must still be defined for successful replay.
+
+```catala
+declaration scope UnrelatedEmpty:
+  input flag content boolean
+  input values content list of integer
+  output result content integer
+  output required content integer
+
+scope UnrelatedEmpty:
+  definition result equals if flag then 1 else 0
+  definition required equals minimum of values
+```

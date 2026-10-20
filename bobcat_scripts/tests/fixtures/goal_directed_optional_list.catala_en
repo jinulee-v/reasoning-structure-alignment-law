@@ -1,0 +1,14 @@
+# BOBCat optional-list JSON model regression fixture
+
+```catala
+declaration scope OptionalListGoal:
+  input xs content list of optional of integer
+  output hit content boolean
+
+scope OptionalListGoal:
+  definition hit equals
+    exists x among xs such that
+      (match x with pattern
+       -- Absent: false
+       -- Present content value: value > 0)
+```

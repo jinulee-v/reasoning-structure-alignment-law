@@ -1,0 +1,15 @@
+# Mapping can grow a nested list beyond the input bound.
+
+```catala
+declaration scope NestedGrowth:
+  input xs content list of integer
+  output result content boolean
+
+scope NestedGrowth:
+  definition result equals
+    if (exists ys among
+          (map each x among (list of x among xs such that x > 0)
+           to [x; 0 - x])
+        such that (exists y among ys such that y < 0))
+    then true else false
+```

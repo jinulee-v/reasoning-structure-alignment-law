@@ -1,0 +1,40 @@
+From a031ba19afc177ca6d1782a434849f1c7810cd85 Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 17:10:53 -0500
+Subject: [PATCH] Seal BOBCat compilation before solving objectives
+
+---
+ compiler/bobcat/interpreter.ml | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
+diff --git a/compiler/bobcat/interpreter.ml b/compiler/bobcat/interpreter.ml
+index 53cfbb2b..0b951e42 100644
+--- a/compiler/bobcat/interpreter.ml
++++ b/compiler/bobcat/interpreter.ml
+@@ -5722,17 +5722,13 @@ let solve_branch_objectives
+         end
+     end
+   in
+-  let streamed = Hashtbl.create (List.length objectives) in
+   let on_objective objective =
+-    Hashtbl.replace compiled objective ();
+-    if not (Hashtbl.mem streamed objective) then begin
+-      Hashtbl.replace streamed objective ();
+-      (* Solve a newly available leaf immediately. UNSAT/UNKNOWN is provisional
+-         because another dynamic instance of the same source outcome may be
+-         discovered later; SAT is already safe after concrete replay. *)
+-      solve_group ~list_bound:0 ~finalize_failures:false solver_timeout_ms
+-        [objective]
+-    end
++    (* Compilation is monotone: later deferred definitions can still add
++       assertion, error-on-empty, fatal-path, and alternate-call-site
++       constraints. Merely register objectives here. Querying the persistent
++       solver before [compile_reachability] has drained that queue would make a
++       model valid only for a formula prefix. *)
++    Hashtbl.replace compiled objective ()
+   in
+   Printexc.record_backtrace true;
+   begin
+-- 
+2.34.1
+

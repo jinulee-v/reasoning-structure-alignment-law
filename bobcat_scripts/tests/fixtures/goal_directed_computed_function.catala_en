@@ -1,0 +1,22 @@
+# A function selected through a conditional record retains its closure.
+
+```catala
+declaration scope ComputedProvider:
+  input offset content integer
+  output predicate content boolean depends on value content integer
+
+scope ComputedProvider:
+  definition predicate of value equals if value > offset then true else false
+
+declaration scope ComputedFunction:
+  input choose content boolean
+  input x content integer
+  internal provider content ComputedProvider
+  output result content boolean
+
+scope ComputedFunction:
+  definition provider equals
+    if choose then output of ComputedProvider with { -- offset: 0 }
+    else output of ComputedProvider with { -- offset: 10 }
+  definition result equals provider.predicate of x
+```

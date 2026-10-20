@@ -1,0 +1,21 @@
+# A callee's source branches must retain the caller's guard and later assertion.
+
+```catala
+declaration scope EntryGuardHelper:
+  input value content integer
+  output result content integer
+
+scope EntryGuardHelper:
+  definition result equals if value = 0 then 1 else 2
+
+declaration scope EntryGuard:
+  input enter content boolean
+  input value content integer
+  output result content integer
+
+scope EntryGuard:
+  definition result equals
+    if enter then (output of EntryGuardHelper with { -- value: value }).result
+    else 0
+  assertion not enter
+```

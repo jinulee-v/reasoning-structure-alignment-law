@@ -1,0 +1,18 @@
+# Coverage-directed scheduler regression fixture
+
+```catala
+declaration choose content integer
+  depends on b content boolean
+  equals if b then 1 else 0
+
+declaration scope SchedulerTest:
+  input first content boolean
+  input second content boolean
+  input outer content boolean
+  output result content integer
+
+scope SchedulerTest:
+  definition result equals
+    (choose of first) + (choose of second)
+    + (if outer then 10 else 20)
+```

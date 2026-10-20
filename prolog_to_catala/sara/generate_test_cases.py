@@ -52,7 +52,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from saralib import catala, coverage, generate, prolog          # noqa: E402
+from saralib import catala, catala_emit as emit, coverage, generate, prolog  # noqa: E402
 from saralib.paths import (COVERED, GROUNDED, HARNESS, PL_SUPPORT, SCRATCH,
                            SIGNATURE, STATUTES, SWIPL, TEST_CASES,
                            VALUE_TYPES, rel)                    # noqa: E402
@@ -684,9 +684,14 @@ def main() -> int:
     # directory is already emptied, so an exception leaves a half-written suite.
     # Collect the failures, report them, and exit non-zero.
     broken = []
+    out_of_domain = []
     for rec in suite.by_path.values():
         try:
             ok = write_case(sym, rec, out)
+        except emit.EventCardinalityError as exc:
+            out_of_domain.append((rec.get("id", "?"), prolog.goal_of(rec),
+                                  str(exc)))
+            continue
         except Exception as exc:                        # noqa: BLE001
             broken.append((rec.get("id", "?"), prolog.goal_of(rec),
                            f"{type(exc).__name__}: {exc}"))
@@ -702,6 +707,12 @@ def main() -> int:
         for cid, goal, err in broken[:10]:
             print(f"       {cid}  {goal}\n         {err}")
 
+    if out_of_domain:
+        print(f"\n  {len(out_of_domain)} case(s) intentionally dropped: generated "
+              "world exceeds a 0-or-1 category role")
+        for cid, goal, err in out_of_domain[:10]:
+            print(f"       {cid}  {goal}\n         {err}")
+
     bad = verify_written(out, args.jobs, args.verify)
     audit = coverage.audit(suite.points)
     index = {
@@ -711,6 +722,7 @@ def main() -> int:
         "candidates_evaluated": suite.seen,
         "distinct_paths": len(suite),
         "unported_dropped": dict(unported),
+        "event_cardinality_dropped": len(out_of_domain),
         "coverage": {k: audit[k] for k in
                      ("total", "covered", "reachable", "pct_all",
                       "pct_reachable")},

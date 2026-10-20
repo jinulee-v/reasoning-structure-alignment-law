@@ -1,0 +1,54 @@
+# Goal-directed coverage through all three external period primitives.
+
+> Using Period_internal as Period
+
+```catala
+declaration scope PeriodSplitGoal:
+  input start_date content date
+  input stop_date content date
+  output crosses_month content boolean
+  output crosses_year content boolean
+
+scope PeriodSplitGoal:
+  definition crosses_month equals
+    if number of (Period.split_by_month of (start_date, stop_date)) >= 2
+    then true else false
+  definition crosses_year equals
+    if number of (Period.split_by_year of 1, (start_date, stop_date)) >= 2
+    then true else false
+
+declaration scope PeriodSortGoal:
+  input first_date content date
+  input second_date content date
+  output first_input_remains_first content boolean
+
+scope PeriodSortGoal:
+  definition first_input_remains_first equals
+    let sorted equals Period.sort_ of [
+      ((first_date, first_date), 1);
+      ((second_date, second_date), 2)
+    ] in
+    let first_payload equals
+      combine all entry among sorted
+      in first initially 0
+      with if first = 0 then entry.2 else first
+    in
+    if first_payload = 1 then true else false
+
+declaration scope PeriodStableSortGoal:
+  input same_date content date
+  output first_input_remains_first content boolean
+
+scope PeriodStableSortGoal:
+  definition first_input_remains_first equals
+    let sorted equals Period.sort_ of [
+      ((same_date, same_date), 1);
+      ((same_date, same_date), 2)
+    ] in
+    let first_payload equals
+      combine all entry among sorted
+      in first initially 0
+      with if first = 0 then entry.2 else first
+    in
+    if first_payload = 1 then true else false
+```

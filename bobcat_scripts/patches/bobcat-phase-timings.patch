@@ -1,0 +1,202 @@
+From c73404e9777caa8253598ec722077529cd44dc46 Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 14:09:33 -0500
+Subject: [PATCH] Add optional BOBCat phase timings
+
+---
+ compiler/bobcat/interpreter.ml      | 35 +++++++++++++++++++++++++----
+ compiler/bobcat/interpreter.mli     |  1 +
+ compiler/driver.ml                  | 14 +++++++++++-
+ compiler/verification/z3backend.ml  |  8 ++++++-
+ compiler/verification/z3backend.mli |  1 +
+ 5 files changed, 53 insertions(+), 6 deletions(-)
+
+diff --git a/compiler/bobcat/interpreter.ml b/compiler/bobcat/interpreter.ml
+index 8d6b839a..14085a11 100644
+--- a/compiler/bobcat/interpreter.ml
++++ b/compiler/bobcat/interpreter.ml
+@@ -5444,6 +5444,7 @@ let solve_branch_objectives
+     (max_list_length : int)
+     (solver_timeout_ms : int)
+     (solver_timeout_max_ms : int)
++    (print_timings : bool)
+     (p : (dcalc, typed) gexpr program)
+   s : unit =
+   if solver_timeout_ms <= 0 then
+@@ -5451,6 +5452,25 @@ let solve_branch_objectives
+   if solver_timeout_max_ms < solver_timeout_ms then
+     Message.error
+       "The maximum BOBCat solver timeout must be at least the initial timeout";
++  let emit_timing phase objectives cpu_seconds =
++    if print_timings then begin
++      let json =
++        `Assoc
++          [ "phase", `String phase;
++            "objectives", `List (List.map (fun x -> `String x) objectives);
++            "cpu_ms", `Float (cpu_seconds *. 1000.) ]
++      in
++      Message.result "BOBCAT_TIMING %s" (Yojson.Safe.to_string json);
++      Format.pp_print_flush Format.std_formatter ()
++    end
++  in
++  let timed phase objectives action =
++    let started = Sys.time () in
++    Fun.protect
++      ~finally:(fun () ->
++        emit_timing phase objectives (Sys.time () -. started))
++      action
++  in
+   let ctx = make_empty_context p.decl_ctx [] max_list_length |> init_context in
+   (* The inherited concolic engine first evaluated the closed program to
+      precompute a residual scope. On large whole-program inputs that eager
+@@ -5490,7 +5510,8 @@ let solve_branch_objectives
+         max largest (largest_literal_list definition))
+       (max max_list_length (largest_literal_list body)) definitions
+   in
+-  index_source_branches ~definitions:indexed_definitions ctx body;
++  timed "manifest_index" [] (fun () ->
++    index_source_branches ~definitions:indexed_definitions ctx body);
+   let indexed_objectives =
+     Hashtbl.fold (fun _ pair pairs -> pair :: pairs) ctx.ctx_branch_pairs []
+     |> List.sort_uniq String.compare
+@@ -5555,7 +5576,7 @@ let solve_branch_objectives
+   let max_divergences = max 32 (4 * List.length objectives) in
+   let replay_and_validate model predicted =
+     Message.debug "BOBCat candidate input: %s" (Yojson.Safe.to_string model);
+-    match replay_model ctx p s model with
++    match timed "concrete_replay" predicted (fun () -> replay_model ctx p s model) with
+     | Error (reason, observed_before_error) ->
+       incr divergences;
+       Verification.Z3backend.block_last_input solver_session;
+@@ -5630,7 +5651,10 @@ let solve_branch_objectives
+     if candidates = [] || !divergences >= max_divergences then ()
+     else begin
+       Verification.Z3backend.set_solver_timeout solver_session timeout_ms;
+-      match Verification.Z3backend.solve_uncovered solver_session candidates with
++      match
++        timed "z3_check_and_decode" candidates (fun () ->
++          Verification.Z3backend.solve_uncovered solver_session candidates)
++      with
+       | Coverage_unsat ->
+         if finalize_failures then
+           List.iter (fun objective -> finalize objective "unsat" []) candidates
+@@ -5701,7 +5725,10 @@ let solve_branch_objectives
+         begin
+           try
+             Verification.Z3backend.compile_objective solver_session
+-              ~on_objective ~objective_of_tag ~definitions objective body
++              ~on_objective
++              ~on_timing:(fun phase seconds ->
++                emit_timing phase [objective] seconds)
++              ~objective_of_tag ~definitions objective body
+           with
+           | Stack_overflow ->
+             finalize objective "unknown"
+diff --git a/compiler/bobcat/interpreter.mli b/compiler/bobcat/interpreter.mli
+index 09dc742b..c5c93595 100644
+--- a/compiler/bobcat/interpreter.mli
++++ b/compiler/bobcat/interpreter.mli
+@@ -37,6 +37,7 @@ val solve_branch_objectives :
+   int ->
+   int ->
+   int ->
++  bool ->
+   (Shared_ast.dcalc, Shared_ast.typed) Shared_ast.gexpr Shared_ast.program ->
+   Shared_ast.ScopeName.t ->
+   unit
+diff --git a/compiler/driver.ml b/compiler/driver.ml
+index 696346d1..c1f0ac74 100644
+--- a/compiler/driver.ml
++++ b/compiler/driver.ml
+@@ -1482,6 +1482,7 @@ module Commands = struct
+         max_list_length
+         solver_timeout_ms
+         solver_timeout_max_ms
++        timings
+         includes
+         stdlib
+         optimize
+@@ -1500,7 +1501,7 @@ module Commands = struct
+         prg;
+       let scope = get_scope_uid prg.decl_ctx ex_scope in
+       Bobcat.Interpreter.solve_branch_objectives max_list_length
+-        solver_timeout_ms solver_timeout_max_ms prg scope
++        solver_timeout_ms solver_timeout_max_ms timings prg scope
+     in
+     let max_list_length =
+       let open Cmdliner.Arg in
+@@ -1530,6 +1531,16 @@ module Commands = struct
+             "Maximum per-query Z3 timeout used by progressive UNKNOWN recovery \
+              (default: 60000ms)."
+     in
++    let timings =
++      let open Cmdliner.Arg in
++      value
++      & flag
++      & info ["bobcat-timings"]
++          ~doc:
++            "Emit machine-readable per-objective CPU timings for manifest \
++             indexing, slice selection, slice compilation, Z3/model decoding, \
++             and concrete replay."
++    in
+     Cmd.v
+       (Cmd.info "bobcat"
+          ~doc:
+@@ -1540,6 +1551,7 @@ module Commands = struct
+         $ max_list_length
+         $ solver_timeout_ms
+         $ solver_timeout_max_ms
++        $ timings
+         $ Cli.Flags.include_dirs
+         $ Cli.Flags.stdlib_dir
+         $ Cli.Flags.optimize
+diff --git a/compiler/verification/z3backend.ml b/compiler/verification/z3backend.ml
+index f994a834..40adf5f1 100644
+--- a/compiler/verification/z3backend.ml
++++ b/compiler/verification/z3backend.ml
+@@ -3117,7 +3117,9 @@ let compile_reachability
+ 
+ let compile_objective
+     ?(on_objective = fun _ -> ())
++    ?(on_timing = fun _ _ -> ())
+     session ~objective_of_tag ~definitions objective body =
++  let selection_started = Sys.time () in
+   Message.debug "BOBCat: selecting backward slice for %s" objective;
+   let definitions =
+     List.fold_left
+@@ -3240,6 +3242,7 @@ let compile_objective
+   Message.debug "BOBCat: selected candidate slice root %s for %s"
+     (Pos.to_string_short (typed_expr_pos slice_root)) objective;
+   ignore (contains Var.Set.empty slice_root);
++  on_timing "slice_selection" (Sys.time () -. selection_started);
+   Message.debug "BOBCat: indexed backward slice for %s" objective;
+   let should_visit e =
+     List.exists (fun selected -> selected == e) !selected_nodes
+@@ -3256,8 +3259,11 @@ let compile_objective
+   Queue.clear session.direct_deferred_definitions;
+   Hashtbl.clear session.direct_compiled_definition_guards;
+   session.direct_on_objective <- on_objective;
++  let compilation_started = Sys.time () in
+   Fun.protect
+-    ~finally:(fun () -> session.direct_on_objective <- (fun _ -> ()))
++    ~finally:(fun () ->
++      on_timing "slice_compilation" (Sys.time () -. compilation_started);
++      session.direct_on_objective <- (fun _ -> ()))
+     (fun () ->
+       compile_reach_expr ~should_visit session objective_of_tag definitions
+         entry slice_root;
+diff --git a/compiler/verification/z3backend.mli b/compiler/verification/z3backend.mli
+index d57fdc29..237abe74 100644
+--- a/compiler/verification/z3backend.mli
++++ b/compiler/verification/z3backend.mli
+@@ -61,6 +61,7 @@ val reachable_objectives :
+ 
+ val compile_objective :
+   ?on_objective:(string -> unit) ->
++  ?on_timing:(string -> float -> unit) ->
+   direct_session ->
+   objective_of_tag:(Shared_ast.tag -> Catala_utils.Pos.t -> string option) ->
+   definitions:(Shared_ast.typed Dcalc.Ast.naked_expr Bindlib.var *
+-- 
+2.34.1
+

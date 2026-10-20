@@ -1,0 +1,11 @@
+# BOBCat bounded-list reachability regression fixture
+
+```catala
+declaration scope ListGoal:
+  input xs content list of integer
+  output ys content list of integer
+
+scope ListGoal:
+  definition ys equals
+    map each x among xs to (if x > 10 then 1 else 0)
+```

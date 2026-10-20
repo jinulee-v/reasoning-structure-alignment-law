@@ -1,0 +1,27 @@
+# Failure-directed refinement must learn a predicate, not individual inputs.
+
+```catala
+declaration scope RefinedCall:
+  input permitted content boolean
+  input amount content integer
+  output result content integer
+
+scope RefinedCall:
+  assertion permitted
+  definition result equals if amount > 0 then 1 else 0
+
+declaration scope SemanticRefinement:
+  input enabled content boolean
+  input permitted content boolean
+  input amount content integer
+  output result content integer
+
+scope SemanticRefinement:
+  definition result equals
+    if enabled then
+      (output of RefinedCall with {
+        -- permitted: permitted
+        -- amount: amount
+      }).result
+    else if not permitted then 2 else 3
+```

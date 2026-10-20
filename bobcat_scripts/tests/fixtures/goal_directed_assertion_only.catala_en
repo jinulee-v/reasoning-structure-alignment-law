@@ -1,0 +1,12 @@
+# Branches used only by an assertion still belong to the coverage objective.
+
+```catala
+declaration scope AssertionOnly:
+  input enabled content boolean
+  input x content integer
+  output result content integer
+
+scope AssertionOnly:
+  assertion (if enabled then x > 0 else x <= 0)
+  definition result equals 0
+```

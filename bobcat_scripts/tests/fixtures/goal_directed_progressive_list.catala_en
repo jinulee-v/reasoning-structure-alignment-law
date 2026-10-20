@@ -1,0 +1,11 @@
+# BOBCat progressive-list-bound regression fixture
+
+```catala
+declaration scope ProgressiveListGoal:
+  input xs content list of integer
+  output has_pair content boolean
+
+scope ProgressiveListGoal:
+  definition has_pair equals
+    if (number of xs) >= 2 then true else false
+```

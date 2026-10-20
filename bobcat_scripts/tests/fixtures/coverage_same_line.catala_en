@@ -1,0 +1,11 @@
+# Distinct decisions sharing one source line retain distinct exact IDs
+
+```catala
+declaration scope SameLine:
+  input first content boolean
+  input second content boolean
+  output result content integer
+
+scope SameLine:
+  definition result equals if first then (if second then 1 else 2) else (if second then 3 else 4)
+```

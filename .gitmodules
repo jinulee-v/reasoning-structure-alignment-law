@@ -1,0 +1,3 @@
+[submodule ".toolchain/src/catala-bobcat"]
+	path = .toolchain/src/catala-bobcat
+	url = https://github.com/jinulee-v/bobcat.git

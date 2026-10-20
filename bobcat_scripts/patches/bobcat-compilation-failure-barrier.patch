@@ -1,0 +1,57 @@
+From 91016270f0ced9dbe4a8a72e1130dd4a810f61a5 Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 17:33:45 -0500
+Subject: [PATCH] Fail BOBCat objectives closed on compilation errors
+
+---
+ compiler/bobcat/interpreter.ml | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/compiler/bobcat/interpreter.ml b/compiler/bobcat/interpreter.ml
+index 0b951e42..e08d688e 100644
+--- a/compiler/bobcat/interpreter.ml
++++ b/compiler/bobcat/interpreter.ml
+@@ -5731,6 +5731,7 @@ let solve_branch_objectives
+     Hashtbl.replace compiled objective ()
+   in
+   Printexc.record_backtrace true;
++  let compilation_failure = ref None in
+   begin
+     try
+       timed "shared_compilation" objectives (fun () ->
+@@ -5738,15 +5739,28 @@ let solve_branch_objectives
+           ~on_objective ~objective_of_tag ~definitions body)
+     with
+     | Stack_overflow ->
+-      Message.warning "BOBCat shared compilation exhausted the OCaml stack:\n%s"
+-        (Printexc.get_backtrace ())
++      let reason = "shared compilation exhausted the OCaml stack" in
++      compilation_failure := Some reason;
++      Message.warning "BOBCat %s:\n%s" reason (Printexc.get_backtrace ())
+     | (Failure _ | Invalid_argument _ | Z3.Error _) as exn ->
+-      Message.warning "BOBCat shared compilation stopped: %s"
+-        (Printexc.to_string exn)
++      let reason =
++        Format.asprintf "shared compilation stopped: %s"
++          (Printexc.to_string exn)
++      in
++      compilation_failure := Some reason;
++      Message.warning "BOBCat %s" reason
+   end;
+   List.iter
+     (fun objective -> Hashtbl.replace compiled objective ())
+     (Verification.Z3backend.compiled_objectives solver_session);
++  Option.iter
++    (fun reason ->
++      List.iter
++        (fun objective ->
++          if not (Hashtbl.mem final_results objective) then
++            finalize objective "unknown" ["reason", `String reason])
++        objectives)
++    !compilation_failure;
+   List.iter
+     (fun (objective, reason) ->
+       if not (Hashtbl.mem compiled objective) then
+-- 
+2.34.1
+

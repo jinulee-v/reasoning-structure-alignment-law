@@ -30,7 +30,7 @@ class NotPorted(Exception):
     """The query predicate has no Catala renderer."""
 
 
-PREDICATES = CATALA_PROJECT / "SaraPredicates.catala_en"
+PREDICATES = CATALA_PROJECT / "Section7703.catala_en"
 _PRED_RE = re.compile(r"declaration pred_(\S+) content integer equals (\d+)")
 
 
@@ -38,7 +38,7 @@ def recover_symbols() -> dict:
     """Rebuild the key space from the port's own generated constants module.
 
     Only the *predicate* keys have to survive: the port's Layer-1 modules were
-    compiled against `SaraPredicates.pred_s7703_4` and friends, so those
+    compiled against `Section7703.pred_s7703_4` and friends, so those
     integers are load-bearing.  Everything else in the table --- entities,
     dates, amounts --- is allocated per rendered program and only has to be
     consistent within it, which `Symbols` guarantees on its own.  So the module

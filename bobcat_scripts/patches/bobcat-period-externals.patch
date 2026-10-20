@@ -1,0 +1,187 @@
+From f500243d71fcf771d5fa9b47da8b80cccde5308d Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 17:30:11 -0500
+Subject: [PATCH] Encode Period externals for BOBCat objectives
+
+---
+ compiler/verification/z3backend.ml | 157 +++++++++++++++++++++++++++++
+ 1 file changed, 157 insertions(+)
+
+diff --git a/compiler/verification/z3backend.ml b/compiler/verification/z3backend.ml
+index 9dd037ad..b9a64019 100644
+--- a/compiler/verification/z3backend.ml
++++ b/compiler/verification/z3backend.ml
+@@ -1079,6 +1079,93 @@ let expression_list_bound ctx expression =
+ let bounded_array_constructor array =
+   List.hd (Datatype.get_constructors (Expr.get_sort array))
+ 
++let tuple_field ctx index tuple =
++  match List.nth_opt (Tuple.get_field_decls (Expr.get_sort tuple)) index with
++  | Some accessor -> Expr.mk_app ctx.ctx_z3 accessor [tuple]
++  | None -> failwith "[Z3 encoding] tuple projection out of bounds"
++
++let period_dates ctx period = tuple_field ctx 0 period, tuple_field ctx 1 period
++
++let period_entry_start ctx entry =
++  let period = tuple_field ctx 0 entry in
++  fst (period_dates ctx period)
++
++let stable_sort_period_entries ctx length entries =
++  let int = DateEncoding.int ctx in
++  let rec bubble index = function
++    | left :: right :: rest ->
++      let both_present = Arithmetic.mk_gt ctx.ctx_z3 length (int (index + 1)) in
++      let swap =
++        Boolean.mk_and ctx.ctx_z3
++          [ both_present;
++            Arithmetic.mk_gt ctx.ctx_z3
++              (period_entry_start ctx left) (period_entry_start ctx right) ]
++      in
++      let first = Boolean.mk_ite ctx.ctx_z3 swap right left in
++      let carried = Boolean.mk_ite ctx.ctx_z3 swap left right in
++      first :: bubble (index + 1) (carried :: rest)
++    | remaining -> remaining
++  in
++  let rec passes remaining entries =
++    if remaining <= 0 then entries
++    else passes (remaining - 1) (bubble 0 entries)
++  in
++  passes (List.length entries) entries
++
++let encode_period_split ctx result_ty period starts =
++  let _, stop = period_dates ctx period in
++  let capacity = ctx.ctx_max_list_length in
++  if List.length starts <> capacity + 1 then
++    invalid_arg "[encode_period_split] expected capacity + 1 starts";
++  let int = DateEncoding.int ctx in
++  let active start = Arithmetic.mk_lt ctx.ctx_z3 start stop in
++  let output_starts = first_n capacity starts in
++  let next_starts = List.tl starts in
++  let length =
++    List.fold_left
++      (fun count start ->
++        Arithmetic.mk_add ctx.ctx_z3
++          [count; Boolean.mk_ite ctx.ctx_z3 (active start) (int 1) (int 0)])
++      (int 0) output_starts
++  in
++  let ctx =
++    (* The bounded encoding is exact only when another period would not be
++       emitted beyond the final available slot. *)
++    add_z3constraint
++      (Boolean.mk_not ctx.ctx_z3 (active (List.nth starts capacity))) ctx
++  in
++  let pair_sort = Expr.get_sort period in
++  let make_pair = Tuple.get_mk_decl pair_sort in
++  let elements =
++    List.map2
++      (fun start next ->
++        let stop_at_boundary = Arithmetic.mk_sub ctx.ctx_z3 [next; int 1] in
++        let period_stop =
++          Boolean.mk_ite ctx.ctx_z3 (active next) stop_at_boundary stop
++        in
++        Expr.mk_app ctx.ctx_z3 make_pair [start; period_stop])
++      output_starts (first_n capacity next_starts)
++  in
++  let element_ty =
++    match Mark.remove result_ty with
++    | TArray element_ty -> element_ty
++    | _ -> failwith "[Z3 encoding] period split result is not a list"
++  in
++  let ctx, result_sort = find_or_create_array ctx element_ty in
++  let padding =
++    Expr.mk_const_s ctx.ctx_z3
++      ("bobcat_period_padding_"
++       ^ Digest.(to_hex (string (Sort.to_string pair_sort))))
++      pair_sort
++  in
++  let elements =
++    elements
++    @ List.init (capacity - List.length elements) (fun _ -> padding)
++  in
++  ctx,
++  Expr.mk_app ctx.ctx_z3 (List.hd (Datatype.get_constructors result_sort))
++    (length :: elements)
++
+ let enum_z3_members ctx enum sort =
+   let constructors =
+     EnumName.Map.find enum ctx.ctx_decl.ctx_enums
+@@ -2000,6 +2087,76 @@ and translate_expr (ctx : context) (vc : typed expr) : context * Expr.expr =
+             (Expr.mk_app ctx.ctx_z3 absent [snd ctx.ctx_z3unit])
+         | _ -> failwith "[Z3 encoding] malformed option datatype"
+         end
++      | "Period_internal", "sort_", [list] ->
++        let ctx, array = translate_expr ctx list in
++        let length, entries = bounded_array_components ctx array in
++        let sorted = stable_sort_period_entries ctx length entries in
++        ctx,
++        Expr.mk_app ctx.ctx_z3 (bounded_array_constructor array)
++          (length :: sorted)
++      | "Period_internal", "split_by_month", [period] ->
++        let ctx, period = translate_expr ctx period in
++        let start, _ = period_dates ctx period in
++        let year, month, _ = DateEncoding.date_to_civil ctx start in
++        let starts =
++          start
++          :: List.init ctx.ctx_max_list_length (fun index ->
++               let total_month =
++                 Arithmetic.mk_add ctx.ctx_z3
++                   [month; DateEncoding.int ctx index]
++               in
++               let shifted_year =
++                 Arithmetic.mk_add ctx.ctx_z3
++                   [ year;
++                     Arithmetic.mk_div ctx.ctx_z3 total_month
++                       (DateEncoding.int ctx 12) ]
++               in
++               let shifted_month =
++                 Arithmetic.mk_add ctx.ctx_z3
++                   [ Arithmetic.Integer.mk_mod ctx.ctx_z3 total_month
++                       (DateEncoding.int ctx 12);
++                     DateEncoding.int ctx 1 ]
++               in
++               DateEncoding.civil_to_date ctx shifted_year shifted_month
++                 (DateEncoding.int ctx 1))
++        in
++        let (Typed { ty; _ }) = Mark.get vc in
++        encode_period_split ctx ty period starts
++      | "Period_internal", "split_by_year", [start_month; period] ->
++        let ctx, start_month = translate_expr ctx start_month in
++        let ctx, period = translate_expr ctx period in
++        let start, _ = period_dates ctx period in
++        let year, month, _ = DateEncoding.date_to_civil ctx start in
++        let valid_month =
++          Boolean.mk_and ctx.ctx_z3
++            [ Arithmetic.mk_ge ctx.ctx_z3 start_month (DateEncoding.int ctx 1);
++              Arithmetic.mk_le ctx.ctx_z3 start_month
++                (DateEncoding.int ctx 12) ]
++        in
++        let ctx = add_z3constraint valid_month ctx in
++        let rolling_year =
++          Boolean.mk_ite ctx.ctx_z3
++            (Arithmetic.mk_lt ctx.ctx_z3 month start_month)
++            (Arithmetic.mk_sub ctx.ctx_z3 [year; DateEncoding.int ctx 1]) year
++        in
++        let first_boundary =
++          DateEncoding.civil_to_date ctx
++            (Arithmetic.mk_add ctx.ctx_z3
++               [rolling_year; DateEncoding.int ctx 1])
++            start_month (DateEncoding.int ctx 1)
++        in
++        let starts =
++          start
++          :: List.init ctx.ctx_max_list_length (fun index ->
++               if index = 0 then first_boundary
++               else
++                 DateEncoding.civil_to_date ctx
++                   (Arithmetic.mk_add ctx.ctx_z3
++                      [rolling_year; DateEncoding.int ctx (index + 1)])
++                   start_month (DateEncoding.int ctx 1))
++        in
++        let (Typed { ty; _ }) = Mark.get vc in
++        encode_period_split ctx ty period starts
+       | ( ("Date_internal" | "Date_en" | "Date_fr"),
+           ("of_ymd" | "of_year_month_day" | "depuis_année_mois_jour"),
+           [_position; year; month; day] ) ->
+-- 
+2.34.1
+

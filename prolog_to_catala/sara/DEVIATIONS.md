@@ -227,8 +227,9 @@ calls `s68_b(Taxp,Aa,2015)`, which does not unify, so the grant is dead and the
 figure comes from §68(b)'s own table. It happens to be $250,000 for an unmarried
 taxpayer, so both cases still pass.
 
-**Port:** reproduced without special-casing; the pattern `[Taxp; -1; num_key(Taxy)]`
-fails to match for the same reason and falls through to `Section68.applicable_amount`.
+**Port:** reproduced without special-casing; the fixed-shape lookup constrains
+argument 1 to `Taxp` and argument 3 to `num_key(Taxy)`. The transposed row fails
+that lookup for the same reason and falls through to `Section68.applicable_amount`.
 
 ## D10 — two more inert injections
 
@@ -658,10 +659,11 @@ Every corpus case that injects a *statute* predicate declares it, so the port
 treated injections as purely additive and agreed on all 374. The other half is
 not a corner: it decides whether a derivation runs at all.
 
-**The mechanism.** The emitter records each overridden predicate as a marker
-injection — `pred: W.override_marker`, the overridden key as its only argument —
-so a scope can ask `W.pred_overridden of injections, P.pred_x` without every
-scope taking another input. `W.pred_available of injections, pred, pattern` is
+**The mechanism.** Each real injected conclusion carries a
+`replaces_statute` flag.  Thus an override does not require a synthetic marker
+row or a ghost argument, and a scope can ask
+`W.pred_overridden of injections, P.pred_x` without another input.
+`W.pred_available of injections, pred, matching_injections` is
 "the derivation is still there, or a row answers this query". Consumers that must
 distinguish "no value" from "the value zero" pair it with an `applies` output of
 their own (see II.4).

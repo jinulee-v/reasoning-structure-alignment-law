@@ -1,0 +1,3389 @@
+{
+  "enums": {
+    "Section7703.EntityTag": "The kind of an interned entity: an ordinary entity, country, purpose, place, medium, type, or destination.",
+    "Section7703.InjectionArguments": "A fixed-size typed argument tuple. Args1 through Args8 encode the predicate arity without a nested list."
+  },
+  "fields": {
+    "child_in_law_of": {
+      "description": "Relationship records stating that each subject is a child-in-law of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].object": {
+      "description": "The entity of whom the subject is a child-in-law.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].subject": {
+      "description": "The entity that is the child-in-law in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].subject.id": {
+      "description": "The interned integer identifier of the child-in-law subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].subject.tag": {
+      "description": "The semantic entity classification of the child-in-law subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_in_law_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of": {
+      "description": "Relationship records stating that each subject is a child of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].object": {
+      "description": "The entity of whom the subject is a child.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].subject": {
+      "description": "The entity that is the child in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].subject.id": {
+      "description": "The interned integer identifier of the child subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].subject.tag": {
+      "description": "The semantic entity classification of the child subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "child_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of": {
+      "description": "Relationship records stating that each subject is a descendant of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].object": {
+      "description": "The entity of whom the subject is a descendant.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].subject": {
+      "description": "The entity that is the descendant in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].subject.id": {
+      "description": "The interned integer identifier of the descendant subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].subject.tag": {
+      "description": "The semantic entity classification of the descendant subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "descendent_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "injections": {
+      "description": "Case-supplied grants of SARA predicates, preserving conclusions explicitly asserted by the original Prolog case.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "injections[].arguments": {
+      "description": "The predicate's source-order arguments as an Args1 through Args8 fixed tuple of typed values; no filler or nested argument list is used.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "injections[].pred": {
+      "description": "The interned predicate name-and-arity key identifying which SARA conclusion this injection grants.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "injections[].replaces_statute": {
+      "description": "Whether this real injected conclusion replaces the statute predicate instead of adding another clause; no synthetic marker injection is used.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of": {
+      "description": "Relationship records stating that each subject is a parent-in-law of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].object": {
+      "description": "The entity of whom the subject is a parent-in-law.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].subject": {
+      "description": "The entity that is the parent-in-law in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].subject.id": {
+      "description": "The interned integer identifier of the parent-in-law subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].subject.tag": {
+      "description": "The semantic entity classification of the parent-in-law subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "parent_in_law_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of": {
+      "description": "Relationship records stating that each subject is a sibling-in-law of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].object": {
+      "description": "The entity of whom the subject is a sibling-in-law.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].subject": {
+      "description": "The entity that is the sibling-in-law in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].subject.id": {
+      "description": "The interned integer identifier of the sibling-in-law subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].subject.tag": {
+      "description": "The semantic entity classification of the sibling-in-law subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_in_law_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of": {
+      "description": "Relationship records stating that each subject is a sibling of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].object": {
+      "description": "The entity of whom the subject is a sibling.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].subject": {
+      "description": "The entity that is the sibling in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].subject.id": {
+      "description": "The interned integer identifier of the sibling subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].subject.tag": {
+      "description": "The semantic entity classification of the sibling subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "sibling_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of": {
+      "description": "Relationship records stating that each subject is a stepparent of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].object": {
+      "description": "The entity of whom the subject is a stepparent.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].subject": {
+      "description": "The entity that is the stepparent in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].subject.id": {
+      "description": "The interned integer identifier of the stepparent subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].subject.tag": {
+      "description": "The semantic entity classification of the stepparent subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepparent_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of": {
+      "description": "Relationship records stating that each subject is a stepsibling of its object during the recorded validity window.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].object": {
+      "description": "The entity of whom the subject is a stepsibling.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].object.id": {
+      "description": "The interned integer identifier of the relationship object; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].object.tag": {
+      "description": "The semantic entity classification of the relationship object.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].subject": {
+      "description": "The entity that is the stepsibling in this relationship.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].subject.id": {
+      "description": "The interned integer identifier of the stepsibling subject; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].subject.tag": {
+      "description": "The semantic entity classification of the stepsibling subject.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].window": {
+      "description": "The optional start and end dates over which this relationship instance is valid.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].window.ends_on": {
+      "description": "The relationship's end date; absent means that the source facts impose no upper date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "stepsibling_of[].window.starts_on": {
+      "description": "The relationship's start date; absent means that the source facts impose no lower date bound.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "taxable_year": {
+      "description": "The four-digit taxable year to which the statutory calculation or qualification applies.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "taxpayer": {
+      "description": "The taxpayer entity whose liability, filing status, deduction, or dependent claim is being evaluated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "taxpayer.id": {
+      "description": "The interned integer identifier of the taxpayer; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "taxpayer.tag": {
+      "description": "The semantic entity classification of the taxpayer, used for special government, decree, U.S., and state cases.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world": {
+      "description": "The complete SARA case world: reified events plus any purpose facts that apply universally.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts": {
+      "description": "Standalone agents facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].subject": {
+      "description": "The entity about which this agents fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].value": {
+      "description": "The asserted agent entities value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].value.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.agent_facts[].value.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events": {
+      "description": "Events classified as american employer facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.agents": {
+      "description": "The agent entities attached to this american employer record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.ident": {
+      "description": "The identifier of this american employer record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.american_employer_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.amount_facts": {
+      "description": "Standalone amounts facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.amount_facts[].subject": {
+      "description": "The entity about which this amounts fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.amount_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.amount_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.amount_facts[].value": {
+      "description": "The asserted monetary amounts value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events": {
+      "description": "Events classified as attending classes facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.agents": {
+      "description": "The agent entities attached to this attending classes record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.ends": {
+      "description": "The end date attached to this attending classes record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.ident": {
+      "description": "The identifier of this attending classes record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.places": {
+      "description": "The locations attached to this attending classes record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.attending_classes_events.starts": {
+      "description": "The start dates attached to this attending classes record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts": {
+      "description": "Standalone beneficiaries facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].subject": {
+      "description": "The entity about which this beneficiaries fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].value": {
+      "description": "The asserted beneficiary entities value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].value.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.beneficiary_facts[].value.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events": {
+      "description": "Events classified as birth facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.birth_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events": {
+      "description": "Events classified as blindness facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.agents": {
+      "description": "The agent entities attached to this blindness record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.ident": {
+      "description": "The identifier of this blindness record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.blindness_events.starts": {
+      "description": "The start dates attached to this blindness record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events": {
+      "description": "Events classified as brother facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.agents": {
+      "description": "The agent entities attached to this brother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.ident": {
+      "description": "The identifier of this brother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.patients": {
+      "description": "The patient entities attached to this brother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.brother_events.starts": {
+      "description": "The start dates attached to this brother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events": {
+      "description": "Events classified as business facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.agents": {
+      "description": "The agent entities attached to this business record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.ident": {
+      "description": "The identifier of this business record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.starts": {
+      "description": "The start dates attached to this business record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_events.types": {
+      "description": "The semantic type attached to this business record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events": {
+      "description": "Events classified as business trust facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.agents": {
+      "description": "The agent entities attached to this business trust record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.ends": {
+      "description": "The end date attached to this business trust record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.ident": {
+      "description": "The identifier of this business trust record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.business_trust_events.starts": {
+      "description": "The start dates attached to this business trust record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events": {
+      "description": "Events classified as citizenship facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].patients": {
+      "description": "Entities acting as patients, objects, or recipients of this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].patients[].id": {
+      "description": "The interned identifier of one entity in this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.citizenship_events[].patients[].tag": {
+      "description": "The entity category of one member of this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts": {
+      "description": "Standalone countries facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].subject": {
+      "description": "The entity about which this countries fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].value": {
+      "description": "The asserted country entity value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].value.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.country_facts[].value.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events": {
+      "description": "Events classified as daughter facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.agents": {
+      "description": "The agent entities attached to this daughter record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.ident": {
+      "description": "The identifier of this daughter record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.patients": {
+      "description": "The patient entities attached to this daughter record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.daughter_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events": {
+      "description": "Events classified as death facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.agents": {
+      "description": "The agent entities attached to this death record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.ends": {
+      "description": "The end date attached to this death record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.ident": {
+      "description": "The identifier of this death record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.death_events.starts": {
+      "description": "The start dates attached to this death record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events": {
+      "description": "Events classified as deduction facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].amounts": {
+      "description": "Monetary amounts explicitly attached to this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.deduction_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.destination_facts": {
+      "description": "Standalone destinations facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.destination_facts[].subject": {
+      "description": "The entity about which this destinations fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.destination_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.destination_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.destination_facts[].value": {
+      "description": "The asserted destination value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events": {
+      "description": "Events classified as disability facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.agents": {
+      "description": "The agent entities attached to this disability record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.ident": {
+      "description": "The identifier of this disability record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.disability_events.starts": {
+      "description": "The start dates attached to this disability record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events": {
+      "description": "Events classified as educational institution facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.agents": {
+      "description": "The agent entities attached to this educational institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.ident": {
+      "description": "The identifier of this educational institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.educational_institution_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.end_facts": {
+      "description": "Standalone ends facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.end_facts[].subject": {
+      "description": "The entity about which this ends fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.end_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.end_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.end_facts[].value": {
+      "description": "The asserted end date value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events": {
+      "description": "Events classified as enrollment facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.agents": {
+      "description": "The agent entities attached to this enrollment record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.ends": {
+      "description": "The end date attached to this enrollment record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.ident": {
+      "description": "The identifier of this enrollment record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.patients": {
+      "description": "The patient entities attached to this enrollment record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.enrollment_events.starts": {
+      "description": "The start dates attached to this enrollment record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events": {
+      "description": "Events classified as father facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.agents": {
+      "description": "The agent entities attached to this father record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.ident": {
+      "description": "The identifier of this father record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.patients": {
+      "description": "The patient entities attached to this father record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.father_events.starts": {
+      "description": "The start dates attached to this father record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events": {
+      "description": "Events classified as hospital facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.agents": {
+      "description": "The agent entities attached to this hospital record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.ident": {
+      "description": "The identifier of this hospital record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.hospital_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events": {
+      "description": "Events classified as incarceration facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.agents": {
+      "description": "The agent entities attached to this incarceration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.ends": {
+      "description": "The end date attached to this incarceration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.ident": {
+      "description": "The identifier of this incarceration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.patients": {
+      "description": "The patient entities attached to this incarceration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.incarceration_events.starts": {
+      "description": "The start dates attached to this incarceration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events": {
+      "description": "Complete income occurrences. Each record has exactly one agent, start date, and direct monetary amount; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events[].agent": {
+      "description": "The person whose gross income includes this occurrence.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events[].agent.id": {
+      "description": "The interned identifier of the income recipient; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events[].agent.tag": {
+      "description": "The semantic classification of the income recipient.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events[].amount": {
+      "description": "The statutory income amount represented by this income occurrence.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.income_events[].start": {
+      "description": "The date on which this income occurrence is recognized.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events": {
+      "description": "Events classified as international organization facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.agents": {
+      "description": "The agent entities attached to this international organization record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.ident": {
+      "description": "The identifier of this international organization record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.international_organization_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.itemize_deductions_events": {
+      "description": "Events classified as itemize deductions facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.itemize_deductions_events.ident": {
+      "description": "The identifier of this itemize deductions record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.itemize_deductions_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.itemize_deductions_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events": {
+      "description": "Events classified as joint return facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.joint_return_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events": {
+      "description": "Events classified as legal separation facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.agents": {
+      "description": "The agent entities attached to this legal separation record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.ident": {
+      "description": "The identifier of this legal separation record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.patients": {
+      "description": "The patient entities attached to this legal separation record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.legal_separation_events.starts": {
+      "description": "The start dates attached to this legal separation record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events": {
+      "description": "Events classified as marriage facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.marriage_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events": {
+      "description": "Events classified as medical institution facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.agents": {
+      "description": "The agent entities attached to this medical institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.ident": {
+      "description": "The identifier of this medical institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_institution_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events": {
+      "description": "Events classified as medical patient facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.agents": {
+      "description": "The agent entities attached to this medical patient record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.ends": {
+      "description": "The end date attached to this medical patient record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.ident": {
+      "description": "The identifier of this medical patient record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.patients": {
+      "description": "The patient entities attached to this medical patient record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medical_patient_events.starts": {
+      "description": "The start dates attached to this medical patient record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medium_facts": {
+      "description": "Standalone media facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medium_facts[].subject": {
+      "description": "The entity about which this media fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medium_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medium_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.medium_facts[].value": {
+      "description": "The asserted payment media value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events": {
+      "description": "Events classified as migration facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.agents": {
+      "description": "The agent entities attached to this migration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.destinations": {
+      "description": "The destination attached to this migration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.ident": {
+      "description": "The identifier of this migration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.migration_events.purposes": {
+      "description": "The purpose attached to this migration record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events": {
+      "description": "Events classified as mother facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.agents": {
+      "description": "The agent entities attached to this mother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.ident": {
+      "description": "The identifier of this mother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.patients": {
+      "description": "The patient entities attached to this mother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.mother_events.starts": {
+      "description": "The start dates attached to this mother record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events": {
+      "description": "Events classified as nonresident alien facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.agents": {
+      "description": "The agent entities attached to this nonresident alien record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.ends": {
+      "description": "The end date attached to this nonresident alien record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.ident": {
+      "description": "The identifier of this nonresident alien record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nonresident_alien_events.starts": {
+      "description": "The start dates attached to this nonresident alien record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events": {
+      "description": "Events classified as nurses training school facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.agents": {
+      "description": "The agent entities attached to this nurses training school record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.ident": {
+      "description": "The identifier of this nurses training school record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.nurses_training_school_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts": {
+      "description": "Standalone patients facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].subject": {
+      "description": "The entity about which this patients fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].value": {
+      "description": "The asserted patient entities value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].value.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.patient_facts[].value.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events": {
+      "description": "Events classified as payment facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].amounts": {
+      "description": "Monetary amounts explicitly attached to this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].beneficiaries": {
+      "description": "Entities explicitly benefiting from this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].beneficiaries[].id": {
+      "description": "The interned identifier of one entity in this event's beneficiaries list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].beneficiaries[].tag": {
+      "description": "The entity category of one member of this event's beneficiaries list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].media": {
+      "description": "Medium identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].patients": {
+      "description": "Entities acting as patients, objects, or recipients of this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].patients[].id": {
+      "description": "The interned identifier of one entity in this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].patients[].tag": {
+      "description": "The entity category of one member of this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].purposes": {
+      "description": "Purpose identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.payment_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events": {
+      "description": "Events classified as penal institution facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.agents": {
+      "description": "The agent entities attached to this penal institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.ident": {
+      "description": "The identifier of this penal institution record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.penal_institution_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.place_facts": {
+      "description": "Standalone places facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.place_facts[].subject": {
+      "description": "The entity about which this places fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.place_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.place_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.place_facts[].value": {
+      "description": "The asserted locations value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events": {
+      "description": "Events classified as plan facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].beneficiaries": {
+      "description": "Entities explicitly benefiting from this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].beneficiaries[].id": {
+      "description": "The interned identifier of one entity in this event's beneficiaries list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].beneficiaries[].tag": {
+      "description": "The entity category of one member of this event's beneficiaries list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.plan_events[].purposes": {
+      "description": "Purpose identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.purpose_facts": {
+      "description": "Standalone purposes facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.purpose_facts[].subject": {
+      "description": "The entity about which this purposes fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.purpose_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.purpose_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.purpose_facts[].value": {
+      "description": "The asserted purpose value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts": {
+      "description": "Standalone reasons facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].subject": {
+      "description": "The entity about which this reasons fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].value": {
+      "description": "The asserted reason entity value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].value.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.reason_facts[].value.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events": {
+      "description": "Events classified as residence facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].patients": {
+      "description": "Entities acting as patients, objects, or recipients of this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].patients[].id": {
+      "description": "The interned identifier of one entity in this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].patients[].tag": {
+      "description": "The entity category of one member of this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.residence_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events": {
+      "description": "Events classified as retirement facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.agents": {
+      "description": "The agent entities attached to this retirement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.ident": {
+      "description": "The identifier of this retirement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.reasons": {
+      "description": "The reason entity attached to this retirement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.reasons.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.reasons.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.retirement_events.starts": {
+      "description": "The start dates attached to this retirement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events": {
+      "description": "Events classified as service facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].ends": {
+      "description": "End dates explicitly stated for this event; leave empty for no stated end date.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].media": {
+      "description": "Medium identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].patients": {
+      "description": "Entities acting as patients, objects, or recipients of this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].patients[].id": {
+      "description": "The interned identifier of one entity in this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].patients[].tag": {
+      "description": "The entity category of one member of this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].places": {
+      "description": "Place identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].purposes": {
+      "description": "Purpose identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.service_events[].types": {
+      "description": "Type identifiers explicitly associated with this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events": {
+      "description": "Events classified as sibling facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.agents": {
+      "description": "The agent entities attached to this sibling record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.ident": {
+      "description": "The identifier of this sibling record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.patients": {
+      "description": "The patient entities attached to this sibling record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sibling_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events": {
+      "description": "Events classified as sister facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.agents": {
+      "description": "The agent entities attached to this sister record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.ident": {
+      "description": "The identifier of this sister record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.patients": {
+      "description": "The patient entities attached to this sister record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.sister_events.starts": {
+      "description": "The start dates attached to this sister record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events": {
+      "description": "Events classified as son facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].agents": {
+      "description": "Entities acting as agents or performers of this event; leave empty when no agent is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].agents[].id": {
+      "description": "The interned identifier of one entity in this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].agents[].tag": {
+      "description": "The entity category of one member of this event's agents list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].ident": {
+      "description": "The stable identity of this event, shared by category-list copies of the same source event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].ident.id": {
+      "description": "The interned identifier of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].ident.tag": {
+      "description": "The entity category of this event's stable identity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].patients": {
+      "description": "Entities acting as patients, objects, or recipients of this event; leave empty when none is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].patients[].id": {
+      "description": "The interned identifier of one entity in this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].patients[].tag": {
+      "description": "The entity category of one member of this event's patients list.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.son_events[].starts": {
+      "description": "Start dates explicitly stated for this event; leave empty when no start date is stated.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.start_facts": {
+      "description": "Standalone starts facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.start_facts[].subject": {
+      "description": "The entity about which this starts fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.start_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.start_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.start_facts[].value": {
+      "description": "The asserted start dates value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events": {
+      "description": "Events classified as termination facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.agents": {
+      "description": "The agent entities attached to this termination record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.ident": {
+      "description": "The identifier of this termination record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.patients": {
+      "description": "The patient entities attached to this termination record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.patients[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.patients[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.reasons": {
+      "description": "The reason entity attached to this termination record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.reasons.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.reasons.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.termination_events.starts": {
+      "description": "The start dates attached to this termination record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.type_facts": {
+      "description": "Standalone types facts whose subject has no matching category field.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.type_facts[].subject": {
+      "description": "The entity about which this types fact is asserted.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.type_facts[].subject.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.type_facts[].subject.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.type_facts[].value": {
+      "description": "The asserted semantic type value.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events": {
+      "description": "Events classified as unemployment compensation agreement facts in the case; use an empty list when the case states none.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.agents": {
+      "description": "The agent entities attached to this unemployment compensation agreement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.agents[].id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.agents[].tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.ident": {
+      "description": "The identifier of this unemployment compensation agreement record.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.ident.id": {
+      "description": "The interned identifier; equal identifiers denote the same entity.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.unemployment_compensation_agreement_events.ident.tag": {
+      "description": "The semantic classification used by statute comparisons.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    },
+    "world.universal_purposes": {
+      "description": "Purpose facts that apply to every event in the case rather than to one named event.",
+      "scopes": [
+        "Section1.catala_en::Total"
+      ]
+    }
+  },
+  "schema_version": 3,
+  "structs": {
+    "Section7703.AgentFact": "A narrow binary agent fact with one subject and one value.",
+    "Section7703.AmericanEmployerEvent": "A category-specific american employer record containing only roles used for that category.",
+    "Section7703.AmountFact": "A narrow binary amount fact with one subject and one value.",
+    "Section7703.AttendingClassesEvent": "A category-specific attending classes record containing only roles used for that category.",
+    "Section7703.BeneficiaryFact": "A narrow binary beneficiary fact with one subject and one value.",
+    "Section7703.BirthEvent": "A category-specific birth record containing only roles used for that category.",
+    "Section7703.BlindnessEvent": "A category-specific blindness record containing only roles used for that category.",
+    "Section7703.BrotherEvent": "A category-specific brother record containing only roles used for that category.",
+    "Section7703.BusinessEvent": "A category-specific business record containing only roles used for that category.",
+    "Section7703.BusinessTrustEvent": "A category-specific business trust record containing only roles used for that category.",
+    "Section7703.CitizenshipEvent": "A category-specific citizenship record containing only roles used for that category.",
+    "Section7703.CountryFact": "A narrow binary country fact with one subject and one value.",
+    "Section7703.DaughterEvent": "A category-specific daughter record containing only roles used for that category.",
+    "Section7703.DeathEvent": "A category-specific death record containing only roles used for that category.",
+    "Section7703.DeductionEvent": "A category-specific deduction record containing only roles used for that category.",
+    "Section7703.DestinationFact": "A narrow binary destination fact with one subject and one value.",
+    "Section7703.DisabilityEvent": "A category-specific disability record containing only roles used for that category.",
+    "Section7703.EducationalInstitutionEvent": "A category-specific educational institution record containing only roles used for that category.",
+    "Section7703.EndFact": "A narrow binary end fact with one subject and one value.",
+    "Section7703.EnrollmentEvent": "A category-specific enrollment record containing only roles used for that category.",
+    "Section7703.Entity": "An interned case entity consisting of a stable numeric identifier and its entity category.",
+    "Section7703.FatherEvent": "A category-specific father record containing only roles used for that category.",
+    "Section7703.HospitalEvent": "A category-specific hospital record containing only roles used for that category.",
+    "Section7703.IncarcerationEvent": "A category-specific incarceration record containing only roles used for that category.",
+    "Section7703.IncomeEvent": "One complete income occurrence with a scalar recipient, date, and direct statutory monetary amount.",
+    "Section7703.Injection": "An explicit predicate result supplied by a SARA case when the case replaces or injects a statutory conclusion.",
+    "Section7703.InjectionArgs1": "A fixed one-argument predicate tuple.",
+    "Section7703.InjectionArgs2": "A fixed two-argument predicate tuple.",
+    "Section7703.InjectionArgs3": "A fixed three-argument predicate tuple.",
+    "Section7703.InjectionArgs4": "A fixed four-argument predicate tuple.",
+    "Section7703.InjectionArgs5": "A fixed five-argument predicate tuple.",
+    "Section7703.InjectionArgs6": "A fixed six-argument predicate tuple.",
+    "Section7703.InjectionArgs7": "A fixed seven-argument predicate tuple.",
+    "Section7703.InjectionArgs8": "A fixed eight-argument predicate tuple.",
+    "Section7703.InternationalOrganizationEvent": "A category-specific international organization record containing only roles used for that category.",
+    "Section7703.ItemizeDeductionsEvent": "A category-specific itemize deductions record containing only roles used for that category.",
+    "Section7703.JointReturnEvent": "A category-specific joint return record containing only roles used for that category.",
+    "Section7703.Kinship": "One directed kinship fact linking a subject entity to an object entity.",
+    "Section7703.LegalSeparationEvent": "A category-specific legal separation record containing only roles used for that category.",
+    "Section7703.MarriageEvent": "A category-specific marriage record containing only roles used for that category.",
+    "Section7703.MedicalInstitutionEvent": "A category-specific medical institution record containing only roles used for that category.",
+    "Section7703.MedicalPatientEvent": "A category-specific medical patient record containing only roles used for that category.",
+    "Section7703.MediumFact": "A narrow binary medium fact with one subject and one value.",
+    "Section7703.MigrationEvent": "A category-specific migration record containing only roles used for that category.",
+    "Section7703.MotherEvent": "A category-specific mother record containing only roles used for that category.",
+    "Section7703.NonresidentAlienEvent": "A category-specific nonresident alien record containing only roles used for that category.",
+    "Section7703.NursesTrainingSchoolEvent": "A category-specific nurses training school record containing only roles used for that category.",
+    "Section7703.PatientFact": "A narrow binary patient fact with one subject and one value.",
+    "Section7703.PaymentEvent": "A category-specific payment record containing only roles used for that category.",
+    "Section7703.PenalInstitutionEvent": "A category-specific penal institution record containing only roles used for that category.",
+    "Section7703.PlaceFact": "A narrow binary place fact with one subject and one value.",
+    "Section7703.PlanEvent": "A category-specific plan record containing only roles used for that category.",
+    "Section7703.PurposeFact": "A narrow binary purpose fact with one subject and one value.",
+    "Section7703.ReasonFact": "A narrow binary reason fact with one subject and one value.",
+    "Section7703.ResidenceEvent": "A category-specific residence record containing only roles used for that category.",
+    "Section7703.RetirementEvent": "A category-specific retirement record containing only roles used for that category.",
+    "Section7703.ServiceEvent": "A category-specific service record containing only roles used for that category.",
+    "Section7703.SiblingEvent": "A category-specific sibling record containing only roles used for that category.",
+    "Section7703.SisterEvent": "A category-specific sister record containing only roles used for that category.",
+    "Section7703.SonEvent": "A category-specific son record containing only roles used for that category.",
+    "Section7703.StartFact": "A narrow binary start fact with one subject and one value.",
+    "Section7703.TerminationEvent": "A category-specific termination record containing only roles used for that category.",
+    "Section7703.TypeFact": "A narrow binary type fact with one subject and one value.",
+    "Section7703.UnemploymentCompensationAgreementEvent": "A category-specific unemployment compensation agreement record containing only roles used for that category.",
+    "Section7703.Window": "A date interval used to test whether an event overlaps a relevant taxable period.",
+    "Section7703.World": "All case facts as category-specific records and narrow standalone role relations; no universal event record is present."
+  }
+}

@@ -1,0 +1,647 @@
+From 497d11ec1ed28618273e7c9bf268d12bd943933f Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 22:29:31 -0500
+Subject: [PATCH] Compile BOBCat objectives on demand
+
+---
+ compiler/bobcat/interpreter.ml      | 168 ++++++++++++++-------
+ compiler/verification/z3backend.ml  | 224 +++++++++++++++-------------
+ compiler/verification/z3backend.mli |  19 ++-
+ 3 files changed, 251 insertions(+), 160 deletions(-)
+
+diff --git a/compiler/bobcat/interpreter.ml b/compiler/bobcat/interpreter.ml
+index e08d688e..cba0e295 100644
+--- a/compiler/bobcat/interpreter.ml
++++ b/compiler/bobcat/interpreter.ml
+@@ -5546,6 +5546,18 @@ let solve_branch_objectives
+            in
+            needle_length = 0 || loop 0
+          in
++         let find_substring haystack needle =
++           let haystack_length = String.length haystack in
++           let needle_length = String.length needle in
++           let rec loop offset =
++             if offset + needle_length > haystack_length then None
++             else if String.equal needle
++                       (String.sub haystack offset needle_length)
++             then Some offset
++             else loop (offset + 1)
++           in
++           loop 0
++         in
+          let rank objective =
+            let local = contains objective ("@" ^ root_file ^ ":") in
+            let kind =
+@@ -5553,7 +5565,33 @@ let solve_branch_objectives
+              else if String.starts_with ~prefix:"default@" objective then 1
+              else 2
+            in
+-           (if local then 0 else 1), kind
++           let source_span =
++             try
++               let decision_end =
++                 match find_substring objective "/branch@" with
++                 | Some index -> index
++                 | None -> Option.get (find_substring objective "/default@")
++               in
++               let decision = String.sub objective 0 decision_end in
++               let pieces = String.split_on_char ':' decision in
++               let count = List.length pieces in
++               let start_line = int_of_string (List.nth pieces (count - 3)) in
++               let middle = List.nth pieces (count - 2) in
++               let dash = String.rindex middle '-' in
++               let end_line =
++                 int_of_string
++                   (String.sub middle (dash + 1)
++                      (String.length middle - dash - 1))
++               in
++               max 0 (end_line - start_line)
++             with _ -> max_int
++           in
++           (* Binary conditions generally have a much smaller data-dependency
++              closure than historical/default aggregation. Put construct cost
++              and source span first so one large historical rule cannot prevent
++              independent objectives from ever being compiled. This only
++              changes work order, never the reachability formula or result. *)
++           kind, (if local then 0 else 1), source_span
+          in
+          match compare (rank left) (rank right) with
+          | 0 -> String.compare left right
+@@ -5578,6 +5616,11 @@ let solve_branch_objectives
+         && not (Hashtbl.mem final_results objective))
+       candidates
+   in
++  let unresolved_from candidates =
++    List.filter
++      (fun objective -> not (Hashtbl.mem final_results objective))
++      candidates
++  in
+   let divergences = ref 0 in
+   let max_divergences = max 32 (4 * List.length objectives) in
+   let replay_and_validate model predicted =
+@@ -5702,10 +5745,11 @@ let solve_branch_objectives
+           in
+           solve_group ~list_bound ~finalize_failures next_timeout candidates
+         | [_] ->
+-          if list_bound < max_list_length then
+-            solve_group ~list_bound:(list_bound + 1) ~finalize_failures
+-              solver_timeout_ms candidates
+-          else if finalize_failures then
++          (* A larger list bound is useful after UNSAT, where it strictly adds
++             candidate inputs. It is not a justified response to a solver
++             timeout: the already-unrolled formula stays at least as hard and
++             repeating UNKNOWN at every bound consumed most target budgets. *)
++          if finalize_failures then
+             List.iter
+               (fun objective ->
+                 finalize objective "unknown"
+@@ -5723,69 +5767,33 @@ let solve_branch_objectives
+     end
+   in
+   let on_objective objective =
+-    (* Compilation is monotone: later deferred definitions can still add
+-       assertion, error-on-empty, fatal-path, and alternate-call-site
+-       constraints. Merely register objectives here. Querying the persistent
+-       solver before [compile_reachability] has drained that queue would make a
+-       model valid only for a formula prefix. *)
++    (* An objective becomes queryable only after its entry-rooted batch has
++       drained every deferred definition below. *)
+     Hashtbl.replace compiled objective ()
+   in
+   Printexc.record_backtrace true;
+-  let compilation_failure = ref None in
+-  begin
+-    try
+-      timed "shared_compilation" objectives (fun () ->
+-        Verification.Z3backend.compile_reachability solver_session
+-          ~on_objective ~objective_of_tag ~definitions body)
+-    with
+-    | Stack_overflow ->
+-      let reason = "shared compilation exhausted the OCaml stack" in
+-      compilation_failure := Some reason;
+-      Message.warning "BOBCat %s:\n%s" reason (Printexc.get_backtrace ())
+-    | (Failure _ | Invalid_argument _ | Z3.Error _) as exn ->
+-      let reason =
+-        Format.asprintf "shared compilation stopped: %s"
+-          (Printexc.to_string exn)
+-      in
+-      compilation_failure := Some reason;
+-      Message.warning "BOBCat %s" reason
+-  end;
+-  List.iter
+-    (fun objective -> Hashtbl.replace compiled objective ())
+-    (Verification.Z3backend.compiled_objectives solver_session);
+-  Option.iter
+-    (fun reason ->
+-      List.iter
+-        (fun objective ->
+-          if not (Hashtbl.mem final_results objective) then
+-            finalize objective "unknown" ["reason", `String reason])
+-        objectives)
+-    !compilation_failure;
+-  List.iter
+-    (fun (objective, reason) ->
+-      if not (Hashtbl.mem compiled objective) then
+-        finalize objective "unknown" ["reason", `String reason])
+-    (Verification.Z3backend.unknown_objectives solver_session);
+-  List.iter
+-    (fun objective ->
+-      if not (Hashtbl.mem compiled objective)
+-         && not (Hashtbl.mem final_results objective)
+-      then
+-        finalize objective "unknown"
+-          [ "reason",
+-            `String "objective tag has no executable guarded instance" ])
+-    objectives;
++  (* Objective slices deliberately omit unrelated assertions and fatal leaves.
++     Their formula is therefore an over-approximation of successful program
++     executions: UNSAT remains sound, while SAT is only a candidate. Concrete
++     replay validates it against the full Catala program, and a failed replay
++     safely blocks that exact Catala-visible input before the next query. *)
+   let rec take n = function
+     | _ when n <= 0 -> []
+     | [] -> []
+     | x :: xs -> x :: take (n - 1) xs
+   in
++  (* Compile one requested reachability formula at a time. Unioning unrelated
++     backward slices makes a batch inherit the largest historical/default
++     closure before any member can be queried. A successful replay still
++     credits every observed source outcome, so this does not force one test per
++     objective; it only keeps formula construction demand-driven. *)
++  let objective_compilation_batch_size = 1 in
+   let rec cover () =
+-    let uncovered = pending_from objectives in
++    let uncovered = unresolved_from objectives in
+     match uncovered with
+     | [] -> ()
+     | _ ->
+-      let candidates = take 8 uncovered in
++      let candidates = take objective_compilation_batch_size uncovered in
+       if !divergences >= max_divergences then
+         List.iter
+           (fun objective ->
+@@ -5794,6 +5802,54 @@ let solve_branch_objectives
+                 `String "concrete replay divergence budget exhausted" ])
+           uncovered
+       else begin
++        let compilation_failure = ref None in
++        begin
++          try
++            Verification.Z3backend.compile_objectives solver_session
++              ~on_objective ~objective_of_tag ~definitions candidates body
++              ~on_timing:(fun phase elapsed ->
++                emit_timing phase candidates elapsed)
++          with
++          | Stack_overflow ->
++            let reason =
++              "objective-slice compilation exhausted the OCaml stack"
++            in
++            compilation_failure := Some reason;
++            Message.warning "BOBCat %s:\n%s" reason
++              (Printexc.get_backtrace ())
++          | (Failure _ | Invalid_argument _ | Z3.Error _) as exn ->
++            let reason =
++              Format.asprintf "objective-slice compilation stopped: %s"
++                (Printexc.to_string exn)
++            in
++            compilation_failure := Some reason;
++            Message.warning "BOBCat %s" reason
++        end;
++        List.iter
++          (fun objective -> Hashtbl.replace compiled objective ())
++          (Verification.Z3backend.compiled_objectives solver_session);
++        Option.iter
++          (fun reason ->
++            List.iter
++              (fun objective ->
++                if not (Hashtbl.mem final_results objective) then
++                  finalize objective "unknown" ["reason", `String reason])
++              candidates)
++          !compilation_failure;
++        List.iter
++          (fun objective ->
++            if not (Hashtbl.mem compiled objective)
++               && not (Hashtbl.mem final_results objective)
++            then
++              let reason =
++                Verification.Z3backend.unknown_objectives solver_session
++                |> List.assoc_opt objective
++                |> Option.value
++                     ~default:
++                       "objective tag has no executable guarded instance"
++              in
++              finalize objective "unknown" ["reason", `String reason])
++          candidates;
+         solve_group ~list_bound:0 ~finalize_failures:true solver_timeout_ms
+           candidates;
+         cover ()
+diff --git a/compiler/verification/z3backend.ml b/compiler/verification/z3backend.ml
+index b9a64019..a188a072 100644
+--- a/compiler/verification/z3backend.ml
++++ b/compiler/verification/z3backend.ml
+@@ -19,6 +19,7 @@ open Shared_ast
+ open Dcalc
+ open Ast
+ open Z3
++module CatalaExpr = Shared_ast.Expr
+ module StringMap = String.Map
+ module Runtime = Catala_runtime
+ 
+@@ -2901,11 +2902,13 @@ let rec resolve_definition definitions (e : typed expr) =
+   | _ -> e
+ 
+ let rec compile_reach_expr
+-    ~should_visit session objective_of_tag definitions guard (e : typed expr) =
++    ~should_visit ~is_target_decision ~enforce_failures session
++    objective_of_tag definitions guard (e : typed expr) =
+   if not (should_visit e) then () else
+   let ctx () = session.direct_ctx.ctx_z3 in
+   let compile =
+-    compile_reach_expr ~should_visit session objective_of_tag definitions
++    compile_reach_expr ~should_visit ~is_target_decision ~enforce_failures
++      session objective_of_tag definitions
+   in
+   let compile_function guard fn arguments =
+     let fn = resolve_callable definitions fn in
+@@ -3022,10 +3025,26 @@ let rec compile_reach_expr
+           cases
+     end
+   | EDefault { excepts; just; cons } ->
+-    List.iter (compile guard) excepts;
++    if not (is_target_decision "default" (typed_expr_pos e)) then begin
++      (* As with an ancestor [if], retain only the data-flow route. Encoding an
++         enclosing default's selected exception would translate that complete
++         historical rule merely to reach a nested objective. *)
++      List.iter (compile guard) excepts;
++      compile guard just;
++      compile guard cons
++    end else begin
++    (* A source objective inside one exception does not depend on translating
++       every sibling exception. For a base/consequence objective, omitting
++       unselected exceptions weakens [not any_defined], yielding a deliberate
++       over-approximation. Concrete replay validates SAT; UNSAT of the weaker
++       reachability condition is still sound. *)
++    let selected_excepts = List.filter should_visit excepts in
++    List.iter (compile guard) selected_excepts;
+     begin
+       try
+-        let encoded = List.map (encode_under_guard session guard) excepts in
++        let encoded =
++          List.map (encode_under_guard session guard) selected_excepts
++        in
+         let defined_values =
+           List.map
+             (fun default ->
+@@ -3045,18 +3064,27 @@ let rec compile_reach_expr
+           Boolean.mk_and (ctx ())
+             [guard; Boolean.mk_not (ctx ()) any_defined]
+         in
+-        compile base_guard just;
+-        let z3_just = encode_under_guard session base_guard just in
+-        compile (Boolean.mk_and (ctx ()) [base_guard; z3_just]) cons
++        if should_visit just || should_visit cons then
++          compile base_guard just;
++        if should_visit cons then begin
++          let z3_just = encode_under_guard session base_guard just in
++          compile (Boolean.mk_and (ctx ()) [base_guard; z3_just]) cons
++        end
+       with
+       | Failure reason | Invalid_argument reason | Z3.Error reason ->
+         mark_expr_unknown session objective_of_tag just reason;
+         mark_expr_unknown session objective_of_tag cons reason
+     end
++    end
+   | EApp { f = (EAbs { binder; _ }, _); args; _ } ->
+     List.iter (compile guard) args;
+     if Bindlib.mbinder_arity binder = List.length args then begin
+       let vars, body = Bindlib.unmbind binder in
++      (* Exact dead-argument elimination: constructing Z3 values for large
++         scope records dominates compilation even when a callee never reads
++         the corresponding parameter. This uses ordinary lexical free-variable
++         analysis and therefore does not abstract any value the body can use. *)
++      let used_vars = CatalaExpr.free_vars body in
+       let former_substs = session.direct_ctx.ctx_z3matchsubsts in
+       let former_definitions = session.direct_ctx.ctx_z3definitions in
+       let definitions = ref definitions in
+@@ -3070,17 +3098,19 @@ let rec compile_reach_expr
+                   ctx_z3definitions =
+                     Var.Map.add var arg
+                       session.direct_ctx.ctx_z3definitions };
+-              let (Typed { ty; _ }) = Mark.get arg in
+-              match Mark.remove ty with
+-              | TArrow _ ->
+-                ()
+-              | _ ->
+-                let value = encode_under_guard session guard arg in
+-                session.direct_ctx <-
+-                  add_z3matchsubst var value session.direct_ctx)
++              if Var.Set.mem var used_vars then begin
++                let (Typed { ty; _ }) = Mark.get arg in
++                match Mark.remove ty with
++                | TArrow _ ->
++                  ()
++                | _ ->
++                  let value = encode_under_guard session guard arg in
++                  session.direct_ctx <-
++                    add_z3matchsubst var value session.direct_ctx
++              end)
+             vars (Array.of_list args);
+-          compile_reach_expr ~should_visit session objective_of_tag
+-            !definitions guard body
++          compile_reach_expr ~should_visit ~is_target_decision
++            ~enforce_failures session objective_of_tag !definitions guard body
+         with
+         | Failure reason | Invalid_argument reason | Z3.Error reason ->
+           mark_expr_unknown session objective_of_tag body reason
+@@ -3096,7 +3126,8 @@ let rec compile_reach_expr
+     let resolved = resolve_callable definitions f in
+     begin match Mark.remove resolved with
+     | EAbs { binder; _ } ->
+-      compile_reach_expr ~should_visit session objective_of_tag definitions guard
++      compile_reach_expr ~should_visit ~is_target_decision ~enforce_failures
++        session objective_of_tag definitions guard
+         (EApp { f = resolved; args; tys = [] }, Mark.get e)
+     | _ ->
+       compile guard resolved;
+@@ -3205,7 +3236,7 @@ let rec compile_reach_expr
+     StructField.Map.iter (fun _ field -> compile guard field) fields
+   | EAssert assertion ->
+     compile guard assertion;
+-    begin
++    if enforce_failures then begin
+       try
+         let predicate = encode_under_guard session guard assertion in
+         Z3.Solver.add session.direct_solver
+@@ -3223,7 +3254,8 @@ let rec compile_reach_expr
+   | EStructAccess { e; _ } | ETupleAccess { e; _ } | EInj { e; _ }
+   | EPureDefault e -> compile guard e
+   | EFatalError _ ->
+-    Z3.Solver.add session.direct_solver [Boolean.mk_not (ctx ()) guard]
++    if enforce_failures then
++      Z3.Solver.add session.direct_solver [Boolean.mk_not (ctx ()) guard]
+   | EVar var ->
+     begin match Var.Map.find_opt var definitions with
+     | None -> ()
+@@ -3274,8 +3306,9 @@ let compile_reachability
+   Fun.protect
+     ~finally:(fun () -> session.direct_on_objective <- (fun _ -> ()))
+     (fun () ->
+-      compile_reach_expr ~should_visit:(fun _ -> true) session objective_of_tag
+-        definitions entry body;
++      compile_reach_expr ~should_visit:(fun _ -> true)
++        ~is_target_decision:(fun _ _ -> true) ~enforce_failures:true session
++        objective_of_tag definitions entry body;
+       (* Definition nodes are expanded breadth-first. Shallow objectives can
+          therefore be solved and replayed before one deep historical/default
+          chain monopolizes guarded formula construction. *)
+@@ -3283,47 +3316,36 @@ let compile_reachability
+         Queue.take session.direct_deferred_definitions ()
+       done)
+ 
+-let compile_objective
++let compile_slice
+     ?(on_objective = fun _ -> ())
+     ?(on_timing = fun _ _ -> ())
+-    session ~objective_of_tag ~definitions objective body =
++    session ~objective_of_tag ~definitions ~objectives body =
+   let selection_started = Sys.time () in
+-  Message.debug "BOBCat: selecting backward slice for %s" objective;
++  let slice_label =
++    Format.asprintf "%d branch objectives" (List.length objectives)
++  in
++  Message.debug "BOBCat: selecting dependency slice for %s" slice_label;
+   let definitions =
+     List.fold_left
+       (fun env (var, definition) -> Var.Map.add var definition env)
+       Var.Map.empty definitions
+   in
+-  let target_file, target_line =
+-    try
+-      let at = String.index objective '@' + 1 in
+-      let slash = String.index_from objective at '/' in
+-      let decision = String.sub objective at (slash - at) in
+-      let pieces = String.split_on_char ':' decision in
+-      let count = List.length pieces in
+-      let file =
+-        pieces |> List.filteri (fun index _ -> index < count - 3)
+-        |> String.concat ":"
+-      in
+-      file, int_of_string (List.nth pieces (count - 3))
+-    with _ -> "", (-1)
++  let selected_objectives = Hashtbl.create (List.length objectives) in
++  List.iter
++    (fun objective -> Hashtbl.replace selected_objectives objective ())
++    objectives;
++  let is_selected_objective tag pos =
++    Option.fold ~none:false
++      ~some:(fun objective -> Hashtbl.mem selected_objectives objective)
++      (objective_of_tag tag pos)
+   in
+-  let rec source_score seen (e : typed expr) =
+-    let pos = typed_expr_pos e in
+-    let direct =
+-    if not (String.equal (Pos.get_file pos) target_file) then 0
+-    else if Pos.get_start_line pos <= target_line
+-            && target_line <= Pos.get_end_line pos
+-    then 2
+-    else 1
+-    in
+-    if direct > 0 then direct
+-    else match Mark.remove e with
+-    | EVar var when not (Var.Set.mem var seen) ->
+-      Option.fold ~none:0
+-        ~some:(source_score (Var.Set.add var seen))
+-        (Var.Map.find_opt var definitions)
+-    | _ -> 0
++  let is_target_decision kind pos =
++    let decision =
++      Printf.sprintf "%s@%s:%d:%d-%d:%d/" kind (Pos.get_file pos)
++        (Pos.get_start_line pos) (Pos.get_start_column pos)
++        (Pos.get_end_line pos) (Pos.get_end_column pos)
++    in
++    List.exists (String.starts_with ~prefix:decision) objectives
+   in
+   let memo = Hashtbl.create 257 in
+   let selected_nodes = ref [] in
+@@ -3332,16 +3354,15 @@ let compile_objective
+       match Mark.remove e with
+       | EAppOp
+           { op = Tag ((Branching _ | Exception _) as tag), _; _ } ->
+-        Option.fold ~none:false ~some:(String.equal objective)
+-          (objective_of_tag tag (typed_expr_pos e))
++        is_selected_objective tag (typed_expr_pos e)
+       | _ -> false
+     in
+-    let result = own ||
+-    (match Mark.remove e with
++    let descendants =
++    match Mark.remove e with
+     | EVar var ->
+       if Var.Set.mem var seen then false
+       else begin match Var.Map.find_opt var definitions with
+-      | None -> true
++      | None -> false
+       | Some definition ->
+         let key = Bindlib.uid_of var in
+         begin match Hashtbl.find_opt memo key with
+@@ -3353,72 +3374,57 @@ let compile_objective
+         end
+       end
+     | EMatch { e; cases; _ } ->
+-      contains seen e
+-      || any seen
+-           (EnumConstructor.Map.values cases
+-            |> List.map (fun arm ->
+-              (fun () ->
+-             Option.fold ~none:false ~some:(String.equal objective)
+-               (objective_of_tag (Branching None) (typed_expr_pos arm))
+-             || contains seen arm), arm))
++      let subject_selected = contains seen e in
++      let arms_selected =
++        EnumConstructor.Map.values cases
++        |> List.map (fun arm ->
++             let nested = contains seen arm in
++             is_selected_objective (Branching None) (typed_expr_pos arm)
++             || nested)
++        |> any seen
++      in
++      subject_selected || arms_selected
+     | EAbs { binder; _ } ->
+       let _, body = Bindlib.unmbind binder in contains seen body
+     | EApp { f; args; _ } ->
+-      any seen (List.map (fun e -> (fun () -> contains seen e), e) (f :: args))
++      any seen (List.map (contains seen) (f :: args))
+     | EAppOp { args; _ } | EArray args | ETuple args ->
+-      any seen (List.map (fun e -> (fun () -> contains seen e), e) args)
++      any seen (List.map (contains seen) args)
+     | EIfThenElse { cond; etrue; efalse } ->
+-      let children = [cond; etrue; efalse] in
+-      any seen (List.map (fun e -> (fun () -> contains seen e), e) children)
++      any seen (List.map (contains seen) [cond; etrue; efalse])
+     | EStruct { fields; _ } ->
+       StructField.Map.values fields
+-      |> List.map (fun e -> (fun () -> contains seen e), e)
++      |> List.map (contains seen)
+       |> any seen
+     | EStructAccess { e; _ } | ETupleAccess { e; _ } | EInj { e; _ }
+     | EAssert e | EPureDefault e | EErrorOnEmpty e -> contains seen e
+     | EDefault { excepts; just; cons } ->
+       let children = just :: cons :: excepts in
+-      any seen (List.map (fun e -> (fun () -> contains seen e), e) children)
++      any seen (List.map (contains seen) children)
+     | EExternal _ | ELit _ | EEmpty | EPos _ | EFatalError _ | EBad -> false
+-    | _ -> false)
++    | _ -> false
+     in
++    let result = own || descendants in
+     if result
+        && not (List.exists (fun selected -> selected == e) !selected_nodes)
+     then selected_nodes := e :: !selected_nodes;
+     result
+-  and any _seen candidates =
+-    candidates
+-    |> List.sort (fun (_, left) (_, right) ->
+-         Int.compare
+-           (source_score Var.Set.empty right)
+-           (source_score Var.Set.empty left))
+-    |> List.exists (fun (test, _) -> test ())
+-  in
+-  let slice_root =
+-    Var.Map.bindings definitions
+-    |> List.filter_map (fun (_, definition) ->
+-         let pos = typed_expr_pos definition in
+-         if source_score Var.Set.empty definition = 2 then
+-           Some
+-             ( max 0 (Pos.get_end_line pos - Pos.get_start_line pos),
+-               definition )
+-         else None)
+-    |> List.sort (fun (left, _) (right, _) -> Int.compare left right)
+-    |> fun candidates -> List.nth_opt candidates 0
+-    |> Option.fold ~none:body ~some:snd
++  and any _seen results = List.fold_left ( || ) false results
+   in
+-  Message.debug "BOBCat: selected candidate slice root %s for %s"
+-    (Pos.to_string_short (typed_expr_pos slice_root)) objective;
+-  ignore (contains Var.Set.empty slice_root);
++  ignore (contains Var.Set.empty body);
+   on_timing "slice_selection" (Sys.time () -. selection_started);
+-  Message.debug "BOBCat: indexed backward slice for %s" objective;
++  Message.debug "BOBCat: indexed dependency slice for %s" slice_label;
+   let should_visit e =
+     List.exists (fun selected -> selected == e) !selected_nodes
++    (* Unbinding a Bindlib binder can materialize fresh expression nodes, for
++       which physical identity is intentionally unavailable. Re-evaluate the
++       cheap selector in that case; definition results remain memoized. *)
+     || contains Var.Set.empty e
+   in
+   let objective_of_tag tag pos =
+     match objective_of_tag tag pos with
+-    | Some candidate when String.equal candidate objective -> Some candidate
++    | Some candidate when Hashtbl.mem selected_objectives candidate ->
++      Some candidate
+     | _ -> None
+   in
+   let entry = Boolean.mk_true session.direct_ctx.ctx_z3 in
+@@ -3433,12 +3439,26 @@ let compile_objective
+       on_timing "slice_compilation" (Sys.time () -. compilation_started);
+       session.direct_on_objective <- (fun _ -> ()))
+     (fun () ->
+-      compile_reach_expr ~should_visit session objective_of_tag definitions
+-        entry slice_root;
++      compile_reach_expr ~should_visit ~is_target_decision
++        ~enforce_failures:false session objective_of_tag definitions entry body;
+       while not (Queue.is_empty session.direct_deferred_definitions) do
+         Queue.take session.direct_deferred_definitions ()
+       done;
+-      Message.debug "BOBCat: compiled backward slice for %s" objective)
++      Message.debug "BOBCat: sealed dependency slice for %s" slice_label)
++
++let compile_objectives
++    ?(on_objective = fun _ -> ())
++    ?(on_timing = fun _ _ -> ())
++    session ~objective_of_tag ~definitions objectives body =
++  compile_slice ~on_objective ~on_timing session ~objective_of_tag ~definitions
++    ~objectives body
++
++let compile_objective
++    ?(on_objective = fun _ -> ())
++    ?(on_timing = fun _ _ -> ())
++    session ~objective_of_tag ~definitions objective body =
++  compile_objectives ~on_objective ~on_timing session ~objective_of_tag
++    ~definitions [objective] body
+ 
+ let unknown_objectives session = StringMap.bindings session.direct_unknowns
+ 
+diff --git a/compiler/verification/z3backend.mli b/compiler/verification/z3backend.mli
+index 741aa1dd..18b06265 100644
+--- a/compiler/verification/z3backend.mli
++++ b/compiler/verification/z3backend.mli
+@@ -69,8 +69,23 @@ val compile_objective :
+   string ->
+   Shared_ast.typed Dcalc.Ast.expr ->
+   unit
+-(** Add only the backwards dependency slice for one exact source outcome to
+-    the shared guarded solver session. *)
++(** Add a sealed dependency over-approximation for one exact source outcome to
++    the shared guarded solver session. Ancestor control predicates are omitted;
++    SAT candidates therefore require replay. *)
++
++val compile_objectives :
++  ?on_objective:(string -> unit) ->
++  ?on_timing:(string -> float -> unit) ->
++  direct_session ->
++  objective_of_tag:(Shared_ast.tag -> Catala_utils.Pos.t -> string option) ->
++  definitions:(Shared_ast.typed Dcalc.Ast.naked_expr Bindlib.var *
++               Shared_ast.typed Dcalc.Ast.expr) list ->
++  string list ->
++  Shared_ast.typed Dcalc.Ast.expr ->
++  unit
++(** Add one sealed dependency slice containing a batch of source outcomes.
++    Constraints accumulated by the slice are non-failing semantic constraints
++    and can therefore be shared by later batches. *)
+ 
+ val unknown_objectives : direct_session -> (string * string) list
+ 
+-- 
+2.34.1
+

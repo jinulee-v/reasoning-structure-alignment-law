@@ -1,0 +1,11 @@
+# Temporal-boundary seeding regression fixture
+
+```catala
+declaration scope TemporalBoundaries:
+  input effective_date content date
+  output result content integer
+
+scope TemporalBoundaries:
+  definition result equals
+    if effective_date < |2020-01-15| then 1 else 2
+```

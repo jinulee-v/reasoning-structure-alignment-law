@@ -1,0 +1,11 @@
+# Input bound one must admit an intermediate list of length two.
+
+```catala
+declaration scope ListGrowth:
+  input xs content list of integer
+  output pair content boolean
+
+scope ListGrowth:
+  definition pair equals
+    if (number of (xs ++ xs)) >= 2 then true else false
+```

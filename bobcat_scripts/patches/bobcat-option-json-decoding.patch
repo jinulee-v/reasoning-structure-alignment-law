@@ -1,0 +1,33 @@
+From 082d66599f060b02aea9a37bf2999d3759efe9f4 Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Sat, 12 Sep 2026 15:50:56 -0500
+Subject: [PATCH] Decode optional inputs as Catala JSON injections
+
+---
+ compiler/verification/z3backend.ml | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/compiler/verification/z3backend.ml b/compiler/verification/z3backend.ml
+index 030af232..9dd037ad 100644
+--- a/compiler/verification/z3backend.ml
++++ b/compiler/verification/z3backend.ml
+@@ -697,10 +697,12 @@ let rec json_of_z3model_expr
+       if Boolean.is_true
+            (eval_model model (Expr.mk_app ctx.ctx_z3 present [e]))
+       then
+-        json_of_z3model_expr ctx model payload_ty
+-          (Expr.mk_app ctx.ctx_z3 _present_value [e])
+-      else `Null
+-    | _ -> `Null
++        `Assoc
++          [ "Present",
++            json_of_z3model_expr ctx model payload_ty
++              (Expr.mk_app ctx.ctx_z3 _present_value [e]) ]
++      else `String "Absent"
++    | _ -> `String "Absent"
+     end
+   | TDefault inner_ty ->
+     let _, _, accessors =
+-- 
+2.34.1
+

@@ -1,0 +1,11 @@
+# Calendar-aware symbolic date arithmetic
+
+```catala
+declaration scope CalendarGoal:
+  input start_date content date
+  output result content integer
+
+scope CalendarGoal:
+  definition result equals
+    if start_date + 1 year < |2021-03-01| then 1 else 2
+```

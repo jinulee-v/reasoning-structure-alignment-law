@@ -1,0 +1,11 @@
+# Decoding a date must not depend on symbolic calendar selectors being demanded.
+
+```catala
+declaration scope UnusedDate:
+  input current_date content date
+  input flag content boolean
+  output result content integer
+
+scope UnusedDate:
+  definition result equals if flag then 1 else 0
+```

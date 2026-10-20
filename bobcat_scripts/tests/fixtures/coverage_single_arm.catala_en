@@ -1,0 +1,15 @@
+# A source match with one written arm is not a branch decision
+
+```catala
+declaration enumeration Choice:
+  -- Only
+
+declaration scope SingleArm:
+  input choice content Choice
+  output result content integer
+
+scope SingleArm:
+  definition result equals
+    match choice with pattern
+    -- Only: 1
+```

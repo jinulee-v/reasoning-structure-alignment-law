@@ -1,0 +1,15 @@
+# Generic list operations need distinct summaries for distinct SMT sorts.
+
+```catala
+declaration scope PolymorphicSummaries:
+  input integers content list of integer
+  input decimals content list of decimal
+  output integer_positive content boolean
+  output decimal_positive content boolean
+
+scope PolymorphicSummaries:
+  definition integer_positive equals
+    if (minimum of integers or if list empty then 0) > 0 then true else false
+  definition decimal_positive equals
+    if (minimum of decimals or if list empty then 0.0) > 0.0 then true else false
+```

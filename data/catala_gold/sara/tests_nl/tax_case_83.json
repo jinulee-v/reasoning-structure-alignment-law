@@ -1,0 +1,7 @@
+{
+  "domain": "sara",
+  "id": "tax_case_83",
+  "label": "206073",
+  "question": "How much tax does Alice have to pay in 2016?",
+  "text": "In 2016, Alice's gross income was $567192.\nAlice has employed Bob, Cameron, Dan, Emily, Fred and George for agricultural labor on various occasions during the year 2016:\n- Jan 24: B, C, D, E and F\n- Feb 4: B, C and F\n- Mar 3: B, C, D, E and F\n- Mar 19: C, D, E, F and G\n- Apr 2: B, C, D, F and G\n- May 9: C, D, E, F and G\n- Oct 15: B, C, D, E and G\n- Oct 25: B, E, F and G\n- Nov 8: B, C, E, F and G\n- Nov 22: B, C, D, E and F\n- Dec 1: B, C, D, E and G\n- Dec 3: B, C, D, E and G\nOn each occasion, Alice paid each of them $550. Alice takes the standard deduction in 2016."
+}

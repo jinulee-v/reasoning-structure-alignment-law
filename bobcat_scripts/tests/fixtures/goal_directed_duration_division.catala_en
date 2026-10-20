@@ -1,0 +1,11 @@
+# Duration division is defined for nonzero day durations.
+
+```catala
+declaration scope DurationDivisionGoal:
+  input elapsed content duration
+  output result content integer
+
+scope DurationDivisionGoal:
+  definition result equals
+    if elapsed / 1 day > 10.0 then 1 else 0
+```

@@ -1,0 +1,7 @@
+{
+  "domain": "sara",
+  "id": "tax_case_91",
+  "label": "247432",
+  "question": "How much tax does Alice have to pay in 2017?",
+  "text": "Alice got married on June 2nd, 2006. Alice files a joint return with her spouse for 2017. Alice's and her spouse's gross income for the year 2017 is $684642. They take the standard deduction in 2017.\nAlice has employed Bob, Cameron, Dan, Emily, Fred and George for agricultural labor on various occasions during the year 2017:\n- Jan 24: B, C, D, E and F\n- Feb 4: B, C and F\n- Mar 3: B, C, D, E and F\n- Mar 19: C, D, E, F and G\n- Apr 2: B, C, D, F and G\n- May 9: C, D, E, F and G\n- Oct 15: B, C, D, E and G\n- Oct 25: B, E, F and G\n- Nov 8: B, C, E, F and G\n- Nov 22: B, C, D, E and F\n- Dec 1: B, C, D, E and G\n- Dec 3: B, C, D, E and G\nAlice has paid each $632 on each occasion."
+}

@@ -1,0 +1,25 @@
+# Named Catala values must denote their definitions in Z3. In particular, the
+# list is not an arbitrary symbolic list and the integer is not a fresh model
+# variable.
+
+```catala-metadata
+declaration enumeration Region:
+  -- Allowed
+  -- Forbidden
+
+declaration allowed_regions content list of Region equals [Region.Allowed]
+declaration required_code content integer equals 29
+
+declaration scope DefinedValuesGoal:
+  input region content Region
+  input code content integer
+  output accepted content boolean
+```
+
+```catala
+scope DefinedValuesGoal:
+  definition accepted equals
+    if (allowed_regions contains region) and code = required_code
+    then true
+    else false
+```

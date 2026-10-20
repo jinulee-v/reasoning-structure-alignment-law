@@ -1,0 +1,19 @@
+# Match arms are explicit branch outcomes
+
+```catala
+declaration enumeration Choice:
+  -- Left
+  -- Middle
+  -- Right
+
+declaration scope MatchGoal:
+  input choice content Choice
+  output result content integer
+
+scope MatchGoal:
+  definition result equals
+    match choice with pattern
+    -- Left: 1
+    -- Middle: 2
+    -- Right: 3
+```

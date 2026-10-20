@@ -1,5 +1,5 @@
 % Text
-% Alice got married on December 30th, 2017. Alice files a joint return with her spouse for 2017. Alice's and her spouse's gross income for the year 2017 is $684642. Alice has itemized deductions of $23029 for donating cash to a charity.
+% Alice got married on December 30th, 2017. Alice files a joint return with her spouse for 2017. Alice's and her spouse's gross income for the year 2017 is $684642. Alice has itemized deductions of $23029 for donating cash to a charity. Alice elects to itemize her deductions for 2017.
 
 % Question
 % How much tax does Alice have to pay in 2017? $243097

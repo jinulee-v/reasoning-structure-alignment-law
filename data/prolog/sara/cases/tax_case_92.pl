@@ -1,5 +1,5 @@
 % Text
-% Alice has paid $300 to Bob for domestic service done in her home from Feb 1st, 2010 to Sep 2nd, 2010, in Baltimore, Maryland, USA. In 2010, Alice was paid $33408. Alice is allowed itemized deductions of $680, $2102, $1993 and $4807.
+% Alice has paid $300 to Bob for domestic service done in her home from Feb 1st, 2010 to Sep 2nd, 2010, in Baltimore, Maryland, USA. In 2010, Alice was paid $33408. Alice is allowed itemized deductions of $680, $2102, $1993 and $4807. Alice elects to itemize her deductions for 2010.
 
 % Question
 % How much tax does Alice have to pay in 2010? $3274

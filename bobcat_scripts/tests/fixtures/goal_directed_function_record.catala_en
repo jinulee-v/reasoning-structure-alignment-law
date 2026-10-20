@@ -1,0 +1,19 @@
+# Function-valued scope fields retain their captured input.
+
+```catala
+declaration scope FunctionProvider:
+  input offset content integer
+  output predicate content boolean depends on value content integer
+
+scope FunctionProvider:
+  definition predicate of value equals if value > offset then true else false
+
+declaration scope FunctionRecord:
+  input x content integer
+  output result content boolean
+
+scope FunctionRecord:
+  definition result equals
+    ((output of FunctionProvider with { -- offset: x }).predicate of (x + 1))
+    and not ((output of FunctionProvider with { -- offset: x }).predicate of (x - 1))
+```

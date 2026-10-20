@@ -1,0 +1,13 @@
+# BOBCat direct-goal regression fixture
+
+```catala
+declaration scope GoalDirected:
+  input x content boolean
+  output result content integer
+
+scope GoalDirected:
+  definition result equals
+    if x then
+      if not x then 1 else 2
+    else 3
+```

@@ -14,15 +14,22 @@ section rather than failing wholesale.
 from __future__ import annotations
 
 import json
+import itertools
 import re
+from datetime import date
 from .paths import CATALA_PROJECT
 
 OUT = CATALA_PROJECT / "cases"
 
 DATE_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})$")
 VAR_RE = re.compile(r"^_VAR\d+$")
+# Prolog numeric amounts are rendered as whole-dollar Catala money values.
 
-# events.pl unary predicates -> SaraWorld.EventKind constructors.
+
+class EventCardinalityError(ValueError):
+    """A generated world lies outside the Catala port's bounded event schema."""
+
+# events.pl unary predicates -> typed World category fields.
 EVENT_KINDS = {
     "marriage_": "Marriage", "birth_": "Birth", "death_": "Death",
     "income_": "Income", "payment_": "Payment", "service_": "Service",
@@ -48,13 +55,156 @@ EVENT_KINDS = {
     "unemployment_compensation_agreement_": "UnemploymentCompensationAgreement",
 }
 
-# Binary role predicates -> Event field.
+# World field for each unary event predicate. Keeping this mapping next to
+# EVENT_KINDS makes the Prolog fact -> Catala input schema conversion explicit.
+EVENT_FIELDS = {
+    pred: re.sub(r"_$", "_events", pred) for pred in EVENT_KINDS
+}
+
+# Unary categories whose grounded SARA fan-out is 0-or-1 per world. Keeping
+# this beside EVENT_FIELDS makes the bounded Catala schema and both adapters
+# share one authoritative list.
+OPTIONAL_EVENT_FIELDS = {
+    "itemize_deductions_events", "unemployment_compensation_agreement_events",
+    "american_employer_events", "attending_classes_events", "blindness_events",
+    "brother_events", "business_events", "business_trust_events",
+    "daughter_events", "death_events", "disability_events",
+    "educational_institution_events", "enrollment_events", "father_events",
+    "hospital_events", "incarceration_events", "international_organization_events",
+    "legal_separation_events", "medical_institution_events",
+    "medical_patient_events", "migration_events", "mother_events",
+    "nonresident_alien_events", "nurses_training_school_events",
+    "penal_institution_events", "retirement_events", "sibling_events",
+    "sister_events", "termination_events",
+}
+
+# Binary role predicates -> category-record field.
 ROLE_FIELDS = {
     "agent_": "agents", "patient_": "patients", "start_": "starts",
     "end_": "ends", "amount_": "amounts", "purpose_": "purposes",
     "location_": "places", "means_": "media", "reason_": "reasons",
     "beneficiary_": "beneficiaries", "country_": "countries",
     "type_": "types", "destination_": "destinations",
+}
+
+# Role facts whose subject has no suitable unary category are represented as
+# narrow binary relations.  Do not replace these with another catch-all event:
+# its Cartesian payload is precisely what makes symbolic inputs explode.
+ROLE_FACTS = {
+    "agents": ("AgentFact", "agent_facts"),
+    "patients": ("PatientFact", "patient_facts"),
+    "starts": ("StartFact", "start_facts"),
+    "ends": ("EndFact", "end_facts"),
+    "amounts": ("AmountFact", "amount_facts"),
+    "purposes": ("PurposeFact", "purpose_facts"),
+    "places": ("PlaceFact", "place_facts"),
+    "media": ("MediumFact", "medium_facts"),
+    "reasons": ("ReasonFact", "reason_facts"),
+    "beneficiaries": ("BeneficiaryFact", "beneficiary_facts"),
+    "countries": ("CountryFact", "country_facts"),
+    "types": ("TypeFact", "type_facts"),
+    "destinations": ("DestinationFact", "destination_facts"),
+}
+
+# Fields retained by each category-specific Catala input record.  This is the
+# semantic schema used by the statute, not a profile of mutation noise: a
+# mutation may attach (say) a destination to a birth, but no translated rule
+# can observe that role on a birth. Narrow records keep such irrelevant facts
+# out of BOBCat's symbolic input altogether; observable uncategorized roles use
+# the independent binary relations in ``ROLE_FACTS``.
+EVENT_CATEGORY_ROLES = {
+    "marriage_": ("agents", "starts", "ends"),
+    "birth_": ("agents", "starts", "ends"),
+    "death_": ("agents", "starts", "ends"),
+    "income_": ("agents", "starts", "ends", "amounts", "purposes"),
+    "payment_": ("agents", "patients", "starts", "ends", "amounts",
+                 "purposes", "media", "beneficiaries"),
+    "service_": ("agents", "patients", "starts", "ends", "purposes",
+                 "places", "media", "types"),
+    "residence_": ("agents", "patients", "starts", "ends"),
+    "migration_": ("agents", "purposes", "destinations"),
+    "retirement_": ("agents", "starts", "reasons"),
+    "deduction_": ("agents", "starts", "amounts"),
+    "enrollment_": ("agents", "patients", "starts", "ends"),
+    "termination_": ("agents", "patients", "starts", "reasons"),
+    "incarceration_": ("agents", "patients", "starts", "ends"),
+    "legal_separation_": ("agents", "patients", "starts"),
+    "joint_return_": ("agents", "starts", "ends"),
+    "itemize_deductions_": (),
+    "blindness_": ("agents", "starts"),
+    "disability_": ("agents", "starts"),
+    "attending_classes_": ("agents", "starts", "ends", "places"),
+    "medical_patient_": ("agents", "patients", "starts", "ends"),
+    "nonresident_alien_": ("agents", "starts", "ends"),
+    "citizenship_": ("agents", "patients"),
+    "son_": ("agents", "patients", "starts"),
+    "daughter_": ("agents", "patients"),
+    "father_": ("agents", "patients", "starts"),
+    "mother_": ("agents", "patients", "starts"),
+    "brother_": ("agents", "patients", "starts"),
+    "sister_": ("agents", "patients", "starts"),
+    "sibling_": ("agents", "patients"),
+    "business_": ("agents", "starts", "types"),
+    "business_trust_": ("agents", "starts", "ends"),
+    "plan_": ("agents", "purposes", "beneficiaries"),
+    "hospital_": ("agents",),
+    "medical_institution_": ("agents",),
+    "penal_institution_": ("agents",),
+    "educational_institution_": ("agents",),
+    "nurses_training_school_": ("agents",),
+    "international_organization_": ("agents",),
+    "american_employer_": ("agents",),
+    "unemployment_compensation_agreement_": ("agents",),
+}
+
+# Category/role pairs whose grounded SARA worlds contain at most one value.
+# Cardinality is pair-specific: a payment can have many starts while a
+# retirement has at most one. Media and beneficiaries deliberately stay lists.
+OPTIONAL_CATEGORY_ROLES = {
+    ("marriage_", "ends"),
+    ("birth_", "starts"), ("birth_", "ends"),
+    ("death_", "starts"), ("death_", "ends"),
+    ("income_", "agents"), ("income_", "ends"), ("income_", "purposes"),
+    ("payment_", "ends"), ("payment_", "purposes"),
+    ("service_", "ends"), ("service_", "purposes"), ("service_", "types"),
+    ("residence_", "ends"),
+    ("migration_", "agents"), ("migration_", "purposes"),
+    ("migration_", "destinations"),
+    ("retirement_", "agents"), ("retirement_", "starts"),
+    ("retirement_", "reasons"),
+    ("deduction_", "starts"), ("deduction_", "amounts"),
+    ("enrollment_", "patients"), ("enrollment_", "starts"),
+    ("enrollment_", "ends"),
+    ("termination_", "agents"), ("termination_", "patients"),
+    ("termination_", "starts"), ("termination_", "reasons"),
+    ("incarceration_", "agents"), ("incarceration_", "patients"),
+    ("incarceration_", "starts"), ("incarceration_", "ends"),
+    ("legal_separation_", "agents"), ("legal_separation_", "patients"),
+    ("legal_separation_", "starts"),
+    ("joint_return_", "starts"), ("joint_return_", "ends"),
+    ("blindness_", "starts"),
+    ("disability_", "agents"), ("disability_", "starts"),
+    ("attending_classes_", "agents"), ("attending_classes_", "starts"),
+    ("attending_classes_", "ends"), ("attending_classes_", "places"),
+    ("medical_patient_", "agents"), ("medical_patient_", "patients"),
+    ("medical_patient_", "starts"), ("medical_patient_", "ends"),
+    ("nonresident_alien_", "ends"),
+    ("citizenship_", "agents"),
+    ("daughter_", "agents"), ("daughter_", "patients"),
+    ("father_", "starts"),
+    ("mother_", "agents"), ("mother_", "patients"),
+    ("brother_", "starts"),
+    ("sister_", "agents"), ("sister_", "patients"), ("sister_", "starts"),
+    ("sibling_", "patients"),
+    ("business_", "starts"), ("business_", "types"),
+    ("business_trust_", "ends"),
+    ("plan_", "agents"), ("plan_", "purposes"),
+    ("hospital_", "agents"), ("penal_institution_", "agents"),
+    ("educational_institution_", "agents"),
+    ("nurses_training_school_", "agents"),
+    ("international_organization_", "agents"),
+    ("american_employer_", "agents"),
+    ("unemployment_compensation_agreement_", "agents"),
 }
 
 # The closed semantic vocabulary the statutes branch on.
@@ -80,6 +230,16 @@ MEDIA = {"cash": "Cash"}
 # Non-statute predicates a case may grant directly, e.g. `utils.pl`'s
 # `total_wages_employer/6`, asserted by the two §3301 cases.
 INJECTABLE_UTILS = {"total_wages_employer"}
+
+# Argument positions that no translated consumer reads. Preserve arity (it is
+# part of the Prolog predicate identity), but do not intern or carry a bogus
+# semantic value for these slots. Positions are zero-based here.
+IGNORED_INJECTION_POSITIONS = {
+    "s151/5": {2}, "s152_b_2/4": {1}, "s152_d_2_H/6": {3},
+    "s3306_b/8": {7}, "s63_c_3/4": {1}, "s63_d/4": {1},
+    "s7703/4": {2}, "total_wages_employer/6": {2, 3},
+    "s2_a/5": {1, 2, 3},
+}
 
 ROMAN = {"i": 1, "ii": 2, "iii": 3, "iv": 4, "v": 5}
 SCHEDULE = {"a": "ScheduleA", "b": "ScheduleB", "c": "ScheduleC", "d": "ScheduleD"}
@@ -164,7 +324,7 @@ def render_s63_c_2_B(sym, rec, goal) -> str:
     """s63_c_2_B(Taxp,Taxy,Bassd)."""
     taxpayer, year, claimed = goal["args"]
     return (f"(output of S63.HeadOfHouseholdBasicHolds with {{"
-            f" -- status: (output of St.FilingStatus with {{"
+            f" -- status: (output of St.StatusDetermination with {{"
             f" -- world: world -- injections: injections"
             f" -- taxpayer: {entity_lit(sym, taxpayer)}"
             f" -- taxable_year: {int(year)} }}).status"
@@ -172,7 +332,7 @@ def render_s63_c_2_B(sym, rec, goal) -> str:
             f" -- claimed: {money_arg(claimed)} }}).holds")
 
 
-_S63 = ["Section63 as S63", "SaraStatus as St"]
+_S63 = ["Section63 as S63", "Section68 as St"]
 PORTED["s63_c_7_i/2"] = {"render": render_s63_c_7, "uses": _S63}
 PORTED["s63_c_7_ii/2"] = {"render": render_s63_c_7, "uses": _S63}
 PORTED["s63_c_2_C/2"] = {"render": render_s63_c_2_C, "uses": _S63}
@@ -548,7 +708,7 @@ def render_s2_b(sym, rec, goal) -> str:
                f" -- dependant: {_opt_entity(sym, dependant)}") + ".holds"
 
 
-_S63_FULL = ["Section63 as S63", "SaraStatus as St", "Section151 as S151",
+_S63_FULL = ["Section63 as S63", "Section68 as St", "Section151 as S151",
              "Section152 as S152", "Section7703 as S7703", "Section68 as S68"]
 
 
@@ -763,9 +923,8 @@ def render_s7703_b(sym, rec, goal) -> str:
         # the household is left unbound in the cases; every qualifying-child
         # dependant is a candidate, so the scope is asked over each household
         # the taxpayer resides at. Rendered as an existential in Catala.
-        return (f"(exists h among (map each e among (list of ev among world.events"
-                f" such that ev.kinds contains W.EventKind.Residence"
-                f" and ev.agents contains {taxpayer}) to e)"
+        return (f"(exists h among (map each e among (list of ev among world.residence_events"
+                f" such that ev.agents contains {taxpayer}) to e)"
                 f" such that (exists hh among h.patients such that"
                 f" (output of S7703.LivingApartOne with {{"
                 f" -- world: world -- taxpayer: {taxpayer}"
@@ -801,7 +960,7 @@ for _p in ("s7703_b_1/4", "s7703_b_2/4", "s7703_b_3/4"):
 # ---- filing-status plumbing shared by the §1/§63/§68 query renderers ----
 
 def status_expr(sym, taxpayer: str, year: int) -> str:
-    return (f"(output of St.FilingStatus with {{ -- world: world"
+    return (f"(output of St.StatusDetermination with {{ -- world: world"
             f" -- injections: injections"
             f" -- taxpayer: {entity_lit(sym, taxpayer)}"
             f" -- taxable_year: {year} }})")
@@ -843,8 +1002,8 @@ def s151b_exempt_spouses_expr(sym, taxpayer: str, year: int) -> str:
     # argument only, else a grant made to the spouse in their own right also
     # applies in reverse.  An unbound spouse argument admits every §7703 spouse.
     granted = (f"(combine all r among (map each inj among"
-               f" (W.injections_for of injections, P.pred_s151_b_applies_3,"
-               f" [{ent}.id; -1; W.num_key of {year}])"
+               f" (W.injections_for_3_13 of injections,"
+               f" P.pred_s151_b_applies_3, {ent}.id, W.num_key of {year})"
                f" to (match (W.injection_entity of inj, 2) with pattern"
                f" -- Absent: {indiv}.all_spouses"
                f" -- Present content sp: [sp]))"
@@ -955,8 +1114,9 @@ def render_s1_subsection(sym, rec, goal) -> str:
     taxpayer = args[0]
     year = int(args[2] if pred == "s1_d" else args[1])
     claimed = args[-1]
-    ti = (f"(W.injected_money of injections, P.pred_s63_3,"
-          f" [{entity_lit(sym, taxpayer)}.id; W.num_key of {year}; -1], 3)")
+    ti = (f"(W.injected_money of (W.injections_for_3_12 of injections,"
+          f" P.pred_s63_3, {entity_lit(sym, taxpayer)}.id,"
+          f" W.num_key of {year}), 3)")
     # `s1_c` reaches its rate schedule through `s63`, which the case may grant
     # *and* the statute derives, so both are consulted (D59).
     tax_scope = (f"(output of S1.Tax with {{ -- world: world"
@@ -984,13 +1144,13 @@ def render_s68_a_2(sym, rec, goal) -> str:
     args = goal["args"]
     taxpayer, claimed, year = args[0], args[2], int(args[3])
     ent = entity_lit(sym, taxpayer)
-    pattern = f"[{ent}.id; -1; -1; W.num_key of {year}]"
+    matching = (f"(W.injections_for_4_14 of injections, P.pred_s63_d_4,"
+                f" {ent}.id, W.num_key of {year})")
     world = (f"(output of S63.ItemizedDeductions with {{ -- world: world"
              f" -- taxpayer: {ent} -- taxable_year: {year} }})")
-    itemized = (f"(match (W.injected_money of injections, P.pred_s63_d_4,"
-                f" {pattern}, 3) with pattern"
+    itemized = (f"(match (W.injected_money of {matching}, 3) with pattern"
                 f" -- Absent: {world}.total -- Present content m: m)")
-    itemizes = (f"((W.injected_holds of injections, P.pred_s63_d_4, {pattern})"
+    itemizes = (f"((W.injected_holds of {matching})"
                 f" or {world}.itemizes)")
     return (f"(output of S68.ReductionTwoHolds with {{"
             f" -- itemized: {itemized}"
@@ -1007,8 +1167,8 @@ def render_s68_b(sym, rec, goal) -> str:
             f" -- claimed: {money_arg(claimed)} }}).holds")
 
 
-_S63B = ["Section63 as S63", "SaraStatus as St", "Section7703 as S7703",
-         "SaraPredicates as P"]
+_S63B = ["Section63 as S63", "Section68 as St", "Section7703 as S7703",
+         "Section7703 as P"]
 # the two that consult §151(b) derive it as well as reading the grant
 _S63B151 = _S63B + ["Section151 as S151"]
 for _p in _AGED:
@@ -1024,13 +1184,13 @@ PORTED["s63_c_5/5"] = {"render": render_s63_c_5, "uses": _S63B}
 PORTED["s63_c_2_A_i/3"] = {"render": render_s63_c_2_A, "uses": _S63B}
 PORTED["s63_c_2_A_ii/2"] = {"render": render_s63_c_2_A, "uses": _S63B}
 
-_S1B = ["Section1 as S1", "SaraStatus as St", "SaraPredicates as P"]
+_S1B = ["Section1 as S1", "Section68 as St", "Section7703 as P"]
 for _p in _SUBSEC:
     PORTED[f"{_p}/{5 if _p == 's1_d' else 4}"] = {
         "render": render_s1_subsection, "uses": _S1B}
 
-_S68B = ["Section68 as S68", "SaraStatus as St", "Section7703 as S7703",
-         "SaraPredicates as P"]
+_S68B = ["Section68 as S68", "Section68 as St", "Section7703 as S7703",
+         "Section7703 as P"]
 PORTED["s68_a_2/4"] = {"render": render_s68_a_2,
                        "uses": _S68B + ["Section63 as S63"]}
 PORTED["s68_b/3"] = {
@@ -1438,13 +1598,13 @@ PORTED["s3301/6"] = {"render": render_s3301, "uses": _S3306}
 def render_tax(sym, rec, goal) -> str:
     """tax(Taxp,Taxy,Tax) -- §1 plus §3301, against the case's gold figure."""
     taxpayer, year, claimed = goal["args"]
-    return (f"((output of SaraTax.Total with {{ -- world: world"
+    return (f"((output of S1.Total with {{ -- world: world"
             f" -- injections: injections -- taxpayer: {entity_lit(sym, taxpayer)}"
             f" -- taxable_year: {int(year)} {KIN_ARGS_ALL} }}).total"
             f" = {money_arg(claimed)})")
 
 
-PORTED["tax/3"] = {"render": render_tax, "uses": ["SaraTax"]}
+PORTED["tax/3"] = {"render": render_tax, "uses": ["Section1 as S1"]}
 
 
 
@@ -1454,7 +1614,7 @@ class Symbols:
 
     New ids come from `max + 1` rather than `len + 1` so that a table *seeded*
     with part of an earlier key space --- the predicate keys recovered from
-    `SaraPredicates.catala_en`, whose values the compiled port depends on ---
+    `Section7703.catala_en`, whose values the compiled port depends on ---
     cannot hand a fresh atom an id one of them already holds.  Built from
     empty the two rules agree, since ids are then handed out 1, 2, 3, ...
     """
@@ -1480,7 +1640,7 @@ ENTITY_TAGS = {
 
 
 def entity_tag(atom: str, kind: str = "str") -> str:
-    """The SaraWorld.EntityTag for one interned atom or string.
+    """The Section7703.EntityTag for one interned atom or string.
 
     Which tags a value earns depends on how SARA tests for it, and the two
     kinds of test do not agree.  `Employer=="united states government"` and
@@ -1582,8 +1742,13 @@ def classify_value(sym: Symbols, pred: str, value, kind: str = "atom"):
 
 
 def build_events(sym: Symbols, events: dict,
-                 types: dict | None = None) -> tuple[list[str], list[str]]:
-    """Group the flat fact base by event id into Event literals.
+                 types: dict | None = None) -> tuple[dict[str, list[str]], list[str]]:
+    """Group the flat fact base into one list per unary event predicate.
+
+    An event identifier may satisfy several unary predicates. Its relevant
+    fields are emitted into every corresponding category. Roles not carried by
+    any such category become narrow binary facts; there is no universal event
+    record, canonical-copy flag, or universal role table.
 
     `types` is the atom/string table from `saralib.value_types`.  It has
     to reach `classify_value`, because the closed vocabularies match only
@@ -1610,7 +1775,7 @@ def build_events(sym: Symbols, events: dict,
             if VAR_RE.match(eid):
                 continue
             slot((eid, kind_of(types, pred, 0, eid))).setdefault(
-                "kinds", []).append(f"W.EventKind.{kind}")
+                "categories", []).append(kind)
 
     for pred, field in ROLE_FIELDS.items():
         for row in events.get(pred, []):
@@ -1631,46 +1796,124 @@ def build_events(sym: Symbols, events: dict,
             slot((eid, kind_of(types, pred, 0, eid))).setdefault(
                 field, []).append(rendered)
 
-    fields = ["kinds", "agents", "patients", "starts", "ends", "amounts",
+    fields = ["agents", "patients", "starts", "ends", "amounts",
               "purposes", "places", "media", "reasons", "beneficiaries",
               "countries", "types", "destinations"]
-    literals = []
+    literals = {field: [] for field in EVENT_FIELDS.values()}
+    literals.update({field: [] for _, field in ROLE_FACTS.values()})
     for eid, ekind in sorted(per_event):
-        parts = [f"-- ident: {entity_lit(sym, eid, ekind)}"]
-        for f in fields:
-            vals = per_event[(eid, ekind)].get(f, [])
-            parts.append(f"-- {f}: [{'; '.join(vals)}]")
-        literals.append("W.Event {\n        " + "\n        ".join(parts) + " }")
+        event = per_event[(eid, ekind)]
+        categories = event.get("categories", [])
+        target_specs = [
+            (EVENT_FIELDS[pred], pred)
+            for pred, constructor in EVENT_KINDS.items()
+            if constructor in categories
+        ]
+        for target, pred in target_specs:
+            kept_fields = EVENT_CATEGORY_ROLES[pred]
+            if pred == "income_":
+                # Each row is one solution of SARA's conjunction
+                # income_/agent_/start_/amount_. Missing roles contribute no
+                # solution; repeated role facts retain their Cartesian
+                # multiplicity without nested symbolic lists.
+                for agent, start, amount in itertools.product(
+                        event.get("agents", []), event.get("starts", []),
+                        event.get("amounts", [])):
+                    amount_match = re.fullmatch(r"\(money of (-?\d+)\)", amount)
+                    if amount_match is None:
+                        raise ValueError(f"invalid rendered income amount: {amount}")
+                    literals[target].append(
+                        "W.IncomeEvent {"
+                        f" -- agent: {agent}"
+                        f" -- start: {start}"
+                        f" -- amount: {amount} }}"
+                    )
+                continue
+            if pred == "deduction_":
+                # Preserve the two observably different dated states:
+                # §63(c)(6)(A) accepts a dated claim without an amount, while
+                # §63(d) requires both. Amounts without dates cannot satisfy
+                # either rule and are therefore observationally undated.
+                starts = event.get("starts", [])
+                amounts = event.get("amounts", [])
+                for role, vals in (("starts", starts), ("amounts", amounts)):
+                    if len(vals) > 1:
+                        raise EventCardinalityError(
+                            f"{pred} event {eid!r} has {len(vals)} values for "
+                            f"0-or-1 role {role!r}")
+                if not starts:
+                    evidence = "W.DeductionEvidence.Undated"
+                elif not amounts:
+                    evidence = (
+                        "W.DeductionEvidence.DatedClaim content "
+                        f"({starts[0]})")
+                else:
+                    evidence = (
+                        "W.DeductionEvidence.DatedAmount content "
+                        "(W.DeductionOccurrence {"
+                        f" -- start: {starts[0]}"
+                        f" -- amount: {amounts[0]} }})")
+                literals[target].append(
+                    "W.DeductionEvent {\n"
+                    f"        -- agents: [{'; '.join(event.get('agents', []))}]\n"
+                    f"        -- evidence: {evidence} }}"
+                )
+                continue
+            rendered_fields = {}
+            for f in kept_fields:
+                vals = event.get(f, [])
+                if (pred, f) in OPTIONAL_CATEGORY_ROLES:
+                    if len(vals) > 1:
+                        raise EventCardinalityError(
+                            f"{pred} event {eid!r} has {len(vals)} values for "
+                            f"0-or-1 role {f!r}")
+                    rendered_fields[f] = (
+                        "Absent" if not vals
+                        else f"Present content ({vals[0]})")
+                else:
+                    rendered_fields[f] = f"[{'; '.join(vals)}]"
+            parts = [
+                f"-- ident: {entity_lit(sym, eid, ekind)}",
+                *(f"-- {f}: {rendered_fields[f]}" for f in kept_fields),
+            ]
+            structure = f"{EVENT_KINDS[pred]}Event"
+            literals[target].append(
+                f"W.{structure} {{\n        " + "\n        ".join(parts) + " }"
+            )
+        covered_roles = {
+            role for _, pred in target_specs for role in EVENT_CATEGORY_ROLES[pred]
+        }
+        subject = entity_lit(sym, eid, ekind)
+        for role in fields:
+            if role in covered_roles:
+                continue
+            constructor, target = ROLE_FACTS[role]
+            for value in event.get(role, []):
+                literals[target].append(
+                    f"W.{constructor} {{ -- subject: {subject} -- value: {value} }}"
+                )
     return literals, universal_purposes
 
 
-# Key spaces are disjoint and computable, since a Layer-1 scope cannot read the
-# symbol table: entities keep their interned ids; numbers and dates map to
-# themselves under a fixed offset.
-NUM_OFFSET = 1_000_000
-DATE_OFFSET = 2_000_000
+def injection_key_value(sym: Symbols, value) -> tuple[int, str | None]:
+    """Encode one injection argument exactly as the Catala matcher reads it.
 
-
-def date_ordinal(s: str) -> int:
-    import datetime
-    y, m, d = (int(x) for x in s.split("-"))
-    return datetime.date(y, m, d).toordinal()
-
-
-def arg_key(sym: Symbols, v) -> tuple[int, int, str]:
-    """Intern one injected argument -> (match key, numeric payload, date payload)."""
-    if isinstance(v, str) and VAR_RE.match(v):
-        return -1, 0, "|0001-01-01|"
-    if isinstance(v, bool):
-        return -1, 0, "|0001-01-01|"
-    if isinstance(v, int):
-        return NUM_OFFSET + v, v, "|0001-01-01|"
-    if isinstance(v, list):
-        return -1, 0, "|0001-01-01|"
-    s = str(v)
-    if DATE_RE.match(s):
-        return DATE_OFFSET + date_ordinal(s), 0, cat_date(s)
-    return sym.entity(s), 0, "|0001-01-01|"
+    The former five-constructor value at every tuple position was immediately
+    collapsed to this tagged integer by `injection_key`.  Dates retain their
+    concrete literal only for the few positions that callers project back.
+    """
+    if isinstance(value, str) and VAR_RE.match(value):
+        return -1, None
+    if isinstance(value, list) or isinstance(value, bool):
+        return -2, None
+    if isinstance(value, int):
+        return 1_000_000 + value, None
+    if isinstance(value, str) and DATE_RE.match(value):
+        return 2_000_000 + date.fromisoformat(value).toordinal(), value
+    raw = str(value).strip()
+    kind = "str" if raw[:1] == '"' else "atom"
+    atom = unquote(raw)
+    return sym.key("s" if kind == "str" else "e", atom), None
 
 
 _DISCONT_CACHE: dict | None = None
@@ -1691,13 +1934,12 @@ def _discontiguous_table() -> dict:
 
 def build_injections(sym: Symbols, other: dict,
                      discontiguous=()) -> list[str]:
-    """The case's injected conclusions, plus a marker per *overridden* one.
+    """The case's real injected conclusions, including override semantics.
 
     Injecting a statute conclusion without declaring the predicate
     `discontiguous` replaces the statute's clauses instead of appending to
-    them.  The corpus always declares, so this only shows up on generated
-    worlds -- but when it does it is decisive, because the clause being
-    replaced can be the one that made a guard vacuous.
+    them.  This is decisive because the clause being replaced can be the one
+    that made a guard vacuous. No synthetic marker rows are emitted.
     """
     out = []
     declared = set(discontiguous)
@@ -1705,21 +1947,33 @@ def build_injections(sym: Symbols, other: dict,
         if not re.match(r"^s\d", pred) and pred.split("/")[0] not in INJECTABLE_UTILS:
             continue  # case-local helper, not a statute conclusion
         pkey = sym.key("p", pred)
-        if pred not in declared:
-            out.append("W.Injection { -- pred: W.override_marker"
-                       f" -- args: [{pkey}] -- nums: [0]"
-                       " -- dates: [|0001-01-01|] }")
+        replaces = "true" if pred not in declared else "false"
         for row in rows:
-            keys, nums, dates = [], [], []
-            for v in row:
-                k, n, d = arg_key(sym, v)
-                keys.append(str(k)); nums.append(str(n)); dates.append(d)
+            if not 1 <= len(row) <= 8:
+                raise ValueError(f"unsupported injection arity {len(row)} for {pred}")
+            names = ("one", "two", "three", "four", "five", "six", "seven", "eight")
+            ignored = IGNORED_INJECTION_POSITIONS.get(pred, set())
+            encoded = [(-2, None) if i in ignored
+                       else injection_key_value(sym, value)
+                       for i, value in enumerate(row)]
+            rendered = [f"-- {names[i]}: {key}"
+                        for i, (key, _date) in enumerate(encoded)]
+            date_positions = {
+                4: ((2, "three_date"), (3, "four_date")),
+                5: ((3, "four_date"),),
+                6: ((4, "five_date"), (5, "six_date")),
+            }.get(len(row), ())
+            rendered.extend(
+                f"-- {field}: "
+                + (f"Present content ({cat_date(encoded[i][1])})"
+                   if encoded[i][1] is not None else "Absent")
+                for i, field in date_positions
+            )
             out.append(
-                "W.Injection {"
-                f" -- pred: {pkey}"
-                f" -- args: [{'; '.join(keys)}]"
-                f" -- nums: [{'; '.join(nums)}]"
-                f" -- dates: [{'; '.join(dates)}] }}"
+                f"W.Injection {{ -- pred: {pkey}"
+                f" -- replaces_statute: {replaces}"
+                f" -- arguments: W.InjectionArguments.Args{len(row)} content"
+                f" (W.InjectionArgs{len(row)} {{ {' '.join(rendered)} }}) }}"
             )
     return out
 
@@ -1741,7 +1995,7 @@ def emit_case(sym: Symbols, rec: dict, standalone: bool = False,
     # A fuzz mutant carries its own overrides for the six values SARA quotes
     # inconsistently; a real case is looked up by id.
     types = {**table_for(rec["id"]), **rec.get("value_kinds", {})}
-    events, universal = build_events(sym, rec["events"], types)
+    events_by_field, universal = build_events(sym, rec["events"], types)
     # A fuzz record carries its own declarations, an empty list included; a
     # corpus record has no such field, which is not "nothing declared".
     disc = rec.get("discontiguous")
@@ -1771,7 +2025,22 @@ def emit_case(sym: Symbols, rec: dict, standalone: bool = False,
             f"\n## UNPORTED: {goal['predicate']}/{len(goal['args'])} {why}; "
             "`verdict` is a placeholder.\n")
 
-    ev = ";\n      ".join(events) if events else ""
+    world_fields = []
+    for field in EVENT_FIELDS.values():
+        values = events_by_field[field]
+        if field in OPTIONAL_EVENT_FIELDS:
+            if len(values) > 1:
+                raise EventCardinalityError(
+                    f"world has {len(values)} events for 0-or-1 category "
+                    f"{field!r}")
+            rendered = "Absent" if not values else f"Present content ({values[0]})"
+            world_fields.append(f"-- {field}: {rendered}")
+        else:
+            rendered = ";\n      ".join(values)
+            world_fields.append(f"-- {field}: [\n      {rendered}\n    ]")
+    for _, field in ROLE_FACTS.values():
+        rendered = ";\n      ".join(events_by_field[field])
+        world_fields.append(f"-- {field}: [\n      {rendered}\n    ]")
     modline = "" if standalone else f"\n> Module {module}\n"
     prov = provenance or (
         f"Generated from `.port/sara/build/cases_grounded/{rec['id']}.json` by\n"
@@ -1779,8 +2048,8 @@ def emit_case(sym: Symbols, rec: dict, standalone: bool = False,
     question = f"\nQuestion: {rec['question']}\n" if rec.get("question") else ""
     return f"""# Case {rec['id']}
 {modline}
-> Using SaraWorld as W
-> Using SaraKinship as K{uses}
+> Using Section7703 as W
+> Using Section7703 as K{uses}
 
 {prov}
 {question}
@@ -1804,9 +2073,7 @@ declaration scope Run:
 ```catala
 scope Run:
   definition world equals W.World {{
-    -- events: [
-      {ev}
-    ]
+    {chr(10).join(world_fields)}
     -- universal_purposes: [{'; '.join(universal)}]
   }}
 
@@ -1847,7 +2114,7 @@ scope Run:
 
 
 def write_predicates_module(sym: Symbols) -> int:
-    """Re-emit `SaraPredicates.catala_en` from the interned key space.
+    """Refresh the predicate constants embedded in `Section7703.catala_en`.
 
     Predicate keys are interned integers; the Layer-1 modules refer to them by
     name (`P.pred_s7703_4`) rather than by magic number.  The key space is
@@ -1856,21 +2123,16 @@ def write_predicates_module(sym: Symbols) -> int:
     file is rebuilt and the whole port recompiled with it.
     """
     preds = sorted((k[2:], v) for k, v in sym.table.items() if k.startswith("p:"))
-    lines = [
-        "# Interned predicate keys",
-        "",
-        "> Module SaraPredicates",
-        "",
-        "Generated by `prolog_to_catala/sara/generate_test_cases.py`. Do not edit.",
-        "",
-        "Catala 1.2 has no string type, so the statute predicate a case injects is",
-        "identified by an interned integer. These constants name those keys.",
-        "",
-        "```catala-metadata",
-    ]
+    lines = []
     for name, key in preds:
         ident = "pred_" + name.replace("/", "_")
         lines.append(f"declaration {ident} content integer equals {key}")
-    lines += ["```", ""]
-    (CATALA_PROJECT / "SaraPredicates.catala_en").write_text("\n".join(lines))
+    path = CATALA_PROJECT / "Section7703.catala_en"
+    text = path.read_text()
+    pattern = r"(?:^declaration pred_[^\n]+\n)+"
+    replacement = "\n".join(lines) + "\n"
+    text, count = re.subn(pattern, replacement, text, count=1, flags=re.M)
+    if count != 1:
+        raise RuntimeError(f"predicate declaration block not found in {path}")
+    path.write_text(text)
     return len(preds)

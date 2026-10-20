@@ -1,0 +1,10 @@
+# Equality must depend on active elements, not storage outside a list's length.
+
+```catala
+declaration scope ListEquality:
+  input xs content list of integer
+  output result content integer
+
+scope ListEquality:
+  definition result equals if xs = [1] then 1 else 0
+```

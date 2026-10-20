@@ -1,0 +1,1155 @@
+From 07374f32457d0f001fe81a87fed3b0eb4aade13a Mon Sep 17 00:00:00 2001
+From: Jinu Lee <jinulee@icgpu01.openstacklocal>
+Date: Fri, 11 Sep 2026 17:26:32 -0500
+Subject: [PATCH] Complete bounded goal-directed branch search
+
+---
+ compiler/bobcat/interpreter.ml      | 304 +++++++++++++-----
+ compiler/bobcat/interpreter.mli     |   8 +-
+ compiler/driver.ml                  |  25 +-
+ compiler/verification/z3backend.ml  | 479 ++++++++++++++++++++++++++--
+ compiler/verification/z3backend.mli |  24 +-
+ 5 files changed, 717 insertions(+), 123 deletions(-)
+
+diff --git a/compiler/bobcat/interpreter.ml b/compiler/bobcat/interpreter.ml
+index 82867627..8d6b839a 100644
+--- a/compiler/bobcat/interpreter.ml
++++ b/compiler/bobcat/interpreter.ml
+@@ -5431,17 +5431,26 @@ let replay_model ctx p scope input =
+       Ok (branches, outputs)
+     end
+   with
+-  | Stack_overflow -> Error "concrete replay exhausted the OCaml stack"
++  | Stack_overflow ->
++    Error ("concrete replay exhausted the OCaml stack", sorted_table_keys hits)
+   | (Runtime.Error _ | Failure _ | Invalid_argument _) as exn ->
+     let backtrace = Printexc.get_backtrace () in
+     Error
+-      (Printexc.to_string exn
+-       ^ if String.equal backtrace "" then "" else "\n" ^ backtrace)
++      ( (Printexc.to_string exn
++         ^ if String.equal backtrace "" then "" else "\n" ^ backtrace),
++        sorted_table_keys hits )
+ 
+ let solve_branch_objectives
+     (max_list_length : int)
++    (solver_timeout_ms : int)
++    (solver_timeout_max_ms : int)
+     (p : (dcalc, typed) gexpr program)
+   s : unit =
++  if solver_timeout_ms <= 0 then
++    Message.error "The initial BOBCat solver timeout must be positive";
++  if solver_timeout_max_ms < solver_timeout_ms then
++    Message.error
++      "The maximum BOBCat solver timeout must be at least the initial timeout";
+   let ctx = make_empty_context p.decl_ctx [] max_list_length |> init_context in
+   (* The inherited concolic engine first evaluated the closed program to
+      precompute a residual scope. On large whole-program inputs that eager
+@@ -5488,7 +5497,7 @@ let solve_branch_objectives
+   in
+   let solver_session =
+     Verification.Z3backend.create_direct_session p.decl_ctx ~input_var
+-      ~input_ty ~max_list_length ~array_capacity
++      ~input_ty ~max_list_length ~array_capacity ~solver_timeout_ms
+   in
+   let final_results = Hashtbl.create (List.length indexed_objectives) in
+   let compiled = Hashtbl.create (List.length indexed_objectives) in
+@@ -5496,15 +5505,30 @@ let solve_branch_objectives
+     Hashtbl.find_opt ctx.ctx_branch_pairs (outcome_key tag pos)
+   in
+   let objectives =
+-    Verification.Z3backend.reachable_objectives ~objective_of_tag ~definitions
+-      body
++    indexed_objectives
+     |> List.sort (fun left right ->
++         let root_file = Pos.get_file (Expr.pos body) in
++         let contains haystack needle =
++           let haystack_length = String.length haystack in
++           let needle_length = String.length needle in
++           let rec loop offset =
++             offset + needle_length <= haystack_length
++             && (String.equal needle
++                   (String.sub haystack offset needle_length)
++                 || loop (offset + 1))
++           in
++           needle_length = 0 || loop 0
++         in
+          let rank objective =
+-           if String.starts_with ~prefix:"match@" objective then 0
+-           else if String.starts_with ~prefix:"if@" objective then 1
+-           else 2
++           let local = contains objective ("@" ^ root_file ^ ":") in
++           let kind =
++             if String.starts_with ~prefix:"if@" objective then 0
++             else if String.starts_with ~prefix:"default@" objective then 1
++             else 2
++           in
++           (if local then 0 else 1), kind
+          in
+-         match Int.compare (rank left) (rank right) with
++         match compare (rank left) (rank right) with
+          | 0 -> String.compare left right
+          | order -> order)
+   in
+@@ -5520,23 +5544,187 @@ let solve_branch_objectives
+       Format.pp_print_flush Format.std_formatter ()
+     end
+   in
++  let pending_from candidates =
++    List.filter
++      (fun objective ->
++        Hashtbl.mem compiled objective
++        && not (Hashtbl.mem final_results objective))
++      candidates
++  in
++  let divergences = ref 0 in
++  let max_divergences = max 32 (4 * List.length objectives) in
++  let replay_and_validate model predicted =
++    Message.debug "BOBCat candidate input: %s" (Yojson.Safe.to_string model);
++    match replay_model ctx p s model with
++    | Error (reason, observed_before_error) ->
++      incr divergences;
++      Verification.Z3backend.block_last_input solver_session;
++      let json =
++        `Assoc
++          [ "input", model;
++            "predicted",
++            `List (List.map (fun x -> `String x) predicted);
++            "observed_before_error",
++            `List (List.map (fun x -> `String x) observed_before_error);
++            "reason", `String reason ]
++      in
++      Message.result "BOBCAT_REFINEMENT %s" (Yojson.Safe.to_string json);
++      Message.warning "BOBCat rejected symbolic input %s: %s"
++        (Yojson.Safe.to_string model) reason;
++      false
++    | Ok (observed, outputs) ->
++      let newly_covered =
++        List.filter
++          (fun objective ->
++            List.mem objective observed
++            && not (Hashtbl.mem final_results objective))
++          objectives
++      in
++      if newly_covered = [] then begin
++        incr divergences;
++        Verification.Z3backend.block_last_input solver_session;
++        let json =
++          `Assoc
++            [ "input", model;
++              "predicted",
++              `List (List.map (fun x -> `String x) predicted);
++              "observed",
++              `List (List.map (fun x -> `String x) observed);
++              "reason", `String "predicted objective was not observed" ]
++        in
++        Message.result "BOBCAT_REFINEMENT %s" (Yojson.Safe.to_string json);
++        false
++      end else begin
++        let json =
++          `Assoc
++            [ "objectives",
++              `List (List.map (fun x -> `String x) predicted);
++              "input", model;
++              "outputs", outputs;
++              "branches",
++              `List (List.map (fun b -> `String b) observed) ]
++        in
++        Message.result "BOBCAT_REPLAY %s" (Yojson.Safe.to_string json);
++        List.iter
++          (fun objective ->
++            finalize objective "sat"
++              ["input", model; "validated", `Bool true])
++          newly_covered;
++        true
++      end
++  in
++  let split values =
++    let left_count = max 1 (List.length values / 2) in
++    let rec take_drop n taken rest =
++      if n = 0 then List.rev taken, rest
++      else match rest with
++        | [] -> List.rev taken, []
++        | value :: tail -> take_drop (n - 1) (value :: taken) tail
++    in
++    take_drop left_count [] values
++  in
++  let max_refinements_per_group = 3 in
++  let rec solve_group
++      ?(refinements = 0) ~finalize_failures timeout_ms candidates =
++    let candidates = pending_from candidates in
++    if candidates = [] || !divergences >= max_divergences then ()
++    else begin
++      Verification.Z3backend.set_solver_timeout solver_session timeout_ms;
++      match Verification.Z3backend.solve_uncovered solver_session candidates with
++      | Coverage_unsat ->
++        if finalize_failures then
++          List.iter (fun objective -> finalize objective "unsat" []) candidates
++      | Coverage_sat (model, predicted) ->
++        let made_progress = replay_and_validate model predicted in
++        let remaining = pending_from candidates in
++        if remaining <> [] && made_progress && (!divergences < max_divergences)
++        then
++          (* A valid replay can cover only part of an OR-batch. A rejected
++             replay adds a counterexample refinement. In both cases the next
++             query is strictly different: an objective disappeared or the
++             exact spurious model was excluded. *)
++          solve_group ~finalize_failures solver_timeout_ms remaining
++        else if remaining <> [] && not made_progress && finalize_failures then
++          if refinements + 1 >= max_refinements_per_group then
++            List.iter
++              (fun objective ->
++                finalize objective "unknown"
++                  [ "reason",
++                    `String
++                      "repeated symbolic/concrete divergence after abstract \
++                       input refinement";
++                    "refinements", `Int (refinements + 1) ])
++              remaining
++          else
++            solve_group ~refinements:(refinements + 1) ~finalize_failures
++              solver_timeout_ms remaining
++      | Coverage_unknown reason ->
++        begin match candidates with
++        | [_] when timeout_ms < solver_timeout_max_ms ->
++          let next_timeout =
++            min solver_timeout_max_ms (max (timeout_ms + 1) (timeout_ms * 5))
++          in
++          solve_group ~finalize_failures next_timeout candidates
++        | [_] ->
++          if finalize_failures then
++            List.iter
++              (fun objective ->
++                finalize objective "unknown"
++                  [ "reason", `String reason;
++                    "timeout_ms", `Int timeout_ms ])
++              candidates
++        | _ ->
++          (* UNKNOWN for A OR B says nothing about A or B individually. Split
++             until the expensive objective is isolated so its siblings still
++             get a definitive result. *)
++          let left, right = split candidates in
++          solve_group ~finalize_failures timeout_ms left;
++          solve_group ~finalize_failures timeout_ms right
++        end
++    end
++  in
++  let streamed = Hashtbl.create (List.length objectives) in
++  let on_objective objective =
++    Hashtbl.replace compiled objective ();
++    if not (Hashtbl.mem streamed objective) then begin
++      Hashtbl.replace streamed objective ();
++      (* Solve a newly available leaf immediately. UNSAT/UNKNOWN is provisional
++         because another dynamic instance of the same source outcome may be
++         discovered later; SAT is already safe after concrete replay. *)
++      solve_group ~finalize_failures:false solver_timeout_ms [objective]
++    end
++  in
+   Printexc.record_backtrace true;
+-  begin
+-    try
+-      Verification.Z3backend.compile_reachability solver_session
+-        ~objective_of_tag ~definitions body
+-    with Stack_overflow ->
+-      raise
+-        (Failure
+-           ("stack overflow while compiling guarded reachability:\n"
+-            ^ Printexc.get_backtrace ()))
+-  end;
++  List.iter
++    (fun objective ->
++      if not (Hashtbl.mem final_results objective) then begin
++        begin
++          try
++            Verification.Z3backend.compile_objective solver_session
++              ~on_objective ~objective_of_tag ~definitions objective body
++          with
++          | Stack_overflow ->
++            finalize objective "unknown"
++              [ "reason",
++                `String
++                  ("stack overflow while compiling objective slice:\n"
++                   ^ Printexc.get_backtrace ()) ]
++          | (Failure _ | Invalid_argument _ | Z3.Error _) as exn ->
++            finalize objective "unknown"
++              ["reason", `String (Printexc.to_string exn)]
++        end;
++        if Hashtbl.mem compiled objective
++           && not (Hashtbl.mem final_results objective)
++        then solve_group ~finalize_failures:true solver_timeout_ms [objective]
++      end)
++    objectives;
+   List.iter
+     (fun objective -> Hashtbl.replace compiled objective ())
+     (Verification.Z3backend.compiled_objectives solver_session);
+   List.iter
+     (fun (objective, reason) ->
+-      finalize objective "unknown" ["reason", `String reason])
++      if not (Hashtbl.mem compiled objective) then
++        finalize objective "unknown" ["reason", `String reason])
+     (Verification.Z3backend.unknown_objectives solver_session);
+   List.iter
+     (fun objective ->
+@@ -5547,84 +5735,30 @@ let solve_branch_objectives
+           [ "reason",
+             `String "objective tag has no executable guarded instance" ])
+     objectives;
+-  let pending () =
+-    List.filter
+-      (fun objective ->
+-        Hashtbl.mem compiled objective
+-        && not (Hashtbl.mem final_results objective))
+-      objectives
+-  in
+-  let max_divergences = max 32 (4 * List.length objectives) in
+   let rec take n = function
+     | _ when n <= 0 -> []
+     | [] -> []
+     | x :: xs -> x :: take (n - 1) xs
+   in
+-  let rec cover divergences =
+-    match pending () with
++  let rec cover () =
++    let uncovered = pending_from objectives in
++    match uncovered with
+     | [] -> ()
+-    | uncovered ->
++    | _ ->
+       let candidates = take 8 uncovered in
+-      if divergences >= max_divergences then
++      if !divergences >= max_divergences then
+         List.iter
+           (fun objective ->
+             finalize objective "unknown"
+               [ "reason",
+                 `String "concrete replay divergence budget exhausted" ])
+           uncovered
+-      else
+-        match Verification.Z3backend.solve_uncovered solver_session candidates with
+-        | Coverage_unsat ->
+-          List.iter
+-            (fun objective -> finalize objective "unsat" [])
+-            candidates;
+-          cover divergences
+-        | Coverage_unknown reason ->
+-          List.iter
+-            (fun objective ->
+-              finalize objective "unknown" ["reason", `String reason])
+-            candidates;
+-          cover divergences
+-        | Coverage_sat (model, predicted) ->
+-          begin match replay_model ctx p s model with
+-          | Error reason ->
+-            Verification.Z3backend.block_last_input solver_session;
+-            Message.warning "BOBCat rejected symbolic input %s: %s"
+-              (Yojson.Safe.to_string model) reason;
+-            cover (divergences + 1)
+-          | Ok (observed, outputs) ->
+-            let newly_covered =
+-              List.filter
+-                (fun objective ->
+-                  List.mem objective observed
+-                  && not (Hashtbl.mem final_results objective))
+-                objectives
+-            in
+-            if newly_covered = [] then begin
+-              Verification.Z3backend.block_last_input solver_session;
+-              cover (divergences + 1)
+-            end else begin
+-              let json =
+-                `Assoc
+-                  [ "objectives",
+-                    `List (List.map (fun x -> `String x) predicted);
+-                    "input", model;
+-                    "outputs", outputs;
+-                    "branches",
+-                    `List (List.map (fun b -> `String b) observed) ]
+-              in
+-              Message.result "BOBCAT_REPLAY %s"
+-                (Yojson.Safe.to_string json);
+-              List.iter
+-                (fun objective ->
+-                  finalize objective "sat"
+-                    ["input", model; "validated", `Bool true])
+-                newly_covered;
+-              cover divergences
+-            end
+-          end
++      else begin
++        solve_group ~finalize_failures:true solver_timeout_ms candidates;
++        cover ()
++      end
+   in
+-  cover 0;
++  cover ();
+   List.iter
+     (fun objective ->
+       if not (Hashtbl.mem final_results objective) then
+diff --git a/compiler/bobcat/interpreter.mli b/compiler/bobcat/interpreter.mli
+index 7da24cc9..09dc742b 100644
+--- a/compiler/bobcat/interpreter.mli
++++ b/compiler/bobcat/interpreter.mli
+@@ -30,14 +30,16 @@ val enumerate_branch_objectives :
+     executing a concrete input or constructing concolic path candidates.  This
+     is the front-end census consumed by BOBCat's goal-directed solver. *)
+ 
++(** Compile exact guarded outcome slices into one shared session, then solve
++    and concretely replay each objective. No concrete seed, path prefix, or
++    constraint flipping is involved. *)
+ val solve_branch_objectives :
++  int ->
++  int ->
+   int ->
+   (Shared_ast.dcalc, Shared_ast.typed) Shared_ast.gexpr Shared_ast.program ->
+   Shared_ast.ScopeName.t ->
+   unit
+-(** Compile exact guarded outcome formulas once, then incrementally solve for
+-    the disjunction of the outcomes not yet witnessed by concrete replay. No
+-    concrete seed, path prefix, or constraint flipping is involved. *)
+ open Bobcat_types
+ 
+ val interpret_program_concolic :
+diff --git a/compiler/driver.ml b/compiler/driver.ml
+index d34e41f6..696346d1 100644
+--- a/compiler/driver.ml
++++ b/compiler/driver.ml
+@@ -1480,6 +1480,8 @@ module Commands = struct
+     let run
+         options
+         max_list_length
++        solver_timeout_ms
++        solver_timeout_max_ms
+         includes
+         stdlib
+         optimize
+@@ -1497,7 +1499,8 @@ module Commands = struct
+         ~hashf:Hash.(finalise ~monomorphize_types:false)
+         prg;
+       let scope = get_scope_uid prg.decl_ctx ex_scope in
+-      Bobcat.Interpreter.solve_branch_objectives max_list_length prg scope
++      Bobcat.Interpreter.solve_branch_objectives max_list_length
++        solver_timeout_ms solver_timeout_max_ms prg scope
+     in
+     let max_list_length =
+       let open Cmdliner.Arg in
+@@ -1509,6 +1512,24 @@ module Commands = struct
+              represents the length symbolically and does not enumerate list \
+              lengths as concolic paths."
+     in
++    let solver_timeout_ms =
++      let open Cmdliner.Arg in
++      value
++      & opt int 2000
++      & info ["bobcat-solver-timeout-ms"] ~docv:"MILLISECONDS"
++          ~doc:
++            "Initial per-query Z3 timeout (default: 2000ms). Unknown singleton \
++             objectives are retried with progressively larger timeouts."
++    in
++    let solver_timeout_max_ms =
++      let open Cmdliner.Arg in
++      value
++      & opt int 60000
++      & info ["bobcat-solver-timeout-max-ms"] ~docv:"MILLISECONDS"
++          ~doc:
++            "Maximum per-query Z3 timeout used by progressive UNKNOWN recovery \
++             (default: 60000ms)."
++    in
+     Cmd.v
+       (Cmd.info "bobcat"
+          ~doc:
+@@ -1517,6 +1538,8 @@ module Commands = struct
+         const run
+         $ Cli.Flags.Global.options
+         $ max_list_length
++        $ solver_timeout_ms
++        $ solver_timeout_max_ms
+         $ Cli.Flags.include_dirs
+         $ Cli.Flags.stdlib_dir
+         $ Cli.Flags.optimize
+diff --git a/compiler/verification/z3backend.ml b/compiler/verification/z3backend.ml
+index f39c4392..f994a834 100644
+--- a/compiler/verification/z3backend.ml
++++ b/compiler/verification/z3backend.ml
+@@ -60,6 +60,7 @@ type context = {
+   ctx_z3tuples : Sort.sort StringMap.t;
+   ctx_max_list_length : int;
+   ctx_symbolic_list_bound : int;
++  ctx_allow_fatal_dummy : bool;
+   ctx_z3definitions : (typed expr, typed expr) Var.Map.t;
+   (* Lifted default values are encoded as
+      [Default(defined, conflict, value)].  Keeping this distinct from the
+@@ -324,6 +325,27 @@ module DateEncoding = struct
+     let calendar_result = comparison (months ly lm) (months ry rm) in
+     let day_result = comparison ld rd in
+     valid, ite ctx calendar_mode calendar_result day_result
++
++  let duration_equality ctx left right =
++    let structural = Boolean.mk_eq ctx.ctx_z3 left right in
++    let comparable, numerical =
++      duration_comparison ctx (Boolean.mk_eq ctx.ctx_z3) left right
++    in
++    ( Boolean.mk_or ctx.ctx_z3 [structural; comparable],
++      Boolean.mk_or ctx.ctx_z3 [structural; numerical] )
++
++  let div_dur_dur ctx left right =
++    let ly, lm, ld = duration_parts ctx left in
++    let ry, rm, rd = duration_parts ctx right in
++    let zero = int ctx 0 in
++    let eq0 value = Boolean.mk_eq ctx.ctx_z3 value zero in
++    let valid =
++      Boolean.mk_and ctx.ctx_z3
++        [eq0 ly; eq0 lm; eq0 ry; eq0 rm;
++         Boolean.mk_not ctx.ctx_z3 (eq0 rd)]
++    in
++    let numerator = Arithmetic.Integer.mk_int2real ctx.ctx_z3 ld in
++    valid, Arithmetic.mk_div ctx.ctx_z3 numerator rd
+ end
+ 
+ let z3_round ctx value =
+@@ -589,7 +611,18 @@ let rec json_of_z3model_expr
+   | TLit TMoney ->
+     let cents = Z.of_string (integer_string e) in
+     `String (Q.(of_bigint cents / of_int 100 |> to_string))
+-  | TLit TDate -> `String (nb_days_to_date (int_of_string (integer_string e)))
++  | TLit TDate ->
++    (* Use the schema's object form. It is total over the admitted year
++       domain, including year 0000, whereas the runtime string formatter and
++       parser historically disagreed on zero-padding at that boundary. *)
++    let year, month, day = DateEncoding.date_to_civil ctx e in
++    let component value =
++      value |> eval_model model |> integer_string |> int_of_string
++    in
++    `Assoc
++      [ "year", `Int (component year);
++        "month", `Int (component month);
++        "day", `Int (component day) ]
+   | TLit TDuration ->
+     let years, months, days = DateEncoding.duration_parts ctx e in
+     let component value =
+@@ -664,12 +697,10 @@ let rec json_of_z3model_expr
+       if Boolean.is_true
+            (eval_model model (Expr.mk_app ctx.ctx_z3 present [e]))
+       then
+-        `Assoc
+-          [ "Present",
+-            json_of_z3model_expr ctx model payload_ty
+-              (Expr.mk_app ctx.ctx_z3 _present_value [e]) ]
+-      else `String "Absent"
+-    | _ -> `String "Absent"
++        json_of_z3model_expr ctx model payload_ty
++          (Expr.mk_app ctx.ctx_z3 _present_value [e])
++      else `Null
++    | _ -> `Null
+     end
+   | TDefault inner_ty ->
+     let _, _, accessors =
+@@ -1155,6 +1186,16 @@ let rec translate_op :
+     let ctx, duration = translate_expr ctx duration in
+     let ctx, factor = translate_expr ctx factor in
+     ctx, DateEncoding.mult_dur_int ctx duration factor
++  | Div_dur_dur, [left; right] ->
++    let ctx, left = translate_expr ctx left in
++    let ctx, right = translate_expr ctx right in
++    let valid, result = DateEncoding.div_dur_dur ctx left right in
++    add_z3constraint valid ctx, result
++  | Eq, [left; right] when has_duration_type left ->
++    let ctx, left = translate_expr ctx left in
++    let ctx, right = translate_expr ctx right in
++    let valid, result = DateEncoding.duration_equality ctx left right in
++    add_z3constraint valid ctx, result
+   | ((Lt | Lte | Gt | Gte) as relation), [left; right]
+     when has_duration_type left ->
+     let ctx, left = translate_expr ctx left in
+@@ -2092,6 +2133,13 @@ and translate_expr (ctx : context) (vc : typed expr) : context * Expr.expr =
+         Shared_ast.Expr.format
+         (Shared_ast.Expr.untype head |> Shared_ast.Expr.unbox))
+   | EAssert e -> translate_expr ctx e
++  | EFatalError _ when ctx.ctx_allow_fatal_dummy ->
++    (* Guarded reachability separately asserts that the path leading to this
++       leaf is impossible. A typed dummy lets surrounding matches/ITEs retain
++       their ordinary value sort while that path condition is assembled. *)
++    let (Typed { ty; _ }) = Mark.get vc in
++    let ctx, sort = translate_typ ctx (Mark.remove ty) in
++    ctx, Expr.mk_fresh_const ctx.ctx_z3 "bobcat_fatal_value" sort
+   | EFatalError _ -> failwith "[Z3 encoding] EFatalError unsupported"
+   | EDefault { excepts; just; cons } ->
+     let (Typed { ty; _ }) = Mark.get vc in
+@@ -2312,6 +2360,7 @@ module Backend = struct
+       ctx_z3tuples = StringMap.empty;
+       ctx_max_list_length = 5;
+       ctx_symbolic_list_bound = 5;
++      ctx_allow_fatal_dummy = false;
+       ctx_z3definitions = Var.Map.empty;
+       ctx_z3constraints = [];
+     }
+@@ -2327,21 +2376,41 @@ type direct_session = {
+   mutable direct_objectives : Expr.expr StringMap.t;
+   mutable direct_last_input : Expr.expr option;
+   mutable direct_unknowns : string StringMap.t;
++  direct_compiled_definition_guards : (string, unit) Hashtbl.t;
++  direct_deferred_definitions : (unit -> unit) Queue.t;
++  mutable direct_on_objective : string -> unit;
+ }
+ 
+ let rec bounded_value_constraints ctx max_list_length ty value =
+   match Mark.remove ty with
+-  | TArray _ ->
++  | TArray element_ty ->
+     let accessors = List.hd (Datatype.get_accessors (Expr.get_sort value)) in
+-    let length =
++    let length, elements =
+       match accessors with
+-      | accessor :: _ -> Expr.mk_app ctx.ctx_z3 accessor [value]
++      | accessor :: elements ->
++        Expr.mk_app ctx.ctx_z3 accessor [value], elements
+       | [] -> assert false
+     in
+-    [ Arithmetic.mk_ge ctx.ctx_z3 length
+-        (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 0);
+-      Arithmetic.mk_le ctx.ctx_z3 length
+-        (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 max_list_length) ]
++    let length_constraints =
++      [ Arithmetic.mk_ge ctx.ctx_z3 length
++          (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 0);
++        Arithmetic.mk_le ctx.ctx_z3 length
++          (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 max_list_length) ]
++    in
++    let element_constraints =
++      List.mapi
++        (fun index accessor ->
++          let present =
++            Arithmetic.mk_gt ctx.ctx_z3 length
++              (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 index)
++          in
++          bounded_value_constraints ctx max_list_length element_ty
++            (Expr.mk_app ctx.ctx_z3 accessor [value])
++          |> List.map (Boolean.mk_implies ctx.ctx_z3 present))
++        elements
++      |> List.concat
++    in
++    length_constraints @ element_constraints
+   | TStruct name ->
+     let fields = StructName.Map.find name ctx.ctx_decl.ctx_structs in
+     let sort = StructName.Map.find name ctx.ctx_z3structs in
+@@ -2395,7 +2464,30 @@ let rec bounded_value_constraints ctx max_list_length ty value =
+              (Expr.mk_app ctx.ctx_z3 defined [value]) constraint_)
+     | _ -> []
+     end
+-  | TLit _ | TTuple _ | TAbstract _ | TArrow _ | TVar _ | TForAll _
++  | TTuple tys ->
++    List.map2
++      (fun ty accessor ->
++        bounded_value_constraints ctx max_list_length ty
++          (Expr.mk_app ctx.ctx_z3 accessor [value]))
++      tys (Tuple.get_field_decls (Expr.get_sort value))
++    |> List.concat
++  | TLit TDate ->
++    (* Concrete JSON replay accepts proleptic-Gregorian years 0 through 9999.
++       Keeping symbolic dates in the same domain prevents SAT models which the
++       concrete decoder cannot represent. *)
++    let lower =
++      DateEncoding.civil_to_date ctx
++        (DateEncoding.int ctx 0) (DateEncoding.int ctx 1)
++        (DateEncoding.int ctx 1)
++    in
++    let upper =
++      DateEncoding.civil_to_date ctx
++        (DateEncoding.int ctx 9999) (DateEncoding.int ctx 12)
++        (DateEncoding.int ctx 31)
++    in
++    [Arithmetic.mk_ge ctx.ctx_z3 value lower;
++     Arithmetic.mk_le ctx.ctx_z3 value upper]
++  | TLit _ | TAbstract _ | TArrow _ | TVar _ | TForAll _
+   | TClosureEnv | TError -> []
+ 
+ let create_direct_session
+@@ -2403,20 +2495,23 @@ let create_direct_session
+     ~(input_var : typed expr Var.t)
+     ~(input_ty : typ)
+     ~(max_list_length : int)
+-    ~(array_capacity : int) : direct_session =
++    ~(array_capacity : int)
++    ~(solver_timeout_ms : int) : direct_session =
+   let ctx = Backend.make_context decl_ctx in
+   (* The datatype needs enough slots for constants written by the program,
+      independently of the bound imposed on symbolic input lists. *)
+   let ctx =
+     { ctx with
+       ctx_max_list_length = array_capacity;
+-      ctx_symbolic_list_bound = max_list_length }
++      ctx_symbolic_list_bound = max_list_length;
++      ctx_allow_fatal_dummy = true }
+   in
+   let ctx, input_sort = translate_typ ctx (Mark.remove input_ty) in
+   let input_expr = Expr.mk_const_s ctx.ctx_z3 (unique_name input_var) input_sort in
+   let solver = Z3.Solver.mk_solver ctx.ctx_z3 None in
+   let params = Z3.Params.mk_params ctx.ctx_z3 in
+-  Z3.Params.add_int params (Z3.Symbol.mk_string ctx.ctx_z3 "timeout") 2000;
++  Z3.Params.add_int params (Z3.Symbol.mk_string ctx.ctx_z3 "timeout")
++    solver_timeout_ms;
+   Z3.Solver.set_parameters solver params;
+   Z3.Solver.add solver
+     (bounded_value_constraints ctx max_list_length input_ty input_expr);
+@@ -2426,7 +2521,17 @@ let create_direct_session
+     direct_solver = solver;
+     direct_objectives = StringMap.empty;
+     direct_last_input = None;
+-    direct_unknowns = StringMap.empty }
++    direct_unknowns = StringMap.empty;
++    direct_compiled_definition_guards = Hashtbl.create 257;
++    direct_deferred_definitions = Queue.create ();
++    direct_on_objective = (fun _ -> ()) }
++
++let set_solver_timeout session timeout_ms =
++  let timeout_ms = max 1 timeout_ms in
++  let params = Z3.Params.mk_params session.direct_ctx.ctx_z3 in
++  Z3.Params.add_int params
++    (Z3.Symbol.mk_string session.direct_ctx.ctx_z3 "timeout") timeout_ms;
++  Z3.Solver.set_parameters session.direct_solver params
+ 
+ let typed_expr_pos (e : typed expr) =
+   let (Typed { pos; _ }) = Mark.get e in
+@@ -2440,7 +2545,8 @@ let register_reach session objective reach =
+       Boolean.mk_or session.direct_ctx.ctx_z3 [former; reach]
+   in
+   session.direct_objectives <-
+-    StringMap.add objective reach session.direct_objectives
++    StringMap.add objective reach session.direct_objectives;
++  session.direct_on_objective objective
+ 
+ let mark_unknown session objective reason =
+   if not (StringMap.mem objective session.direct_objectives) then
+@@ -2627,9 +2733,12 @@ let rec resolve_definition definitions (e : typed expr) =
+   | _ -> e
+ 
+ let rec compile_reach_expr
+-    session objective_of_tag definitions guard (e : typed expr) =
++    ~should_visit session objective_of_tag definitions guard (e : typed expr) =
++  if not (should_visit e) then () else
+   let ctx () = session.direct_ctx.ctx_z3 in
+-  let compile = compile_reach_expr session objective_of_tag definitions in
++  let compile =
++    compile_reach_expr ~should_visit session objective_of_tag definitions
++  in
+   let compile_function guard fn arguments =
+     let fn = resolve_callable definitions fn in
+     match Mark.remove fn with
+@@ -2802,7 +2911,8 @@ let rec compile_reach_expr
+                 session.direct_ctx <-
+                   add_z3matchsubst var value session.direct_ctx)
+             vars (Array.of_list args);
+-          compile_reach_expr session objective_of_tag !definitions guard body
++          compile_reach_expr ~should_visit session objective_of_tag
++            !definitions guard body
+         with
+         | Failure reason | Invalid_argument reason | Z3.Error reason ->
+           mark_expr_unknown session objective_of_tag body reason
+@@ -2818,7 +2928,7 @@ let rec compile_reach_expr
+     let resolved = resolve_callable definitions f in
+     begin match Mark.remove resolved with
+     | EAbs { binder; _ } ->
+-      compile_reach_expr session objective_of_tag definitions guard
++      compile_reach_expr ~should_visit session objective_of_tag definitions guard
+         (EApp { f = resolved; args; tys = [] }, Mark.get e)
+     | _ ->
+       compile guard resolved;
+@@ -2936,13 +3046,54 @@ let rec compile_reach_expr
+       | Failure reason | Invalid_argument reason | Z3.Error reason ->
+         mark_expr_unknown session objective_of_tag assertion reason
+     end
++  | EErrorOnEmpty inner ->
++    (* DCalc lowers error-on-empty into ordinary guarded defaults and matches.
++       Their [EFatalError] leaf below contributes [not guard], which is the
++       precise normal-termination condition without forcing the value encoder
++       to manufacture a value for an exception. *)
++    compile guard inner
+   | EStructAccess { e; _ } | ETupleAccess { e; _ } | EInj { e; _ }
+-  | EPureDefault e | EErrorOnEmpty e -> compile guard e
+-  | EExternal _ | EVar _ | ELit _ | EEmpty | EPos _ | EFatalError _ | EBad ->
++  | EPureDefault e -> compile guard e
++  | EFatalError _ ->
++    Z3.Solver.add session.direct_solver [Boolean.mk_not (ctx ()) guard]
++  | EVar var ->
++    begin match Var.Map.find_opt var definitions with
++    | None -> ()
++    | Some definition ->
++      (* Definitions are the sharing nodes of DCalc's acyclic graph. Compile a
++         definition once per symbolic guard, rather than either treating it as
++         opaque (which loses its failures/branches) or blindly expanding every
++         reference (which recreates the old whole-expression explosion). *)
++      let guard_id = Digest.(to_hex (string (Expr.to_string guard))) in
++      let key = string_of_int (Bindlib.uid_of var) ^ ":" ^ guard_id in
++      if not (Hashtbl.mem session.direct_compiled_definition_guards key) then
++      begin
++        Hashtbl.replace session.direct_compiled_definition_guards key ();
++        let captured_substs = session.direct_ctx.ctx_z3matchsubsts in
++        let captured_z3definitions = session.direct_ctx.ctx_z3definitions in
++        Queue.add
++          (fun () ->
++            let caller_substs = session.direct_ctx.ctx_z3matchsubsts in
++            let caller_definitions = session.direct_ctx.ctx_z3definitions in
++            session.direct_ctx <-
++              { session.direct_ctx with
++                ctx_z3matchsubsts = captured_substs;
++                ctx_z3definitions = captured_z3definitions };
++            compile guard definition;
++            session.direct_ctx <-
++              { session.direct_ctx with
++                ctx_z3matchsubsts = caller_substs;
++                ctx_z3definitions = caller_definitions })
++          session.direct_deferred_definitions
++      end
++    end
++  | EExternal _ | ELit _ | EEmpty | EPos _ | EBad ->
+     ()
+   | _ -> ()
+ 
+-let compile_reachability session ~objective_of_tag ~definitions body =
++let compile_reachability
++    ?(on_objective = fun _ -> ())
++    session ~objective_of_tag ~definitions body =
+   let entry = Boolean.mk_true session.direct_ctx.ctx_z3 in
+   let definitions =
+     List.fold_left
+@@ -2951,7 +3102,169 @@ let compile_reachability session ~objective_of_tag ~definitions body =
+   in
+   session.direct_ctx <-
+     { session.direct_ctx with ctx_z3definitions = definitions };
+-  compile_reach_expr session objective_of_tag definitions entry body
++  session.direct_on_objective <- on_objective;
++  Fun.protect
++    ~finally:(fun () -> session.direct_on_objective <- (fun _ -> ()))
++    (fun () ->
++      compile_reach_expr ~should_visit:(fun _ -> true) session objective_of_tag
++        definitions entry body;
++      (* Definition nodes are expanded breadth-first. Shallow objectives can
++         therefore be solved and replayed before one deep historical/default
++         chain monopolizes guarded formula construction. *)
++      while not (Queue.is_empty session.direct_deferred_definitions) do
++        Queue.take session.direct_deferred_definitions ()
++      done)
++
++let compile_objective
++    ?(on_objective = fun _ -> ())
++    session ~objective_of_tag ~definitions objective body =
++  Message.debug "BOBCat: selecting backward slice for %s" objective;
++  let definitions =
++    List.fold_left
++      (fun env (var, definition) -> Var.Map.add var definition env)
++      Var.Map.empty definitions
++  in
++  let target_file, target_line =
++    try
++      let at = String.index objective '@' + 1 in
++      let slash = String.index_from objective at '/' in
++      let decision = String.sub objective at (slash - at) in
++      let pieces = String.split_on_char ':' decision in
++      let count = List.length pieces in
++      let file =
++        pieces |> List.filteri (fun index _ -> index < count - 3)
++        |> String.concat ":"
++      in
++      file, int_of_string (List.nth pieces (count - 3))
++    with _ -> "", (-1)
++  in
++  let rec source_score seen (e : typed expr) =
++    let pos = typed_expr_pos e in
++    let direct =
++    if not (String.equal (Pos.get_file pos) target_file) then 0
++    else if Pos.get_start_line pos <= target_line
++            && target_line <= Pos.get_end_line pos
++    then 2
++    else 1
++    in
++    if direct > 0 then direct
++    else match Mark.remove e with
++    | EVar var when not (Var.Set.mem var seen) ->
++      Option.fold ~none:0
++        ~some:(source_score (Var.Set.add var seen))
++        (Var.Map.find_opt var definitions)
++    | _ -> 0
++  in
++  let memo = Hashtbl.create 257 in
++  let selected_nodes = ref [] in
++  let rec contains seen (e : typed expr) =
++    let own =
++      match Mark.remove e with
++      | EAppOp
++          { op = Tag ((Branching _ | Exception _) as tag), _; _ } ->
++        Option.fold ~none:false ~some:(String.equal objective)
++          (objective_of_tag tag (typed_expr_pos e))
++      | _ -> false
++    in
++    let result = own ||
++    (match Mark.remove e with
++    | EVar var ->
++      if Var.Set.mem var seen then false
++      else begin match Var.Map.find_opt var definitions with
++      | None -> true
++      | Some definition ->
++        let key = Bindlib.uid_of var in
++        begin match Hashtbl.find_opt memo key with
++        | Some result -> result
++        | None ->
++          let result = contains (Var.Set.add var seen) definition in
++          Hashtbl.replace memo key result;
++          result
++        end
++      end
++    | EMatch { e; cases; _ } ->
++      contains seen e
++      || any seen
++           (EnumConstructor.Map.values cases
++            |> List.map (fun arm ->
++              (fun () ->
++             Option.fold ~none:false ~some:(String.equal objective)
++               (objective_of_tag (Branching None) (typed_expr_pos arm))
++             || contains seen arm), arm))
++    | EAbs { binder; _ } ->
++      let _, body = Bindlib.unmbind binder in contains seen body
++    | EApp { f; args; _ } ->
++      any seen (List.map (fun e -> (fun () -> contains seen e), e) (f :: args))
++    | EAppOp { args; _ } | EArray args | ETuple args ->
++      any seen (List.map (fun e -> (fun () -> contains seen e), e) args)
++    | EIfThenElse { cond; etrue; efalse } ->
++      let children = [cond; etrue; efalse] in
++      any seen (List.map (fun e -> (fun () -> contains seen e), e) children)
++    | EStruct { fields; _ } ->
++      StructField.Map.values fields
++      |> List.map (fun e -> (fun () -> contains seen e), e)
++      |> any seen
++    | EStructAccess { e; _ } | ETupleAccess { e; _ } | EInj { e; _ }
++    | EAssert e | EPureDefault e | EErrorOnEmpty e -> contains seen e
++    | EDefault { excepts; just; cons } ->
++      let children = just :: cons :: excepts in
++      any seen (List.map (fun e -> (fun () -> contains seen e), e) children)
++    | EExternal _ | ELit _ | EEmpty | EPos _ | EFatalError _ | EBad -> false
++    | _ -> false)
++    in
++    if result
++       && not (List.exists (fun selected -> selected == e) !selected_nodes)
++    then selected_nodes := e :: !selected_nodes;
++    result
++  and any _seen candidates =
++    candidates
++    |> List.sort (fun (_, left) (_, right) ->
++         Int.compare
++           (source_score Var.Set.empty right)
++           (source_score Var.Set.empty left))
++    |> List.exists (fun (test, _) -> test ())
++  in
++  let slice_root =
++    Var.Map.bindings definitions
++    |> List.filter_map (fun (_, definition) ->
++         let pos = typed_expr_pos definition in
++         if source_score Var.Set.empty definition = 2 then
++           Some
++             ( max 0 (Pos.get_end_line pos - Pos.get_start_line pos),
++               definition )
++         else None)
++    |> List.sort (fun (left, _) (right, _) -> Int.compare left right)
++    |> fun candidates -> List.nth_opt candidates 0
++    |> Option.fold ~none:body ~some:snd
++  in
++  Message.debug "BOBCat: selected candidate slice root %s for %s"
++    (Pos.to_string_short (typed_expr_pos slice_root)) objective;
++  ignore (contains Var.Set.empty slice_root);
++  Message.debug "BOBCat: indexed backward slice for %s" objective;
++  let should_visit e =
++    List.exists (fun selected -> selected == e) !selected_nodes
++    || contains Var.Set.empty e
++  in
++  let objective_of_tag tag pos =
++    match objective_of_tag tag pos with
++    | Some candidate when String.equal candidate objective -> Some candidate
++    | _ -> None
++  in
++  let entry = Boolean.mk_true session.direct_ctx.ctx_z3 in
++  session.direct_ctx <-
++    { session.direct_ctx with ctx_z3definitions = definitions };
++  Queue.clear session.direct_deferred_definitions;
++  Hashtbl.clear session.direct_compiled_definition_guards;
++  session.direct_on_objective <- on_objective;
++  Fun.protect
++    ~finally:(fun () -> session.direct_on_objective <- (fun _ -> ()))
++    (fun () ->
++      compile_reach_expr ~should_visit session objective_of_tag definitions
++        entry slice_root;
++      while not (Queue.is_empty session.direct_deferred_definitions) do
++        Queue.take session.direct_deferred_definitions ()
++      done;
++      Message.debug "BOBCat: compiled backward slice for %s" objective)
+ 
+ let unknown_objectives session = StringMap.bindings session.direct_unknowns
+ 
+@@ -3007,12 +3320,114 @@ let solve_uncovered
+     Z3.Solver.pop session.direct_solver 1;
+     answer
+ 
+-let block_last_input (session : direct_session) =
++let rec semantic_value_equality ctx ty left right =
++  let eq = Boolean.mk_eq ctx.ctx_z3 in
++  match Mark.remove ty with
++  | TArray element_ty ->
++    let accessors = List.hd (Datatype.get_accessors (Expr.get_sort left)) in
++    begin match accessors with
++    | length_accessor :: element_accessors ->
++      let left_length = Expr.mk_app ctx.ctx_z3 length_accessor [left] in
++      let right_length = Expr.mk_app ctx.ctx_z3 length_accessor [right] in
++      let elements_equal =
++        List.mapi
++          (fun index accessor ->
++            let present =
++              Arithmetic.mk_gt ctx.ctx_z3 left_length
++                (Arithmetic.Integer.mk_numeral_i ctx.ctx_z3 index)
++            in
++            let left_element = Expr.mk_app ctx.ctx_z3 accessor [left] in
++            let right_element = Expr.mk_app ctx.ctx_z3 accessor [right] in
++            Boolean.mk_implies ctx.ctx_z3 present
++              (semantic_value_equality ctx element_ty left_element right_element))
++          element_accessors
++      in
++      Boolean.mk_and ctx.ctx_z3 (eq left_length right_length :: elements_equal)
++    | [] -> eq left right
++    end
++  | TStruct name ->
++    let fields = StructName.Map.find name ctx.ctx_decl.ctx_structs in
++    let accessors =
++      List.hd (Datatype.get_accessors (Expr.get_sort left))
++    in
++    List.map2
++      (fun (_, field_ty) accessor ->
++        semantic_value_equality ctx field_ty
++          (Expr.mk_app ctx.ctx_z3 accessor [left])
++          (Expr.mk_app ctx.ctx_z3 accessor [right]))
++      (StructField.Map.bindings fields) accessors
++    |> Boolean.mk_and ctx.ctx_z3
++  | TTuple tys ->
++    List.map2
++      (fun ty accessor ->
++        semantic_value_equality ctx ty
++          (Expr.mk_app ctx.ctx_z3 accessor [left])
++          (Expr.mk_app ctx.ctx_z3 accessor [right]))
++      tys (Tuple.get_field_decls (Expr.get_sort left))
++    |> Boolean.mk_and ctx.ctx_z3
++  | TOption payload_ty ->
++    begin match Datatype.get_recognizers (Expr.get_sort left),
++                Datatype.get_accessors (Expr.get_sort left) with
++    | absent :: present :: _, _absent_fields :: (payload :: _) :: _ ->
++      let is constructor value = Expr.mk_app ctx.ctx_z3 constructor [value] in
++      Boolean.mk_or ctx.ctx_z3
++        [ Boolean.mk_and ctx.ctx_z3 [is absent left; is absent right];
++          Boolean.mk_and ctx.ctx_z3
++            [ is present left; is present right;
++              semantic_value_equality ctx payload_ty
++                (Expr.mk_app ctx.ctx_z3 payload [left])
++                (Expr.mk_app ctx.ctx_z3 payload [right]) ] ]
++    | _ -> eq left right
++    end
++  | TEnum name ->
++    let constructors =
++      EnumConstructor.Map.bindings (EnumName.Map.find name ctx.ctx_decl.ctx_enums)
++    in
++    let recognizers = Datatype.get_recognizers (Expr.get_sort left) in
++    let accessors = Datatype.get_accessors (Expr.get_sort left) in
++    List.map2
++      (fun (_, payload_ty) (recognizer, fields) ->
++        let same_constructor =
++          Boolean.mk_and ctx.ctx_z3
++            [ Expr.mk_app ctx.ctx_z3 recognizer [left];
++              Expr.mk_app ctx.ctx_z3 recognizer [right] ]
++        in
++        match fields with
++        | payload :: _ ->
++          Boolean.mk_and ctx.ctx_z3
++            [ same_constructor;
++              semantic_value_equality ctx payload_ty
++                (Expr.mk_app ctx.ctx_z3 payload [left])
++                (Expr.mk_app ctx.ctx_z3 payload [right]) ]
++        | [] -> same_constructor)
++      constructors (List.combine recognizers accessors)
++    |> Boolean.mk_or ctx.ctx_z3
++  | TDefault payload_ty ->
++    begin match List.hd (Datatype.get_accessors (Expr.get_sort left)) with
++    | defined :: conflict :: payload :: _ ->
++      let field accessor value = Expr.mk_app ctx.ctx_z3 accessor [value] in
++      let left_defined = field defined left in
++      Boolean.mk_and ctx.ctx_z3
++        [ eq left_defined (field defined right);
++          eq (field conflict left) (field conflict right);
++          Boolean.mk_implies ctx.ctx_z3 left_defined
++            (semantic_value_equality ctx payload_ty
++               (field payload left) (field payload right)) ]
++    | _ -> eq left right
++    end
++  | TLit _ | TAbstract _ | TArrow _ | TVar _ | TForAll _ | TClosureEnv
++  | TError -> eq left right
++
++let refine_last_input (session : direct_session) =
+   match session.direct_last_input with
+   | None -> ()
+   | Some value ->
++    let equivalent =
++      semantic_value_equality session.direct_ctx session.direct_input_ty
++        session.direct_input_expr value
++    in
+     Z3.Solver.add session.direct_solver
+-      [Boolean.mk_not session.direct_ctx.ctx_z3
+-         (Boolean.mk_eq session.direct_ctx.ctx_z3
+-            session.direct_input_expr value)];
++      [Boolean.mk_not session.direct_ctx.ctx_z3 equivalent];
+     session.direct_last_input <- None
++
++let block_last_input = refine_last_input
+diff --git a/compiler/verification/z3backend.mli b/compiler/verification/z3backend.mli
+index 597b3cb0..d57fdc29 100644
+--- a/compiler/verification/z3backend.mli
++++ b/compiler/verification/z3backend.mli
+@@ -32,9 +32,13 @@ val create_direct_session :
+   input_ty:Shared_ast.typ ->
+   max_list_length:int ->
+   array_capacity:int ->
++  solver_timeout_ms:int ->
+   direct_session
+ 
++val set_solver_timeout : direct_session -> int -> unit
++
+ val compile_reachability :
++  ?on_objective:(string -> unit) ->
+   direct_session ->
+   objective_of_tag:(Shared_ast.tag -> Catala_utils.Pos.t -> string option) ->
+   definitions:(Shared_ast.typed Dcalc.Ast.naked_expr Bindlib.var *
+@@ -55,12 +59,28 @@ val reachable_objectives :
+     acyclic definition graph. This runs before formula construction so a
+     solver timeout cannot erase uncovered outcomes from the denominator. *)
+ 
++val compile_objective :
++  ?on_objective:(string -> unit) ->
++  direct_session ->
++  objective_of_tag:(Shared_ast.tag -> Catala_utils.Pos.t -> string option) ->
++  definitions:(Shared_ast.typed Dcalc.Ast.naked_expr Bindlib.var *
++               Shared_ast.typed Dcalc.Ast.expr) list ->
++  string ->
++  Shared_ast.typed Dcalc.Ast.expr ->
++  unit
++(** Add only the backwards dependency slice for one exact source outcome to
++    the shared guarded solver session. *)
++
+ val unknown_objectives : direct_session -> (string * string) list
+ 
+ val compiled_objectives : direct_session -> string list
+ 
++(** Ask the persistent solver for a model reaching any member of the supplied
++    uncovered set. *)
+ val solve_uncovered : direct_session -> string list -> coverage_result
+ 
++(** Conservatively refine after a failed replay by excluding the Catala-visible
++    input equivalence class. Invisible bounded-list padding and inactive sum
++    payloads are abstracted away, so one concrete counterexample is not retried
++    under a syntactically different Z3 model. *)
+ val block_last_input : direct_session -> unit
+-(** Compile each objective once, then ask a single persistent solver for a
+-    model reaching any member of the supplied uncovered set. *)
+-- 
+2.34.1
+

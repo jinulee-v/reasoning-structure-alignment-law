@@ -1,0 +1,44 @@
+# A branch in a scope called below nested list maps must retain its input dependency.
+
+```catala
+declaration enumeration Cabin:
+  -- Basic
+  -- Premium
+  -- Business
+
+declaration structure Journey:
+  data cabin content Cabin
+  data valid content integer
+  data values content list of integer
+
+declaration structure Charge:
+  data amount content integer
+
+declaration scope Tariff:
+  input journey content Journey
+  output amount content integer
+
+scope Tariff:
+  definition amount equals
+    if [Premium; Business] contains journey.cabin then 0 else 1
+
+declaration scope JourneyCost:
+  input journey content Journey
+  output charges content list of Charge
+
+scope JourneyCost:
+  assertion journey.valid = 42
+  definition charges equals
+    map each (left, right) among (journey.values, journey.values) to
+      Charge { -- amount: (output of Tariff with { -- journey: journey }).amount
+                         + left + right }
+
+declaration scope NestedScopeMap:
+  input journey content Journey
+  output charges content list of list of Charge
+
+scope NestedScopeMap:
+  definition charges equals
+    map each journey among [journey] to
+      (output of JourneyCost with { -- journey: journey }).charges
+```

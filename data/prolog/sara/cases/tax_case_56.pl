@@ -1,5 +1,5 @@
 % Text
-% Alice's gross income in 2015 is $395276. Alice is allowed itemized deductions of $4571, $1973 and $15271.
+% Alice's gross income in 2015 is $395276. Alice is allowed itemized deductions of $4571, $1973 and $15271. Alice elects to itemize her deductions for 2015.
 
 % Question
 % How much tax does Alice have to pay in 2015? $130388

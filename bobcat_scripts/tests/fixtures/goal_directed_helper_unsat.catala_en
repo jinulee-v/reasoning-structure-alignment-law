@@ -1,0 +1,17 @@
+# BOBCat lazy-definition semantic regression fixture
+
+```catala
+declaration above_ten content boolean
+  depends on x content integer
+  equals x > 10
+
+declaration scope HelperGoal:
+  input x content integer
+  output result content integer
+
+scope HelperGoal:
+  definition result equals
+    if above_ten of x then
+      if x <= 10 then 1 else 2
+    else 3
+```

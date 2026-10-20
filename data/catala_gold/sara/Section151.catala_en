@@ -1,44 +1,28 @@
-# §151. Allowance of deductions for personal exemptions
+<!-- rtdf-document-id: sara/section151 -->
 
 > Module Section151
-
-> Using SaraWorld as W
-> Using SaraKinship as K
-> Using SaraIncome as Inc
-> Using SaraStatus as St
-> Using SaraPredicates as P
+> Using Section7703 as W
+> Using Section7703 as K
+> Using Section7703 as Inc
+> Using Section68 as St
+> Using Section7703 as P
 > Using Section7703 as S7703
 > Using Section152 as S152
 > Using Section68 as S68
 
-Port of `section151.pl`. §151 allows one exemption of the exemption amount for
-the taxpayer, one more for a spouse who is not filing jointly and has no income
-of their own, and one for each dependent under §152.
-
-## The cycle, and where it is cut
-
-§151 → §68 → §63 → §151 is a real cycle. It is cut at **§68(b)**: the
-applicable amount is a pure function of filing status, with no route back into
-§63, so §151(d)(3) can call it directly. That is the same shape as the
-§7703(a) cut described in `Section7703.catala_en` — a genuine acyclic entry
-point rather than an arbitrary break.
-
-`Section63` therefore depends on `Section151`, and `Section151` depends only on
-`Section68`'s rate table, never on `Section68`'s own use of §63.
-
-## The exemption list
-
-`s151_individual/5` returns a *list of people* and a *list of amounts*, built
-from three `findall`s and two `list_to_set` calls. The port keeps that shape,
-because `s63_d_2(alice,[2000],2017)` asks about the list, not the total.
-
-A case may grant `s151_c(Taxp,_,2000,Taxy)` with the person left as a Prolog
-variable, so the person is optional here — "some dependent, unnamed".
-
+<!-- rtdf-block-id: sara/section151:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 declaration structure Exemption:
   data person content optional of W.Entity
   data amount content money
+
+## The tax path only needs these two fields from a joint-filing spouse's full
+## §151 computation. Keeping them together lets the optional spouse branch run
+## `Individual` once, and not at all when there is no joint-filing spouse.
+
+declaration structure IndividualSummary:
+  data total content money
+  data self_available content boolean
 
 declaration same_exemption content boolean
   depends on a content Exemption, b content Exemption
@@ -55,6 +39,7 @@ declaration same_exemption content boolean
               -- Present content y: x.id = y.id))
 
 ## `list_to_set/2`, which keeps the first occurrence of each element.
+
 declaration dedup content list of Exemption
   depends on xs content list of Exemption
   equals
@@ -64,250 +49,18 @@ declaration dedup content list of Exemption
 
 ## The (person, amount) pairs a case grants directly, e.g.
 ## `s151_c(alice,_,2000,2015)`.
+
 declaration injected_exemptions content list of Exemption
-  depends on injections content list of W.Injection,
-             pred content integer, pattern content list of integer,
+  depends on matching_injections content list of W.Injection,
              person_pos content integer, amount_pos content integer
   equals
-    map each inj among (W.injections_for of injections, pred, pattern)
+    map each inj among matching_injections
     to Exemption {
-         -- person: (match (List.nth_element of inj.args, person_pos) with pattern
-                     -- Absent: Absent
-                     -- Present content k: W.entity_of_key of k)
-         -- amount: (match (List.nth_element of inj.nums, amount_pos) with pattern
+         -- person: W.injection_entity of inj, person_pos
+         -- amount: (match (W.injection_num of inj, amount_pos) with pattern
                      -- Absent: $0
                      -- Present content n: money of n) }
-```
 
-## (d)(1) and (d)(5) — the exemption amount, before adjustment
-
-$2,000, except that for taxable years 2018 through 2025 it is zero.
-
-```catala-metadata
-declaration exemption_base content money equals $2,000
-
-declaration suspended_year content boolean
-  depends on y content integer
-  equals y >= 2018 and y <= 2025
-```
-
-## (d)(3)(B) Applicable percentage
-
-Two percentage points for each $2,500 — **or fraction thereof**, hence the
-ceiling — by which adjusted gross income exceeds the §68(b) applicable amount,
-halved to $1,250 for a married individual filing a separate return, and capped
-at 100.
-
-```catala-metadata
-## `ceil/1`. Catala has `round`, which is round-half-away-from-zero, so the
-## ceiling is one more than the rounding whenever rounding went down.
-declaration ceil_of content decimal
-  depends on x content decimal
-  equals
-    (let r equals round of x in
-     if r >= x then r else r + (decimal of 1))
-
-declaration scope ApplicablePercentage:
-  input agi content money
-  input aa content money
-  ## The Prolog's test is `s7703(Taxp,Spouse,_,Taxy)` and no joint return —
-  ## married, filing separately — not the §2 filing status.
-  input married_filing_separately content boolean
-  output step content money
-  output excess content money
-  output percentage content integer
-```
-
-```catala
-scope ApplicablePercentage:
-  definition step equals $2,500
-  exception definition step
-    under condition married_filing_separately consequence equals $1,250
-
-  definition excess equals Money.max of $0, (agi - aa)
-
-  definition percentage equals
-    Integer.min of 100,
-      (integer of (ceil_of of (excess / step)) * 2)
-```
-
-## (d)(3)(A) Phaseout
-
-The reduction is the applicable percentage of the exemption amount, rounded to
-the dollar, and the result is floored at zero. Note the two cuts in the Prolog
-(`gross_income(...), !, s68_b(...), !`) — they make the first solution for
-adjusted gross income and the applicable amount the only ones considered, which
-matters not at all here because both are functional.
-
-```catala-metadata
-declaration scope Phaseout:
-  input agi content money
-  input aa content money
-  input married_filing_separately content boolean
-  input exemption_in content money
-  output applies content boolean
-  output percentage content integer
-  output reduction content money
-  output amount content money
-```
-
-```catala
-scope Phaseout:
-  definition applies equals agi > aa
-
-  definition percentage equals
-    (output of ApplicablePercentage with {
-       -- agi: agi -- aa: aa
-       -- married_filing_separately: married_filing_separately }).percentage
-
-  definition reduction equals
-    money of (round of
-      (decimal of (exemption_in * ((decimal of percentage) / (decimal of 100)))))
-
-  definition amount equals Money.max of $0, (exemption_in - reduction)
-```
-
-## (b) and (c) — who gets an exemption
-
-`s151_b_applies/2` is the taxpayer's own, and is **vacuously true** — see D2.
-`s151_b_applies/3` is the spouse's, and `s151_c_applies/3` is each dependent's.
-
-```catala-metadata
-declaration scope SpouseExemptionApplies:
-  input world content W.World
-  ## `s7703(Taxp,Spouse,_,Taxy)` opens this clause, and a case may *grant* that
-  ## rather than model the marriage, so the grant has to be visible here too.
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input spouse content W.Entity
-  input taxable_year content integer
-  input qualifying_children content list of W.Entity
-  input spouse_is_dependent content boolean
-  ## `gross_income(Spouse,Taxy,0)` — `utils.pl`'s *joint-aware* figure, which
-  ## adds the spouse's own spouse's income when those two filed jointly, not
-  ## the individual one. The caller computes it: §7703(b)(1) needs the kinship
-  ## lists, which this scope does not carry. See D54.
-  input spouse_gross_income content money
-  ## §7703, in full: the spouse survives both (a) and (b).
-  output married content boolean
-  output files_jointly content boolean
-  output spouse_has_no_income content boolean
-  output holds content boolean
-```
-
-```catala
-scope SpouseExemptionApplies:
-  definition married equals
-    (exists sp among
-       (output of S7703.MaritalStatus with {
-          -- injections: injections -- world: world -- taxpayer: taxpayer
-          -- taxable_year: taxable_year
-          -- qualifying_dependants: qualifying_children }).spouses
-     such that sp.id = spouse.id)
-    or (W.injected_holds of injections, P.pred_s7703_4,
-          [taxpayer.id; spouse.id; -1; W.num_key of taxable_year])
-
-  definition files_jointly equals
-    exists ev among world.events such that
-      ev.kinds contains W.EventKind.JointReturn
-      and ev.agents contains taxpayer
-      and ev.agents contains spouse
-      and ev.starts contains (W.first_day_year of taxable_year)
-      and ev.ends contains (W.last_day_year of taxable_year)
-
-  definition spouse_has_no_income equals spouse_gross_income = $0
-
-  definition holds equals
-    married and (not files_jointly)
-    and (not spouse_is_dependent) and spouse_has_no_income
-```
-
-## (d)(2) Exemption amount disallowed
-
-Zero for an individual whom *another* taxpayer may claim, under either (b) or
-(c). Every case that reaches this grants the applicability by injection, and
-the derived route asks §152 the other way round.
-
-```catala-metadata
-declaration scope Disallowed:
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  ## Is this individual somebody else's dependent under §152?
-  input is_someones_dependent content boolean
-  output injected content boolean
-  output holds content boolean
-```
-
-```catala
-scope Disallowed:
-  definition injected equals
-    (W.injected_holds of injections, P.pred_s151_b_applies_3,
-       [-1; taxpayer.id; W.num_key of taxable_year])
-    or (W.injected_holds of injections, P.pred_s151_c_applies_3,
-       [-1; taxpayer.id; W.num_key of taxable_year])
-
-  definition holds equals injected or is_someones_dependent
-```
-
-## (d) Exemption amount
-
-The three branches are mutually exclusive in the Prolog — the fall-through
-requires `\+ s151_d_2` and `\+ s151_d_5` — so they are written here as
-exceptions on disjoint conditions rather than as a priority order.
-
-```catala-metadata
-declaration scope ExemptionAmount:
-  input taxable_year content integer
-  input disallowed content boolean
-  input agi content money
-  input aa content money
-  ## False when a replaced `s68_b/3` names nobody relevant: the phaseout is
-  ## then unreachable rather than computed from zero.
-  input aa_available content boolean
-  input married_filing_separately content boolean
-  output zeroed content boolean
-  output phased_out content boolean
-  output amount content money
-```
-
-```catala
-scope ExemptionAmount:
-  definition zeroed equals disallowed or (suspended_year of taxable_year)
-
-  definition phased_out equals
-    (not zeroed)
-    and aa_available
-    and (output of Phaseout with {
-           -- agi: agi -- aa: aa
-           -- married_filing_separately: married_filing_separately
-           -- exemption_in: exemption_base }).applies
-
-  definition amount equals exemption_base
-
-  exception definition amount
-    under condition phased_out
-    consequence equals
-      (output of Phaseout with {
-         -- agi: agi -- aa: aa
-         -- married_filing_separately: married_filing_separately
-         -- exemption_in: exemption_base }).amount
-
-  exception definition amount
-    under condition zeroed
-    consequence equals $0
-```
-
-## `s151_individual/5`
-
-One entry for the taxpayer, one for each qualifying spouse, one for each §152
-dependent, each carrying the same exemption amount — `s151_b/4` and `s151_c/4`
-both read it from `s151_d(Taxp,Ea,Taxy)`, so the amount does not vary by
-person. The two `list_to_set` calls deduplicate (b) and (c) separately and the
-results are then appended, so a person reachable both ways is counted twice;
-the port keeps that.
-
-```catala-metadata
 declaration scope Individual:
   input injections content list of W.Injection
   input world content W.World
@@ -346,6 +99,7 @@ declaration scope Individual:
   output dependants content list of W.Entity
   output agi content money
   ## §68(b)
+  internal aa_grant content W.InjectedMoneyResult
   output aa content money
   output aa_available content boolean
   output married_filing_separately content boolean
@@ -360,15 +114,176 @@ declaration scope Individual:
   ## (d)(2): is *this* taxpayer disallowed?
   output disallowed content boolean
   ## (d)
+  internal exemption_grant content W.InjectedMoneyResult
   output exemption_amount content money
   output set_b content list of Exemption
   output set_c content list of Exemption
+  output total content money
+
+declaration scope Personal:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  individual scope Individual
+  internal total_grant content W.InjectedMoneyResult
+  ## the spouse a joint return is filed with, if any
+  output joint_spouse content optional of W.Entity
   output entries content list of Exemption
   output amounts content list of money
+  ## `s151/5` can be *replaced* rather than added to (D22). SARA then has no
+  ## clauses but the injected rows, so for a taxpayer no row names the call
+  ## simply fails -- which is not a total of $0, and §63 and §1 fail with it.
+  ## The same is true one level down, of the `s151_b/3` call that opens
+  ## `s151_individual/5`, for the taxpayer and for a joint-filing spouse alike.
+  output self_available content boolean
+  output applies content boolean
+  ## s151/5's second argument, and `s151_a/3`
   output total content money
+
+declaration scope PersonalTotal:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  individual scope Individual
+  output joint_spouse content optional of W.Entity
+  ## Re-export the already-computed §151 individual facts needed by §63. This
+  ## keeps the tax path from evaluating the same Individual scope a second
+  ## time solely for the standard deduction.
+  output all_spouses content list of W.Entity
+  output exempt_spouses content list of W.Entity
+  output disallowed content boolean
+  internal spouse_summary content IndividualSummary
+  internal total_grant content W.InjectedMoneyResult
+  internal injected_total content boolean
+  internal self_available content boolean
+  output applies content boolean
+  output total content money
+
+declaration scope SpouseExemptionHolds:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input spouse content W.Entity
+  input taxable_year content integer
+  input claimed content optional of money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output derived_applies content boolean
+  output applies content boolean
+  output holds content boolean
+
+## s151_c(Taxp,S24,Ea,Taxy)
+
+declaration scope DependentExemptionHolds:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input dependant content W.Entity
+  input taxable_year content integer
+  input claimed content optional of money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output applies content boolean
+  output holds content boolean
+
+## s151_d_3_A(Taxp,_,_,_,Ein,Ea,Taxy) and s151_d_3_B(Ap,Taxp,_,Taxy,_)
+
+declaration scope PhaseoutHolds:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input exemption_in content money
+  input claimed content optional of money
+  input claimed_percentage content optional of integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output agi content money
+  output aa content money
+  output married_filing_separately content boolean
+  output aa_available content boolean
+  ## s151_d_3_A: the phaseout bites and yields the claimed amount
+  output holds_a content boolean
+  ## s151_d_3_B: the applicable percentage is the claimed one
+  output holds_b content boolean
+
+## s151_d_2(Taxp,_,Ea,Taxy)
+
+declaration scope DisallowedHolds:
+  input injections content list of W.Injection
+  input world content W.World
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content money
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  output holds content boolean
+
+## s151_d_5(Ea,Taxy)
+
+declaration scope SuspendedHolds:
+  input taxable_year content integer
+  input claimed content money
+  output holds content boolean
 ```
 
+
+<!-- rtdf-block-id: sara/section151:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
+scope ExemptionAmount:
+  definition phaseout.agi equals agi
+
+scope ExemptionAmount:
+  definition phaseout.aa equals aa
+
+scope ExemptionAmount:
+  definition phaseout.married_filing_separately equals married_filing_separately
+
+scope ExemptionAmount:
+  definition phaseout.exemption_in equals exemption_base
+
 scope Individual:
   definition qualifying_children equals
     (output of S152.QualifyingChildrenOf with {
@@ -381,16 +296,19 @@ scope Individual:
   # §7703 derived, plus the spouse a case *grants* by injecting `s7703/4`.
   # `MaritalStatus` reads the marriage events only, so a case that states the
   # marriage rather than modelling it left this list empty and §151(b) gave the
-  # taxpayer no exemption for a spouse SARA does grant one for. `SaraStatus`
+  # taxpayer no exemption for a spouse SARA does grant one for. The shared status logic
   # already took the identity from the same grant; see D26.
   # `MaritalStatus.spouses` now carries the granted spouses itself (D65), so
   # this is the whole list.
+
+scope Individual:
   definition all_spouses equals
     (output of S7703.MaritalStatus with {
        -- injections: injections -- world: world -- taxpayer: taxpayer
        -- taxable_year: taxable_year
        -- qualifying_dependants: qualifying_children }).spouses
 
+scope Individual:
   definition dependants equals
     (output of S152.DependantsOf with {
        -- injections: injections -- world: world -- taxpayer: taxpayer
@@ -407,6 +325,8 @@ scope Individual:
   # case that granted `s7703/4` names such a pair even where the event base
   # holds no marriage at all. A grant that replaced §7703 leaves its own rows
   # as the only pairs there are; see D22 and D79.
+
+scope Individual:
   definition marriage_partners equals
     list of p among
       (S152.dedup_people of
@@ -414,19 +334,18 @@ scope Individual:
           then []
           else (combine all r
                   among (map each ev among
-                          (list of e among world.events
-                           such that e.kinds contains W.EventKind.Marriage
-                                     and e.agents contains taxpayer)
+                          (list of e among (W.marriage_event_values of world)
+                           such that e.agents contains taxpayer)
                          to ev.agents)
                   in acc initially [] with acc ++ r))
          ++ (map each inj among
-               (W.injections_for of injections, P.pred_s7703_4,
-                  [-1; taxpayer.id; -1; W.num_key of taxable_year])
+               ((W.injections_for_4_24 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))
              to (match (W.injection_entity of inj, 1) with pattern
                  -- Absent: taxpayer
                  -- Present content tp: tp))))
     such that p.id != taxpayer.id
 
+scope Individual:
   definition exempt_spouses equals
     list of sp among all_spouses such that
       (output of SpouseExemptionApplies with {
@@ -463,6 +382,8 @@ scope Individual:
 
   ## `gross_income/3` again: §151(d)(3) phases the exemption out against the
   ## joint figure where a joint return was filed.
+
+scope Individual:
   definition agi equals
     (output of Inc.GrossIncome with {
        -- world: world -- person: taxpayer
@@ -474,44 +395,58 @@ scope Individual:
                -- qualifying_dependants: qualifying_children }).spouse }).total
 
   ## `s68_b/3`, either as the case granted it or from the §68(b) table.
+
+scope Individual:
+  definition aa_grant equals
+    W.injected_money_result of
+      (W.injections_for_3_13 of injections, P.pred_s68_b_3,
+         taxpayer.id, W.num_key of taxable_year), 2
+
+scope Individual:
   definition aa equals
-    S68.applicable_amount of
-      (S68.status_of_filing of
-        (output of St.FilingStatus with {
-           -- world: world -- injections: injections
-           -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+    if aa_grant.holds
+    then
+      (match aa_grant.amount with pattern
+       -- Absent: $0
+       -- Present content m: m)
+    else
+      S68.applicable_amount of
+        (S68.status_of_filing of
+          (output of St.StatusDeterminationFromRelations with {
+             -- world: world -- injections: injections
+             -- taxpayer: taxpayer -- taxable_year: taxable_year
+             -- child_of: child_of -- sibling_of: sibling_of
+             -- descendent_of: descendent_of
+             -- stepsibling_of: stepsibling_of
+             -- stepparent_of: stepparent_of
+             -- child_in_law_of: child_in_law_of
+             -- parent_in_law_of: parent_in_law_of
+             -- sibling_in_law_of: sibling_in_law_of }).status)
 
   ## `s151_d_3_A` reaches the phaseout through `s68_b(Taxp,Aa,Taxy)`. A grant
   ## that *replaced* that predicate and names nobody relevant makes the call
   ## fail, so the phaseout does not apply at all -- which is not the same as an
   ## applicable amount of zero, and in the opposite direction. See D45.
+
+scope Individual:
   definition aa_available equals
-    W.pred_available of injections, P.pred_s68_b_3,
-      [taxpayer.id; -1; W.num_key of taxable_year]
+    W.pred_available of injections, P.pred_s68_b_3, (W.injections_for_3_13 of injections, P.pred_s68_b_3, taxpayer.id, W.num_key of taxable_year)
 
-  exception definition aa
-    under condition
-      (W.injected_holds of injections, P.pred_s68_b_3,
-         [taxpayer.id; -1; W.num_key of taxable_year])
-    consequence equals
-      (match (W.injected_money of injections, P.pred_s68_b_3,
-                [taxpayer.id; -1; W.num_key of taxable_year], 2) with pattern
-       -- Absent: $0
-       -- Present content m: m)
-
+scope Individual:
   definition married_filing_separately equals
     (number of all_spouses) > 0
     and not (exists sp among all_spouses such that
-               exists ev among world.events such that
-                 ev.kinds contains W.EventKind.JointReturn
-                 and ev.agents contains taxpayer
+               exists ev among (W.joint_return_event_values of world) such that
+                 ev.agents contains taxpayer
                  and ev.agents contains sp
-                 and ev.starts contains (W.first_day_year of taxable_year)
-                 and ev.ends contains (W.last_day_year of taxable_year))
+                 and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+                 and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year)))
 
   # Each disjunct of `s151_d_2` is a *derivation* — `s151_c_applies/3` on the
   # left, `s151_b_applies/3` on the right — and a case that replaced either has
   # removed it. `Disallowed.injected` still reads the rows.
+
+scope Individual:
   definition disallowed equals
     (output of Disallowed with {
        -- injections: injections -- taxpayer: taxpayer
@@ -539,22 +474,25 @@ scope Individual:
                           -- spouse_gross_income: agi
                           -- spouse_is_dependent: false }).holds)) }).holds
 
-  definition exemption_amount equals
-    (output of ExemptionAmount with {
-       -- taxable_year: taxable_year -- disallowed: disallowed
-       -- agi: agi -- aa: aa -- aa_available: aa_available
-       -- married_filing_separately: married_filing_separately }).amount
+scope Individual:
+  definition exemption_grant equals
+    W.injected_money_result of
+      (W.injections_for_3_13 of injections, P.pred_s151_b_3,
+         taxpayer.id, W.num_key of taxable_year), 2
 
-  ## A case granting `s151_b(Taxp,Ea,Taxy)` supplies the self amount directly.
-  exception definition exemption_amount
-    under condition
-      (W.injected_holds of injections, P.pred_s151_b_3,
-         [taxpayer.id; -1; W.num_key of taxable_year])
-    consequence equals
-      (match (W.injected_money of injections, P.pred_s151_b_3,
-                [taxpayer.id; -1; W.num_key of taxable_year], 2) with pattern
+scope Individual:
+  definition exemption_amount equals
+    # A case granting `s151_b(Taxp,Ea,Taxy)` supplies the self amount directly.
+    if exemption_grant.holds
+    then
+      (match exemption_grant.amount with pattern
        -- Absent: $0
        -- Present content m: m)
+    else
+      (output of ExemptionAmount with {
+         -- taxable_year: taxable_year -- disallowed: disallowed
+         -- agi: agi -- aa: aa -- aa_available: aa_available
+         -- married_filing_separately: married_filing_separately }).amount
 
   # `s151_b(Taxp,Ea,Taxy) :- s151_b_applies(Taxp,Taxy), s151_d(Taxp,Ea,Taxy)`.
   # The guard is D2's `s151_b_applies(_,_)` and is normally vacuous, so the
@@ -562,20 +500,22 @@ scope Individual:
   # `s151_b_applies/2` without declaring it discontiguous *replaces* that
   # clause, and then only the injected rows hold. That revokes D2 for every
   # taxpayer the case did not name.
+
+scope Individual:
   definition self_exemption_applies equals
     if W.pred_overridden of injections, P.pred_s151_b_applies_2
-    then (W.injected_holds of injections, P.pred_s151_b_applies_2,
-            [taxpayer.id; W.num_key of taxable_year])
+    then (W.injected_holds of (W.injections_for_2_12 of injections, P.pred_s151_b_applies_2, taxpayer.id, W.num_key of taxable_year))
     else true
 
   # `s151_b/3` is a predicate in its own right, and replacing it removes the
   # only clause `s151_individual/5` can reach the taxpayer's own exemption
   # through. Then §151 does not hold for this taxpayer at all, and §63 and §1
   # fail with it -- an outcome no total, not even $0, can stand for.
+
+scope Individual:
   definition self_exemption_available equals
     self_exemption_applies
-    and (W.pred_available of injections, P.pred_s151_b_3,
-           [taxpayer.id; -1; W.num_key of taxable_year])
+    and (W.pred_available of injections, P.pred_s151_b_3, (W.injections_for_3_13 of injections, P.pred_s151_b_3, taxpayer.id, W.num_key of taxable_year))
 
   # `s151_b(Taxp,Spouse,Ea,Taxy) :- s151_b_applies(Taxp,Spouse,Taxy), ...`.
   # Replacing the guard leaves the injected rows as the whole of (b)'s spouse
@@ -588,20 +528,19 @@ scope Individual:
   # because §152's own guard rejects two unbound arguments, the joint-return
   # check binds `Spouse` from the return's agents, and `gross_income` sums the
   # whole world -- and (b) yields an exemption for nobody in particular.
+
+scope Individual:
   definition unnamed_spouse_exemption equals
     (exists inj among
-       (W.injections_for of injections, P.pred_s7703_4,
-          [taxpayer.id; -1; -1; W.num_key of taxable_year])
-     such that (match (List.nth_element of inj.args, 2) with pattern
-                -- Absent: false
-                -- Present content k: k = -1))
-    and not (exists ev among world.events such that
-               ev.kinds contains W.EventKind.JointReturn
-               and ev.agents contains taxpayer
-               and ev.starts contains (W.first_day_year of taxable_year)
-               and ev.ends contains (W.last_day_year of taxable_year))
+       ((W.injections_for_4_14 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))
+     such that (W.injection_key of inj, 2) = -1)
+    and not (exists ev among (W.joint_return_event_values of world) such that
+               ev.agents contains taxpayer
+               and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+               and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year)))
     and (Inc.everyone_income of world, taxable_year) = $0
 
+scope Individual:
   definition spouse_entries equals
     (if W.pred_overridden of injections, P.pred_s151_b_applies_3
      then []
@@ -613,18 +552,9 @@ scope Individual:
                                  -- amount: exemption_amount }]
                else [])))
     ++ (map each inj among
-          (W.injections_for of injections, P.pred_s151_b_applies_3,
-             [taxpayer.id; -1; W.num_key of taxable_year])
+          ((W.injections_for_3_13 of injections, P.pred_s151_b_applies_3, taxpayer.id, W.num_key of taxable_year))
         to Exemption { -- person: W.injection_entity of inj, 2
                        -- amount: exemption_amount })
-
-  definition set_b equals
-    dedup of
-      ((if self_exemption_applies
-        then [Exemption { -- person: Present content taxpayer
-                          -- amount: exemption_amount }]
-        else [])
-       ++ spouse_entries)
 
   # `s151_c(Taxp,S24,Ea,Taxy) :- s151_c_applies(Taxp,S24,Taxy), s151_d(...)`,
   # and the guard is `s152(S24,Taxp,Taxy)`. Replacing it leaves the injected
@@ -635,6 +565,8 @@ scope Individual:
   # one `s151_individual/5`'s `findall` can reach, so neither the derived
   # dependants nor an `s151_c_applies/3` grant survives it, and the injected
   # rows in `set_c` are the whole of (c). See D22 and D78.
+
+scope Individual:
   definition dependant_entries equals
     if W.pred_overridden of injections, P.pred_s151_c_4 then [] else
     ((if W.pred_overridden of injections, P.pred_s151_c_applies_3
@@ -643,134 +575,159 @@ scope Individual:
             to Exemption { -- person: Present content d
                            -- amount: exemption_amount }))
      ++ (map each inj among
-           (W.injections_for of injections, P.pred_s151_c_applies_3,
-              [taxpayer.id; -1; W.num_key of taxable_year])
+           ((W.injections_for_3_13 of injections, P.pred_s151_c_applies_3, taxpayer.id, W.num_key of taxable_year))
          to Exemption { -- person: W.injection_entity of inj, 2
                         -- amount: exemption_amount }))
 
-  definition set_c equals
-    dedup of
-      ((injected_exemptions of injections, P.pred_s151_c_4,
-          [taxpayer.id; -1; -1; W.num_key of taxable_year], 2, 3)
-       ++ dependant_entries)
+scope Personal:
+  definition individual.injections equals injections
 
-  definition entries equals set_b ++ set_c
+scope Personal:
+  definition individual.world equals world
 
-  definition amounts equals map each e among entries to e.amount
+scope Personal:
+  definition individual.taxpayer equals taxpayer
 
-  definition total equals Money.sum of amounts
-```
+scope Personal:
+  definition individual.taxable_year equals taxable_year
 
-## §151 itself
+scope Personal:
+  definition individual.child_of equals child_of
 
-A taxpayer filing jointly gets their own exemptions and their spouse's,
-appended; otherwise just their own.
+scope Personal:
+  definition individual.sibling_of equals sibling_of
 
-```catala-metadata
-declaration scope Personal:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  ## the spouse a joint return is filed with, if any
-  output joint_spouse content optional of W.Entity
-  output entries content list of Exemption
-  output amounts content list of money
-  ## `s151/5` can be *replaced* rather than added to (D22). SARA then has no
-  ## clauses but the injected rows, so for a taxpayer no row names the call
-  ## simply fails -- which is not a total of $0, and §63 and §1 fail with it.
-  ## The same is true one level down, of the `s151_b/3` call that opens
-  ## `s151_individual/5`, for the taxpayer and for a joint-filing spouse alike.
-  output self_available content boolean
-  output applies content boolean
-  ## s151/5's second argument, and `s151_a/3`
-  output total content money
-```
+scope Personal:
+  definition individual.descendent_of equals descendent_of
 
-```catala
+scope Personal:
+  definition individual.stepsibling_of equals stepsibling_of
+
+scope Personal:
+  definition individual.stepparent_of equals stepparent_of
+
+scope Personal:
+  definition individual.child_in_law_of equals child_in_law_of
+
+scope Personal:
+  definition individual.parent_in_law_of equals parent_in_law_of
+
+scope Personal:
+  definition individual.sibling_in_law_of equals sibling_in_law_of
+
+scope PersonalTotal:
+  definition individual.injections equals injections
+
+scope PersonalTotal:
+  definition individual.world equals world
+
+scope PersonalTotal:
+  definition individual.taxpayer equals taxpayer
+
+scope PersonalTotal:
+  definition individual.taxable_year equals taxable_year
+
+scope PersonalTotal:
+  definition individual.child_of equals child_of
+
+scope PersonalTotal:
+  definition individual.sibling_of equals sibling_of
+
+scope PersonalTotal:
+  definition individual.descendent_of equals descendent_of
+
+scope PersonalTotal:
+  definition individual.stepsibling_of equals stepsibling_of
+
+scope PersonalTotal:
+  definition individual.stepparent_of equals stepparent_of
+
+scope PersonalTotal:
+  definition individual.child_in_law_of equals child_in_law_of
+
+scope PersonalTotal:
+  definition individual.parent_in_law_of equals parent_in_law_of
+
+scope PersonalTotal:
+  definition individual.sibling_in_law_of equals sibling_in_law_of
+
+scope PersonalTotal:
+  definition all_spouses equals individual.all_spouses
+
+scope PersonalTotal:
+  definition exempt_spouses equals individual.exempt_spouses
+
+scope PersonalTotal:
+  definition disallowed equals individual.disallowed
+
 scope Personal:
   definition joint_spouse equals
     List.first_element of
-      (list of sp among
-        (output of Individual with {
-           -- injections: injections -- world: world -- taxpayer: taxpayer
-           -- taxable_year: taxable_year
-           -- child_of: child_of -- sibling_of: sibling_of
-           -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-           -- stepparent_of: stepparent_of
-           -- child_in_law_of: child_in_law_of
-           -- parent_in_law_of: parent_in_law_of
-           -- sibling_in_law_of: sibling_in_law_of }).all_spouses
+      (list of sp among individual.all_spouses
        such that
-         exists ev among world.events such that
-           ev.kinds contains W.EventKind.JointReturn
-           and ev.agents contains taxpayer
+         exists ev among (W.joint_return_event_values of world) such that
+           ev.agents contains taxpayer
            and ev.agents contains sp
-           and ev.starts contains (W.first_day_year of taxable_year)
-           and ev.ends contains (W.last_day_year of taxable_year))
+           and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+           and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year)))
 
+scope PersonalTotal:
+  definition joint_spouse equals
+    List.first_element of
+      (list of sp among individual.all_spouses
+       such that
+         exists ev among (W.joint_return_event_values of world) such that
+           ev.agents contains taxpayer
+           and ev.agents contains sp
+           and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+           and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year)))
+
+scope PersonalTotal:
+  definition spouse_summary equals
+    match joint_spouse with pattern
+    -- Absent:
+        IndividualSummary { -- total: $0 -- self_available: true }
+    -- Present content sp:
+        (let result equals
+           (output of Individual with {
+              -- injections: injections -- world: world -- taxpayer: sp
+              -- taxable_year: taxable_year
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of
+              -- stepsibling_of: stepsibling_of
+              -- stepparent_of: stepparent_of
+              -- child_in_law_of: child_in_law_of
+              -- parent_in_law_of: parent_in_law_of
+              -- sibling_in_law_of: sibling_in_law_of }) in
+         IndividualSummary {
+           -- total: result.total
+           -- self_available: result.self_exemption_available })
+
+scope Personal:
   definition entries equals
-    (output of Individual with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).entries
+    individual.set_b ++ individual.set_c
+    ++ (match joint_spouse with pattern
+        -- Absent: []
+        -- Present content sp:
+            (let spouse_result equals
+               (output of Individual with {
+                  -- injections: injections -- world: world -- taxpayer: sp
+                  -- taxable_year: taxable_year
+                  -- child_of: child_of -- sibling_of: sibling_of
+                  -- descendent_of: descendent_of
+                  -- stepsibling_of: stepsibling_of
+                  -- stepparent_of: stepparent_of
+                  -- child_in_law_of: child_in_law_of
+                  -- parent_in_law_of: parent_in_law_of
+                  -- sibling_in_law_of: sibling_in_law_of }) in
+             spouse_result.set_b ++ spouse_result.set_c))
 
-  exception definition entries
-    under condition
-      (match joint_spouse with pattern
-       -- Absent: false
-       -- Present content sp: true)
-    consequence equals
-      (output of Individual with {
-         -- injections: injections -- world: world -- taxpayer: taxpayer
-         -- taxable_year: taxable_year
-         -- child_of: child_of -- sibling_of: sibling_of
-         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-         -- stepparent_of: stepparent_of
-         -- child_in_law_of: child_in_law_of
-         -- parent_in_law_of: parent_in_law_of
-         -- sibling_in_law_of: sibling_in_law_of }).entries
-      ++ (match joint_spouse with pattern
-          -- Absent: []
-          -- Present content sp:
-              (output of Individual with {
-                 -- injections: injections -- world: world -- taxpayer: sp
-                 -- taxable_year: taxable_year
-                 -- child_of: child_of -- sibling_of: sibling_of
-                 -- descendent_of: descendent_of
-                 -- stepsibling_of: stepsibling_of
-                 -- stepparent_of: stepparent_of
-                 -- child_in_law_of: child_in_law_of
-                 -- parent_in_law_of: parent_in_law_of
-                 -- sibling_in_law_of: sibling_in_law_of }).entries)
-
+scope Personal:
   definition amounts equals map each e among entries to e.amount
 
-  definition total equals Money.sum of amounts
-
+scope Personal:
   definition self_available equals
-    (output of Individual with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).self_exemption_available
+    individual.self_exemption_available
     and (match joint_spouse with pattern
          -- Absent: true
          -- Present content sp:
@@ -785,131 +742,18 @@ scope Personal:
                 -- parent_in_law_of: parent_in_law_of
                 -- sibling_in_law_of: sibling_in_law_of }).self_exemption_available)
 
-  definition applies equals
-    (W.injected_holds of injections, P.pred_s151_5,
-       [taxpayer.id; -1; -1; -1; W.num_key of taxable_year])
-    or ((not (W.pred_overridden of injections, P.pred_s151_5))
-        and self_available)
+scope PersonalTotal:
+  definition self_available equals
+    individual.self_exemption_available
+    and spouse_summary.self_available
 
-  ## `s151(Taxp,S2,_,_,Taxy)` granted outright, which is how §63 and §2 get it.
-  exception definition total
-    under condition
-      (W.injected_holds of injections, P.pred_s151_5,
-         [taxpayer.id; -1; -1; -1; W.num_key of taxable_year])
-    consequence equals
-      (match (W.injected_money of injections, P.pred_s151_5,
-                [taxpayer.id; -1; -1; -1; W.num_key of taxable_year], 2)
-       with pattern
-       -- Absent: $0
-       -- Present content m: m)
-```
-
-## Query surfaces used by the cases
-
-Each mirrors one Prolog predicate. Where a case leaves the exemption amount
-unbound — `s151_b(alice,bob,_,2015)`, `s151_c(alice,bob,_,2015)` — only the
-applicability is asserted, which is why `claimed` is optional.
-
-```catala-metadata
-## s151_b(Taxp,Spouse,Ea,Taxy)
-declaration scope SpouseExemptionHolds:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input spouse content W.Entity
-  input taxable_year content integer
-  input claimed content optional of money
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output derived_applies content boolean
-  output applies content boolean
-  output holds content boolean
-
-## s151_c(Taxp,S24,Ea,Taxy)
-declaration scope DependentExemptionHolds:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input dependant content W.Entity
-  input taxable_year content integer
-  input claimed content optional of money
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output applies content boolean
-  output holds content boolean
-
-## s151_d_3_A(Taxp,_,_,_,Ein,Ea,Taxy) and s151_d_3_B(Ap,Taxp,_,Taxy,_)
-declaration scope PhaseoutHolds:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input exemption_in content money
-  input claimed content optional of money
-  input claimed_percentage content optional of integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output agi content money
-  output aa content money
-  output married_filing_separately content boolean
-  output aa_available content boolean
-  ## s151_d_3_A: the phaseout bites and yields the claimed amount
-  output holds_a content boolean
-  ## s151_d_3_B: the applicable percentage is the claimed one
-  output holds_b content boolean
-
-## s151_d_2(Taxp,_,Ea,Taxy)
-declaration scope DisallowedHolds:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input claimed content money
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output holds content boolean
-
-## s151_d_5(Ea,Taxy)
-declaration scope SuspendedHolds:
-  input taxable_year content integer
-  input claimed content money
-  output holds content boolean
-```
-
-```catala
 scope SpouseExemptionHolds:
-  # A row the case injected answers on its own; a case that *replaced* the
-  # guard leaves nothing else to answer with.
   definition applies equals
-    (W.injected_holds of injections, P.pred_s151_b_applies_3,
-       [taxpayer.id; spouse.id; W.num_key of taxable_year])
+    (W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_b_applies_3, taxpayer.id, spouse.id, W.num_key of taxable_year))
     or ((not (W.pred_overridden of injections, P.pred_s151_b_applies_3))
         and derived_applies)
 
+scope SpouseExemptionHolds:
   definition derived_applies equals
     (output of SpouseExemptionApplies with {
        -- world: world -- injections: injections
@@ -949,6 +793,7 @@ scope SpouseExemptionHolds:
                -- parent_in_law_of: parent_in_law_of
                -- sibling_in_law_of: sibling_in_law_of }).holds }).holds
 
+scope SpouseExemptionHolds:
   definition holds equals
     applies
     and (match claimed with pattern
@@ -966,26 +811,24 @@ scope SpouseExemptionHolds:
                 -- sibling_in_law_of: sibling_in_law_of }).exemption_amount = c)
 
 scope DependentExemptionHolds:
+
+scope DependentExemptionHolds:
   definition applies equals
-    (output of S152.IsDependent with {
-       -- injections: injections -- world: world
-       -- dependant: dependant -- taxpayer: taxpayer
-       -- taxpayer_generated: false
-       -- dependant_generated: false
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).holds
+    (W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_c_applies_3, taxpayer.id, dependant.id, W.num_key of taxable_year))
+    or (output of S152.IsDependent with {
+          -- injections: injections -- world: world
+          -- dependant: dependant -- taxpayer: taxpayer
+          -- taxpayer_generated: false
+          -- dependant_generated: false
+          -- taxable_year: taxable_year
+          -- child_of: child_of -- sibling_of: sibling_of
+          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+          -- stepparent_of: stepparent_of
+          -- child_in_law_of: child_in_law_of
+          -- parent_in_law_of: parent_in_law_of
+          -- sibling_in_law_of: sibling_in_law_of }).holds
 
-  exception definition applies
-    under condition
-      (W.injected_holds of injections, P.pred_s151_c_applies_3,
-         [taxpayer.id; dependant.id; W.num_key of taxable_year])
-    consequence equals true
-
+scope DependentExemptionHolds:
   definition holds equals
     applies
     and (match claimed with pattern
@@ -1003,6 +846,8 @@ scope DependentExemptionHolds:
                 -- sibling_in_law_of: sibling_in_law_of }).exemption_amount = c)
 
 scope PhaseoutHolds:
+
+scope PhaseoutHolds:
   definition agi equals
     (output of Individual with {
        -- injections: injections -- world: world
@@ -1014,6 +859,7 @@ scope PhaseoutHolds:
        -- parent_in_law_of: parent_in_law_of
        -- sibling_in_law_of: sibling_in_law_of }).agi
 
+scope PhaseoutHolds:
   definition aa equals
     (output of Individual with {
        -- injections: injections -- world: world
@@ -1025,6 +871,7 @@ scope PhaseoutHolds:
        -- parent_in_law_of: parent_in_law_of
        -- sibling_in_law_of: sibling_in_law_of }).aa
 
+scope PhaseoutHolds:
   definition married_filing_separately equals
     (output of Individual with {
        -- injections: injections -- world: world
@@ -1040,6 +887,8 @@ scope PhaseoutHolds:
   # `s68_b(Taxp,Aa,Taxy)`, so a case that *replaced* that predicate and names
   # nobody relevant makes both fail outright. D45 gave `ExemptionAmount` this
   # test; the two query surfaces need it in their own right. See D62.
+
+scope PhaseoutHolds:
   definition aa_available equals
     (output of Individual with {
        -- injections: injections -- world: world
@@ -1051,6 +900,7 @@ scope PhaseoutHolds:
        -- parent_in_law_of: parent_in_law_of
        -- sibling_in_law_of: sibling_in_law_of }).aa_available
 
+scope PhaseoutHolds:
   definition holds_a equals
     aa_available
     and (output of Phaseout with {
@@ -1065,6 +915,7 @@ scope PhaseoutHolds:
                 -- married_filing_separately: married_filing_separately
                 -- exemption_in: exemption_in }).amount = c)
 
+scope PhaseoutHolds:
   definition holds_b equals
     aa_available
     and (match claimed_percentage with pattern
@@ -1082,6 +933,8 @@ scope DisallowedHolds:
   # their dependent does. This query surface tested only the §152 half, while
   # `Individual.disallowed` — the same subsection, reached from §63 — had both.
   # It now calls that, so the two readings cannot drift apart again. See D43.
+
+scope DisallowedHolds:
   definition holds equals
     claimed = $0
     and (output of Individual with {
@@ -1096,5 +949,333 @@ scope DisallowedHolds:
            -- sibling_in_law_of: sibling_in_law_of }).disallowed
 
 scope SuspendedHolds:
+
+scope SuspendedHolds:
   definition holds equals (suspended_year of taxable_year) and claimed = $0
+```
+
+§151. Allowance of deductions for personal exemptions
+
+(a) Allowance of deductions
+
+In the case of an individual, the exemptions provided by this section shall be allowed as deductions in computing taxable income.
+
+
+<!-- rtdf-block-id: sara/section151:b0003; role: provision; provision-id: sara/section151(a); source-lines: 3-5; relation: formalizes-preceding -->
+```catala
+scope Individual:
+  definition total equals
+    (Money.sum of (map each e among set_b to e.amount))
+    + (Money.sum of (map each e among set_c to e.amount))
+
+scope Personal:
+  definition total_grant equals
+    W.injected_money_result of
+      (W.injections_for_5_15 of injections, P.pred_s151_5,
+         taxpayer.id, W.num_key of taxable_year), 2
+
+scope Personal:
+  definition total equals
+    # `s151(Taxp,S2,_,_,Taxy)` granted outright, which is how §63 and §2 get it.
+    if total_grant.holds
+    then
+      (match total_grant.amount
+       with pattern
+       -- Absent: $0
+       -- Present content m: m)
+    else Money.sum of amounts
+
+scope PersonalTotal:
+  definition total_grant equals
+    W.injected_money_result of
+      (W.injections_for_5_15 of injections, P.pred_s151_5,
+         taxpayer.id, W.num_key of taxable_year), 2
+
+scope PersonalTotal:
+  definition injected_total equals
+    total_grant.holds
+
+scope PersonalTotal:
+  definition total equals
+    if injected_total
+    then
+      (match total_grant.amount
+       with pattern
+       -- Absent: $0
+       -- Present content m: m)
+    else
+      individual.total
+      + spouse_summary.total
+
+scope Personal:
+  definition applies equals
+    total_grant.holds
+    or ((not (W.pred_overridden of injections, P.pred_s151_5))
+        and self_available)
+
+scope PersonalTotal:
+  definition applies equals
+    injected_total
+    or ((not (W.pred_overridden of injections, P.pred_s151_5))
+        and self_available)
+```
+
+(b) Taxpayer and spouse
+
+An exemption of the exemption amount for the taxpayer; and an additional exemption of the exemption amount for the spouse of the taxpayer if a joint return is not made by the taxpayer and his spouse, and if the spouse, for the calendar year in which the taxable year of the taxpayer begins, has no gross income and is not the dependent of another taxpayer.
+
+
+<!-- rtdf-block-id: sara/section151:b0004; role: provision; provision-id: sara/section151(b); source-lines: 7-9; relation: formalizes-preceding -->
+```catala
+scope SpouseExemptionApplies:
+  definition married equals
+    (exists sp among
+       (output of S7703.MaritalStatus with {
+          -- injections: injections -- world: world -- taxpayer: taxpayer
+          -- taxable_year: taxable_year
+          -- qualifying_dependants: qualifying_children }).spouses
+     such that sp.id = spouse.id)
+    or (W.injected_holds of (W.injections_for_4_124 of injections, P.pred_s7703_4, taxpayer.id, spouse.id, W.num_key of taxable_year))
+
+scope SpouseExemptionApplies:
+  definition files_jointly equals
+    exists ev among (W.joint_return_event_values of world) such that
+      ev.agents contains taxpayer
+      and ev.agents contains spouse
+      and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+      and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year))
+
+scope SpouseExemptionApplies:
+  definition spouse_has_no_income equals spouse_gross_income = $0
+
+scope SpouseExemptionApplies:
+  definition holds equals
+    married and (not files_jointly)
+    and (not spouse_is_dependent) and spouse_has_no_income
+
+scope Individual:
+  definition set_b equals
+    dedup of
+      ((if self_exemption_applies
+        then [Exemption { -- person: Present content taxpayer
+                          -- amount: exemption_amount }]
+        else [])
+       ++ spouse_entries)
+```
+
+```catala-metadata
+declaration scope SpouseExemptionApplies:
+  input world content W.World
+  ## `s7703(Taxp,Spouse,_,Taxy)` opens this clause, and a case may *grant* that
+  ## rather than model the marriage, so the grant has to be visible here too.
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input spouse content W.Entity
+  input taxable_year content integer
+  input qualifying_children content list of W.Entity
+  input spouse_is_dependent content boolean
+  ## `gross_income(Spouse,Taxy,0)` — `utils.pl`'s *joint-aware* figure, which
+  ## adds the spouse's own spouse's income when those two filed jointly, not
+  ## the individual one. The caller computes it: §7703(b)(1) needs the kinship
+  ## lists, which this scope does not carry. See D54.
+  input spouse_gross_income content money
+  ## §7703, in full: the spouse survives both (a) and (b).
+  output married content boolean
+  output files_jointly content boolean
+  output spouse_has_no_income content boolean
+  output holds content boolean
+```
+
+
+
+(c) Additional exemption for dependents
+
+An exemption of the exemption amount for each individual who is a dependent (as defined in section 152) of the taxpayer for the taxable year.
+
+
+<!-- rtdf-block-id: sara/section151:b0005; role: provision; provision-id: sara/section151(c); source-lines: 11-13; relation: formalizes-preceding -->
+```catala
+scope Individual:
+  definition set_c equals
+    dedup of
+      ((injected_exemptions of (W.injections_for_4_14 of injections, P.pred_s151_c_4, taxpayer.id, W.num_key of taxable_year), 2, 3)
+       ++ dependant_entries)
+```
+
+(d) Exemption amount
+
+For purposes of this section-
+
+
+<!-- rtdf-block-id: sara/section151:b0006; role: provision; provision-id: sara/section151(d); source-lines: 15-17; relation: formalizes-preceding -->
+```catala
+scope ExemptionAmount:
+  definition zeroed equals disallowed or (suspended_year of taxable_year)
+
+scope ExemptionAmount:
+  definition phased_out equals
+    (not zeroed)
+    and aa_available
+    and phaseout.applies
+
+scope ExemptionAmount:
+  definition amount equals
+    if zeroed then $0
+    else if phased_out then phaseout.amount
+    else exemption_base
+```
+
+```catala-metadata
+declaration scope ExemptionAmount:
+  input taxable_year content integer
+  input disallowed content boolean
+  input agi content money
+  input aa content money
+  ## False when a replaced `s68_b/3` names nobody relevant: the phaseout is
+  ## then unreachable rather than computed from zero.
+  input aa_available content boolean
+  input married_filing_separately content boolean
+  phaseout scope Phaseout
+  output zeroed content boolean
+  output phased_out content boolean
+  output amount content money
+```
+
+
+
+    (1) In general
+
+    Except as otherwise provided in this subsection, the term "exemption amount" means $2,000.
+
+
+<!-- rtdf-block-id: sara/section151:b0007; role: provision; provision-id: sara/section151(d)(1); source-lines: 19-21; relation: formalizes-preceding -->
+```catala-metadata
+declaration exemption_base content money equals $2,000
+```
+
+    (2) Exemption amount disallowed in case of certain dependents
+
+    In the case of an individual with respect to whom a deduction under this section is allowable to another taxpayer for a taxable year beginning in the calendar year in which the individual's taxable year begins, the exemption amount applicable to such individual for such individual's taxable year shall be zero.
+
+
+<!-- rtdf-block-id: sara/section151:b0008; role: provision; provision-id: sara/section151(d)(2); source-lines: 23-25; relation: formalizes-preceding -->
+```catala
+scope Disallowed:
+  definition injected equals
+    (W.injected_holds of (W.injections_for_3_23 of injections, P.pred_s151_b_applies_3, taxpayer.id, W.num_key of taxable_year))
+    or (W.injected_holds of (W.injections_for_3_23 of injections, P.pred_s151_c_applies_3, taxpayer.id, W.num_key of taxable_year))
+
+scope Disallowed:
+  definition holds equals injected or is_someones_dependent
+```
+
+```catala-metadata
+declaration scope Disallowed:
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## Is this individual somebody else's dependent under §152?
+  input is_someones_dependent content boolean
+  output injected content boolean
+  output holds content boolean
+```
+
+
+
+    (3) Phaseout
+
+
+<!-- rtdf-block-id: sara/section151:b0009; role: provision; provision-id: sara/section151(d)(3); source-lines: 27-27; relation: formalizes-preceding -->
+```catala
+# This structural heading introduces no rule independently of its immediately following subprovisions.
+```
+
+        (A) In general
+
+        In the case of any taxpayer whose adjusted gross income for the taxable year exceeds the applicable amount in effect under section 68(b), the exemption amount shall be reduced by the applicable percentage.
+
+
+<!-- rtdf-block-id: sara/section151:b0010; role: provision; provision-id: sara/section151(d)(3)(A); source-lines: 29-31; relation: formalizes-preceding -->
+```catala
+scope Phaseout:
+  definition applies equals agi > aa
+
+scope Phaseout:
+  definition percentage equals
+    (output of ApplicablePercentage with {
+       -- agi: agi -- aa: aa
+       -- married_filing_separately: married_filing_separately }).percentage
+
+scope Phaseout:
+  definition reduction equals
+    money of (round of
+      (decimal of (exemption_in * ((decimal of percentage) / (decimal of 100)))))
+
+scope Phaseout:
+  definition amount equals Money.max of $0, (exemption_in - reduction)
+```
+
+```catala-metadata
+declaration scope Phaseout:
+  input agi content money
+  input aa content money
+  input married_filing_separately content boolean
+  input exemption_in content money
+  output applies content boolean
+  output percentage content integer
+  output reduction content money
+  output amount content money
+```
+
+
+
+        (B) Applicable percentage
+
+        For purposes of subparagraph (A), the term "applicable percentage" means 2 percentage points for each $2,500 (or fraction thereof) by which the taxpayer's adjusted gross income for the taxable year exceeds the applicable amount in effect under section 68(b). In the case of a married individual filing a separate return, the preceding sentence shall be applied by substituting "$1,250" for "$2,500". In no event shall the applicable percentage exceed 100 percent.
+
+
+<!-- rtdf-block-id: sara/section151:b0011; role: provision; provision-id: sara/section151(d)(3)(B); source-lines: 33-35; relation: formalizes-preceding -->
+```catala
+scope ApplicablePercentage:
+  definition step equals
+    if married_filing_separately then $1,250 else $2,500
+
+scope ApplicablePercentage:
+  definition excess equals Money.max of $0, (agi - aa)
+
+scope ApplicablePercentage:
+  definition percentage equals
+    Integer.min of 100,
+      (integer of (ceil_of of (excess / step)) * 2)
+```
+
+```catala-metadata
+declaration ceil_of content decimal
+  depends on x content decimal
+  equals
+    (let r equals round of x in
+     if r >= x then r else r + (decimal of 1))
+
+declaration scope ApplicablePercentage:
+  input agi content money
+  input aa content money
+  ## The Prolog's test is `s7703(Taxp,Spouse,_,Taxy)` and no joint return —
+  ## married, filing separately — not the §2 filing status.
+  input married_filing_separately content boolean
+  output step content money
+  output excess content money
+  output percentage content integer
+```
+
+
+
+    (5) Special rules for taxable years 2018 through 2025
+
+    In the case of a taxable year beginning after December 31, 2017, and before January 1, 2026, the term "exemption amount" means zero.
+
+<!-- rtdf-block-id: sara/section151:b0012; role: provision; provision-id: sara/section151(d)(5); source-lines: 37-39; relation: formalizes-preceding -->
+```catala
+declaration suspended_year content boolean
+  depends on y content integer
+  equals y >= 2018 and y <= 2025
 ```

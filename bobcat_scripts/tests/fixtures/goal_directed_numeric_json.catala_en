@@ -1,0 +1,13 @@
+```catala
+declaration scope NumericJson:
+  input amount content money
+  input ratio content decimal
+  input count content integer
+  output positive content boolean
+
+scope NumericJson:
+  definition positive equals
+    if amount > $1 then true
+    else if ratio > 1.0 then true
+    else count > 1
+```

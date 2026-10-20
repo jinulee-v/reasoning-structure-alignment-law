@@ -1,5 +1,5 @@
 % Text
-% Alice has a son, Bob, who was born January 31st, 2014, and has lived at Alice's place since then. Alice's gross income for the year 2017 is $22895. Alice takes the standard deduction.
+% Alice has a son, Bob, who was born January 31st, 2014, and has lived at Alice's place since then. In 2017, Alice furnished over one-half of the cost of maintaining that home. Alice's gross income for the year 2017 is $22895. Alice takes the standard deduction.
 
 % Question
 % How much tax does Alice have to pay in 2017? $2174

@@ -1,0 +1,11 @@
+# Reduction and its empty-list fallback
+
+```catala
+declaration scope ReduceGoal:
+  input values content list of integer
+  output result content integer
+
+scope ReduceGoal:
+  definition result equals
+    if (minimum of values or if list empty then -1) < 0 then 1 else 2
+```

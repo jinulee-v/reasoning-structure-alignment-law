@@ -1,0 +1,12 @@
+# Recursive bounded-list constraints must reach lists nested in list elements.
+
+```catala
+declaration scope NestedListGoal:
+  input rows content list of list of integer
+  output mapped content list of list of integer
+
+scope NestedListGoal:
+  definition mapped equals
+    map each row among rows to
+      (map each value among row to (if value > 10 then 1 else 0))
+```

@@ -1,28 +1,93 @@
-# §68. Overall limitation on itemized deductions
+<!-- rtdf-document-id: sara/section68 -->
 
 > Module Section68
+> Using Section7703 as W
+> Using Section7703 as Inc
+> Using Section7703 as P
+> Using Section7703 as K
+> Using Section7703 as S7703
+> Using Section2 as S2
 
-> Using SaraWorld as W
-> Using SaraIncome as Inc
-> Using SaraStatus as St
-> Using SaraPredicates as P
-
-Port of `section68.pl`. §68 reduces itemized deductions for taxpayers whose
-adjusted gross income exceeds an applicable amount that depends on filing
-status.
-
-§68 sits on the §151 → §68 → §63 → §151 cycle. Filing status (§2(a), §2(b),
-§7703) is therefore taken as input rather than derived here, which is the
-stratification described in `SaraPattern.catala_en` Pattern 3; 154 of the 376
-cases supply exactly these conclusions by injection anyway.
-
-## (b) Applicable amount
-
-The Prolog keeps the four figures in an `amount/2` table keyed by the statute's
-subparagraph letters, with (D) defined as half of (A) rather than as a literal.
-That derivation is preserved here.
-
+<!-- rtdf-block-id: sara/section68:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
+declaration scope JointReturn:
+  input world content W.World
+  input taxpayer content W.Entity
+  ## `agent_(J,Spouse)`: the return has to name the *spouse* too, and `Spouse`
+  ## is bound by the `s7703(Taxp,Spouse,_,Taxy)` that precedes it. Dropping
+  ## this conjunct let a return signed by the taxpayer alone count as joint.
+  input expected_spouse content optional of W.Entity
+  input taxable_year content integer
+  ## Is there a joint return by this taxpayer covering the whole year?
+  output filed content boolean
+  ## The co-agent on that return, when there is one.
+  output spouse content optional of W.Entity
+
+declaration enumeration Status:
+  -- JointOrSurvivingSpouse
+  -- HeadOfHousehold
+  -- Unmarried
+  -- MarriedFilingSeparately
+
+declaration scope StatusDetermination:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  ## These scopes feed several outputs below.  Naming them here makes each
+  ## evaluation explicit and avoids rebuilding an identical scope call for
+  ## every projected field.
+  kinships scope K.Kinships
+  in_laws scope K.InLaws
+  core scope StatusDeterminationFromRelations
+  ## §7703: is the taxpayer married for the taxable year?
+  output married content boolean
+  ## §2(a): surviving spouse
+  output surviving_spouse content boolean
+  ## §2(b): head of household
+  output head_of_household content boolean
+  output joint_return content boolean
+  ## The spouse, where §7703 identifies one.
+  output spouse content optional of W.Entity
+  ## Rebuilt from `world` so this scope's signature stays stable.
+  output child_of content list of K.Kinship
+  output sibling_of content list of K.Kinship
+  output descendent_of content list of K.Kinship
+  output stepsibling_of content list of K.Kinship
+  output stepparent_of content list of K.Kinship
+  output child_in_law_of content list of K.Kinship
+  output parent_in_law_of content list of K.Kinship
+  output sibling_in_law_of content list of K.Kinship
+  output status content Status
+
+## The tax entry point already receives the normalized relationship lists.
+## Consuming them directly avoids rebuilding and concatenating the entire
+## event-derived kinship closure merely to determine filing status.
+
+declaration scope StatusDeterminationFromRelations:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input child_of content list of K.Kinship
+  input sibling_of content list of K.Kinship
+  input descendent_of content list of K.Kinship
+  input stepsibling_of content list of K.Kinship
+  input stepparent_of content list of K.Kinship
+  input child_in_law_of content list of K.Kinship
+  input parent_in_law_of content list of K.Kinship
+  input sibling_in_law_of content list of K.Kinship
+  marital_status scope S7703.MaritalStatusA
+  output married content boolean
+  output surviving_spouse content boolean
+  output head_of_household content boolean
+  output joint_return content boolean
+  output spouse content optional of W.Entity
+  ## Preserve the complete §7703(a) result for callers that need every spouse,
+  ## rather than forcing them to repeat the same MaritalStatusA computation.
+  output spouses_under_a content list of W.Entity
+  output status content Status
+
 declaration enumeration FilingStatus:
   ## (A) joint return, or a surviving spouse under §2(a)
   -- JointOrSurvivingSpouse
@@ -33,52 +98,389 @@ declaration enumeration FilingStatus:
   ## (D) married filing separately
   -- MarriedFilingSeparately
 
-declaration applicable_amount content money
-  depends on status content FilingStatus
+declaration scope ReductionOneHolds:
+  input agi content money
+  input aa content money
+  input claimed content money
+  output holds content boolean
+
+## s68_a_2(Taxp,Itemded,Reduction,Taxy). `s63_d/4` is a *generator*, and SARA
+## guards it with `L>0`: a taxpayer with no itemized deduction in the year makes
+## §63(d) fail rather than total zero, and §68(a)(2) fails with it. `itemizes`
+## carries that, because `itemized = $0` cannot distinguish "no deductions" from
+## "deductions summing to nothing".
+
+declaration scope ReductionTwoHolds:
+  input itemized content money
+  input itemizes content boolean
+  input claimed content money
+  output holds content boolean
+
+## s68_b(Taxp,Aa,Taxy) and the s68_b_1_* subparagraphs
+
+declaration scope ApplicableAmountHolds:
+  input status content FilingStatus
+  input claimed content money
+  output holds content boolean
+
+## s68_f(Taxy)
+
+declaration scope SuspendedHolds:
+  input taxable_year content integer
+  output holds content boolean
+
+declaration status_of_filing content FilingStatus
+  depends on st content Status
   equals
-    # (D) is half of (A), per the statute, not an independent literal.
-    match status with pattern
-    -- JointOrSurvivingSpouse: $300,000
-    -- HeadOfHousehold: $275,000
-    -- Unmarried: $250,000
-    -- MarriedFilingSeparately: money of (round of ($300,000 / $2))
+    match st with pattern
+    -- Status.JointOrSurvivingSpouse: FilingStatus.JointOrSurvivingSpouse
+    -- Status.HeadOfHousehold: FilingStatus.HeadOfHousehold
+    -- Status.Unmarried: FilingStatus.Unmarried
+    -- Status.MarriedFilingSeparately: FilingStatus.MarriedFilingSeparately
+
+## A derived surviving spouse must be an agent of a marriage; an injected
+## §2(a) conclusion can additionally name its taxpayer directly.  Searching
+## every person in every unrelated event made this filing-status test one of
+## the widest symbolic loops in §68.
+
+declaration surviving_spouse_candidates content list of W.Entity
+  depends on world content W.World,
+             injections content list of W.Injection,
+             taxable_year content integer
+  equals
+    (combine all agents
+       among (map each ev among (W.marriage_event_values of world) to ev.agents)
+       in acc initially [] with acc ++ agents)
+    ++ (combine all inj among
+          ((W.injections_for_3_3 of injections, P.pred_s2_a_3, W.num_key of taxable_year))
+        in acc initially [] with
+          (match (W.injection_entity of inj, 1) with pattern
+           -- Absent: acc
+           -- Present content taxpayer: acc ++ [taxpayer]))
+
+declaration scope SubparagraphHolds:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input subparagraph content FilingStatus
+  input claimed content optional of money
+  output holds content boolean
+
+declaration scope ReductionOneForTaxpayer:
+  input world content W.World
+  input injections content list of W.Injection
+  input taxpayer content W.Entity
+  input taxable_year content integer
+  input claimed content money
+  output agi content money
+  output aa content money
+  output holds content boolean
 ```
 
-## (a)(1) and (a)(2) — the two candidate reductions
 
-`round(3*(Agi-Aa) rdiv 100)` and `round(80*Itemded rdiv 100)`. The Prolog uses
-exact rational division here (`rdiv`), not floats, so the port's exact decimal
-arithmetic matches it without qualification.
+<!-- rtdf-block-id: sara/section68:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+```catala
+scope JointReturn:
+  definition filed equals
+    exists ev among (W.joint_return_event_values of world) such that
+      ev.agents contains taxpayer
+      # No spouse, no `s7703(Taxp,Spouse,_,Taxy)`, so the clause never reaches
+      # the joint return at all.
+      and (match expected_spouse with pattern
+           -- Absent: false
+           -- Present content sp: ev.agents contains sp)
+      and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
+      and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year))
 
-```catala-metadata
-## (1) 3 percent of the excess of adjusted gross income over the applicable
-## amount.
-declaration reduction_1 content money
-  depends on agi content money, aa content money
-  equals money of (round of (decimal of ((agi - aa) * 0.03)))
+scope JointReturn:
+  definition spouse equals
+    List.first_element of
+      (combine all others
+        among (map each ev among
+                (list of e among (W.joint_return_event_values of world)
+                 such that e.agents contains taxpayer
+                           and (W.optional_date_equals of e.starts, (W.first_day_year of taxable_year))
+                           and (W.optional_date_equals of e.ends, (W.last_day_year of taxable_year)))
+              to (list of a among ev.agents such that a.id != taxpayer.id))
+        in acc initially []
+        with acc ++ others)
 
-## (2) 80 percent of the itemized deductions otherwise allowable.
-declaration reduction_2 content money
-  depends on itemized content money
-  equals money of (round of (decimal of (itemized * 0.8)))
+scope StatusDetermination:
+
+scope StatusDetermination:
+  definition kinships.world equals world
+
+scope StatusDetermination:
+  definition in_laws.world equals world
+
+scope StatusDetermination:
+  definition in_laws.child_of equals child_of
+
+scope StatusDetermination:
+  definition in_laws.sibling_of equals sibling_of
+
+scope StatusDetermination:
+  definition core.world equals world
+
+scope StatusDetermination:
+  definition core.injections equals injections
+
+scope StatusDetermination:
+  definition core.taxpayer equals taxpayer
+
+scope StatusDetermination:
+  definition core.taxable_year equals taxable_year
+
+scope StatusDetermination:
+  definition core.child_of equals child_of
+
+scope StatusDetermination:
+  definition core.sibling_of equals sibling_of
+
+scope StatusDetermination:
+  definition core.descendent_of equals descendent_of
+
+scope StatusDetermination:
+  definition core.stepsibling_of equals stepsibling_of
+
+scope StatusDetermination:
+  definition core.stepparent_of equals stepparent_of
+
+scope StatusDetermination:
+  definition core.child_in_law_of equals child_in_law_of
+
+scope StatusDetermination:
+  definition core.parent_in_law_of equals parent_in_law_of
+
+scope StatusDetermination:
+  definition core.sibling_in_law_of equals sibling_in_law_of
+
+scope StatusDeterminationFromRelations:
+  definition marital_status.world equals world
+
+scope StatusDeterminationFromRelations:
+  definition marital_status.taxpayer equals taxpayer
+
+scope StatusDeterminationFromRelations:
+  definition marital_status.taxable_year equals taxable_year
+
+scope StatusDetermination:
+  definition child_of equals kinships.child_of
+
+scope StatusDetermination:
+  definition sibling_of equals kinships.sibling_of
+
+scope StatusDetermination:
+  definition descendent_of equals kinships.descendent_of
+
+scope StatusDetermination:
+  definition stepsibling_of equals in_laws.stepsibling_of
+
+scope StatusDetermination:
+  definition stepparent_of equals in_laws.stepparent_of
+
+scope StatusDetermination:
+  definition child_in_law_of equals in_laws.child_in_law_of
+
+scope StatusDetermination:
+  definition parent_in_law_of equals in_laws.parent_in_law_of
+
+scope StatusDetermination:
+  definition sibling_in_law_of equals in_laws.sibling_in_law_of
+
+  ## §7703 derived, with the case's injection as an overriding exception.
+
+scope StatusDeterminationFromRelations:
+  definition married equals
+    marital_status.married
+    or
+      (W.injected_holds of (W.injections_for_4_14 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))
+
+  ## §2(a), derived, with the case's grant as an overriding exception.
+
+scope StatusDeterminationFromRelations:
+  definition surviving_spouse equals
+    (W.injected_holds of (W.injections_for_3_13 of injections, P.pred_s2_a_3, taxpayer.id, W.num_key of taxable_year))
+    or
+      (# A grant that *replaced* `s2_a/3` leaves the statute no clauses of its
+       # own, so only the injected rows answer.
+       not (W.pred_overridden of injections, P.pred_s2_a_3)
+       and (output of S2.SurvivingSpouse with {
+              -- injections: injections -- world: world -- taxpayer: taxpayer
+              -- taxable_year: taxable_year
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+              -- stepparent_of: stepparent_of
+              -- child_in_law_of: child_in_law_of
+              -- parent_in_law_of: parent_in_law_of
+              -- sibling_in_law_of: sibling_in_law_of }).holds)
+
+  ## §2(b), likewise. The dependant is left unbound, as every caller does.
+
+scope StatusDeterminationFromRelations:
+  definition head_of_household equals
+    (W.injected_holds of (W.injections_for_3_13 of injections, P.pred_s2_b_3, taxpayer.id, W.num_key of taxable_year))
+    or
+      (not (W.pred_overridden of injections, P.pred_s2_b_3)
+       and (output of S2.HeadOfHousehold with {
+              -- injections: injections -- world: world -- taxpayer: taxpayer
+              -- dependant: Absent -- taxable_year: taxable_year
+              -- child_of: child_of -- sibling_of: sibling_of
+              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
+              -- stepparent_of: stepparent_of
+              -- child_in_law_of: child_in_law_of
+              -- parent_in_law_of: parent_in_law_of
+              -- sibling_in_law_of: sibling_in_law_of }).holds)
+
+  ## The spouse, likewise derived with the case's grant overriding. `married`
+  ## already honours an injected `s7703/4`; the *identity* has to come from the
+  ## same place, because a case can grant the marriage without the event base
+  ## naming one — and §63(c)(2)(A)(i) then asks whether that named spouse
+  ## signed the joint return.
+
+scope StatusDeterminationFromRelations:
+  definition spouse equals
+    if (W.injected_holds of (W.injections_for_4_14 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))
+    then
+      (match (List.first_element of
+                ((W.injections_for_4_14 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))) with pattern
+       -- Absent: Absent
+       -- Present content inj: W.injection_entity of inj, 2)
+    else marital_status.spouse
+
+scope StatusDeterminationFromRelations:
+  definition spouses_under_a equals marital_status.spouses
+
+scope StatusDeterminationFromRelations:
+  definition joint_return equals
+    (output of JointReturn with {
+       -- world: world -- taxpayer: taxpayer -- expected_spouse: spouse
+       -- taxable_year: taxable_year }).filed
+
+  ## §1's four clauses are a *disjunction* and SARA backtracks over every one
+  ## that holds, so a taxpayer who is both a head of household and a surviving
+  ## spouse has two taxes and `tax/3` accepts either. A single `status` has to
+  ## choose --- and choosing nothing is not an option: as unlabelled siblings
+  ## these three conflicted and the interpreter refused the program outright
+  ## rather than answering it. The priority is §1's own clause order, (a)
+  ## before (b) before (c) and (d), which is the solution SARA reaches first.
+  ## `Unmarried` stays the base: §1(c) demands `\+ s7703(Taxp,_,_,Taxy)` and so
+  ## cannot hold beside (d)'s married-filing-separately anyway. See D81.
+
+scope StatusDeterminationFromRelations:
+  definition status equals
+    if (married and joint_return) or surviving_spouse then
+      Status.JointOrSurvivingSpouse
+    else if head_of_household then
+      Status.HeadOfHousehold
+    else if married and not joint_return then
+      Status.MarriedFilingSeparately
+    else Status.Unmarried
+
+scope StatusDetermination:
+  definition married equals core.married
+
+scope StatusDetermination:
+  definition surviving_spouse equals core.surviving_spouse
+
+scope StatusDetermination:
+  definition head_of_household equals core.head_of_household
+
+scope StatusDetermination:
+  definition joint_return equals core.joint_return
+
+scope StatusDetermination:
+  definition spouse equals core.spouse
+
+scope StatusDetermination:
+  definition status equals core.status
+
+scope Section68:
+
+scope ReductionOneHolds:
+  definition holds equals (reduction_1 of agi, aa) = claimed
+
+scope ReductionTwoHolds:
+
+scope ReductionTwoHolds:
+  definition holds equals itemizes and (reduction_2 of itemized) = claimed
+
+scope ApplicableAmountHolds:
+
+scope ApplicableAmountHolds:
+  definition holds equals (applicable_amount of status) = claimed
+
+scope SuspendedHolds:
+
+scope SuspendedHolds:
+  definition holds equals suspended of taxable_year
+
+scope SubparagraphHolds:
+  definition holds equals
+    ((status_of_filing of
+       (output of StatusDetermination with {
+          -- world: world -- injections: injections
+          -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+       = subparagraph
+     or (subparagraph = FilingStatus.JointOrSurvivingSpouse
+         and ((W.injected_holds of (W.injections_for_3_3 of injections, P.pred_s2_a_3, W.num_key of taxable_year))
+              or (exists p among
+                    (surviving_spouse_candidates of
+                       world, injections, taxable_year)
+                  such that
+                    (output of StatusDetermination with {
+                       -- world: world -- injections: injections
+                       -- taxpayer: p
+                       -- taxable_year: taxable_year }).surviving_spouse))))
+    and (match claimed with pattern
+         -- Absent: true
+         -- Present content c: (applicable_amount of subparagraph) = c)
+
+scope ReductionOneForTaxpayer:
+  definition agi equals
+    (output of Inc.GrossIncomeIndividual with {
+       -- world: world -- person: taxpayer
+       -- taxable_year: taxable_year }).total
+
+scope ReductionOneForTaxpayer:
+  definition aa equals
+    applicable_amount of
+      (status_of_filing of
+        (output of StatusDetermination with {
+           -- world: world -- injections: injections
+           -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+
+scope ReductionOneForTaxpayer:
+  definition holds equals
+    (output of ReductionOneHolds with {
+       -- agi: agi -- aa: aa -- claimed: claimed }).holds
 ```
 
-## (f) Section not to apply
+§68. Overall limitation on itemized deductions
 
-`between(2018,2025,Taxy)`. Suspended for taxable years beginning after 31
-December 2017 and before 1 January 2026.
+(a) General rule
 
-```catala-metadata
-declaration suspended content boolean
-  depends on y content integer
-  equals y >= 2018 and y <= 2025
+In the case of an individual whose adjusted gross income exceeds the applicable amount, the amount of the itemized deductions otherwise allowable for the taxable year shall be reduced by the lesser of-
+
+
+<!-- rtdf-block-id: sara/section68:b0003; role: provision; provision-id: sara/section68(a); source-lines: 3-5; relation: formalizes-preceding -->
+```catala
+scope Section68:
+  definition aa equals applicable_amount of status
+
+scope Section68:
+  definition applies equals (not (suspended of taxable_year)) and agi > aa
+
+scope Section68:
+  definition reduction equals
+    if applies then
+      Money.min of (reduction_1 of agi, aa), (reduction_2 of itemized_deductions)
+    else $0
+
+scope Section68:
+  definition deductions_out equals itemized_deductions - reduction
 ```
-
-## (a) General rule, and the section as a whole
-
-The reduction applies only when AGI exceeds the applicable amount, and is the
-lesser of the two candidates. `s68/4` then subtracts it, except in a suspended
-year, where deductions pass through unchanged.
 
 ```catala-metadata
 declaration scope Section68:
@@ -96,172 +498,95 @@ declaration scope Section68:
   output deductions_out content money
 ```
 
-```catala
-scope Section68:
-  definition aa equals applicable_amount of status
 
-  definition applies equals (not (suspended of taxable_year)) and agi > aa
 
-  definition reduction equals $0
-  exception definition reduction under condition applies consequence equals
-    Money.min of (reduction_1 of agi, aa), (reduction_2 of itemized_deductions)
+    (1) 3 percent of the excess of adjusted gross income over the applicable amount, or
 
-  definition deductions_out equals itemized_deductions - reduction
-```
 
-## Query surfaces used by the cases
-
-The §68 cases query the individual subsections directly, so each is exposed as
-its own relation check in the same shape as the Prolog predicate.
-
+<!-- rtdf-block-id: sara/section68:b0004; role: provision; provision-id: sara/section68(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
 ```catala-metadata
-## s68_a_1(Agi,Aa,Reduction)
-declaration scope ReductionOneHolds:
-  input agi content money
-  input aa content money
-  input claimed content money
-  output holds content boolean
-
-## s68_a_2(Taxp,Itemded,Reduction,Taxy). `s63_d/4` is a *generator*, and SARA
-## guards it with `L>0`: a taxpayer with no itemized deduction in the year makes
-## §63(d) fail rather than total zero, and §68(a)(2) fails with it. `itemizes`
-## carries that, because `itemized = $0` cannot distinguish "no deductions" from
-## "deductions summing to nothing".
-declaration scope ReductionTwoHolds:
-  input itemized content money
-  input itemizes content boolean
-  input claimed content money
-  output holds content boolean
-
-## s68_b(Taxp,Aa,Taxy) and the s68_b_1_* subparagraphs
-declaration scope ApplicableAmountHolds:
-  input status content FilingStatus
-  input claimed content money
-  output holds content boolean
-
-## s68_f(Taxy)
-declaration scope SuspendedHolds:
-  input taxable_year content integer
-  output holds content boolean
+declaration reduction_1 content money
+  depends on agi content money, aa content money
+  equals money of (round of (decimal of ((agi - aa) * 0.03)))
 ```
 
+    (2) 80 percent of the amount of the itemized deductions otherwise allowable for such taxable year.
+
+
+<!-- rtdf-block-id: sara/section68:b0005; role: provision; provision-id: sara/section68(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
 ```catala
-scope ReductionOneHolds:
-  definition holds equals (reduction_1 of agi, aa) = claimed
-
-scope ReductionTwoHolds:
-  definition holds equals itemizes and (reduction_2 of itemized) = claimed
-
-scope ApplicableAmountHolds:
-  definition holds equals (applicable_amount of status) = claimed
-
-scope SuspendedHolds:
-  definition holds equals suspended of taxable_year
+declaration reduction_2 content money
+  depends on itemized content money
+  equals money of (round of (decimal of (itemized * 0.8)))
 ```
 
-## Subparagraph queries
+(b) Applicable amount
 
-`s68_b_1_A/5` … `s68_b_1_D/3` each assert both that the taxpayer falls in that
-subparagraph's filing status *and* that the applicable amount is the claimed
-figure. The Prolog states the two as a conjunction, so the port does too. Some
-cases leave the amount unbound — `s68_b_1_A(alice,_,_,_,2016)` — and then only
-the status is asserted.
+    (1) In general
 
+    For purposes of this section, the term "applicable amount" means-
+
+
+<!-- rtdf-block-id: sara/section68:b0006; role: provision; provision-id: sara/section68(b)(1); source-lines: 13-15; relation: formalizes-preceding -->
 ```catala-metadata
-declaration status_of_filing content FilingStatus
-  depends on st content St.Status
+declaration applicable_amount content money
+  depends on status content FilingStatus
   equals
-    match st with pattern
-    -- St.Status.JointOrSurvivingSpouse: FilingStatus.JointOrSurvivingSpouse
-    -- St.Status.HeadOfHousehold: FilingStatus.HeadOfHousehold
-    -- St.Status.Unmarried: FilingStatus.Unmarried
-    -- St.Status.MarriedFilingSeparately: FilingStatus.MarriedFilingSeparately
-
-declaration scope SubparagraphHolds:
-  input world content W.World
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input subparagraph content FilingStatus
-  input claimed content optional of money
-  output holds content boolean
+    match status with pattern
+    -- FilingStatus.JointOrSurvivingSpouse: applicable_amount_a
+    -- FilingStatus.HeadOfHousehold: applicable_amount_b
+    -- FilingStatus.Unmarried: applicable_amount_c
+    -- FilingStatus.MarriedFilingSeparately: applicable_amount_d
 ```
 
-```catala
-scope SubparagraphHolds:
-  # (A) is `$300,000 in the case of a joint return or a surviving spouse`, and
-  # SARA writes the second half as `s2_a(Surviving_spouse,_,Taxy)` with
-  # `Surviving_spouse` reaching it *unbound* — `s68_b` passes `_` for that
-  # argument. The clause therefore asks whether anybody at all is a surviving
-  # spouse this year, not whether the taxpayer is one, and hands the $300,000
-  # threshold to a taxpayer who merely shares a world with one. D11 recorded
-  # this and left the port deliberately narrower; the fuzzer has since shown
-  # it is reachable, so it is reproduced here.
-  definition holds equals
-    ((status_of_filing of
-       (output of St.FilingStatus with {
-          -- world: world -- injections: injections
-          -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
-       = subparagraph
-     or (subparagraph = FilingStatus.JointOrSurvivingSpouse
-         and ((W.injected_holds of injections, P.pred_s2_a_3,
-                 [-1; -1; W.num_key of taxable_year])
-              or (exists p among
-                    (combine all r
-                       among (map each ev among world.events
-                              to (ev.agents ++ ev.patients))
-                       in acc initially [] with acc ++ r)
-                  such that
-                    (output of St.FilingStatus with {
-                       -- world: world -- injections: injections
-                       -- taxpayer: p
-                       -- taxable_year: taxable_year }).surviving_spouse))))
-    and (match claimed with pattern
-         -- Absent: true
-         -- Present content c: (applicable_amount of subparagraph) = c)
-```
+        (A) $300,000 in the case of a joint return or a surviving spouse (as defined in section 2(a)),
 
-## The conjunctive (a)(1) query
 
-Two cases ask (a)(1) as a conjunction that first *binds* the applicable amount
-and the taxpayer's gross income:
-
-```prolog
-s68_b(alice,Applicable_amount,2016),
-gross_income(alice,2016,Gross_income),
-s68_a_1(Gross_income,Applicable_amount,306)
-```
-
-Answering only the first conjunct would answer a different question, so the
-whole chain is one scope.
-
+<!-- rtdf-block-id: sara/section68:b0007; role: provision; provision-id: sara/section68(b)(1)(A); source-lines: 17-17; relation: formalizes-preceding -->
 ```catala-metadata
-declaration scope ReductionOneForTaxpayer:
-  input world content W.World
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input claimed content money
-  output agi content money
-  output aa content money
-  output holds content boolean
+declaration applicable_amount_a content money equals $300,000
 ```
 
+        (B) $275,000 in the case of a head of household (as defined in section 2(b)),
+
+
+<!-- rtdf-block-id: sara/section68:b0008; role: provision; provision-id: sara/section68(b)(1)(B); source-lines: 19-19; relation: formalizes-preceding -->
+```catala-metadata
+declaration applicable_amount_b content money equals $275,000
+```
+
+        (C) $250,000 in the case of an individual who is not married and who is not a surviving spouse or head of household, and
+
+
+<!-- rtdf-block-id: sara/section68:b0009; role: provision; provision-id: sara/section68(b)(1)(C); source-lines: 21-21; relation: formalizes-preceding -->
+```catala-metadata
+declaration applicable_amount_c content money equals $250,000
+```
+
+        (D) 1/2 the amount applicable under subparagraph (A) in the case of a married individual filing a separate return.
+
+
+<!-- rtdf-block-id: sara/section68:b0010; role: provision; provision-id: sara/section68(b)(1)(D); source-lines: 23-23; relation: formalizes-preceding -->
+```catala-metadata
+declaration applicable_amount_d content money equals
+  money of (round of (applicable_amount_a / $2))
+```
+
+    For purposes of this paragraph, marital status shall be determined under section 7703.
+
+
+<!-- rtdf-block-id: sara/section68:b0011; role: provision; provision-id: sara/section68(b)(1):flush; source-lines: 25-25; relation: formalizes-preceding -->
 ```catala
-scope ReductionOneForTaxpayer:
-  definition agi equals
-    (output of Inc.GrossIncomeIndividual with {
-       -- world: world -- person: taxpayer
-       -- taxable_year: taxable_year }).total
+# This is continuation prose; its legal effect is implemented in the preceding provision block.
+```
 
-  definition aa equals
-    applicable_amount of
-      (status_of_filing of
-        (output of St.FilingStatus with {
-           -- world: world -- injections: injections
-           -- taxpayer: taxpayer -- taxable_year: taxable_year }).status)
+(f) Section not to apply
 
-  definition holds equals
-    (output of ReductionOneHolds with {
-       -- agi: agi -- aa: aa -- claimed: claimed }).holds
+This section shall not apply to any taxable year beginning after December 31, 2017, and before January 1, 2026.
+
+<!-- rtdf-block-id: sara/section68:b0012; role: provision; provision-id: sara/section68(f); source-lines: 27-29; relation: formalizes-preceding -->
+```catala-metadata
+declaration suspended content boolean
+  depends on y content integer
+  equals y >= 2018 and y <= 2025
 ```
