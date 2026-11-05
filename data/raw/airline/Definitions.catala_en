@@ -1,0 +1,15 @@
+# Shared airline definitions
+
+Use this unannotated module only for itinerary facts, types, and
+provision-neutral helper computations shared by the airline policy and API. Do
+not place a policy rule, required evaluator output, or API orchestration here.
+
+> Module Definitions
+
+```catala-metadata
+# Declare shared factual records, enumerations, and helper signatures here.
+```
+
+```catala
+# Define only provision-neutral shared helpers here.
+```

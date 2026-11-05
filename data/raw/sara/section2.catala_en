@@ -1,11 +1,13 @@
 <!-- rtdf-document-id: sara/section2 -->
 
-<!-- rtdf-block-id: sara/section2:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section2
+> Using Definitions as W
+> Using Section7703 as S7703
+> Using Section152 as S152
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section2:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -18,7 +20,6 @@
     For purposes of section 1, the term "surviving spouse" means a taxpayer-
 
 
-<!-- rtdf-block-id: sara/section2:b0003; role: provision; provision-id: sara/section2(a)(1); source-lines: 5-7; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -39,7 +40,6 @@
     For purposes of this paragraph, an individual shall be considered as maintaining a household only if over half of the cost of maintaining the household during the taxable year is furnished by such individual.
 
 
-<!-- rtdf-block-id: sara/section2:b0006; role: provision; provision-id: sara/section2(a)(1):flush; source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -48,7 +48,6 @@
     Notwithstanding paragraph (1), for purposes of section 1 a taxpayer shall not be considered to be a surviving spouse-
 
 
-<!-- rtdf-block-id: sara/section2:b0007; role: provision; provision-id: sara/section2(a)(2); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -73,21 +72,18 @@
     An individual shall be considered a head of a household if, and only if, such individual is not married at the close of his taxable year, is not a surviving spouse (as defined in subsection (a)), and either-
 
 
-<!-- rtdf-block-id: sara/section2:b0010; role: provision; provision-id: sara/section2(b)(1); source-lines: 25-27; relation: formalizes-preceding -->
 ```catala
 ```
 
         (A) maintains as his home a household which constitutes for more than one-half of such taxable year the principal place of abode, as a member of such household, of-
 
 
-<!-- rtdf-block-id: sara/section2:b0011; role: provision; provision-id: sara/section2(b)(1)(A); source-lines: 29-29; relation: formalizes-preceding -->
 ```catala
 ```
 
             (i) a qualifying child of the individual (as defined in section 152(c)), but not if such child-
 
 
-<!-- rtdf-block-id: sara/section2:b0012; role: provision; provision-id: sara/section2(b)(1)(A)(i); source-lines: 31-31; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -122,7 +118,6 @@
     For purposes of this paragraph, an individual shall be considered as maintaining a household only if over half of the cost of maintaining the household during the taxable year is furnished by such individual.
 
 
-<!-- rtdf-block-id: sara/section2:b0017; role: provision; provision-id: sara/section2(b)(1):flush; source-lines: 41-41; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -131,7 +126,6 @@
     Notwithstanding paragraph (1),
 
 
-<!-- rtdf-block-id: sara/section2:b0018; role: provision; provision-id: sara/section2(b)(2); source-lines: 43-45; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -161,7 +155,6 @@
     Notwithstanding paragraph (1), for purposes of this subtitle a taxpayer shall not be considered to be a head of a household-
 
 
-<!-- rtdf-block-id: sara/section2:b0022; role: provision; provision-id: sara/section2(b)(3); source-lines: 53-55; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -177,4 +170,3 @@
 <!-- rtdf-block-id: sara/section2:b0024; role: provision; provision-id: sara/section2(b)(3)(B); source-lines: 59-59; relation: formalizes-preceding -->
 ```catala
 ```
-

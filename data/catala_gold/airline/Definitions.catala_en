@@ -1,0 +1,337 @@
+# Shared airline definitions
+
+> Module Definitions
+
+The typed rendering of a DeonticBench *airline* case. Where SARA's Layer 0 has
+to quarantine a neo-Davidsonian event base, this one is small: every one of the
+300 cases is a single sentence in one grammar --- a passenger, a cabin, an
+origin, a destination, a numbered list of items with dimensions and weight, and
+a ticket price --- so the world model is that sentence, typed.
+
+Three decisions, each measured over all 300 cases rather than assumed:
+
+- **Cities are an enumeration, and the gazetteer lives here.** The statute
+  reasons about countries and regions; the cases name cities. 73 distinct cities
+  appear, a closed set, so the city -> country map is part of the world model
+  and not of the statute --- the same separation SARA draws between its symbol
+  table and its sections.
+- **Dimensions are compared componentwise, in the order given.** The carry-on
+  test could plausibly sort both triples first (a bag may be turned on its
+  side). Measured: the two readings disagree on **none** of the 2,372 items in
+  the corpus, so the simpler one is used and nothing is riding on it.
+- **Money is Catala's `money`.** Every fee in the statute is a whole number of
+  dollars, but the type carries the intent.
+
+```catala-metadata
+## The cabin the passenger is ticketed in. `MainPlus` is not a column of any
+## fee table --- it is Main Cabin plus one extra free checked bag, per the
+## footnote to the First and Second Bag tables --- but it is a cabin a case can
+## state, so it is a case of the enumeration.
+declaration enumeration Cabin:
+  -- BasicEconomy
+  -- MainCabin
+  -- MainPlus
+  -- PremiumEconomy
+  -- Business
+  -- First
+
+## The countries the fee tables distinguish, restricted to those the corpus
+## reaches. Regions the tables name but no case visits (Guyana, Suriname,
+## Honduras) are absent: a case cannot express them, so a scope cannot be
+## driven down them.
+declaration enumeration Country:
+  -- UnitedStates
+  -- PuertoRico
+  -- Canada
+  -- USVirginIslands
+  -- Mexico
+  -- Honduras
+  -- Guyana
+  -- Suriname
+  -- Cuba
+  -- Haiti
+  -- Panama
+  -- Colombia
+  -- Peru
+  -- Ecuador
+  -- Argentina
+  -- Brazil
+  -- Europe
+  -- Israel
+  -- Qatar
+  -- China
+  -- HongKong
+  -- Japan
+  -- SouthKorea
+  -- India
+  -- Australia
+  -- NewZealand
+
+## The 73 cities the corpus names.
+declaration enumeration City:
+  -- Atlanta
+  -- Austin
+  -- Boston
+  -- Charlotte
+  -- Chicago
+  -- Dallas
+  -- Denver
+  -- Houston
+  -- LasVegas
+  -- LosAngeles
+  -- Miami
+  -- Minneapolis
+  -- NewOrleans
+  -- NewYork
+  -- Orlando
+  -- Philadelphia
+  -- Phoenix
+  -- Portland
+  -- Sacramento
+  -- SaltLakeCity
+  -- SanFrancisco
+  -- Seattle
+  -- WashingtonDC
+  -- SanJuan
+  -- CharlotteAmalie
+  -- Tegucigalpa
+  -- Georgetown
+  -- Paramaribo
+  -- Montreal
+  -- Ottawa
+  -- Toronto
+  -- Vancouver
+  -- MexicoCity
+  -- Havana
+  -- PortAuPrince
+  -- PanamaCity
+  -- Bogota
+  -- Lima
+  -- Quito
+  -- BuenosAires
+  -- RioDeJaneiro
+  -- Amsterdam
+  -- Athens
+  -- Barcelona
+  -- Berlin
+  -- Brussels
+  -- Helsinki
+  -- London
+  -- Madrid
+  -- Munich
+  -- Paris
+  -- Roma
+  -- Stockholm
+  -- Vienna
+  -- Zurich
+  -- Jerusalem
+  -- Doha
+  -- Beijing
+  -- Chengdu
+  -- Guangzhou
+  -- Shanghai
+  -- Shenzhen
+  -- Wuhan
+  -- Xiamen
+  -- HongKongCity
+  -- Kyoto
+  -- Nagoya
+  -- Osaka
+  -- Tokyo
+  -- Busan
+  -- Incheon
+  -- Seoul
+  -- Mumbai
+  -- NewDelhi
+  -- Melbourne
+  -- Sydney
+  -- Auckland
+
+## The gazetteer. This is world knowledge, not statute: the tables are written
+## in terms of countries and the cases are written in terms of cities.
+declaration country_of content Country
+  depends on c content City
+  equals
+    match c with pattern
+    -- Atlanta: Country.UnitedStates
+    -- Austin: Country.UnitedStates
+    -- Boston: Country.UnitedStates
+    -- Charlotte: Country.UnitedStates
+    -- Chicago: Country.UnitedStates
+    -- Dallas: Country.UnitedStates
+    -- Denver: Country.UnitedStates
+    -- Houston: Country.UnitedStates
+    -- LasVegas: Country.UnitedStates
+    -- LosAngeles: Country.UnitedStates
+    -- Miami: Country.UnitedStates
+    -- Minneapolis: Country.UnitedStates
+    -- NewOrleans: Country.UnitedStates
+    -- NewYork: Country.UnitedStates
+    -- Orlando: Country.UnitedStates
+    -- Philadelphia: Country.UnitedStates
+    -- Phoenix: Country.UnitedStates
+    -- Portland: Country.UnitedStates
+    -- Sacramento: Country.UnitedStates
+    -- SaltLakeCity: Country.UnitedStates
+    -- SanFrancisco: Country.UnitedStates
+    -- Seattle: Country.UnitedStates
+    -- WashingtonDC: Country.UnitedStates
+    -- SanJuan: Country.PuertoRico
+    -- CharlotteAmalie: Country.USVirginIslands
+    -- Tegucigalpa: Country.Honduras
+    -- Georgetown: Country.Guyana
+    -- Paramaribo: Country.Suriname
+    -- Montreal: Country.Canada
+    -- Ottawa: Country.Canada
+    -- Toronto: Country.Canada
+    -- Vancouver: Country.Canada
+    -- MexicoCity: Country.Mexico
+    -- Havana: Country.Cuba
+    -- PortAuPrince: Country.Haiti
+    -- PanamaCity: Country.Panama
+    -- Bogota: Country.Colombia
+    -- Lima: Country.Peru
+    -- Quito: Country.Ecuador
+    -- BuenosAires: Country.Argentina
+    -- RioDeJaneiro: Country.Brazil
+    -- Amsterdam: Country.Europe
+    -- Athens: Country.Europe
+    -- Barcelona: Country.Europe
+    -- Berlin: Country.Europe
+    -- Brussels: Country.Europe
+    -- Helsinki: Country.Europe
+    -- London: Country.Europe
+    -- Madrid: Country.Europe
+    -- Munich: Country.Europe
+    -- Paris: Country.Europe
+    -- Roma: Country.Europe
+    -- Stockholm: Country.Europe
+    -- Vienna: Country.Europe
+    -- Zurich: Country.Europe
+    -- Jerusalem: Country.Israel
+    -- Doha: Country.Qatar
+    -- Beijing: Country.China
+    -- Chengdu: Country.China
+    -- Guangzhou: Country.China
+    -- Shanghai: Country.China
+    -- Shenzhen: Country.China
+    -- Wuhan: Country.China
+    -- Xiamen: Country.China
+    -- HongKongCity: Country.HongKong
+    -- Kyoto: Country.Japan
+    -- Nagoya: Country.Japan
+    -- Osaka: Country.Japan
+    -- Tokyo: Country.Japan
+    -- Busan: Country.SouthKorea
+    -- Incheon: Country.SouthKorea
+    -- Seoul: Country.SouthKorea
+    -- Mumbai: Country.India
+    -- NewDelhi: Country.India
+    -- Melbourne: Country.Australia
+    -- Sydney: Country.Australia
+    -- Auckland: Country.NewZealand
+
+## AAdvantage and oneworld status, as the Complimentary Bags section grades it.
+## The two programmes are collapsed into one ladder because the statute grants
+## the same allowance at each rung --- Gold with Ruby, Platinum with Sapphire,
+## Platinum Pro and Executive Platinum with Emerald --- and a case that holds
+## both gets the better of them, which is the same as holding the higher.
+## GOL Diamond Smiles sits at `Gold`, its one free bag.
+declaration enumeration EliteStatus:
+  -- NoStatus
+  ## AAdvantage Gold, oneworld Ruby, GOL Diamond Smiles: 1st bag
+  -- Gold
+  ## AAdvantage Platinum, oneworld Sapphire: 1st and 2nd
+  -- Platinum
+  ## AAdvantage Platinum Pro, oneworld Emerald: 1st, 2nd and 3rd
+  -- PlatinumPro
+  ## AAdvantage Executive Platinum: 1st, 2nd and 3rd
+  -- ExecutivePlatinum
+
+## "Active U.S. military and / or dependents with ID traveling on orders
+## (1st - 5th bags free of charge)"; "Active U.S. military with ID on personal
+## travel" gets the three the tier above it gets.
+declaration enumeration MilitaryStatus:
+  -- NotMilitary
+  -- OnOrders
+  -- PersonalTravel
+
+## What kind of thing the passenger is carrying. The statute prices only
+## ordinary bags; the rest are named so that the rules that *exempt* them, or
+## give them their own limit, can be written at all.
+declaration enumeration ItemKind:
+  -- OrdinaryBag
+  ## "Your soft-sided garment bag cannot exceed 51 inches / 130 cm
+  ## (length + width + height)" --- a carry-on with its own limit, not the box.
+  -- SoftSidedGarmentBag
+  ## "These don't count as your personal item or carry-on" --- one diaper bag
+  ## per child, so this one is allowanced rather than simply exempt.
+  -- DiaperBag
+  -- BreastPump
+  -- BreastMilkCooler
+  -- ChildSafetySeat
+  -- Stroller
+  -- MedicalOrMobilityDevice
+
+## One item the passenger presents at check-in. `length`, `width` and `height`
+## are inches; `weight` is pounds. The statute adds the three dimensions and
+## never uses them separately except for the carry-on box. These physical
+## measurements are required to be nonnegative by the
+## `Section1NonTextual.Trip` scope.
+declaration structure Item:
+  data kind content ItemKind
+  data length content integer
+  data width content integer
+  data height content integer
+  data weight content integer
+
+## The total outside dimensions, which is what "Weight and Size" says to
+## compare against the 62 in allowance.
+declaration size_sum content integer
+  depends on it content Item
+  equals it.length + it.width + it.height
+
+## A case, entire.
+declaration structure Itinerary:
+  data origin content City
+  data destination content City
+  data cabin content Cabin
+  ## The nonnegative base ticket price before baggage fees.
+  data ticket content money
+  data items content list of Item
+  ## "the benefits are based on your highest status level at time of ticketing
+  ## or check-in". The statute then says what to do when the two differ, and
+  ## both branches come to the same thing: the higher one applies. So both are
+  ## carried and `Section1NonTextual.effective_status` takes the better.
+  data status_at_ticketing content EliteStatus
+  data status_at_checkin content EliteStatus
+  ## "Eligible AAdvantage Aviator and Citi / AAdvantage cardmembers (on
+  ## domestic American Airlines operated itineraries)".
+  data cardmember content boolean
+  data military content MilitaryStatus
+  ## "Confirmed Flagship First and Flagship Business Plus customers", which is
+  ## a fare product rather than a cabin, so it rides alongside `cabin`.
+  data flagship content boolean
+  ## How many children the passenger is travelling with, for "Diaper bags
+  ## (1 per child)". This count is nonnegative.
+  data children content integer
+
+declaration origin_country content Country
+  depends on t content Itinerary
+  equals country_of of t.origin
+
+declaration destination_country content Country
+  depends on t content Itinerary
+  equals country_of of t.destination
+
+## "Between X and Y" in the tables is symmetric, and every row but the two Cuba
+## rows is stated that way. This is the test those rows use.
+declaration touches content boolean
+  depends on t content Itinerary, cs content list of Country
+  equals (cs contains (origin_country of t)) or (cs contains (destination_country of t))
+
+## "Within and between ..." --- both endpoints inside the named set.
+declaration within content boolean
+  depends on t content Itinerary, cs content list of Country
+  equals (cs contains (origin_country of t)) and (cs contains (destination_country of t))
+```

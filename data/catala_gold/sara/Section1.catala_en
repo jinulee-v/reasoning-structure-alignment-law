@@ -1,492 +1,53 @@
 <!-- rtdf-document-id: sara/section1 -->
 
 > Module Section1
-> Using Section7703 as W
-> Using Section7703 as K
-> Using Section7703 as P
-> Using Section68 as St
-> Using Section7703 as S7703
-> Using Section152 as S152
-> Using Section63 as S63
-> Using Section3306 as S3306
+> Using Definitions as W
 
-<!-- rtdf-block-id: sara/section1:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
-declaration scope Total:
-  input world content W.World
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  ## §1
+declaration enumeration FilingStatus:
+  -- JointOrSurviving
+  -- HeadOfHousehold
+  -- Unmarried
+  -- MarriedFilingSeparately
+
+declaration scope IncomeTax:
+  input taxable_income content money
+  input filing_status content FilingStatus
+  output tax content money
+
+declaration scope TotalTax:
+  input taxable_income content money
+  input filing_status content FilingStatus
+  input unemployment_tax content money
+  income_tax_scope scope IncomeTax
   output income_tax content money
-  ## §3301
-  output employment_tax content money
-  output total content money
-
-## Scalar §1 path for the whole-tax entry point.  The public Tax scope retains
-## all subsection diagnostics used by standalone SARA queries; this scope has
-## only the value that Total consumes, so unselected filing routes stay lazy.
-declaration scope TaxForTotal:
-  input world content W.World
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output tax content money
-
-## A §1 tax above zero needs positive gross income for the taxpayer (or a
-## possible joint-filing spouse), or a negative deduction supplied by the
-## world.  Injected monetary arguments decode only non-negative dollar values;
-## filing-status, kinship, and injected facts can choose or reduce deductions,
-## but cannot create a positive tax base without one of those two sources.
-declaration has_income_tax_basis content boolean
-  depends on world content W.World,
-             taxpayer content W.Entity,
-             taxable_year content integer
-  equals
-    # Positive gross income paid directly to the taxpayer in this year.
-    (exists ev among (W.income_event_values of world) such that
-       ev.agent.id = taxpayer.id
-       and (W.first_day_year of taxable_year) <= ev.start
-       and ev.start <= (W.last_day_year of taxable_year)
-       and ev.amount > $0)
-    or (exists ev among (W.payment_event_values of world) such that
-          ev.patients contains taxpayer
-          and (exists d among ev.starts such that
-                 (W.first_day_year of taxable_year) <= d
-                 and d <= (W.last_day_year of taxable_year))
-          and (Money.sum of ev.amounts) > $0)
-    # A joint return can add the spouse's positive gross income.  This is
-    # deliberately conservative: the full §7703 calculation below decides
-    # whether the two event records actually describe the same spouse.
-    or (exists ev among (W.income_event_values of world) such that
-          (W.first_day_year of taxable_year) <= ev.start
-          and ev.start <= (W.last_day_year of taxable_year)
-          and ev.amount > $0
-          and (exists marriage among (W.marriage_event_values of world) such that
-                 marriage.agents contains taxpayer
-                 and marriage.agents contains ev.agent)
-          and (exists joint_return among (W.joint_return_event_values of world) such that
-                 joint_return.agents contains taxpayer
-                 and joint_return.agents contains ev.agent
-                 and (W.optional_date_equals of joint_return.starts, (W.first_day_year of taxable_year))
-                 and (W.optional_date_equals of joint_return.ends, (W.last_day_year of taxable_year))))
-    or (exists ev among (W.payment_event_values of world) such that
-          (exists spouse among ev.patients such that
-             (exists marriage among (W.marriage_event_values of world) such that
-                marriage.agents contains taxpayer
-                and marriage.agents contains spouse)
-             and (exists joint_return among (W.joint_return_event_values of world) such that
-                    joint_return.agents contains taxpayer
-                    and joint_return.agents contains spouse
-                    and (W.optional_date_equals of joint_return.starts, (W.first_day_year of taxable_year))
-                    and (W.optional_date_equals of joint_return.ends, (W.last_day_year of taxable_year))))
-          and (exists d among ev.starts such that
-                 (W.first_day_year of taxable_year) <= d
-                 and d <= (W.last_day_year of taxable_year))
-          and (Money.sum of ev.amounts) > $0)
-    # A negative itemized deduction increases, rather than decreases, the
-    # translated Prolog arithmetic result.
-    or (exists ev among (W.deduction_event_values of world) such that
-          ev.agents contains taxpayer
-          and (match ev.evidence with pattern
-               -- Undated: false
-               -- DatedClaim content d: false
-               -- DatedAmount content occurrence:
-                    (W.first_day_year of taxable_year) <= occurrence.start
-                    and occurrence.start <= (W.last_day_year of taxable_year)
-                    and occurrence.amount < $0))
-
-declaration enumeration Schedule:
-  -- ScheduleA
-  -- ScheduleB
-  -- ScheduleC
-  -- ScheduleD
-
-## The single coordinating result of §1's filing classification. Provision
-## predicates remain separate below; this record prevents the same §63 premise
-## and chosen schedule from being branched on again for each public output.
-declaration structure TaxResult:
-  data subsection content optional of Schedule
-  data holds content boolean
-  data tax content money
-
-## One row of a rate schedule: tax is `base` plus `rate` of the excess over
-## `floor`, provided income does not exceed `ceiling`. The top bracket has no
-## ceiling.
-
-declaration structure Bracket:
-  data floor content money
-  data ceiling content optional of money
-  data base content money
-  data rate content decimal
-
-declaration brackets_of content list of Bracket
-  depends on sched content Schedule
-  equals
-    match sched with pattern
-    -- ScheduleA: schedule_a
-    -- ScheduleB: schedule_b
-    -- ScheduleC: schedule_c
-    -- ScheduleD: schedule_d
-
-declaration bracket_tax content money
-  depends on b content Bracket, taxable_income content money
-  equals
-    money of (round of (decimal of (b.base + (taxable_income - b.floor) * b.rate)))
-
-## Does this bracket govern the given taxable income? The Prolog writes the
-## test as `Taxinc =< ceiling, floor < Taxinc`, so the floor is exclusive and
-## the ceiling inclusive. The first bracket has floor $0 and the Prolog omits
-## its lower test entirely, which matters only for negative income; income is
-## never negative in the corpus.
-
-declaration bracket_applies content boolean
-  depends on b content Bracket, taxable_income content money
-  equals
-    (b.floor = $0 or b.floor < taxable_income)
-    and (match b.ceiling with pattern
-         -- Absent: true
-         -- Present content c: taxable_income <= c)
-
-## Select directly among the five statutory rows.  The records themselves stay
-## beside their provisions below; avoiding an intermediate filtered list keeps
-## the executable form equivalent without allocating symbolic list storage.
-declaration applicable_bracket_tax content money
-  depends on sched content Schedule, taxable_income content money
-  equals
-    match sched with pattern
-    -- ScheduleA:
-        if bracket_applies of bracket_a_1, taxable_income then bracket_tax of bracket_a_1, taxable_income
-        else if bracket_applies of bracket_a_2, taxable_income then bracket_tax of bracket_a_2, taxable_income
-        else if bracket_applies of bracket_a_3, taxable_income then bracket_tax of bracket_a_3, taxable_income
-        else if bracket_applies of bracket_a_4, taxable_income then bracket_tax of bracket_a_4, taxable_income
-        else bracket_tax of bracket_a_5, taxable_income
-    -- ScheduleB:
-        if bracket_applies of bracket_b_1, taxable_income then bracket_tax of bracket_b_1, taxable_income
-        else if bracket_applies of bracket_b_2, taxable_income then bracket_tax of bracket_b_2, taxable_income
-        else if bracket_applies of bracket_b_3, taxable_income then bracket_tax of bracket_b_3, taxable_income
-        else if bracket_applies of bracket_b_4, taxable_income then bracket_tax of bracket_b_4, taxable_income
-        else bracket_tax of bracket_b_5, taxable_income
-    -- ScheduleC:
-        if bracket_applies of bracket_c_1, taxable_income then bracket_tax of bracket_c_1, taxable_income
-        else if bracket_applies of bracket_c_2, taxable_income then bracket_tax of bracket_c_2, taxable_income
-        else if bracket_applies of bracket_c_3, taxable_income then bracket_tax of bracket_c_3, taxable_income
-        else if bracket_applies of bracket_c_4, taxable_income then bracket_tax of bracket_c_4, taxable_income
-        else bracket_tax of bracket_c_5, taxable_income
-    -- ScheduleD:
-        if bracket_applies of bracket_d_1, taxable_income then bracket_tax of bracket_d_1, taxable_income
-        else if bracket_applies of bracket_d_2, taxable_income then bracket_tax of bracket_d_2, taxable_income
-        else if bracket_applies of bracket_d_3, taxable_income then bracket_tax of bracket_d_3, taxable_income
-        else if bracket_applies of bracket_d_4, taxable_income then bracket_tax of bracket_d_4, taxable_income
-        else bracket_tax of bracket_d_5, taxable_income
-
-declaration scope BracketHolds:
-  input sched content Schedule
-  ## 1-based, matching the statute's (i)…(v).
-  input index content integer
-  input taxable_income content money
-  input claimed_tax content money
-  output holds content boolean
-
-declaration scope ScheduleTax:
-  input sched content Schedule
-  input taxable_income content money
-  output tax content money
-
-declaration schedule_of content Schedule
-  depends on st content St.Status
-  equals
-    match st with pattern
-    -- St.Status.JointOrSurvivingSpouse: Schedule.ScheduleA
-    -- St.Status.HeadOfHousehold: Schedule.ScheduleB
-    -- St.Status.Unmarried: Schedule.ScheduleC
-    -- St.Status.MarriedFilingSeparately: Schedule.ScheduleD
-
-declaration scope SubsectionHolds:
-  input status content St.Status
-  input subsection content Schedule
-  ## §63 taxable income, as injected by the case.
-  input taxable_income content optional of money
-  ## ... and as the statute derives it, with its own availability: a *replaced*
-  ## `s63/3` leaves only the granted rows. Both are solutions of the same
-  ## `s63(Taxp,Taxy,Taxinc)` goal, so either may satisfy the claimed tax.
-  input derived_income content money
-  input derived_applies content boolean
-  input claimed_tax content money
-  output holds content boolean
-
-declaration scope Tax:
-  input world content W.World
-  input injections content list of W.Injection
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  taxable_income_calculation scope S63.TaxableIncomeForTax
-  ## Filing classification is independent of whether §63 succeeds.  Keeping
-  ## that classification separate avoids repeating the much larger §63
-  ## availability formula in every arm below. `result` combines availability,
-  ## the chosen schedule and its tax in one decision.
-  internal filing_subsection content optional of Schedule
-  internal result content TaxResult
-  ## The §7703 spouses, which (a)(1) and (d) both quantify over.
-  output spouses content list of W.Entity
-  output taxable_income_applies content boolean
-  output married content boolean
-  ## s1_a_1/6 — married, filing jointly, and neither spouse a nonresident alien
-  output holds_a_1 content boolean
-  output holds_a_2 content boolean
-  ## s1_a/4
-  output holds_a content boolean
-  ## s1_b/4
-  output holds_b content boolean
-  ## s1_c/4
-  output holds_c content boolean
-  ## s1_d/5
-  output holds_d content boolean
-  ## s63/3
-  output taxable_income content money
-  output subsection content optional of Schedule
-  ## s1/4 — the tax, and whether the goal has a solution at all
-  output tax content money
-  output holds content boolean
+  output total_tax content money
 ```
 
-
-<!-- rtdf-block-id: sara/section1:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
-scope Total:
-  definition income_tax equals
-    if not (has_income_tax_basis of world, taxpayer, taxable_year)
-    then $0
-    else
-      (output of TaxForTotal with {
-         -- world: world -- injections: injections -- taxpayer: taxpayer
-         -- taxable_year: taxable_year
-         -- child_of: child_of -- sibling_of: sibling_of
-         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-         -- stepparent_of: stepparent_of
-         -- child_in_law_of: child_in_law_of
-         -- parent_in_law_of: parent_in_law_of
-         -- sibling_in_law_of: sibling_in_law_of }).tax
-
-scope Total:
-  definition employment_tax equals
-    (output of S3306.UnemploymentTax with {
-       -- world: world -- injections: injections
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of
-       -- employer: taxpayer -- caly: taxable_year }).applicable_tax
-
-scope Total:
-  definition total equals income_tax + employment_tax
-
-scope BracketHolds:
-
-scope BracketHolds:
-  definition holds equals
-    match (List.nth_element of (brackets_of of sched), index) with pattern
-    -- Absent: false
-    -- Present content b:
-        (bracket_applies of b, taxable_income)
-        and (bracket_tax of b, taxable_income) = claimed_tax
-
-scope ScheduleTax:
-  definition tax equals
-    applicable_bracket_tax of sched, taxable_income
-
-scope SubsectionHolds:
-  definition holds equals
-    (schedule_of of status) = subsection
-    and ((match taxable_income with pattern
-          -- Absent: false
-          -- Present content ti:
-              (output of ScheduleTax with {
-                 -- sched: subsection -- taxable_income: ti }).tax = claimed_tax)
-         or (derived_applies
-             and (output of ScheduleTax with {
-                    -- sched: subsection
-                    -- taxable_income: derived_income }).tax = claimed_tax))
-
-scope Tax:
-  definition taxable_income_calculation.world equals world
-
-scope Tax:
-  definition taxable_income_calculation.injections equals injections
-
-scope Tax:
-  definition taxable_income_calculation.taxpayer equals taxpayer
-
-scope Tax:
-  definition taxable_income_calculation.taxable_year equals taxable_year
-
-scope Tax:
-  definition taxable_income_calculation.child_of equals child_of
-
-scope Tax:
-  definition taxable_income_calculation.sibling_of equals sibling_of
-
-scope Tax:
-  definition taxable_income_calculation.descendent_of equals descendent_of
-
-scope Tax:
-  definition taxable_income_calculation.stepsibling_of equals stepsibling_of
-
-scope Tax:
-  definition taxable_income_calculation.stepparent_of equals stepparent_of
-
-scope Tax:
-  definition taxable_income_calculation.child_in_law_of equals child_in_law_of
-
-scope Tax:
-  definition taxable_income_calculation.parent_in_law_of equals parent_in_law_of
-
-scope Tax:
-  definition taxable_income_calculation.sibling_in_law_of equals sibling_in_law_of
-
-scope Tax:
-  definition spouses equals
-    taxable_income_calculation.spouses
-
-scope Tax:
-  definition married equals
-    (number of spouses) > 0
-    or (W.injected_holds of (W.injections_for_4_14 of injections, P.pred_s7703_4, taxpayer.id, W.num_key of taxable_year))
-
-  ## A joint return by these two spanning the whole taxable year, which the
-  ## Prolog states by unifying its start and end with the year boundaries.
-
-scope Tax:
-  definition taxable_income equals
-    taxable_income_calculation.income
-
-  ## `s1/4` reaches its rate schedule through §63, and §63 through §151. When a
-  ## case *replaces* `s151/5` and names nobody relevant, the chain fails rather
-  ## than yielding a taxable income of zero, and `tax(Taxp,Taxy,T)` then takes
-  ## its `\+ s1(...)` branch with `Income_tax is 0`. See D39.
-
-scope Tax:
-  definition taxable_income_applies equals
-    taxable_income_calculation.applies
-
-scope Tax:
-  definition filing_subsection equals
-    # Clause (c) is mutually exclusive with (a), (b), and (d), so checking it
-    # first preserves the Prolog solution while avoiding spouse work for the
-    # common unmarried case.  If §63 is unavailable, none of the four clauses
-    # can hold, so stop before evaluating their filing-status predicates.
-    if not taxable_income_applies then Absent
-    else if holds_c then Present content Schedule.ScheduleC
-    else if holds_a then Present content Schedule.ScheduleA
-    else if holds_b then Present content Schedule.ScheduleB
-    else if holds_d then Present content Schedule.ScheduleD
-    else Absent
-
-scope Tax:
-  definition result equals
-    match filing_subsection with pattern
-    -- Absent:
-        TaxResult {
-          -- subsection: Absent
-          -- holds: false
-          -- tax: $0 }
-    -- Present content sched:
-        TaxResult {
-          -- subsection: Present content sched
-          -- holds: true
-          -- tax: (output of ScheduleTax with {
-                     -- sched: sched
-                     -- taxable_income: taxable_income }).tax }
-
-scope Tax:
-  definition subsection equals result.subsection
-
-scope Tax:
-  definition holds equals
-    result.holds
-
-scope Tax:
-  definition tax equals
-    result.tax
+scope TotalTax:
+  definition income_tax_scope.taxable_income equals taxable_income
+  definition income_tax_scope.filing_status equals filing_status
+  definition income_tax equals income_tax_scope.tax
+  definition total_tax equals income_tax + unemployment_tax
 ```
 
 §1. Tax imposed
-
-<!-- rtdf-block-id: sara/section1:b0030; role: provision; provision-id: sara/section1; source-lines: 1-1; relation: formalizes-preceding -->
-```catala
-scope TaxForTotal:
-  definition tax equals
-    let ti equals
-      (output of S63.TaxableIncomeForTax with {
-         -- world: world -- injections: injections -- taxpayer: taxpayer
-         -- taxable_year: taxable_year
-         -- child_of: child_of -- sibling_of: sibling_of
-         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-         -- stepparent_of: stepparent_of
-         -- child_in_law_of: child_in_law_of
-         -- parent_in_law_of: parent_in_law_of
-         -- sibling_in_law_of: sibling_in_law_of })
-    in if not ti.applies then $0
-       else
-         let spouses equals ti.spouses in
-         let married equals
-           (number of spouses) > 0
-           or (W.injected_holds of
-                 (W.injections_for_4_14 of injections, P.pred_s7703_4,
-                    taxpayer.id, W.num_key of taxable_year))
-         in # Subsection (c) is exclusive of (a), (b), and (d).  Testing it
-            # first avoids their spouse-event searches for the common case.
-            if subsection_c_applies of
-                 married, ti.head_of_household, ti.surviving_spouse
-            then applicable_bracket_tax of Schedule.ScheduleC, ti.income
-            else if (subsection_a_1_applies of
-                       world, taxpayer, taxable_year, spouses)
-                    or ti.surviving_spouse
-            then applicable_bracket_tax of Schedule.ScheduleA, ti.income
-            else if ti.head_of_household
-            then applicable_bracket_tax of Schedule.ScheduleB, ti.income
-            else if subsection_d_applies of
-                      world, taxpayer, taxable_year, spouses
-            then applicable_bracket_tax of Schedule.ScheduleD, ti.income
-            else $0
-```
 
 (a) Married individuals filing joint returns and surviving spouses
 
 There is hereby imposed on the taxable income of-
 
 
-<!-- rtdf-block-id: sara/section1:b0003; role: provision; provision-id: sara/section1(a); source-lines: 3-5; relation: formalizes-preceding -->
 ```catala
-scope Tax:
-  definition holds_a equals
-    holds_a_1
-    or holds_a_2
+scope IncomeTax:
+  definition tax equals
+    round of
+      (match filing_status with pattern
+       -- FilingStatus.JointOrSurviving: joint_tax of taxable_income
+       -- FilingStatus.HeadOfHousehold: head_tax of taxable_income
+       -- FilingStatus.Unmarried: unmarried_tax of taxable_income
+       -- FilingStatus.MarriedFilingSeparately: separate_tax of taxable_income)
 ```
 
     (1) every married individual (as defined in section 7703) who makes a single return jointly with his spouse, and
@@ -494,31 +55,10 @@ scope Tax:
 
 <!-- rtdf-block-id: sara/section1:b0004; role: provision; provision-id: sara/section1(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
 ```catala
-declaration subsection_a_1_applies content boolean
-  depends on world content W.World,
-             taxpayer content W.Entity,
-             taxable_year content integer,
-             spouses content list of W.Entity
-  equals
-    exists sp among spouses such that
-      (exists jr among (W.joint_return_event_values of world) such that
-         jr.agents contains taxpayer and jr.agents contains sp
-         and (W.optional_date_equals of jr.starts, (W.first_day_year of taxable_year))
-         and (W.optional_date_equals of jr.ends, (W.last_day_year of taxable_year)))
-      # nonresident aliens cannot file jointly
-      and not (exists nra among (W.nonresident_alien_event_values of world) such that
-                 (nra.agents contains taxpayer or nra.agents contains sp)
-                 and ((number of nra.starts) = 0
-                      or (exists st among nra.starts such that
-                            st <= (W.last_day_year of taxable_year)))
-                 and (match nra.ends with pattern
-                      -- Absent: true
-                      -- Present content en:
-                          (W.first_day_year of taxable_year) <= en))
-
-scope Tax:
-  definition holds_a_1 equals
-    subsection_a_1_applies of world, taxpayer, taxable_year, spouses
+declaration joint_return_subject content boolean
+  depends on married_under_section_7703 content boolean,
+             made_joint_return content boolean
+  equals married_under_section_7703 and made_joint_return
 ```
 
     (2) every surviving spouse (as defined in section 2(a)),
@@ -526,61 +66,59 @@ scope Tax:
 
 <!-- rtdf-block-id: sara/section1:b0005; role: provision; provision-id: sara/section1(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
 ```catala
-scope Tax:
-  definition holds_a_2 equals taxable_income_calculation.surviving_spouse
+declaration surviving_spouse_subject content boolean
+  depends on surviving_spouse_under_section_2 content boolean
+  equals surviving_spouse_under_section_2
 ```
 
 a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0006; role: provision; provision-id: sara/section1(a):flush; source-lines: 11-11; relation: formalizes-preceding -->
 ```catala
-declaration schedule_a content list of Bracket equals
-  [bracket_a_1; bracket_a_2; bracket_a_3; bracket_a_4; bracket_a_5]
+declaration joint_tax content money
+  depends on income content money
+  equals
+    if income <= $36900 then joint_bracket_one of income
+    else if income <= $89150 then joint_bracket_two of income
+    else if income <= $140000 then joint_bracket_three of income
+    else if income <= $250000 then joint_bracket_four of income
+    else joint_bracket_five of income
 ```
 
     (i) 15% of taxable income if the taxable income is not over $36,900;
 
 <!-- rtdf-block-id: sara/section1:b0007; role: provision; provision-id: sara/section1(a)(i); source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
-declaration bracket_a_1 content Bracket equals
-  Bracket { -- floor: $0
-            -- ceiling: Present content $36,900
-            -- base: $0
-            -- rate: 0.15 }
+declaration joint_bracket_one content money
+  depends on income content money
+  equals 15% * income
 ```
 
     (ii) $5,535, plus 28% of the excess over $36,900 if the taxable income is over $36,900 but not over $89,150;
 
 <!-- rtdf-block-id: sara/section1:b0008; role: provision; provision-id: sara/section1(a)(ii); source-lines: 14-14; relation: formalizes-preceding -->
 ```catala
-declaration bracket_a_2 content Bracket equals
-  Bracket { -- floor: $36,900
-            -- ceiling: Present content $89,150
-            -- base: $5,535
-            -- rate: 0.28 }
+declaration joint_bracket_two content money
+  depends on income content money
+  equals $5535 + 28% * (income - $36900)
 ```
 
     (iii) $20,165, plus 31% of the excess over $89,150 if the taxable income is over $89,150 but not over $140,000;
 
 <!-- rtdf-block-id: sara/section1:b0009; role: provision; provision-id: sara/section1(a)(iii); source-lines: 15-15; relation: formalizes-preceding -->
 ```catala
-declaration bracket_a_3 content Bracket equals
-  Bracket { -- floor: $89,150
-            -- ceiling: Present content $140,000
-            -- base: $20,165
-            -- rate: 0.31 }
+declaration joint_bracket_three content money
+  depends on income content money
+  equals $20165 + 31% * (income - $89150)
 ```
 
     (iv) $35,928.50, plus 36% of the excess over $140,000 if the taxable income is over $140,000 but not over $250,000;
 
 <!-- rtdf-block-id: sara/section1:b0010; role: provision; provision-id: sara/section1(a)(iv); source-lines: 16-16; relation: formalizes-preceding -->
 ```catala
-declaration bracket_a_4 content Bracket equals
-  Bracket { -- floor: $140,000
-            -- ceiling: Present content $250,000
-            -- base: $35,928.50
-            -- rate: 0.36 }
+declaration joint_bracket_four content money
+  depends on income content money
+  equals $35928.50 + 36% * (income - $140000)
 ```
 
     (v) $75,528.50, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
@@ -588,11 +126,9 @@ declaration bracket_a_4 content Bracket equals
 
 <!-- rtdf-block-id: sara/section1:b0011; role: provision; provision-id: sara/section1(a)(v); source-lines: 17-17; relation: formalizes-preceding -->
 ```catala
-declaration bracket_a_5 content Bracket equals
-  Bracket { -- floor: $250,000
-            -- ceiling: Absent
-            -- base: $75,528.50
-            -- rate: 0.396 }
+declaration joint_bracket_five content money
+  depends on income content money
+  equals $75528.50 + 39.6% * (income - $250000)
 ```
 
 (b) Heads of households
@@ -600,58 +136,51 @@ declaration bracket_a_5 content Bracket equals
 There is hereby imposed on the taxable income of every head of a household (as defined in section 2(b)) a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0012; role: provision; provision-id: sara/section1(b); source-lines: 19-21; relation: formalizes-preceding -->
 ```catala
-scope Tax:
-  definition holds_b equals
-    taxable_income_calculation.head_of_household
-
-declaration schedule_b content list of Bracket equals
-  [bracket_b_1; bracket_b_2; bracket_b_3; bracket_b_4; bracket_b_5]
+declaration head_tax content money
+  depends on income content money
+  equals
+    if income <= $29600 then head_bracket_one of income
+    else if income <= $76400 then head_bracket_two of income
+    else if income <= $127500 then head_bracket_three of income
+    else if income <= $250000 then head_bracket_four of income
+    else head_bracket_five of income
 ```
 
     (i) 15% of taxable income if the taxable income is not over $29,600;
 
 <!-- rtdf-block-id: sara/section1:b0013; role: provision; provision-id: sara/section1(b)(i); source-lines: 23-23; relation: formalizes-preceding -->
 ```catala
-declaration bracket_b_1 content Bracket equals
-  Bracket { -- floor: $0
-            -- ceiling: Present content $29,600
-            -- base: $0
-            -- rate: 0.15 }
+declaration head_bracket_one content money
+  depends on income content money
+  equals 15% * income
 ```
 
     (ii) $4,440, plus 28% of the excess over $29,600 if the taxable income is over $29,600 but not over $76,400;
 
 <!-- rtdf-block-id: sara/section1:b0014; role: provision; provision-id: sara/section1(b)(ii); source-lines: 24-24; relation: formalizes-preceding -->
 ```catala
-declaration bracket_b_2 content Bracket equals
-  Bracket { -- floor: $29,600
-            -- ceiling: Present content $76,400
-            -- base: $4,440
-            -- rate: 0.28 }
+declaration head_bracket_two content money
+  depends on income content money
+  equals $4440 + 28% * (income - $29600)
 ```
 
     (iii) $17,544, plus 31% of the excess over $76,400 if the taxable income is over $76,400 but not over $127,500;
 
 <!-- rtdf-block-id: sara/section1:b0015; role: provision; provision-id: sara/section1(b)(iii); source-lines: 25-25; relation: formalizes-preceding -->
 ```catala
-declaration bracket_b_3 content Bracket equals
-  Bracket { -- floor: $76,400
-            -- ceiling: Present content $127,500
-            -- base: $17,544
-            -- rate: 0.31 }
+declaration head_bracket_three content money
+  depends on income content money
+  equals $17544 + 31% * (income - $76400)
 ```
 
     (iv) $33,385, plus 36% of the excess over $127,500 if the taxable income is over $127,500 but not over $250,000;
 
 <!-- rtdf-block-id: sara/section1:b0016; role: provision; provision-id: sara/section1(b)(iv); source-lines: 26-26; relation: formalizes-preceding -->
 ```catala
-declaration bracket_b_4 content Bracket equals
-  Bracket { -- floor: $127,500
-            -- ceiling: Present content $250,000
-            -- base: $33,385
-            -- rate: 0.36 }
+declaration head_bracket_four content money
+  depends on income content money
+  equals $33385 + 36% * (income - $127500)
 ```
 
     (v) $77,485, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
@@ -659,11 +188,9 @@ declaration bracket_b_4 content Bracket equals
 
 <!-- rtdf-block-id: sara/section1:b0017; role: provision; provision-id: sara/section1(b)(v); source-lines: 27-27; relation: formalizes-preceding -->
 ```catala
-declaration bracket_b_5 content Bracket equals
-  Bracket { -- floor: $250,000
-            -- ceiling: Absent
-            -- base: $77,485
-            -- rate: 0.396 }
+declaration head_bracket_five content money
+  depends on income content money
+  equals $77485 + 39.6% * (income - $250000)
 ```
 
 (c) Unmarried individuals (other than surviving spouses and heads of households)
@@ -671,69 +198,51 @@ declaration bracket_b_5 content Bracket equals
 There is hereby imposed on the taxable income of every individual (other than a surviving spouse as defined in section 2(a) or the head of a household as defined in section 2(b)) who is not a married individual (as defined in section 7703) a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0018; role: provision; provision-id: sara/section1(c); source-lines: 29-31; relation: formalizes-preceding -->
 ```catala
-declaration subsection_c_applies content boolean
-  depends on married content boolean,
-             head_of_household content boolean,
-             surviving_spouse content boolean
+declaration unmarried_tax content money
+  depends on income content money
   equals
-    # The three statutory exclusions are conjunctive.
-    not married and not head_of_household and not surviving_spouse
-
-scope Tax:
-  definition holds_c equals
-    subsection_c_applies of
-      married, holds_b, taxable_income_calculation.surviving_spouse
-
-  ## (d) is per spouse: married to somebody they did not file jointly with.
-
-declaration schedule_c content list of Bracket equals
-  [bracket_c_1; bracket_c_2; bracket_c_3; bracket_c_4; bracket_c_5]
+    if income <= $22100 then unmarried_bracket_one of income
+    else if income <= $53500 then unmarried_bracket_two of income
+    else if income <= $115000 then unmarried_bracket_three of income
+    else if income <= $250000 then unmarried_bracket_four of income
+    else unmarried_bracket_five of income
 ```
 
     (i) 15% of taxable income if the taxable income is not over $22,100;
 
 <!-- rtdf-block-id: sara/section1:b0019; role: provision; provision-id: sara/section1(c)(i); source-lines: 33-33; relation: formalizes-preceding -->
 ```catala
-declaration bracket_c_1 content Bracket equals
-  Bracket { -- floor: $0
-            -- ceiling: Present content $22,100
-            -- base: $0
-            -- rate: 0.15 }
+declaration unmarried_bracket_one content money
+  depends on income content money
+  equals 15% * income
 ```
 
     (ii) $3,315, plus 28% of the excess over $22,100 if the taxable income is over $22,100 but not over $53,500;
 
 <!-- rtdf-block-id: sara/section1:b0020; role: provision; provision-id: sara/section1(c)(ii); source-lines: 34-34; relation: formalizes-preceding -->
 ```catala
-declaration bracket_c_2 content Bracket equals
-  Bracket { -- floor: $22,100
-            -- ceiling: Present content $53,500
-            -- base: $3,315
-            -- rate: 0.28 }
+declaration unmarried_bracket_two content money
+  depends on income content money
+  equals $3315 + 28% * (income - $22100)
 ```
 
     (iii) $12,107, plus 31% of the excess over $53,500 if the taxable income is over $53,500 but not over $115,000;
 
 <!-- rtdf-block-id: sara/section1:b0021; role: provision; provision-id: sara/section1(c)(iii); source-lines: 35-35; relation: formalizes-preceding -->
 ```catala
-declaration bracket_c_3 content Bracket equals
-  Bracket { -- floor: $53,500
-            -- ceiling: Present content $115,000
-            -- base: $12,107
-            -- rate: 0.31 }
+declaration unmarried_bracket_three content money
+  depends on income content money
+  equals $12107 + 31% * (income - $53500)
 ```
 
     (iv) $31,172, plus 36% of the excess over $115,000 if the taxable income is over $115,000 but not over $250,000;
 
 <!-- rtdf-block-id: sara/section1:b0022; role: provision; provision-id: sara/section1(c)(iv); source-lines: 36-36; relation: formalizes-preceding -->
 ```catala
-declaration bracket_c_4 content Bracket equals
-  Bracket { -- floor: $115,000
-            -- ceiling: Present content $250,000
-            -- base: $31,172
-            -- rate: 0.36 }
+declaration unmarried_bracket_four content money
+  depends on income content money
+  equals $31172 + 36% * (income - $115000)
 ```
 
     (v) $79,772, plus 39.6% of the excess over $250,000 if the taxable income is over $250,000.
@@ -741,11 +250,9 @@ declaration bracket_c_4 content Bracket equals
 
 <!-- rtdf-block-id: sara/section1:b0023; role: provision; provision-id: sara/section1(c)(v); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
-declaration bracket_c_5 content Bracket equals
-  Bracket { -- floor: $250,000
-            -- ceiling: Absent
-            -- base: $79,772
-            -- rate: 0.396 }
+declaration unmarried_bracket_five content money
+  depends on income content money
+  equals $79772 + 39.6% * (income - $250000)
 ```
 
 (d) Married individuals filing separate returns
@@ -753,79 +260,58 @@ declaration bracket_c_5 content Bracket equals
 There is hereby imposed on the taxable income of every married individual (as defined in section 7703) who does not make a single return jointly with his spouse, a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0024; role: provision; provision-id: sara/section1(d); source-lines: 39-41; relation: formalizes-preceding -->
 ```catala
-declaration subsection_d_applies content boolean
-  depends on world content W.World,
-             taxpayer content W.Entity,
-             taxable_year content integer,
-             spouses content list of W.Entity
+declaration separate_tax content money
+  depends on income content money
   equals
-    exists sp among spouses such that
-      not (exists jr among (W.joint_return_event_values of world) such that
-             jr.agents contains taxpayer and jr.agents contains sp
-             and (W.optional_date_equals of jr.starts, (W.first_day_year of taxable_year))
-             and (W.optional_date_equals of jr.ends, (W.last_day_year of taxable_year)))
-
-scope Tax:
-  definition holds_d equals
-    subsection_d_applies of world, taxpayer, taxable_year, spouses
-
-declaration schedule_d content list of Bracket equals
-  [bracket_d_1; bracket_d_2; bracket_d_3; bracket_d_4; bracket_d_5]
+    if income <= $18450 then separate_bracket_one of income
+    else if income <= $44575 then separate_bracket_two of income
+    else if income <= $70000 then separate_bracket_three of income
+    else if income <= $125000 then separate_bracket_four of income
+    else separate_bracket_five of income
 ```
 
     (i) 15% of taxable income if the taxable income is not over $18,450;
 
 <!-- rtdf-block-id: sara/section1:b0025; role: provision; provision-id: sara/section1(d)(i); source-lines: 43-43; relation: formalizes-preceding -->
 ```catala
-declaration bracket_d_1 content Bracket equals
-  Bracket { -- floor: $0
-            -- ceiling: Present content $18,450
-            -- base: $0
-            -- rate: 0.15 }
+declaration separate_bracket_one content money
+  depends on income content money
+  equals 15% * income
 ```
 
     (ii) $2,767.50, plus 28% of the excess over $18,450 if the taxable income is over $18,450 but not over $44,575;
 
 <!-- rtdf-block-id: sara/section1:b0026; role: provision; provision-id: sara/section1(d)(ii); source-lines: 44-44; relation: formalizes-preceding -->
 ```catala
-declaration bracket_d_2 content Bracket equals
-  Bracket { -- floor: $18,450
-            -- ceiling: Present content $44,575
-            -- base: $2,767.50
-            -- rate: 0.28 }
+declaration separate_bracket_two content money
+  depends on income content money
+  equals $2767.50 + 28% * (income - $18450)
 ```
 
     (iii) $10,082.50, plus 31% of the excess over $44,575 if the taxable income is over $44,575 but not over $70,000;
 
 <!-- rtdf-block-id: sara/section1:b0027; role: provision; provision-id: sara/section1(d)(iii); source-lines: 45-45; relation: formalizes-preceding -->
 ```catala
-declaration bracket_d_3 content Bracket equals
-  Bracket { -- floor: $44,575
-            -- ceiling: Present content $70,000
-            -- base: $10,082.50
-            -- rate: 0.31 }
+declaration separate_bracket_three content money
+  depends on income content money
+  equals $10082.50 + 31% * (income - $44575)
 ```
 
     (iv) $17,964.25, plus 36% of the excess over $70,000 if the taxable income is over $70,000 but not over $125,000;
 
 <!-- rtdf-block-id: sara/section1:b0028; role: provision; provision-id: sara/section1(d)(iv); source-lines: 46-46; relation: formalizes-preceding -->
 ```catala
-declaration bracket_d_4 content Bracket equals
-  Bracket { -- floor: $70,000
-            -- ceiling: Present content $125,000
-            -- base: $17,964.25
-            -- rate: 0.36 }
+declaration separate_bracket_four content money
+  depends on income content money
+  equals $17964.25 + 36% * (income - $70000)
 ```
 
     (v) $37,764.25, plus 39.6% of the excess over $125,000 if the taxable income is over $125,000
 
 <!-- rtdf-block-id: sara/section1:b0029; role: provision; provision-id: sara/section1(d)(v); source-lines: 47-47; relation: formalizes-preceding -->
 ```catala
-declaration bracket_d_5 content Bracket equals
-  Bracket { -- floor: $125,000
-            -- ceiling: Absent
-            -- base: $37,764.25
-            -- rate: 0.396 }
+declaration separate_bracket_five content money
+  depends on income content money
+  equals $37764.25 + 39.6% * (income - $125000)
 ```

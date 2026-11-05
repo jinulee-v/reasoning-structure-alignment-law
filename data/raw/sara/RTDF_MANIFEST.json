@@ -30,7 +30,7 @@
           ]
         },
         {
-          "provision_id": "sara/section1(a):flush",
+          "provision_id": "sara/section1(a):closing",
           "original_source_lines": [
             11,
             11
@@ -200,22 +200,6 @@
       ],
       "blocks": [
         {
-          "block_id": "sara/section1:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section1:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "sara/section1:b0003",
           "kind": "catala",
           "role": "provision",
@@ -253,7 +237,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section1(a):flush",
+          "provision_id": "sara/section1(a):closing",
           "original_source_lines": [
             11,
             11
@@ -593,22 +577,6 @@
       ],
       "blocks": [
         {
-          "block_id": "sara/section151:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section151:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "sara/section151:b0003",
           "kind": "catala",
           "role": "provision",
@@ -938,22 +906,6 @@
         }
       ],
       "blocks": [
-        {
-          "block_id": "sara/section152:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section152:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
         {
           "block_id": "sara/section152:b0003",
           "kind": "catala",
@@ -1314,7 +1266,7 @@
           ]
         },
         {
-          "provision_id": "sara/section2(a)(1):flush",
+          "provision_id": "sara/section2(a)(1):closing",
           "original_source_lines": [
             13,
             13
@@ -1391,7 +1343,7 @@
           ]
         },
         {
-          "provision_id": "sara/section2(b)(1):flush",
+          "provision_id": "sara/section2(b)(1):closing",
           "original_source_lines": [
             41,
             41
@@ -1449,22 +1401,6 @@
       ],
       "blocks": [
         {
-          "block_id": "sara/section2:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section2:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "sara/section2:b0003",
           "kind": "catala",
           "role": "provision",
@@ -1502,7 +1438,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section2(a)(1):flush",
+          "provision_id": "sara/section2(a)(1):closing",
           "original_source_lines": [
             13,
             13
@@ -1623,7 +1559,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section2(b)(1):flush",
+          "provision_id": "sara/section2(b)(1):closing",
           "original_source_lines": [
             41,
             41
@@ -1724,22 +1660,6 @@
       ],
       "blocks": [
         {
-          "block_id": "sara/section3301:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section3301:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "sara/section3301:b0003",
           "kind": "catala",
           "role": "provision",
@@ -1780,7 +1700,7 @@
           ]
         },
         {
-          "provision_id": "sara/section3306(a)(1):flush",
+          "provision_id": "sara/section3306(a)(1):closing",
           "original_source_lines": [
             13,
             13
@@ -1885,7 +1805,7 @@
           ]
         },
         {
-          "provision_id": "sara/section3306(b)(10):flush",
+          "provision_id": "sara/section3306(b)(10):closing",
           "original_source_lines": [
             51,
             51
@@ -2055,22 +1975,6 @@
       ],
       "blocks": [
         {
-          "block_id": "sara/section3306:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section3306:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "sara/section3306:b0003",
           "kind": "catala",
           "role": "provision",
@@ -2108,7 +2012,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section3306(a)(1):flush",
+          "provision_id": "sara/section3306(a)(1):closing",
           "original_source_lines": [
             13,
             13
@@ -2273,7 +2177,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section3306(b)(10):flush",
+          "provision_id": "sara/section3306(b)(10):closing",
           "original_source_lines": [
             51,
             51
@@ -2695,7 +2599,7 @@
           ]
         },
         {
-          "provision_id": "sara/section63(c)(6):flush",
+          "provision_id": "sara/section63(c)(6):closing",
           "original_source_lines": [
             63,
             63
@@ -2786,7 +2690,7 @@
           ]
         },
         {
-          "provision_id": "sara/section63(f)(2):flush",
+          "provision_id": "sara/section63(f)(2):closing",
           "original_source_lines": [
             101,
             101
@@ -2808,22 +2712,6 @@
         }
       ],
       "blocks": [
-        {
-          "block_id": "sara/section63:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section63:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
         {
           "block_id": "sara/section63:b0003",
           "kind": "catala",
@@ -3071,7 +2959,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section63(c)(6):flush",
+          "provision_id": "sara/section63(c)(6):closing",
           "original_source_lines": [
             63,
             63
@@ -3214,7 +3102,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section63(f)(2):flush",
+          "provision_id": "sara/section63(f)(2):closing",
           "original_source_lines": [
             101,
             101
@@ -3307,7 +3195,7 @@
           ]
         },
         {
-          "provision_id": "sara/section68(b)(1):flush",
+          "provision_id": "sara/section68(b)(1):closing",
           "original_source_lines": [
             25,
             25
@@ -3322,22 +3210,6 @@
         }
       ],
       "blocks": [
-        {
-          "block_id": "sara/section68:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section68:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
         {
           "block_id": "sara/section68:b0003",
           "kind": "catala",
@@ -3431,7 +3303,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section68(b)(1):flush",
+          "provision_id": "sara/section68(b)(1):closing",
           "original_source_lines": [
             25,
             25
@@ -3499,7 +3371,7 @@
           ]
         },
         {
-          "provision_id": "sara/section7703(b):flush",
+          "provision_id": "sara/section7703(b):closing",
           "original_source_lines": [
             19,
             19
@@ -3507,22 +3379,6 @@
         }
       ],
       "blocks": [
-        {
-          "block_id": "sara/section7703:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "sara/section7703:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
         {
           "block_id": "sara/section7703:b0003",
           "kind": "catala",
@@ -3594,7 +3450,7 @@
           "kind": "catala",
           "role": "provision",
           "relation": "formalizes-preceding",
-          "provision_id": "sara/section7703(b):flush",
+          "provision_id": "sara/section7703(b):closing",
           "original_source_lines": [
             19,
             19

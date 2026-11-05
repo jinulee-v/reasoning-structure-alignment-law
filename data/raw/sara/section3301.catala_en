@@ -1,11 +1,12 @@
 <!-- rtdf-document-id: sara/section3301 -->
 
-<!-- rtdf-block-id: sara/section3301:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section3301
+> Using Definitions as W
+> Using Section3306 as S3306
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section3301:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -15,4 +16,3 @@ There is hereby imposed on every employer (as defined in section 3306(a)) for ea
 <!-- rtdf-block-id: sara/section3301:b0003; role: provision; provision-id: sara/section3301; source-lines: 3-3; relation: formalizes-preceding -->
 ```catala
 ```
-

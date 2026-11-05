@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_57",
+  "label": "889",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Elizabeth is a Basic Economy Class passenger flying from Portland to San Francisco with the following items: 1. A backpack: 21 x 14 x 6 inches, 7 lbs; 2. A luggage box: 36 x 19 x 9 inches, 53 lbs; 3. A backpack: 38 x 18 x 9 inches, 53 lbs; 4. A luggage box: 36 x 15 x 13 inches, 51 lbs; 5. A backpack: 50 x 27 x 25 inches, 86 lbs; Elizabeth's flight ticket is $164."
+}

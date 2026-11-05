@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_13",
+  "label": "2207",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "David is a First Class passenger flying from Minneapolis to Orlando with the following items: 1. A backpack: 22 x 12 x 7 inches, 8 lbs; 2. A backpack: 48 x 35 x 26 inches, 86 lbs; 3. A backpack: 46 x 23 x 18 inches, 68 lbs; 4. A backpack: 35 x 17 x 13 inches, 62 lbs; 5. A luggage box: 36 x 17 x 10 inches, 75 lbs; 6. A luggage box: 34 x 16 x 13 inches, 51 lbs; 7. A backpack: 47 x 31 x 23 inches, 59 lbs; 8. A backpack: 51 x 25 x 26 inches, 79 lbs; David's flight ticket is $197."
+}

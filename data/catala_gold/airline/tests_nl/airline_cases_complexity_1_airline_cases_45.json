@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_45",
+  "label": "2559",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Joseph is a Main Cabin Class passenger flying from Seattle to Quito with the following items: 1. A backpack: 18 x 13 x 6 inches, 5 lbs; 2. A backpack: 43 x 26 x 17 inches, 67 lbs; 3. A backpack: 43 x 27 x 19 inches, 89 lbs; 4. A luggage box: 38 x 13 x 12 inches, 89 lbs; 5. A luggage box: 50 x 35 x 29 inches, 96 lbs; 6. A backpack: 35 x 17 x 11 inches, 52 lbs; 7. A luggage box: 36 x 18 x 11 inches, 57 lbs; 8. A backpack: 40 x 29 x 16 inches, 59 lbs; Joseph's flight ticket is $429."
+}

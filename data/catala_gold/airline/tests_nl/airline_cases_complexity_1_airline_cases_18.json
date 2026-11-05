@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_18",
+  "label": "223",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Emily is a Premium Economy Class passenger flying from Havana to Washington D.C. with the following items: 1. A backpack: 20 x 13 x 7 inches, 5 lbs; 2. A luggage box: 38 x 16 x 10 inches, 53 lbs; 3. A luggage box: 36 x 18 x 11 inches, 51 lbs; Emily's flight ticket is $163."
+}

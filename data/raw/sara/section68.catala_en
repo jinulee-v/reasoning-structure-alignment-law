@@ -1,11 +1,12 @@
 <!-- rtdf-document-id: sara/section68 -->
 
-<!-- rtdf-block-id: sara/section68:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section68
+> Using Definitions as W
+> Using Section2 as S2
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section68:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -16,7 +17,6 @@
 In the case of an individual whose adjusted gross income exceeds the applicable amount, the amount of the itemized deductions otherwise allowable for the taxable year shall be reduced by the lesser of-
 
 
-<!-- rtdf-block-id: sara/section68:b0003; role: provision; provision-id: sara/section68(a); source-lines: 3-5; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -41,7 +41,6 @@ In the case of an individual whose adjusted gross income exceeds the applicable 
     For purposes of this section, the term "applicable amount" means-
 
 
-<!-- rtdf-block-id: sara/section68:b0006; role: provision; provision-id: sara/section68(b)(1); source-lines: 13-15; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -76,7 +75,6 @@ In the case of an individual whose adjusted gross income exceeds the applicable 
     For purposes of this paragraph, marital status shall be determined under section 7703.
 
 
-<!-- rtdf-block-id: sara/section68:b0011; role: provision; provision-id: sara/section68(b)(1):flush; source-lines: 25-25; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -87,4 +85,3 @@ This section shall not apply to any taxable year beginning after December 31, 20
 <!-- rtdf-block-id: sara/section68:b0012; role: provision; provision-id: sara/section68(f); source-lines: 27-29; relation: formalizes-preceding -->
 ```catala
 ```
-

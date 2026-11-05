@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_77",
+  "label": "1845",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Michael is a Main Plus Class passenger flying from Auckland to New Orleans with the following items: 1. A backpack: 19 x 12 x 9 inches, 11 lbs; 2. A backpack: 52 x 37 x 26 inches, 63 lbs; 3. A backpack: 46 x 33 x 24 inches, 51 lbs; 4. A backpack: 39 x 14 x 14 inches, 58 lbs; 5. A backpack: 38 x 15 x 12 inches, 52 lbs; Michael's flight ticket is $815."
+}

@@ -1,0 +1,688 @@
+# Shared SARA definitions
+
+Use this unannotated module only for facts, types, and provision-neutral helper
+computations shared by multiple statutory sections. Do not place a statutory
+rule, required evaluator output, or cross-section API orchestration here.
+
+> Module Definitions
+
+```catala-metadata
+declaration enumeration TermKind:
+  -- Atom
+  -- String
+
+declaration structure Entity:
+  data id content integer
+  data kind content TermKind
+
+declaration enumeration KnownValue:
+  -- AgriculturalLabor
+  -- DomesticService
+  -- Cash
+  -- UnitedStates
+  -- PrivateHome
+  -- LocalCollegeClub
+  -- CollegeFraternityOrSorority
+  -- SicknessProvision
+  -- AccidentDisabilityProvision
+  -- DeathProvision
+  -- EmployeeOrDependentProvision
+  -- ReligiousOrganization
+  -- Government
+  -- Hospital
+  -- EducationalInstitution
+  -- Student
+  -- ForeignGovernment
+  -- StateGovernment
+  -- OtherKnownValue
+
+declaration enumeration Value:
+  -- Known content KnownValue
+  -- Named content Entity
+
+declaration enumeration EventKind:
+  -- Marriage
+  -- Birth
+  -- Death
+  -- Income
+  -- Payment
+  -- Service
+  -- Residence
+  -- Migration
+  -- Retirement
+  -- Deduction
+  -- Enrollment
+  -- Termination
+  -- Incarceration
+  -- LegalSeparation
+  -- JointReturn
+  -- ItemizeDeductions
+  -- Blindness
+  -- Disability
+  -- AttendingClasses
+  -- MedicalPatient
+  -- NonresidentAlien
+  -- Citizenship
+  -- Son
+  -- Daughter
+  -- Father
+  -- Mother
+  -- Brother
+  -- Sister
+  -- Sibling
+  -- Business
+  -- BusinessTrust
+  -- Plan
+  -- Hospital
+  -- MedicalInstitution
+  -- PenalInstitution
+  -- EducationalInstitution
+  -- NursesTrainingSchool
+  -- InternationalOrganization
+  -- AmericanEmployer
+  -- UnemploymentCompensationAgreement
+
+declaration enumeration FinancialFactKind:
+  -- NoFinancialFact
+  -- Income
+  -- Payment
+  -- Deduction
+
+declaration enumeration RelationshipFactKind:
+  -- NoRelationshipFact
+  -- Marriage
+  -- Birth
+  -- Death
+  -- Residence
+  -- Migration
+  -- LegalSeparation
+  -- JointReturn
+  -- Son
+  -- Daughter
+  -- Father
+  -- Mother
+  -- Brother
+  -- Sister
+  -- Sibling
+
+declaration enumeration EmploymentFactKind:
+  -- NoEmploymentFact
+  -- Service
+  -- Retirement
+  -- Business
+  -- BusinessTrust
+  -- Plan
+  -- Hospital
+  -- MedicalInstitution
+  -- PenalInstitution
+  -- EducationalInstitution
+  -- NursesTrainingSchool
+  -- InternationalOrganization
+  -- AmericanEmployer
+
+declaration enumeration StatusFactKind:
+  -- NoStatusFact
+  -- Enrollment
+  -- Termination
+  -- Incarceration
+  -- ItemizeDeductions
+  -- Blindness
+  -- Disability
+  -- AttendingClasses
+  -- MedicalPatient
+  -- NonresidentAlien
+  -- Citizenship
+  -- UnemploymentCompensationAgreement
+
+declaration structure Event:
+  data identifier content Entity
+  data kind content EventKind
+  data agents content list of Entity
+  data patients content list of Entity
+  data starts content list of date
+  data ends content list of date
+  data amounts content list of money
+  data purposes content list of Value
+  data locations content list of Value
+  data means content list of Value
+  data reasons content list of Value
+  data beneficiaries content list of Entity
+  data countries content list of Value
+  data types content list of Value
+  data destinations content list of Value
+  ## Number of identical grounded Prolog solutions represented by this row.
+  data multiplicity content integer
+
+## External facts are separated by legal-domain shape. `Event` remains an
+## internal common view used by provisions that quantify across fact families.
+declaration structure FinancialFact:
+  data identifier content Entity
+  data kind content FinancialFactKind
+  data agent content Entity
+  data patient content Entity
+  data start content date
+  data end content date
+  data start_present content boolean
+  data end_present content boolean
+  data amount content money
+  data purpose_1 content Value
+  data purpose_2 content Value
+  data means content Value
+  data beneficiary content Entity
+  data multiplicity content integer
+
+declaration structure RelationshipFact:
+  data identifier content Entity
+  data kind content RelationshipFactKind
+  data subject_1 content Entity
+  data subject_2 content Entity
+  data subject_3 content Entity
+  data subject_4 content Entity
+  data relative_1 content Entity
+  data relative_2 content Entity
+  data start content date
+  data end content date
+  data start_present content boolean
+  data end_present content boolean
+  data multiplicity content integer
+
+declaration structure EmploymentFact:
+  data identifier content Entity
+  data kind content EmploymentFactKind
+  data worker content Entity
+  data employer content Entity
+  data start content date
+  data end content date
+  data start_present content boolean
+  data end_present content boolean
+  data purpose_1 content Value
+  data purpose_2 content Value
+  data location_1 content Value
+  data location_2 content Value
+  data location_3 content Value
+  data location_4 content Value
+  data reason content Value
+  data beneficiary content Entity
+  data multiplicity content integer
+
+declaration structure StatusFact:
+  data identifier content Entity
+  data kind content StatusFactKind
+  data subject content Entity
+  data object content Entity
+  data start content date
+  data end content date
+  data start_present content boolean
+  data end_present content boolean
+  data location content Value
+  data reason content Value
+  data multiplicity content integer
+
+declaration structure World:
+  data dependency_1 content Entity
+  data dependency_2 content Entity
+  data dependency_3 content Entity
+  data dependency_4 content Entity
+  data dependency_5 content Entity
+  data dependency_6 content Entity
+  data financial_1 content FinancialFact
+  data financial_2 content FinancialFact
+  data financial_3 content FinancialFact
+  data financial_4 content FinancialFact
+  data financial_5 content FinancialFact
+  data financial_6 content FinancialFact
+  data relationship_1 content RelationshipFact
+  data relationship_2 content RelationshipFact
+  data relationship_3 content RelationshipFact
+  data relationship_4 content RelationshipFact
+  data relationship_5 content RelationshipFact
+  data relationship_6 content RelationshipFact
+  data relationship_7 content RelationshipFact
+  data relationship_8 content RelationshipFact
+  data employment_1 content EmploymentFact
+  data employment_2 content EmploymentFact
+  data employment_3 content EmploymentFact
+  data employment_4 content EmploymentFact
+  data status_1 content StatusFact
+  data status_2 content StatusFact
+  data status_3 content StatusFact
+
+declaration structure TaxPeriod:
+  data tax_year content integer
+  data first_day content date
+  data last_day content date
+
+declaration structure Relationship:
+  data subject content Entity
+  data relative content Entity
+  data starts content list of date
+  data ends content list of date
+
+declaration structure MaritalResult:
+  data married content boolean
+  data spouses content list of Entity
+
+declaration same_entity content boolean
+  depends on left content Entity,
+             right content Entity
+
+declaration has_agent content boolean
+  depends on event content Event,
+             person content Entity
+
+declaration has_patient content boolean
+  depends on event content Event,
+             person content Entity
+
+declaration overlaps_period content boolean
+  depends on starts content list of date,
+             ends content list of date,
+             period content TaxPeriod
+
+declaration covers_period content boolean
+  depends on starts content list of date,
+             ends content list of date,
+             period content TaxPeriod
+
+declaration financial_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+
+declaration relationship_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+
+declaration employment_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+
+declaration status_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+
+declaration gross_income_individual content money
+  depends on world content World,
+             person content Entity,
+             period content TaxPeriod
+
+declaration has_full_year_joint_return content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             spouse content Entity,
+             period content TaxPeriod
+
+declaration all_entities content list of Entity
+  depends on world content World
+
+declaration has_value content boolean
+  depends on values content list of Value,
+             expected content KnownValue
+
+declaration dependency_candidates content list of Entity
+  depends on world content World
+
+declaration financial_event_kind content EventKind
+  depends on kind content FinancialFactKind
+
+declaration relationship_event_kind content EventKind
+  depends on kind content RelationshipFactKind
+
+declaration employment_event_kind content EventKind
+  depends on kind content EmploymentFactKind
+
+declaration status_event_kind content EventKind
+  depends on kind content StatusFactKind
+
+declaration usable_values content list of Value
+  depends on values content list of Value
+
+declaration financial_fact_values content list of Event
+  depends on value content FinancialFact
+
+declaration relationship_fact_values content list of Event
+  depends on value content RelationshipFact
+
+declaration employment_fact_values content list of Event
+  depends on value content EmploymentFact
+
+declaration status_fact_values content list of Event
+  depends on value content StatusFact
+
+declaration financial_events content list of Event
+  depends on world content World
+
+declaration relationship_and_return_events content list of Event
+  depends on world content World
+
+declaration employment_and_institution_events content list of Event
+  depends on world content World
+
+declaration personal_status_events content list of Event
+  depends on world content World
+
+declaration weighted_amounts content list of money
+  depends on event content Event
+```
+
+```catala
+declaration financial_event_kind content EventKind
+  depends on kind content FinancialFactKind
+  equals match kind with pattern
+    -- FinancialFactKind.NoFinancialFact: EventKind.Income
+    -- FinancialFactKind.Income: EventKind.Income
+    -- FinancialFactKind.Payment: EventKind.Payment
+    -- FinancialFactKind.Deduction: EventKind.Deduction
+
+declaration relationship_event_kind content EventKind
+  depends on kind content RelationshipFactKind
+  equals match kind with pattern
+    -- RelationshipFactKind.NoRelationshipFact: EventKind.Marriage
+    -- RelationshipFactKind.Marriage: EventKind.Marriage
+    -- RelationshipFactKind.Birth: EventKind.Birth
+    -- RelationshipFactKind.Death: EventKind.Death
+    -- RelationshipFactKind.Residence: EventKind.Residence
+    -- RelationshipFactKind.Migration: EventKind.Migration
+    -- RelationshipFactKind.LegalSeparation: EventKind.LegalSeparation
+    -- RelationshipFactKind.JointReturn: EventKind.JointReturn
+    -- RelationshipFactKind.Son: EventKind.Son
+    -- RelationshipFactKind.Daughter: EventKind.Daughter
+    -- RelationshipFactKind.Father: EventKind.Father
+    -- RelationshipFactKind.Mother: EventKind.Mother
+    -- RelationshipFactKind.Brother: EventKind.Brother
+    -- RelationshipFactKind.Sister: EventKind.Sister
+    -- RelationshipFactKind.Sibling: EventKind.Sibling
+
+declaration employment_event_kind content EventKind
+  depends on kind content EmploymentFactKind
+  equals match kind with pattern
+    -- EmploymentFactKind.NoEmploymentFact: EventKind.Service
+    -- EmploymentFactKind.Service: EventKind.Service
+    -- EmploymentFactKind.Retirement: EventKind.Retirement
+    -- EmploymentFactKind.Business: EventKind.Business
+    -- EmploymentFactKind.BusinessTrust: EventKind.BusinessTrust
+    -- EmploymentFactKind.Plan: EventKind.Plan
+    -- EmploymentFactKind.Hospital: EventKind.Hospital
+    -- EmploymentFactKind.MedicalInstitution: EventKind.MedicalInstitution
+    -- EmploymentFactKind.PenalInstitution: EventKind.PenalInstitution
+    -- EmploymentFactKind.EducationalInstitution: EventKind.EducationalInstitution
+    -- EmploymentFactKind.NursesTrainingSchool: EventKind.NursesTrainingSchool
+    -- EmploymentFactKind.InternationalOrganization: EventKind.InternationalOrganization
+    -- EmploymentFactKind.AmericanEmployer: EventKind.AmericanEmployer
+
+declaration status_event_kind content EventKind
+  depends on kind content StatusFactKind
+  equals match kind with pattern
+    -- StatusFactKind.NoStatusFact: EventKind.Enrollment
+    -- StatusFactKind.Enrollment: EventKind.Enrollment
+    -- StatusFactKind.Termination: EventKind.Termination
+    -- StatusFactKind.Incarceration: EventKind.Incarceration
+    -- StatusFactKind.ItemizeDeductions: EventKind.ItemizeDeductions
+    -- StatusFactKind.Blindness: EventKind.Blindness
+    -- StatusFactKind.Disability: EventKind.Disability
+    -- StatusFactKind.AttendingClasses: EventKind.AttendingClasses
+    -- StatusFactKind.MedicalPatient: EventKind.MedicalPatient
+    -- StatusFactKind.NonresidentAlien: EventKind.NonresidentAlien
+    -- StatusFactKind.Citizenship: EventKind.Citizenship
+    -- StatusFactKind.UnemploymentCompensationAgreement:
+        EventKind.UnemploymentCompensationAgreement
+
+declaration usable_values content list of Value
+  depends on values content list of Value
+  equals list of value among values such that
+    match value with pattern
+    -- Value.Known content known: known != KnownValue.OtherKnownValue
+    -- Value.Named content named: named.id != 0
+
+declaration financial_fact_values content list of Event
+  depends on value content FinancialFact
+  equals
+    if value.kind = FinancialFactKind.NoFinancialFact then [] else
+        [Event {
+          -- identifier: value.identifier
+          -- kind: financial_event_kind of value.kind
+          -- agents: list of person among [value.agent]
+                     such that person.id != 0
+          -- patients: list of person among [value.patient]
+                       such that person.id != 0
+          -- starts: if value.start_present then [value.start] else []
+          -- ends: if value.end_present then [value.end] else []
+          -- amounts: [value.amount]
+          -- purposes: usable_values of [value.purpose_1; value.purpose_2]
+          -- locations: []
+          -- means: usable_values of [value.means]
+          -- reasons: []
+          -- beneficiaries: list of person among [value.beneficiary]
+                            such that person.id != 0
+          -- countries: [] -- types: [] -- destinations: []
+          -- multiplicity: value.multiplicity }]
+
+declaration relationship_fact_values content list of Event
+  depends on value content RelationshipFact
+  equals
+    if value.kind = RelationshipFactKind.NoRelationshipFact then [] else
+        [Event {
+          -- identifier: value.identifier
+          -- kind: relationship_event_kind of value.kind
+          -- agents: list of person among
+                       [value.subject_1; value.subject_2;
+                        value.subject_3; value.subject_4]
+                     such that person.id != 0
+          -- patients: list of person among
+                         [value.relative_1; value.relative_2]
+                       such that person.id != 0
+          -- starts: if value.start_present then [value.start] else []
+          -- ends: if value.end_present then [value.end] else []
+          -- amounts: [] -- purposes: [] -- locations: [] -- means: []
+          -- reasons: [] -- beneficiaries: [] -- countries: [] -- types: []
+          -- destinations: [] -- multiplicity: value.multiplicity }]
+
+declaration employment_fact_values content list of Event
+  depends on value content EmploymentFact
+  equals
+    if value.kind = EmploymentFactKind.NoEmploymentFact then [] else
+        [Event {
+          -- identifier: value.identifier
+          -- kind: employment_event_kind of value.kind
+          -- agents: list of person among [value.worker]
+                     such that person.id != 0
+          -- patients: list of person among [value.employer]
+                       such that person.id != 0
+          -- starts: if value.start_present then [value.start] else []
+          -- ends: if value.end_present then [value.end] else []
+          -- amounts: []
+          -- purposes: usable_values of [value.purpose_1; value.purpose_2]
+          -- locations: usable_values of
+                          [value.location_1; value.location_2;
+                           value.location_3; value.location_4]
+          -- means: [] -- reasons: usable_values of [value.reason]
+          -- beneficiaries: list of person among [value.beneficiary]
+                            such that person.id != 0
+          -- countries: [] -- types: [] -- destinations: []
+          -- multiplicity: value.multiplicity }]
+
+declaration status_fact_values content list of Event
+  depends on value content StatusFact
+  equals
+    if value.kind = StatusFactKind.NoStatusFact then [] else
+        [Event {
+          -- identifier: value.identifier
+          -- kind: status_event_kind of value.kind
+          -- agents: list of person among [value.subject]
+                     such that person.id != 0
+          -- patients: list of person among [value.object]
+                       such that person.id != 0
+          -- starts: if value.start_present then [value.start] else []
+          -- ends: if value.end_present then [value.end] else []
+          -- amounts: [] -- purposes: []
+          -- locations: usable_values of [value.location]
+          -- means: [] -- reasons: usable_values of [value.reason]
+          -- beneficiaries: [] -- countries: [] -- types: []
+          -- destinations: [] -- multiplicity: value.multiplicity }]
+
+declaration financial_events content list of Event
+  depends on world content World
+  equals
+    (financial_fact_values of world.financial_1)
+    ++ (financial_fact_values of world.financial_2)
+    ++ (financial_fact_values of world.financial_3)
+    ++ (financial_fact_values of world.financial_4)
+    ++ (financial_fact_values of world.financial_5)
+    ++ (financial_fact_values of world.financial_6)
+
+declaration relationship_and_return_events content list of Event
+  depends on world content World
+  equals
+    (relationship_fact_values of world.relationship_1)
+    ++ (relationship_fact_values of world.relationship_2)
+    ++ (relationship_fact_values of world.relationship_3)
+    ++ (relationship_fact_values of world.relationship_4)
+    ++ (relationship_fact_values of world.relationship_5)
+    ++ (relationship_fact_values of world.relationship_6)
+    ++ (relationship_fact_values of world.relationship_7)
+    ++ (relationship_fact_values of world.relationship_8)
+
+declaration employment_and_institution_events content list of Event
+  depends on world content World
+  equals
+    (employment_fact_values of world.employment_1)
+    ++ (employment_fact_values of world.employment_2)
+    ++ (employment_fact_values of world.employment_3)
+    ++ (employment_fact_values of world.employment_4)
+
+declaration personal_status_events content list of Event
+  depends on world content World
+  equals
+    (status_fact_values of world.status_1)
+    ++ (status_fact_values of world.status_2)
+    ++ (status_fact_values of world.status_3)
+
+declaration weighted_amounts content list of money
+  depends on event content Event
+  equals map each amount among event.amounts to
+    amount * (decimal of event.multiplicity)
+
+declaration same_entity content boolean
+  depends on left content Entity,
+             right content Entity
+  equals left.id != 0 and right.id != 0
+         and left.id = right.id and left.kind = right.kind
+
+declaration has_agent content boolean
+  depends on event content Event,
+             person content Entity
+  equals exists candidate among event.agents
+         such that same_entity of candidate, person
+
+declaration has_patient content boolean
+  depends on event content Event,
+             person content Entity
+  equals exists candidate among event.patients
+         such that same_entity of candidate, person
+
+declaration overlaps_period content boolean
+  depends on starts content list of date,
+             ends content list of date,
+             period content TaxPeriod
+  equals
+    (starts = [] or exists start among starts such that start <= period.last_day)
+    and (ends = [] or exists ending among ends such that period.first_day <= ending)
+
+declaration covers_period content boolean
+  depends on starts content list of date,
+             ends content list of date,
+             period content TaxPeriod
+  equals
+    (exists start among starts such that start = period.first_day)
+    and (exists ending among ends such that ending = period.last_day)
+
+declaration financial_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+  equals list of event among (financial_events of world) such that event.kind = kind
+
+declaration relationship_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+  equals list of event among (relationship_and_return_events of world)
+         such that event.kind = kind
+
+declaration employment_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+  equals list of event among (employment_and_institution_events of world)
+         such that event.kind = kind
+
+declaration status_events_of_kind content list of Event
+  depends on world content World,
+             kind content EventKind
+  equals list of event among (personal_status_events of world)
+         such that event.kind = kind
+
+declaration relationship_events content list of Relationship
+  depends on world content World,
+             kind content EventKind
+  equals
+    combine all rows
+      among
+        (map each event among (relationship_events_of_kind of world, kind) to
+          combine all child
+            among event.agents
+            in pairs initially []
+            with pairs ++
+              (map each parent among event.patients to
+                Relationship {
+                  -- subject: child
+                  -- relative: parent
+                  -- starts: event.starts
+                  -- ends: event.ends }))
+      in result initially []
+      with result ++ rows
+
+declaration gross_income_individual content money
+  depends on world content World,
+             person content Entity,
+             period content TaxPeriod
+  equals
+    Money.sum of
+      (combine all event among (financial_events of world)
+         in amounts initially []
+         with
+           if ((event.kind = EventKind.Income and has_agent of event, person)
+               or (event.kind = EventKind.Payment
+                   and has_patient of event, person))
+              and overlaps_period of event.starts, event.ends, period
+           then amounts ++ (weighted_amounts of event)
+           else amounts)
+
+declaration has_full_year_joint_return content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             spouse content Entity,
+             period content TaxPeriod
+  equals exists event among
+           (relationship_events_of_kind of world, EventKind.JointReturn)
+         such that has_agent of event, taxpayer
+                   and has_agent of event, spouse
+                   and covers_period of event.starts, event.ends, period
+
+declaration all_entities content list of Entity
+  depends on world content World
+  equals
+    dependency_candidates of world
+
+declaration has_value content boolean
+  depends on values content list of Value,
+             expected content KnownValue
+  equals exists value among values such that
+    match value with pattern
+    -- Value.Known content known: known = expected
+    -- Value.Named content name: false
+
+declaration dependency_candidates content list of Entity
+  depends on world content World
+  equals
+    list of candidate among
+      [world.dependency_1; world.dependency_2; world.dependency_3;
+       world.dependency_4; world.dependency_5; world.dependency_6]
+    such that candidate.id != 0
+```

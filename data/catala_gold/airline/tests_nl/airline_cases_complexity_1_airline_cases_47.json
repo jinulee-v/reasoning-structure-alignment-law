@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_47",
+  "label": "2019",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Daniel is a Premium Economy Class passenger flying from Charlotte to Port-au-Prince with the following items: 1. A backpack: 21 x 12 x 9 inches, 11 lbs; 2. A luggage box: 35 x 20 x 9 inches, 86 lbs; 3. A backpack: 38 x 15 x 12 inches, 51 lbs; 4. A backpack: 34 x 18 x 13 inches, 65 lbs; 5. A backpack: 34 x 17 x 12 inches, 78 lbs; 6. A backpack: 35 x 16 x 12 inches, 93 lbs; 7. A backpack: 35 x 15 x 13 inches, 51 lbs; 8. A luggage box: 36 x 17 x 11 inches, 84 lbs; Daniel's flight ticket is $59."
+}

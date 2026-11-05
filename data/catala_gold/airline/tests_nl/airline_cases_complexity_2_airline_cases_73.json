@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_2_airline_cases_73",
+  "label": "2991",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Emily is a Premium Economy Class passenger flying from Salt Lake City to Zurich with the following items: 1. A backpack: 18 x 13 x 6 inches, 11 lbs; 2. A luggage box: 39 x 21 x 19 inches, 65 lbs; 3. A backpack: 47 x 31 x 21 inches, 52 lbs; 4. A backpack: 40 x 27 x 15 inches, 53 lbs; 5. A luggage box: 47 x 22 x 22 inches, 66 lbs; 6. A backpack: 47 x 27 x 25 inches, 52 lbs; 7. A luggage box: 45 x 28 x 22 inches, 51 lbs; 8. A backpack: 35 x 17 x 11 inches, 52 lbs; 9. A backpack: 55 x 30 x 30 inches, 61 lbs; 10. A luggage box: 37 x 14 x 13 inches, 53 lbs; 11. A backpack: 33 x 19 x 13 inches, 52 lbs; Emily's flight ticket is $251."
+}

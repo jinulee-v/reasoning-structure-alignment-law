@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_2_airline_cases_55",
+  "label": "3473",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Jennifer is a Basic Economy Class passenger flying from New Orleans to Charlotte with the following items: 1. A backpack: 20 x 13 x 8 inches, 9 lbs; 2. A luggage box: 35 x 16 x 13 inches, 52 lbs; 3. A backpack: 37 x 16 x 15 inches, 53 lbs; 4. A backpack: 41 x 22 x 15 inches, 62 lbs; 5. A backpack: 40 x 19 x 19 inches, 67 lbs; 6. A luggage box: 38 x 13 x 13 inches, 70 lbs; 7. A luggage box: 39 x 19 x 12 inches, 73 lbs; 8. A backpack: 40 x 27 x 15 inches, 73 lbs; 9. A luggage box: 35 x 19 x 13 inches, 51 lbs; 10. A backpack: 39 x 16 x 11 inches, 88 lbs; 11. A luggage box: 34 x 19 x 11 inches, 71 lbs; Jennifer's flight ticket is $108."
+}

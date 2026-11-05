@@ -1,11 +1,14 @@
 <!-- rtdf-document-id: sara/section151 -->
 
-<!-- rtdf-block-id: sara/section151:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section151
+> Using Definitions as W
+> Using Section152 as S152
+> Using Section2 as S2
+> Using Section68 as S68
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section151:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -43,7 +46,6 @@ An exemption of the exemption amount for each individual who is a dependent (as 
 For purposes of this section-
 
 
-<!-- rtdf-block-id: sara/section151:b0006; role: provision; provision-id: sara/section151(d); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -68,7 +70,6 @@ For purposes of this section-
     (3) Phaseout
 
 
-<!-- rtdf-block-id: sara/section151:b0009; role: provision; provision-id: sara/section151(d)(3); source-lines: 27-27; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -97,4 +98,3 @@ For purposes of this section-
 <!-- rtdf-block-id: sara/section151:b0012; role: provision; provision-id: sara/section151(d)(5); source-lines: 37-39; relation: formalizes-preceding -->
 ```catala
 ```
-

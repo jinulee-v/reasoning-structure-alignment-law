@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {"requirement_id": "NSW-ART-UNION", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-CHARITY-HOUSIE", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-CLUB-BINGO", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-DRAW-LOTTERY", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-NO-DRAW-LOTTERY", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-PROGRESSIVE-LOTTERY", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "NSW-SOCIAL-HOUSIE", "file": "", "scope": "", "output": ""}
+  ]
+}

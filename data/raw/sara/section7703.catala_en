@@ -1,11 +1,11 @@
 <!-- rtdf-document-id: sara/section7703 -->
 
-<!-- rtdf-block-id: sara/section7703:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section7703
+> Using Definitions as W
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section7703:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -32,7 +32,6 @@
 For purposes of those provisions of this title which refer to this subsection, if-
 
 
-<!-- rtdf-block-id: sara/section7703:b0005; role: provision; provision-id: sara/section7703(b); source-lines: 9-11; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -59,7 +58,5 @@ For purposes of those provisions of this title which refer to this subsection, i
 
 such individual shall not be considered as married.
 
-<!-- rtdf-block-id: sara/section7703:b0009; role: provision; provision-id: sara/section7703(b):flush; source-lines: 19-19; relation: formalizes-preceding -->
 ```catala
 ```
-

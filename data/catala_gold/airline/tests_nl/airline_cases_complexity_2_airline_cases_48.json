@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_2_airline_cases_48",
+  "label": "3214",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Elizabeth is a Basic Economy Class passenger flying from Vancouver to Las Vegas with the following items: 1. A backpack: 22 x 13 x 8 inches, 5 lbs; 2. A luggage box: 37 x 14 x 12 inches, 74 lbs; 3. A luggage box: 34 x 18 x 13 inches, 54 lbs; 4. A backpack: 36 x 18 x 10 inches, 65 lbs; 5. A luggage box: 37 x 13 x 13 inches, 81 lbs; 6. A luggage box: 33 x 21 x 10 inches, 85 lbs; 7. A luggage box: 35 x 19 x 9 inches, 53 lbs; 8. A backpack: 36 x 17 x 12 inches, 73 lbs; 9. A backpack: 39 x 24 x 17 inches, 80 lbs; 10. A luggage box: 38 x 17 x 9 inches, 53 lbs; 11. A luggage box: 35 x 18 x 12 inches, 68 lbs; Elizabeth's flight ticket is $224."
+}

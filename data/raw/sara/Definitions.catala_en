@@ -1,0 +1,15 @@
+# Shared SARA definitions
+
+Use this unannotated module only for facts, types, and provision-neutral helper
+computations shared by multiple statutory sections. Do not place a statutory
+rule, required evaluator output, or cross-section API orchestration here.
+
+> Module Definitions
+
+```catala-metadata
+# Declare shared factual records, enumerations, and helper signatures here.
+```
+
+```catala
+# Define only provision-neutral shared helpers here.
+```

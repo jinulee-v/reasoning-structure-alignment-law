@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": true,
+  "id": "airline_cases_complexity_0_airline_cases_29",
+  "label": "970",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Michael is a First Class passenger flying from Berlin to Atlanta with the following items: 1. A backpack: 18 x 12 x 9 inches, 12 lbs; 2. A luggage box: 39 x 19 x 18 inches, 52 lbs; 3. A luggage box: 50 x 29 x 22 inches, 67 lbs; 4. A luggage box: 34 x 20 x 10 inches, 63 lbs; 5. A backpack: 35 x 16 x 13 inches, 53 lbs; Michael's flight ticket is $410."
+}

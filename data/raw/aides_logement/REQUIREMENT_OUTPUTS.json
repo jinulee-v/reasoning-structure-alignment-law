@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {"requirement_id": "AL-ELIGIBILITE-AIDE", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-MONTANT-AIDE", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-TRAITEMENT-IMPAYES", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-MONTANT-IMPAYES", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-ELIGIBILITE-DEMENAGEMENT", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-MONTANT-DEMENAGEMENT", "file": "", "scope": "", "output": ""},
+    {"requirement_id": "AL-AGE-RETRAITE", "file": "", "scope": "", "output": ""}
+  ]
+}

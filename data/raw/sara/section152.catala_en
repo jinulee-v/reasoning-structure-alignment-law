@@ -1,11 +1,11 @@
 <!-- rtdf-document-id: sara/section152 -->
 
-<!-- rtdf-block-id: sara/section152:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section152
+> Using Definitions as W
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section152:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -16,7 +16,6 @@
 For purposes of this subtitle, the term "dependent" means-
 
 
-<!-- rtdf-block-id: sara/section152:b0003; role: provision; provision-id: sara/section152(a); source-lines: 3-5; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -39,7 +38,6 @@ For purposes of this subtitle, the term "dependent" means-
 For purposes of this section-
 
 
-<!-- rtdf-block-id: sara/section152:b0006; role: provision; provision-id: sara/section152(b); source-lines: 11-13; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -66,7 +64,6 @@ For purposes of this section-
 For purposes of this section-
 
 
-<!-- rtdf-block-id: sara/section152:b0009; role: provision; provision-id: sara/section152(c); source-lines: 23-25; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -75,7 +72,6 @@ For purposes of this section-
     The term "qualifying child" means, with respect to any taxpayer for any taxable year, an individual-
 
 
-<!-- rtdf-block-id: sara/section152:b0010; role: provision; provision-id: sara/section152(c)(1); source-lines: 27-29; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -112,7 +108,6 @@ For purposes of this section-
     For purposes of paragraph (1)(A), an individual bears a relationship to the taxpayer described in this paragraph if such individual is-
 
 
-<!-- rtdf-block-id: sara/section152:b0015; role: provision; provision-id: sara/section152(c)(2); source-lines: 39-41; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -144,7 +139,6 @@ For purposes of this section-
 For purposes of this section-
 
 
-<!-- rtdf-block-id: sara/section152:b0019; role: provision; provision-id: sara/section152(d); source-lines: 51-53; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -153,7 +147,6 @@ For purposes of this section-
     The term "qualifying relative" means, with respect to any taxpayer for any taxable year, an individual-
 
 
-<!-- rtdf-block-id: sara/section152:b0020; role: provision; provision-id: sara/section152(d)(1); source-lines: 55-57; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -183,7 +176,6 @@ For purposes of this section-
     For purposes of paragraph (1)(A), an individual bears a relationship to the taxpayer described in this paragraph if the individual is any of the following with respect to the taxpayer:
 
 
-<!-- rtdf-block-id: sara/section152:b0024; role: provision; provision-id: sara/section152(d)(2); source-lines: 65-67; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -241,4 +233,3 @@ For purposes of this section-
 <!-- rtdf-block-id: sara/section152:b0032; role: provision; provision-id: sara/section152(d)(2)(H); source-lines: 83-83; relation: formalizes-preceding -->
 ```catala
 ```
-

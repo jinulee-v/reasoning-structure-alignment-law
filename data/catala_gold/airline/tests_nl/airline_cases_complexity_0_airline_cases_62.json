@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_62",
+  "label": "898",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Mary is a Premium Economy Class passenger flying from Portland to Phoenix with the following items: 1. A backpack: 20 x 11 x 6 inches, 5 lbs; 2. A backpack: 48 x 36 x 24 inches, 53 lbs; 3. A luggage box: 33 x 21 x 10 inches, 51 lbs; 4. A backpack: 35 x 16 x 12 inches, 61 lbs; 5. A backpack: 35 x 15 x 14 inches, 69 lbs; Mary's flight ticket is $118."
+}

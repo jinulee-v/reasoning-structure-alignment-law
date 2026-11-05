@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_37",
+  "label": "1742",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Elizabeth is a Premium Economy Class passenger flying from Nagoya to Philadelphia with the following items: 1. A backpack: 19 x 14 x 7 inches, 6 lbs; 2. A luggage box: 38 x 12 x 14 inches, 52 lbs; 3. A luggage box: 36 x 18 x 10 inches, 86 lbs; 4. A luggage box: 49 x 30 x 21 inches, 90 lbs; 5. A backpack: 38 x 18 x 9 inches, 55 lbs; Elizabeth's flight ticket is $312."
+}

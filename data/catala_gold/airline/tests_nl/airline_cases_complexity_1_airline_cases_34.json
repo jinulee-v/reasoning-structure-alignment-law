@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_34",
+  "label": "2492",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Susan is a Main Cabin Class passenger flying from Zurich to Sacramento with the following items: 1. A backpack: 18 x 13 x 6 inches, 11 lbs; 2. A backpack: 54 x 33 x 28 inches, 51 lbs; 3. A backpack: 35 x 16 x 12 inches, 63 lbs; 4. A luggage box: 34 x 24 x 10 inches, 58 lbs; 5. A luggage box: 35 x 21 x 9 inches, 66 lbs; 6. A luggage box: 37 x 17 x 9 inches, 61 lbs; 7. A backpack: 39 x 26 x 16 inches, 51 lbs; 8. A backpack: 36 x 16 x 13 inches, 52 lbs; Susan's flight ticket is $612."
+}

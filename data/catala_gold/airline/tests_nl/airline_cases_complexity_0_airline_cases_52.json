@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": true,
+  "id": "airline_cases_complexity_0_airline_cases_52",
+  "label": "751",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "William is a Business Class passenger flying from New Orleans to New York with the following items: 1. A backpack: 21 x 11 x 6 inches, 10 lbs; 2. A luggage box: 33 x 18 x 12 inches, 65 lbs; 3. A luggage box: 33 x 19 x 11 inches, 52 lbs; 4. A luggage box: 34 x 20 x 11 inches, 52 lbs; 5. A luggage box: 33 x 16 x 14 inches, 66 lbs; William's flight ticket is $281."
+}

@@ -1,0 +1,88 @@
+<!-- 2026.09.17. 기준 사건 자료형 -->
+
+> Module world
+
+# 기본 자료형
+
+```catala-metadata
+declaration structure 사람:
+  data 주민번호 content integer
+  data 생년월일 content date
+  
+declaration structure 피해자:
+  data 사람 content 사람
+  data 피해금액 content money
+  data 상해일수 content integer
+  data 상해인과관계여부 content boolean
+  data 중상해여부 content boolean
+  data 처벌희망여부 content boolean
+
+declaration structure 위법성사실:
+  data 법령에의한행위 content boolean
+  data 업무로인한행위 content boolean
+  data 사회상규에위배되지않음 content boolean
+  data 현재부당침해 content boolean
+  data 방위행위 content boolean
+  data 방위의상당한이유 content boolean
+  data 현재위난 content boolean
+  data 피난행위 content boolean
+  data 피난의무없음 content boolean
+  data 피난의상당한이유 content boolean
+  data 법정절차로청구권보전불능 content boolean
+  data 청구권실행불능또는현저한곤란 content boolean
+  data 자구행위 content boolean
+  data 자구의상당한이유 content boolean
+  data 승낙권한 content boolean
+  data 피해자승낙 content boolean
+  data 승낙한법익훼손 content boolean
+  data 특별규정없음 content boolean
+
+declaration structure 책임성사실:
+  data 심신장애로인한변별의사결정무능력여부 content boolean
+  data 위험발생예견여부 content boolean
+  data 자의심신장애유발여부 content boolean
+
+declaration structure 일시:
+  data 날짜 content date
+  data 시 content integer
+  data 분 content integer
+
+declaration scope 일시_범위검사:
+  input 일시 content 일시
+  output 유효여부 content boolean
+```
+
+```catala
+scope 일시_범위검사:
+  definition 유효여부 equals
+    일시.시 >= 0 and 일시.시 <= 23
+    and 일시.분 >= 0 and 일시.분 <= 59
+
+  assertion 유효여부
+```
+
+# 사건 유형
+
+```catala-metadata
+declaration enumeration 사건:
+  -- 교통사고 content 교통사고
+```
+
+### 교통사고
+
+```catala-metadata
+declaration structure 교통사고:
+  data 가해운전자 content 사람
+  data 피해자 content list of 피해자
+  data 발생시각 content 일시
+  data 업무상과실여부 content boolean
+  data 구호조치여부 content boolean
+  data 인적사항제공여부 content boolean
+  data 현장이탈여부 content boolean
+  data 도주의사여부 content boolean
+  data 유효보험가입여부 content boolean
+  data 중과실여부 content boolean
+  data 위법성사실 content 위법성사실
+  data 책임성사실 content 책임성사실
+
+```

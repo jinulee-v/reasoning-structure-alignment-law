@@ -1,11 +1,14 @@
 <!-- rtdf-document-id: sara/section63 -->
 
-<!-- rtdf-block-id: sara/section63:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section63
+> Using Definitions as W
+> Using Section2 as S2
+> Using Section68 as S68
+> Using Section151 as S151
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section63:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -25,7 +28,6 @@ Except as provided in subsection (b), for purposes of this subtitle, the term "t
 In the case of an individual who does not elect to itemize his deductions for the taxable year, for purposes of this subtitle, the term "taxable income" means adjusted gross income, minus-
 
 
-<!-- rtdf-block-id: sara/section63:b0004; role: provision; provision-id: sara/section63(b); source-lines: 7-9; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -48,7 +50,6 @@ In the case of an individual who does not elect to itemize his deductions for th
 For purposes of this subtitle-
 
 
-<!-- rtdf-block-id: sara/section63:b0007; role: provision; provision-id: sara/section63(c); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -57,7 +58,6 @@ For purposes of this subtitle-
     Except as otherwise provided in this subsection, the term "standard deduction" means the sum of-
 
 
-<!-- rtdf-block-id: sara/section63:b0008; role: provision; provision-id: sara/section63(c)(1); source-lines: 19-21; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -80,14 +80,12 @@ For purposes of this subtitle-
     For purposes of paragraph (1), the basic standard deduction is-
 
 
-<!-- rtdf-block-id: sara/section63:b0011; role: provision; provision-id: sara/section63(c)(2); source-lines: 27-29; relation: formalizes-preceding -->
 ```catala
 ```
 
         (A) 200 percent of the dollar amount in effect under subparagraph (C) for the taxable year in the case of-
 
 
-<!-- rtdf-block-id: sara/section63:b0012; role: provision; provision-id: sara/section63(c)(2)(A); source-lines: 31-31; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -133,7 +131,6 @@ For purposes of this subtitle-
     In the case of an individual with respect to whom a deduction under section 151 is allowable to another taxpayer for a taxable year beginning in the calendar year in which the individual's taxable year begins, the basic standard deduction applicable to such individual for such individual's taxable year shall not exceed the greater of-
 
 
-<!-- rtdf-block-id: sara/section63:b0018; role: provision; provision-id: sara/section63(c)(5); source-lines: 45-47; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -156,7 +153,6 @@ For purposes of this subtitle-
     In the case of-
 
 
-<!-- rtdf-block-id: sara/section63:b0021; role: provision; provision-id: sara/section63(c)(6); source-lines: 53-55; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -184,7 +180,6 @@ For purposes of this subtitle-
     the standard deduction shall be zero.
 
 
-<!-- rtdf-block-id: sara/section63:b0025; role: provision; provision-id: sara/section63(c)(6):flush; source-lines: 63-63; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -195,7 +190,6 @@ For purposes of this subtitle-
     Paragraph (2) shall be applied-
 
 
-<!-- rtdf-block-id: sara/section63:b0026; role: provision; provision-id: sara/section63(c)(7); source-lines: 65-69; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -218,7 +212,6 @@ For purposes of this subtitle-
 For purposes of this subtitle, the term "itemized deductions" means the deductions allowable under this chapter other than-
 
 
-<!-- rtdf-block-id: sara/section63:b0029; role: provision; provision-id: sara/section63(d); source-lines: 75-77; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -243,7 +236,6 @@ For purposes of this subtitle, the term "itemized deductions" means the deductio
     The taxpayer shall be entitled to an additional amount of $600-
 
 
-<!-- rtdf-block-id: sara/section63:b0032; role: provision; provision-id: sara/section63(f)(1); source-lines: 85-87; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -266,7 +258,6 @@ For purposes of this subtitle, the term "itemized deductions" means the deductio
     The taxpayer shall be entitled to an additional amount of $600-
 
 
-<!-- rtdf-block-id: sara/section63:b0035; role: provision; provision-id: sara/section63(f)(2); source-lines: 93-95; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -287,7 +278,6 @@ For purposes of this subtitle, the term "itemized deductions" means the deductio
     For purposes of subparagraph (B), if the spouse dies during the taxable year the determination of whether such spouse is blind shall be made as of the time of such death.
 
 
-<!-- rtdf-block-id: sara/section63:b0038; role: provision; provision-id: sara/section63(f)(2):flush; source-lines: 101-101; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -307,4 +297,3 @@ For purposes of this section, marital status shall be determined under section 7
 <!-- rtdf-block-id: sara/section63:b0040; role: provision; provision-id: sara/section63(g); source-lines: 107-109; relation: formalizes-preceding -->
 ```catala
 ```
-

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {
+      "requirement_id": "AIRLINE-TOTAL-COST",
+      "description": "calculate the total cost of a concrete passenger itinerary, including the ticket price, checked-bag charges, excess-size and excess-weight charges, special-item charges, and all applicable waivers and allowances."
+    }
+  ]
+}

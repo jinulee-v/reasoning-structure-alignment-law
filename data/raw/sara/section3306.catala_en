@@ -1,11 +1,11 @@
 <!-- rtdf-document-id: sara/section3306 -->
 
-<!-- rtdf-block-id: sara/section3306:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section3306
+> Using Definitions as W
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section3306:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -18,7 +18,6 @@
     The term "employer" means, with respect to any calendar year, any person who-
 
 
-<!-- rtdf-block-id: sara/section3306:b0003; role: provision; provision-id: sara/section3306(a)(1); source-lines: 5-7; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -39,7 +38,6 @@
     For purposes of this paragraph, there shall not be taken into account any wages paid to, or employment of, an employee performing domestic services referred to in paragraph (3).
 
 
-<!-- rtdf-block-id: sara/section3306:b0006; role: provision; provision-id: sara/section3306(a)(1):flush; source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -48,7 +46,6 @@
     In the case of agricultural labor, the term "employer" means, with respect to any calendar year, any person who-
 
 
-<!-- rtdf-block-id: sara/section3306:b0007; role: provision; provision-id: sara/section3306(a)(2); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -89,7 +86,6 @@
 For purposes of this chapter, the term "wages" means all remuneration for employment, including the cash value of all remuneration (including benefits) paid in any medium other than cash; except that such term shall not include-
 
 
-<!-- rtdf-block-id: sara/section3306:b0012; role: provision; provision-id: sara/section3306(b); source-lines: 31-33; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -103,7 +99,6 @@ For purposes of this chapter, the term "wages" means all remuneration for employ
     (2) the amount of any payment (including any amount paid by an employer for insurance or annuities, or into a fund, to provide for any such payment) made to, or on behalf of, an employee or any of his dependents under a plan or system established by an employer which makes provision for his employees generally (or for his employees generally and their dependents) or for a class or classes of his employees (or for a class or classes of his employees and their dependents), on account of-
 
 
-<!-- rtdf-block-id: sara/section3306:b0014; role: provision; provision-id: sara/section3306(b)(2); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -131,7 +126,6 @@ For purposes of this chapter, the term "wages" means all remuneration for employ
     (10) any payment or series of payments by an employer to an employee or any of his dependents which is paid-
 
 
-<!-- rtdf-block-id: sara/section3306:b0018; role: provision; provision-id: sara/section3306(b)(10); source-lines: 45-45; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -152,7 +146,6 @@ For purposes of this chapter, the term "wages" means all remuneration for employ
     other than any such payment or series of payments which would have been paid if the employee's employment relationship had not been so terminated;
 
 
-<!-- rtdf-block-id: sara/section3306:b0021; role: provision; provision-id: sara/section3306(b)(10):flush; source-lines: 51-51; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -175,7 +168,6 @@ For purposes of this chapter, the term "wages" means all remuneration for employ
 For purposes of this chapter, the term "employment" means any service, of whatever nature,
 
 
-<!-- rtdf-block-id: sara/section3306:b0024; role: provision; provision-id: sara/section3306(c); source-lines: 57-59; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -196,14 +188,12 @@ For purposes of this chapter, the term "employment" means any service, of whatev
     (1) agricultural labor unless-
 
 
-<!-- rtdf-block-id: sara/section3306:b0027; role: provision; provision-id: sara/section3306(c)(1); source-lines: 65-65; relation: formalizes-preceding -->
 ```catala
 ```
 
         (A) such labor is performed for a person who-
 
 
-<!-- rtdf-block-id: sara/section3306:b0028; role: provision; provision-id: sara/section3306(c)(1)(A); source-lines: 67-67; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -270,7 +260,6 @@ For purposes of this chapter, the term "employment" means any service, of whatev
         (A) service performed in the employ of a school, college, or university, if such service is performed
 
 
-<!-- rtdf-block-id: sara/section3306:b0037; role: provision; provision-id: sara/section3306(c)(10)(A); source-lines: 89-89; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -321,4 +310,3 @@ For purposes of this chapter, the term "employment" means any service, of whatev
 <!-- rtdf-block-id: sara/section3306:b0044; role: provision; provision-id: sara/section3306(c)(21); source-lines: 103-103; relation: formalizes-preceding -->
 ```catala
 ```
-

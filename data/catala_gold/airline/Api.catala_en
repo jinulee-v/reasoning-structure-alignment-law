@@ -1,0 +1,24 @@
+# Airline evaluator API
+
+This file is the evaluator-facing contract. The required scope and output below
+are fixed; add factual inputs, internal variables, and policy subscopes without
+renaming or removing them.
+
+- Requirement ID `AIRLINE-TOTAL-COST`: scope `TotalCost`, output `total_cost`.
+
+> Module Api
+> Using Definitions as W
+> Using Section1NonTextual as S1
+
+```catala-metadata
+declaration scope TotalCost:
+  input itinerary content W.Itinerary
+  policy scope S1.Trip
+  output total_cost content money
+```
+
+```catala
+scope TotalCost:
+  definition policy.itinerary equals itinerary
+  definition total_cost equals policy.total_cost
+```

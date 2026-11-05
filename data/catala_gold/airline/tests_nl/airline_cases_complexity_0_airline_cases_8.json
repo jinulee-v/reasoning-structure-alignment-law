@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_8",
+  "label": "957",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Thomas is a First Class passenger flying from Charlotte to Barcelona with the following items: 1. A backpack: 21 x 12 x 6 inches, 8 lbs; 2. A luggage box: 34 x 20 x 10 inches, 51 lbs; 3. A luggage box: 34 x 17 x 14 inches, 52 lbs; 4. A backpack: 35 x 21 x 9 inches, 52 lbs; 5. A luggage box: 35 x 18 x 11 inches, 52 lbs; Thomas's flight ticket is $637."
+}

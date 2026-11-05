@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {
+      "requirement_id": "NSW-ART-UNION",
+      "file": "nsw_art_union.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-CHARITY-HOUSIE",
+      "file": "nsw_charity_housie.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-CLUB-BINGO",
+      "file": "nsw_club_bingo.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-DRAW-LOTTERY",
+      "file": "nsw_draw_lottery.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-NO-DRAW-LOTTERY",
+      "file": "nsw_no_draw_lottery.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-PROGRESSIVE-LOTTERY",
+      "file": "nsw_progressive_lottery.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    },
+    {
+      "requirement_id": "NSW-SOCIAL-HOUSIE",
+      "file": "nsw_social_housie.catala_en",
+      "scope": "GamingAuthorized",
+      "output": "authorized"
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 <!-- rtdf-document-id: airline/section1_non_textual -->
 
+> Module Section1NonTextual
+> Using Definitions as W
+
 <!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
@@ -363,4 +366,3 @@ More than one fee may apply per bag that exceeds standard dimensions for both we
 <!-- rtdf-block-id: airline/section1_non_textual:b0034; role: provision; provision-id: airline/section1_non_textual:p0032; source-lines: 190-196; relation: formalizes-preceding -->
 ```catala
 ```
-

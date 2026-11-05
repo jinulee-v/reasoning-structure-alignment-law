@@ -1,103 +1,90 @@
 <!-- rtdf-document-id: sara/section2 -->
 
 > Module Section2
-> Using Section7703 as W
-> Using Section7703 as K
-> Using Section7703 as Inc
-> Using Section7703 as P
+> Using Definitions as W
 > Using Section7703 as S7703
 > Using Section152 as S152
 
-<!-- rtdf-block-id: sara/section2:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
-declaration spans_year content boolean
-  depends on starts content list of date,
-             ends content optional of date,
-             y content integer
-  equals
-    ((number of starts) = 0
-     or (exists s among starts such that s <= (W.first_day_year of y)))
-    and ((number of (W.date_values of ends)) = 0
-         or (exists e among (W.date_values of ends) such that (W.last_day_year of y) <= e))
-
-## As above but requiring an actual start date, which several paragraphs do by
-## writing `start_(R,S)` outside the disjunction.
-
-declaration starts_before_year content boolean
-  depends on starts content list of date, y content integer
-  equals exists s among starts such that s <= (W.first_day_year of y)
-
-## A `nonresident_alien_` event that overlaps the taxable year at all.
-
-declaration nra_in_year content boolean
-  depends on starts content list of date,
-             ends content optional of date,
-             y content integer
-  equals
-    ((number of starts) = 0
-     or (exists s among starts such that s <= (W.last_day_year of y)))
-    and ((number of (W.date_values of ends)) = 0
-         or (exists e among (W.date_values of ends) such that (W.first_day_year of y) <= e))
-
-## A kinship window that covers the whole taxable year, with `var(...)` read as
-## "no constraint" on that end.
-
-declaration window_covers content boolean
-  depends on w content K.Window, y content integer
-  equals
-    (match w.starts_on with pattern
-     -- Absent: true
-     -- Present content s: s <= (W.first_day_year of y))
-    and (match w.ends_on with pattern
-         -- Absent: true
-         -- Present content e: (W.last_day_year of y) <= e)
-
-## The residences at a household, and the people living in them.
-
-declaration residents_at content list of W.Entity
-  depends on world content W.World, household content W.Entity
-  equals
-    combine all ag
-      among (map each ev among
-              (list of e among (W.residence_event_values of world)
-               such that e.patients contains household)
-             to ev.agents)
-      in acc initially []
-      with acc ++ ag
-
-declaration households_of content list of W.Entity
-  depends on world content W.World, taxpayer content W.Entity
-  equals
-    combine all ps
-      among (map each ev among
-              (list of e among (W.residence_event_values of world)
-               such that e.agents contains taxpayer)
-             to ev.patients)
-      in acc initially []
-      with acc ++ ps
+declaration enumeration FilingStatus:
+  -- JointOrSurviving
+  -- HeadOfHousehold
+  -- Unmarried
+  -- MarriedFilingSeparately
 
 declaration scope SurvivingSpouse:
-  input injections content list of W.Injection
   input world content W.World
   input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output clause_a content boolean
-  output clause_b content boolean
-  output limited content boolean
+  input period content W.TaxPeriod
+  marital scope S7703.MaritalStatusA
+  dependents_scope scope S152.DependentsOf
   output holds content boolean
+
+declaration scope HeadOfHousehold:
+  input world content W.World
+  input taxpayer content W.Entity
+  input period content W.TaxPeriod
+  marital scope S7703.MaritalStatusA
+  dependents_scope scope S152.DependentsOf
+  surviving_scope scope SurvivingSpouse
+  output holds content boolean
+
+declaration scope FilingStatusFor:
+  input world content W.World
+  input taxpayer content W.Entity
+  input period content W.TaxPeriod
+  marital scope S7703.MaritalStatusA
+  surviving_scope scope SurvivingSpouse
+  head_scope scope HeadOfHousehold
+  output status content FilingStatus
+  output spouse content optional of W.Entity
 ```
 
-
-<!-- rtdf-block-id: sara/section2:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
+declaration value_references_entity content boolean
+  depends on value content W.Value,
+             entity content W.Entity
+  equals match value with pattern
+         -- W.Value.Known content known: false
+         -- W.Value.Named content named: W.same_entity of named, entity
+
+declaration home_costs content money
+  depends on world content W.World,
+             home content W.Entity,
+             period content W.TaxPeriod
+  equals Money.sum of
+    (combine all payment among (W.financial_events_of_kind of world, W.EventKind.Payment)
+     in amounts initially []
+     with if W.overlaps_period of payment.starts, payment.ends, period
+             and exists purpose among payment.purposes
+                 such that value_references_entity of purpose, home
+          then amounts ++ (W.weighted_amounts of payment) else amounts)
+
+declaration home_costs_by content money
+  depends on world content W.World,
+             payer content W.Entity,
+             home content W.Entity,
+             period content W.TaxPeriod
+  equals Money.sum of
+    (combine all payment among (W.financial_events_of_kind of world, W.EventKind.Payment)
+     in amounts initially []
+     with if W.has_agent of payment, payer
+             and W.overlaps_period of payment.starts, payment.ends, period
+             and exists purpose among payment.purposes
+                 such that value_references_entity of purpose, home
+          then amounts ++ (W.weighted_amounts of payment) else amounts)
+
+declaration maintains_household_of content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             individual content W.Entity,
+             period content W.TaxPeriod
+  equals exists residence among
+           (W.relationship_events_of_kind of world, W.EventKind.Residence)
+         such that W.has_agent of residence, individual
+           and W.overlaps_period of residence.starts, residence.ends, period
+           and exists home among residence.patients such that
+             furnishes_over_half_home_cost of world, taxpayer, home, period
 ```
 
 §2. Definitions and special rules
@@ -109,30 +96,23 @@ declaration scope SurvivingSpouse:
     For purposes of section 1, the term "surviving spouse" means a taxpayer-
 
 
-<!-- rtdf-block-id: sara/section2:b0003; role: provision; provision-id: sara/section2(a)(1); source-lines: 5-7; relation: formalizes-preceding -->
 ```catala
 scope SurvivingSpouse:
-  definition clause_a equals
-    (output of SpouseDiedRecently with {
-       -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year }).holds
-
-scope SurvivingSpouse:
-  definition clause_b equals
-    (output of MaintainsHomeForChild with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).holds
-
-scope SurvivingSpouse:
+  definition marital.world equals world
+  definition marital.taxpayer equals taxpayer
+  definition marital.period equals period
+  definition dependents_scope.world equals world
+  definition dependents_scope.taxpayer equals taxpayer
+  definition dependents_scope.candidates equals W.dependency_candidates of world
+  definition dependents_scope.period equals period
   definition holds equals
-    (W.injected_holds of (W.injections_for_3_13 of injections, P.pred_s2_a_3, taxpayer.id, W.num_key of taxable_year))
-    or (clause_a and clause_b and not limited)
+    not marital.result.married
+    and exists spouse among marital.result.spouses such that
+      spouse_died_in_prior_two_years of world, spouse, period
+    and exists child among dependents_scope.dependents such that
+      surviving_spouse_child_household of world, taxpayer, child, period
+    and surviving_spouse_limitations_clear of world, taxpayer,
+                                                marital.result.spouses, period
 ```
 
         (A) whose spouse died during either of the two years immediately preceding the taxable year, and
@@ -140,114 +120,45 @@ scope SurvivingSpouse:
 
 <!-- rtdf-block-id: sara/section2:b0004; role: provision; provision-id: sara/section2(a)(1)(A); source-lines: 9-9; relation: formalizes-preceding -->
 ```catala
-scope SpouseDiedRecently:
-  definition candidates equals
-    (output of S7703.MaritalStatusA with {
-       -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year }).candidates
-
-scope SpouseDiedRecently:
-  definition holds equals
-    exists c among candidates such that
-      (exists ms among c.marriage.starts such that
-         (exists dv among (W.death_event_values of world) such that
-            dv.agents contains c.spouse
-            and (exists td among (W.date_values of dv.starts) such that
-                   ms <= td
-                   # the marriage was not already over when the spouse died
-                   and ((number of (W.date_values of c.marriage.ends)) = 0
-                        or (exists me among (W.date_values of c.marriage.ends) such that td <= me))
-                   # ... during either of the two preceding years
-                   and (W.first_day_year of (taxable_year - 2)) <= td
-                   and td <= (W.last_day_year of (taxable_year - 1)))))
+declaration spouse_died_in_prior_two_years content boolean
+  depends on world content W.World,
+             spouse content W.Entity,
+             period content W.TaxPeriod
+  equals exists death among (W.relationship_events_of_kind of world, W.EventKind.Death)
+         such that W.has_agent of death, spouse
+           and exists died among death.starts such that
+             (Date.get_year of died) >= period.tax_year - 2
+             and (Date.get_year of died) < period.tax_year
 ```
-
-```catala-metadata
-declaration scope SpouseDiedRecently:
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  ## the marriages the taxpayer is an agent of
-  output candidates content list of S7703.Candidate
-  output holds content boolean
-```
-
-
 
         (B) who maintains as his home a household which constitutes for the taxable year the principal place of abode (as a member of such household) of a dependent (i) who (within the meaning of section 152) is a son, stepson, daughter, or stepdaughter of the taxpayer, and (ii) with respect to whom the taxpayer is entitled to a deduction for the taxable year under section 151.
 
 
 <!-- rtdf-block-id: sara/section2:b0005; role: provision; provision-id: sara/section2(a)(1)(B); source-lines: 11-11; relation: formalizes-preceding -->
 ```catala
-scope MaintainsHomeForChild:
-  definition households equals households_of of world, taxpayer
-
-scope MaintainsHomeForChild:
-  definition holds equals
-    exists h among households such that
-      # the taxpayer's own residence spans the year and has a start date
-      (exists rt among
-        (list of e among (W.residence_event_values of world)
-         such that e.agents contains taxpayer
-                   and e.patients contains h)
-       such that (starts_before_year of rt.starts, taxable_year)
-                 and (spans_year of rt.starts, rt.ends, taxable_year))
-      and (output of S7703.LivingApartTwo with {
-             -- world: world -- taxpayer: taxpayer -- household: h
-             -- taxable_year: taxable_year }).holds
-      and (exists dep among (residents_at of world, h) such that
-             (exists rd among
-               (list of e among (W.residence_event_values of world)
-                such that e.agents contains dep
-                          and e.patients contains h)
-              such that (starts_before_year of rd.starts, taxable_year)
-                        and (spans_year of rd.starts, rd.ends, taxable_year))
-             and (exists w among
-                   ((K.windows_between of child_of, dep, taxpayer)
-                    ++ (K.windows_between of stepparent_of, taxpayer, dep))
-                  such that window_covers of w, taxable_year)
-             and ((W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_c_applies_3, taxpayer.id, dep.id, W.num_key of taxable_year))
-                  or (output of S152.IsDependent with {
-                        -- injections: injections -- world: world
-                        -- dependant: dep -- taxpayer: taxpayer
-                        -- taxpayer_generated: false
-                        -- dependant_generated: false
-                        -- taxable_year: taxable_year
-                        -- child_of: child_of -- sibling_of: sibling_of
-                        -- descendent_of: descendent_of
-                        -- stepsibling_of: stepsibling_of
-                        -- stepparent_of: stepparent_of
-                        -- child_in_law_of: child_in_law_of
-                        -- parent_in_law_of: parent_in_law_of
-                        -- sibling_in_law_of: sibling_in_law_of }).holds))
+declaration surviving_spouse_child_household content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             child content W.Entity,
+             period content W.TaxPeriod
+  equals S152.child_or_descendant of world, child, taxpayer, period
+         and S152.same_household of world, child, taxpayer, period
+         and maintains_household_of of world, taxpayer, child, period
 ```
-
-```catala-metadata
-declaration scope MaintainsHomeForChild:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output households content list of W.Entity
-  output holds content boolean
-```
-
-
 
     For purposes of this paragraph, an individual shall be considered as maintaining a household only if over half of the cost of maintaining the household during the taxable year is furnished by such individual.
 
 
-<!-- rtdf-block-id: sara/section2:b0006; role: provision; provision-id: sara/section2(a)(1):flush; source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
-# This is continuation prose; its legal effect is implemented in the preceding provision block.
+declaration furnishes_over_half_home_cost content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             home content W.Entity,
+             period content W.TaxPeriod
+  equals
+    let paid equals home_costs_by of world, taxpayer, home, period in
+    let total equals home_costs of world, home, period in
+    paid > $0 and paid > total - paid
 ```
 
     (2) Limitations
@@ -255,20 +166,15 @@ declaration scope MaintainsHomeForChild:
     Notwithstanding paragraph (1), for purposes of section 1 a taxpayer shall not be considered to be a surviving spouse-
 
 
-<!-- rtdf-block-id: sara/section2:b0007; role: provision; provision-id: sara/section2(a)(2); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
-scope SurvivingSpouse:
-  ## `s2_a_2` is `s2_a_2_A ; \+ s2_a_2_B` — note the negation on (B).
-  definition limited equals
-    (output of Remarried with {
-       -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year }).holds
-    or not (output of JointReturnPossible with {
-              -- world: world -- taxpayer: taxpayer
-              -- spouse: (output of S7703.MaritalStatusA with {
-                            -- world: world -- taxpayer: taxpayer
-                            -- taxable_year: taxable_year }).spouse
-              -- taxable_year: taxable_year }).holds
+declaration surviving_spouse_limitations_clear content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             spouses content list of W.Entity,
+             period content W.TaxPeriod
+  equals
+    not (remarried_before_year_end of world, taxpayer, period)
+    and (joint_return_permitted of world, taxpayer, spouses, period)
 ```
 
         (A) if the taxpayer has remarried at any time before the close of the taxable year, or
@@ -276,64 +182,36 @@ scope SurvivingSpouse:
 
 <!-- rtdf-block-id: sara/section2:b0008; role: provision; provision-id: sara/section2(a)(2)(A); source-lines: 19-19; relation: formalizes-preceding -->
 ```catala
-scope Remarried:
-  definition marriages equals
-    list of e among (W.marriage_event_values of world)
-    such that e.agents contains taxpayer
-
-  ## Two distinct marriages of the taxpayer, the later one starting on or
-  ## before the close of the taxable year.
-
-scope Remarried:
-  definition holds equals
-    exists prev among marriages such that
-      (exists re among marriages such that
-         re.ident.id != prev.ident.id
-         and (exists ps among prev.starts such that
-                (exists rs among re.starts such that
-                   ps <= rs and rs <= (W.last_day_year of taxable_year))))
-
+declaration remarried_before_year_end content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             period content W.TaxPeriod
+  equals
+    let marriages equals
+      list of marriage among (W.relationship_events_of_kind of world, W.EventKind.Marriage)
+      such that W.has_agent of marriage, taxpayer
+                and W.overlaps_period of marriage.starts, marriage.ends, period in
+    let count equals
+      combine all marriage among marriages in result initially 0
+      with result + 1 in
+    count > 1
 ```
-
-```catala-metadata
-declaration scope Remarried:
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  output marriages content list of W.MarriageEvent
-  output holds content boolean
-```
-
-
 
         (B) unless, for the taxpayer's taxable year during which his spouse died, a joint return could have been made. A husband and wife may make a single return jointly of income taxes, even though one of the spouses has neither gross income nor deductions, except that no joint return shall be made if either the husband or wife at any time during the taxable year is a nonresident alien.
 
 
 <!-- rtdf-block-id: sara/section2:b0009; role: provision; provision-id: sara/section2(a)(2)(B); source-lines: 21-21; relation: formalizes-preceding -->
 ```catala
-scope JointReturnPossible:
-  ## `s2_a_2_B(bob,Spouse,2014)` is asked with `Spouse` unbound, and the test
-  ## is inside a negation: an unbound spouse makes every nonresident-alien
-  ## event count, not none.
-  definition holds equals
-    not (exists ev among (W.nonresident_alien_event_values of world) such that
-           (ev.agents contains taxpayer
-                or (match spouse with pattern
-                    -- Absent: (number of ev.agents) > 0
-                    -- Present content sp: ev.agents contains sp))
-           and (nra_in_year of ev.starts, ev.ends, taxable_year))
+declaration joint_return_permitted content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             spouses content list of W.Entity,
+             period content W.TaxPeriod
+  equals
+    not (nonresident_alien_during_year of world, taxpayer, period)
+    and not (exists spouse among spouses such that
+      nonresident_alien_during_year of world, spouse, period)
 ```
-
-```catala-metadata
-declaration scope JointReturnPossible:
-  input world content W.World
-  input taxpayer content W.Entity
-  input spouse content optional of W.Entity
-  input taxable_year content integer
-  output holds content boolean
-```
-
-
 
 (b) Definition of head of household
 
@@ -342,587 +220,63 @@ declaration scope JointReturnPossible:
     An individual shall be considered a head of a household if, and only if, such individual is not married at the close of his taxable year, is not a surviving spouse (as defined in subsection (a)), and either-
 
 
-<!-- rtdf-block-id: sara/section2:b0010; role: provision; provision-id: sara/section2(b)(1); source-lines: 25-27; relation: formalizes-preceding -->
 ```catala
-scope MarriedAtClose:
-  definition holds equals
-    exists m among (W.marriage_event_values of world) such that
-      m.agents contains taxpayer
-      and (exists sp among m.agents such that
-             sp.id != taxpayer.id
-             and (exists ms among m.starts such that
-                    ms <= (W.last_day_year of taxable_year))
-             and (if (exists dv among (W.death_event_values of world) such that
-                        dv.agents contains sp)
-                  then
-                    # the spouse died: during the year, or after its close
-                    ((output of SpouseDiedInYear with {
-                        -- world: world -- taxpayer: taxpayer
-                        -- spouse: Present content sp
-                        -- taxable_year: taxable_year }).holds
-                     or (exists dv among (W.death_event_values of world) such that
-                           dv.agents contains sp
-                           and (exists td among (W.date_values of dv.starts) such that
-                                  (W.last_day_year of taxable_year) <= td)))
-                  else
-                    # the spouse did not die: the marriage must run past the
-                    # close of the year, or have no end at all
-                    ((number of (W.date_values of m.ends)) = 0
-                     or (exists me among (W.date_values of m.ends) such that
-                           (W.first_day_year of (taxable_year + 1)) <= me)))
-             and not (output of S7703.LegalSeparation with {
-                        -- world: world -- marriage: m
-                        -- taxable_year: taxable_year }).separated
-             and not (output of SpouseNonresidentAlien with {
-                        -- world: world -- taxpayer: taxpayer
-                        -- spouse: Present content sp
-                        -- taxable_year: taxable_year }).holds)
-
-scope HeadOfHouseholdOne:
-  definition married equals
-    (output of MarriedAtClose with {
-       -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year }).holds
-
-scope HeadOfHouseholdOne:
-  definition surviving_spouse equals
-    (output of SurvivingSpouse with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).holds
-
-scope HeadOfHouseholdOne:
-  definition clause_a equals
-    (output of HouseholdForDependent with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).holds
-
-scope HeadOfHouseholdOne:
-  definition clause_b equals
-    (output of HouseholdForParent with {
-       -- injections: injections -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year
-       -- child_of: child_of -- sibling_of: sibling_of
-       -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-       -- stepparent_of: stepparent_of
-       -- child_in_law_of: child_in_law_of
-       -- parent_in_law_of: parent_in_law_of
-       -- sibling_in_law_of: sibling_in_law_of }).legal_holds
-
-scope HeadOfHouseholdOne:
-  definition dependants equals
-    if married or surviving_spouse then []
-    else
-      (output of HouseholdForDependent with {
-         -- injections: injections -- world: world -- taxpayer: taxpayer
-         -- taxable_year: taxable_year
-         -- child_of: child_of -- sibling_of: sibling_of
-         -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-         -- stepparent_of: stepparent_of
-         -- child_in_law_of: child_in_law_of
-         -- parent_in_law_of: parent_in_law_of
-         -- sibling_in_law_of: sibling_in_law_of }).dependants
-      ++ (output of HouseholdForParent with {
-            -- injections: injections -- world: world -- taxpayer: taxpayer
-            -- taxable_year: taxable_year
-            -- child_of: child_of -- sibling_of: sibling_of
-            -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-            -- stepparent_of: stepparent_of
-            -- child_in_law_of: child_in_law_of
-            -- parent_in_law_of: parent_in_law_of
-            -- sibling_in_law_of: sibling_in_law_of }).dependants
-
-scope HeadOfHouseholdOne:
-  definition holds equals
-    (not married) and (not surviving_spouse) and (clause_a or clause_b)
-
 scope HeadOfHousehold:
-  ## `s2_b_3/3` for the dependant the caller named, where they named one.
-
-scope HeadOfHousehold:
-  definition limited equals
-    (output of NonresidentAlienTaxpayer with {
-       -- world: world -- taxpayer: taxpayer
-       -- taxable_year: taxable_year }).holds
-    or (output of HouseholdMemberOnly with {
-          -- injections: injections -- world: world -- taxpayer: taxpayer
-          -- dependant: dependant -- taxable_year: taxable_year
-          -- child_of: child_of -- sibling_of: sibling_of
-          -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-          -- stepparent_of: stepparent_of
-          -- child_in_law_of: child_in_law_of
-          -- parent_in_law_of: parent_in_law_of
-          -- sibling_in_law_of: sibling_in_law_of }).legal_holds
-
-  ## `s2_b(Taxp,Dependent,Taxy) :- s2_b_1(Taxp,_,Dependent,Taxy),
-  ## \+ s2_b_3(Taxp,Dependent,Taxy)` -- one dependant has to clear *both*, so
-  ## the quantifier is over the people (b)(1) bound, not over the two tests
-  ## independently.
-
-scope HeadOfHousehold:
+  definition marital.world equals world
+  definition marital.taxpayer equals taxpayer
+  definition marital.period equals period
+  definition dependents_scope.world equals world
+  definition dependents_scope.taxpayer equals taxpayer
+  definition dependents_scope.candidates equals W.dependency_candidates of world
+  definition dependents_scope.period equals period
+  definition surviving_scope.world equals world
+  definition surviving_scope.taxpayer equals taxpayer
+  definition surviving_scope.period equals period
   definition holds equals
-    (W.injected_holds of (W.injections_for_3_13 of injections, P.pred_s2_b_3, taxpayer.id, W.num_key of taxable_year))
-    or (not (output of NonresidentAlienTaxpayer with {
-           -- world: world -- taxpayer: taxpayer
-           -- taxable_year: taxable_year }).holds
-    and (exists dep among
-           (output of HeadOfHouseholdOne with {
-              -- injections: injections -- world: world -- taxpayer: taxpayer
-              -- taxable_year: taxable_year
-              -- child_of: child_of -- sibling_of: sibling_of
-              -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-              -- stepparent_of: stepparent_of
-              -- child_in_law_of: child_in_law_of
-              -- parent_in_law_of: parent_in_law_of
-              -- sibling_in_law_of: sibling_in_law_of }).dependants
-         such that
-           (ent_matches of dependant, dep)
-           and not (output of HouseholdMemberOnly with {
-                      -- injections: injections -- world: world
-                      -- taxpayer: taxpayer
-                      -- dependant: Present content dep
-                      -- taxable_year: taxable_year
-                      -- child_of: child_of -- sibling_of: sibling_of
-                      -- descendent_of: descendent_of
-                      -- stepsibling_of: stepsibling_of
-                      -- stepparent_of: stepparent_of
-                      -- child_in_law_of: child_in_law_of
-                      -- parent_in_law_of: parent_in_law_of
-                      -- sibling_in_law_of: sibling_in_law_of }).legal_holds))
+    (not marital.result.married
+     or (output of S7703.TreatedAsUnmarried with {
+           -- world: world -- taxpayer: taxpayer -- period: period
+           -- deductible_children: dependents_scope.dependents }).holds)
+    and not surviving_scope.holds
+    and ((exists individual among dependents_scope.dependents such that
+            shared_household_qualifier of world, taxpayer, individual, period)
+         or (exists parent among dependents_scope.dependents such that
+               parent_household_qualifier of world, taxpayer, parent, period))
+    and head_of_household_limitations_clear of world, taxpayer, period, false
 ```
-
-```catala-metadata
-declaration scope MarriedAtClose:
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  output holds content boolean
-
-declaration scope HeadOfHouseholdOne:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output married content boolean
-  output surviving_spouse content boolean
-  output clause_a content boolean
-  output clause_b content boolean
-  ## The people (A) and (B) bind as `Dependent`, which (b)(3) re-examines.
-  output dependants content list of W.Entity
-  output holds content boolean
-
-declaration scope HeadOfHousehold:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input dependant content optional of W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  ## s2_b_3/3
-  output limited content boolean
-  output holds content boolean
-```
-
-
 
         (A) maintains as his home a household which constitutes for more than one-half of such taxable year the principal place of abode, as a member of such household, of-
 
 
-<!-- rtdf-block-id: sara/section2:b0011; role: provision; provision-id: sara/section2(b)(1)(A); source-lines: 29-29; relation: formalizes-preceding -->
 ```catala
-scope HouseholdForDependent:
-  definition households equals households_of of world, taxpayer
-
-  # `s2_b_1_A` *binds* `Dependent`, and `s2_b` then puts that same person
-  # through (b)(3). Reporting only "somebody qualifies" loses the identity, and
-  # with it the ability to ask (b)(3)(B) about the right person.
-
-scope HouseholdForDependent:
-  definition dependants equals
-    combine all ds
-      among (map each h among
-              (list of x among households such that
-                 (exists rt among
-                   (list of e among (W.residence_event_values of world)
-                    such that e.agents contains taxpayer
-                              and e.patients contains x)
-                  such that
-                    # the taxpayer's home: `->` on both dates, so the first of
-                    # each is used
-                    (match (List.first_element of rt.starts) with pattern
-                     -- Absent: true
-                     -- Present content st: st <= (W.first_day_year of taxable_year))
-                    and (match (List.first_element of (W.date_values of rt.ends)) with pattern
-                         -- Absent: true
-                         -- Present content en:
-                             (W.last_day_year of taxable_year) <= en))
-                 and (output of S7703.LivingApartTwo with {
-                        -- world: world -- taxpayer: taxpayer -- household: x
-                        -- taxable_year: taxable_year }).holds)
-             to (list of dep among (residents_at of world, h) such that
-                   (exists rd among
-                    (list of e among (W.residence_event_values of world)
-                      such that e.agents contains dep
-                                and e.patients contains h)
-                    such that
-                      (let s equals
-                         (match (List.first_element of rd.starts) with pattern
-                          -- Absent: W.first_day_year of taxable_year
-                          -- Present content d: d) in
-                       let e equals
-                         (match (List.first_element of (W.date_values of rd.ends)) with pattern
-                          -- Absent: W.last_day_year of taxable_year
-                          -- Present content d: d) in
-                       (e - s) * 2 >= ((W.last_day_year of taxable_year)
-                                       - (W.first_day_year of taxable_year))))
-                   and ((output of QualifyingChildClause with {
-                           -- injections: injections -- world: world
-                           -- dependant: dep -- taxpayer: Present content taxpayer
-                           -- taxable_year: taxable_year
-                           -- child_of: child_of -- sibling_of: sibling_of
-                           -- descendent_of: descendent_of
-                           -- stepsibling_of: stepsibling_of }).holds
-                        or (output of OtherDependentClause with {
-                              -- injections: injections -- world: world
-                              -- dependant: dep -- taxpayer: Present content taxpayer
-                              -- taxable_year: taxable_year
-                              -- child_of: child_of -- sibling_of: sibling_of
-                              -- descendent_of: descendent_of
-                              -- stepsibling_of: stepsibling_of
-                              -- stepparent_of: stepparent_of
-                              -- child_in_law_of: child_in_law_of
-                              -- parent_in_law_of: parent_in_law_of
-                              -- sibling_in_law_of: sibling_in_law_of }).legal_holds)))
-      in acc initially [] with acc ++ ds
-
-scope HouseholdForDependent:
-  definition holds equals (number of dependants) > 0
-
-scope HouseholdForParent:
-  ## (B) generates the household from the *parent's* residence, not the
-  ## taxpayer's, so every household in the world is a candidate.
-
-scope HouseholdForParent:
-  definition households equals
-    combine all ps
-      among (map each ev among
-              (W.residence_event_values of world)
-             to ev.patients)
-      in acc initially []
-      with acc ++ ps
-
-scope HouseholdForParent:
-  definition dependants equals
-    combine all ds
-      among (map each h among
-              (list of x among households such that
-                 (output of S7703.LivingApartTwo with {
-                    -- world: world -- taxpayer: taxpayer -- household: x
-                    -- taxable_year: taxable_year }).holds)
-             to (list of dep among (residents_at of world, h) such that
-                   (exists rp among
-                    (list of e among (W.residence_event_values of world)
-                      such that e.agents contains dep
-                                and e.patients contains h)
-                    such that (starts_before_year of rp.starts, taxable_year)
-                              and ((number of (W.date_values of rp.ends)) = 0
-                                   or (exists en among (W.date_values of rp.ends) such that
-                                         (W.last_day_year of taxable_year) <= en)))
-                   and (exists w among (K.windows_between of child_of, taxpayer, dep)
-                        such that window_covers of w, taxable_year)
-                   # `s151_c(Taxp,Dep,Deduction,Taxy)` with `Deduction` unbound
-                   # -- which is the only mode it is ever called in.
-                   # `s151_c/4` is `s151_c_applies/3` and then `s151_d/3`, and
-                   # `s151_d` is *total*: it yields 0 under (d)(2)/(d)(5) and
-                   # 2,000 otherwise, so with the amount unbound it can only
-                   # succeed. The §151(d) half therefore contributes nothing
-                   # here, and dropping it is behaviour-preserving rather than
-                   # a deviation. It is also what breaks the §68(b) → §2(b) →
-                   # §151(c) → §151(d)(3) → §68(b) cycle; SARA's own author
-                   # left `s151_c_applies` commented out at section2.pl:310.
-                   and ((W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_c_applies_3, taxpayer.id, dep.id, W.num_key of taxable_year))
-                        or (output of S152.IsDependent with {
-                              -- injections: injections -- world: world
-                              -- dependant: dep -- taxpayer: taxpayer
-                              -- taxpayer_generated: false
-                              -- dependant_generated: false
-                              -- taxable_year: taxable_year
-                              -- child_of: child_of -- sibling_of: sibling_of
-                              -- descendent_of: descendent_of
-                              -- stepsibling_of: stepsibling_of
-                              -- stepparent_of: stepparent_of
-                              -- child_in_law_of: child_in_law_of
-                              -- parent_in_law_of: parent_in_law_of
-                              -- sibling_in_law_of: sibling_in_law_of }).holds)))
-      in acc initially [] with acc ++ ds
-
-scope HouseholdForParent:
-  definition holds equals (number of dependants) > 0
+declaration shared_household_qualifier content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             individual content W.Entity,
+             period content W.TaxPeriod
+  equals S152.family_relationship of world, individual, taxpayer, period
+         and S152.same_household of world, individual, taxpayer, period
+         and maintains_household_of of world, taxpayer, individual, period
 ```
-
-```catala-metadata
-declaration ent_matches content boolean
-  depends on want content optional of W.Entity, got content W.Entity
-  equals
-    match want with pattern
-    -- Absent: true
-    -- Present content e: e.id = got.id
-
-declaration window_lapsed content boolean
-  depends on w content K.Window, y content integer
-  equals
-    (match w.starts_on with pattern
-     -- Absent: true
-     -- Present content s: s <= (W.first_day_year of y))
-    and (match w.ends_on with pattern
-         -- Absent: true
-         -- Present content e: e <= (W.last_day_year of y))
-
-declaration scope HouseholdForDependent:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output households content list of W.Entity
-  ## The people (b)(1) binds as the dependant, which (b)(3) re-examines.
-  output dependants content list of W.Entity
-  output holds content boolean
-
-declaration scope HouseholdForParent:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output households content list of W.Entity
-  ## The people (b)(1) binds as the dependant, which (b)(3) re-examines.
-  output dependants content list of W.Entity
-  output holds content boolean
-  output legal_holds content boolean
-```
-
-
 
             (i) a qualifying child of the individual (as defined in section 152(c)), but not if such child-
 
 
-<!-- rtdf-block-id: sara/section2:b0012; role: provision; provision-id: sara/section2(b)(1)(A)(i); source-lines: 31-31; relation: formalizes-preceding -->
 ```catala
-scope QualifyingChildClause:
-
-scope QualifyingChildClause:
-  definition candidates equals
-    match taxpayer with pattern
-    -- Present content t: [t]
-    -- Absent:
-        map each k among (child_of ++ sibling_of ++ stepsibling_of) to k.object
-
-scope QualifyingChildClause:
-  definition holds equals
-    exists t among candidates such that
-      (output of S152.QualifyingChild with {
-         -- injections: injections -- world: world
-         -- dependant: dependant -- taxpayer: t
-         -- taxable_year: taxable_year
-         -- child_of: child_of -- sibling_of: sibling_of
-         -- descendent_of: descendent_of
-         -- stepsibling_of: stepsibling_of }).holds_c
-      and not ((output of DependentMarried with {
-                  -- injections: injections -- world: world
-                  -- dependant: dependant -- taxable_year: taxable_year
-                  -- child_of: child_of -- sibling_of: sibling_of
-                  -- descendent_of: descendent_of
-                  -- stepsibling_of: stepsibling_of }).holds
-               and (output of DependentJointReturnWith with {
-                      -- injections: injections -- world: world
-                      -- dependant: dependant
-                      -- spouse: t
-                      -- taxable_year: taxable_year }).holds)
-
-scope OtherDependentClause:
-
-scope OtherDependentClause:
-  definition taxpayer_given equals
-    match taxpayer with pattern
-    -- Present content tp: true
-    -- Absent: false
-
-  # With the taxpayer unbound this is `s152_a(Dep,Taxp,Taxy,_,_)` generating its
-  # own taxpayers, and §152(d)(2) reaches in both directions: (C) makes a person
-  # the dependent of their own descendant, (D) and (G) route through relations
-  # none of these three lists holds. Same universe as `S152.DependantsOf` --
-  # relationship endpoints, residents, and section 152 grants -- with
-  # `IsDependent` filtering.
-  # D18 was this same mistake one level down; `QualifyingChildClause` keeps the
-  # narrow list, because §152(c)(2) really does start at one of those three.
-
-scope OtherDependentClause:
-  definition candidates equals
-    match taxpayer with pattern
-    -- Present content t: [t]
-    -- Absent:
-        list of e among
-          (S152.dependency_people of
-             injections, world, taxable_year,
-             child_of, sibling_of, descendent_of, stepsibling_of,
-             stepparent_of, child_in_law_of, parent_in_law_of,
-             sibling_in_law_of)
-        such that e.id != dependant.id
-
-  # Which §152 mode this is depends on how the goal was asked. With the
-  # taxpayer bound, SARA reaches `\+ s152_b_1(Taxp,_,Taxy)` with it bound and
-  # the eligibility guard runs. With it unbound the guard is reached before
-  # `s152_a` binds anything, so it never runs — D7 — and the port must skip it
-  # too, or it denies a taxpayer SARA allows.
-
-scope OtherDependentClause:
-  definition holds equals
-    exists t among candidates such that
-      (let d equals
-         (output of S152.IsDependent with {
-            -- injections: injections -- world: world
-            -- dependant: dependant -- taxpayer: t
-            -- taxpayer_generated: (not taxpayer_given)
-            -- dependant_generated: false
-            -- taxable_year: taxable_year
-            -- child_of: child_of -- sibling_of: sibling_of
-            -- descendent_of: descendent_of -- stepsibling_of: stepsibling_of
-            -- stepparent_of: stepparent_of
-            -- child_in_law_of: child_in_law_of
-            -- parent_in_law_of: parent_in_law_of
-            -- sibling_in_law_of: sibling_in_law_of }) in
-       (if taxpayer_given then d.holds else d.holds_any_taxpayer)
-       # The second conjunct is `s151_b_applies(Taxp,Dep,Taxy) ;
-       # s151_c_applies(Taxp,Dep,Taxy)`, and `s151_c_applies` is *defined* as
-       # `s152(Dep,Taxp,Taxy)`. That looks like the conjunct just proved, and
-       # the port therefore read it as `true` — but it is not the same
-       # question. The first conjunct ran with the taxpayer unbound, where D7's
-       # ordering skips the eligibility guard; by the time this one is reached
-       # the taxpayer is bound and the guard applies. It can and does fail:
-       # a taxpayer who is themselves somebody's dependent is found by the
-       # first conjunct and rejected by the second.
-       and (d.holds
-            or (W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_b_applies_3, t.id, dependant.id, W.num_key of taxable_year))
-            or (W.injected_holds of (W.injections_for_3_123 of injections, P.pred_s151_c_applies_3, t.id, dependant.id, W.num_key of taxable_year))))
+declaration qualifying_child_household_member content boolean
+  depends on is_qualifying_child content boolean,
+             shares_household content boolean
+  equals is_qualifying_child and shares_household
 ```
-
-```catala-metadata
-declaration scope DependentMarried:
-  input injections content list of W.Injection
-  input world content W.World
-  input dependant content W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  output holds content boolean
-
-## s2_b_1_A_i_II(Dependent,Taxp,Taxy) — `s152_b_2(Dependent,_,Taxp,Taxy)`,
-## where the third argument is the *spouse*, not the taxpayer.
-
-declaration scope DependentJointReturnWith:
-  input injections content list of W.Injection
-  input world content W.World
-  input dependant content W.Entity
-  input spouse content W.Entity
-  input taxable_year content integer
-  output holds content boolean
-
-declaration scope QualifyingChildClause:
-  input injections content list of W.Injection
-  input world content W.World
-  input dependant content W.Entity
-  input taxpayer content optional of W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  output candidates content list of W.Entity
-  output holds content boolean
-
-declaration scope OtherDependentClause:
-  input injections content list of W.Injection
-  input world content W.World
-  input dependant content W.Entity
-  input taxpayer content optional of W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output candidates content list of W.Entity
-  ## Was the taxpayer bound in the goal? It selects which §152 mode applies.
-  output taxpayer_given content boolean
-  output holds content boolean
-  output legal_holds content boolean
-```
-
-
 
                 (I) is married at the close of the taxpayer's taxable year, and
 
 
 <!-- rtdf-block-id: sara/section2:b0013; role: provision; provision-id: sara/section2(b)(1)(A)(i)(I); source-lines: 33-33; relation: formalizes-preceding -->
 ```catala
-scope DependentMarried:
-  definition holds equals
-    (output of S7703.MaritalStatus with {
-       -- injections: injections -- world: world -- taxpayer: dependant
-       -- taxable_year: taxable_year
-       -- qualifying_dependants:
-            (output of S152.QualifyingChildrenOf with {
-               -- injections: injections -- world: world
-               -- taxpayer: dependant -- taxable_year: taxable_year
-               -- child_of: child_of -- sibling_of: sibling_of
-               -- descendent_of: descendent_of
-               -- stepsibling_of: stepsibling_of }).children }).married
+declaration married_child_excluded content boolean
+  depends on married_at_year_end content boolean
+  equals married_at_year_end
 ```
 
                 (II) is not a dependent of such individual by reason of section 152(b)(2) or
@@ -930,16 +284,9 @@ scope DependentMarried:
 
 <!-- rtdf-block-id: sara/section2:b0014; role: provision; provision-id: sara/section2(b)(1)(A)(i)(II); source-lines: 35-35; relation: formalizes-preceding -->
 ```catala
-scope DependentJointReturnWith:
-  definition holds equals
-    (W.injected_holds of (W.injections_for_4_134 of injections, P.pred_s152_b_2_4, dependant.id, spouse.id, W.num_key of taxable_year))
-    or ((exists m among (W.marriage_event_values of world) such that
-       m.agents contains dependant and m.agents contains spouse)
-    and (exists ev among (W.joint_return_event_values of world) such that
-           ev.agents contains dependant
-           and ev.agents contains spouse
-           and (W.optional_date_equals of ev.starts, (W.first_day_year of taxable_year))
-           and (W.optional_date_equals of ev.ends, (W.last_day_year of taxable_year))))
+declaration child_dependency_exception_excluded content boolean
+  depends on excluded_by_section_152_b_2 content boolean
+  equals excluded_by_section_152_b_2
 ```
 
             (ii) any other person who is a dependent of the taxpayer, if the taxpayer is entitled to a deduction for the taxable year for such person under section 151, or
@@ -947,8 +294,11 @@ scope DependentJointReturnWith:
 
 <!-- rtdf-block-id: sara/section2:b0015; role: provision; provision-id: sara/section2(b)(1)(A)(ii); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
-scope OtherDependentClause:
-  definition legal_holds equals holds
+declaration other_dependent_household_member content boolean
+  depends on is_dependent content boolean,
+             deduction_allowed content boolean,
+             shares_household content boolean
+  equals is_dependent and deduction_allowed and shares_household
 ```
 
         (B) maintains a household which constitutes for such taxable year the principal place of abode of the father or mother of the taxpayer, if the taxpayer is entitled to a deduction for the taxable year for such father or mother under section 151.
@@ -956,16 +306,23 @@ scope OtherDependentClause:
 
 <!-- rtdf-block-id: sara/section2:b0016; role: provision; provision-id: sara/section2(b)(1)(B); source-lines: 39-39; relation: formalizes-preceding -->
 ```catala
-scope HouseholdForParent:
-  definition legal_holds equals holds
+declaration parent_household_qualifier content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             parent content W.Entity,
+             period content W.TaxPeriod
+  equals S152.child_or_descendant of world, taxpayer, parent, period
+         and maintains_household_of of world, taxpayer, parent, period
 ```
 
     For purposes of this paragraph, an individual shall be considered as maintaining a household only if over half of the cost of maintaining the household during the taxable year is furnished by such individual.
 
 
-<!-- rtdf-block-id: sara/section2:b0017; role: provision; provision-id: sara/section2(b)(1):flush; source-lines: 41-41; relation: formalizes-preceding -->
 ```catala
-# This is continuation prose; its legal effect is implemented in the preceding provision block.
+declaration household_maintenance_test content boolean
+  depends on furnished_by_taxpayer content money,
+             total_household_cost content money
+  equals furnished_by_taxpayer > 50% * total_household_cost
 ```
 
     (2) Determination of status
@@ -973,9 +330,11 @@ scope HouseholdForParent:
     Notwithstanding paragraph (1),
 
 
-<!-- rtdf-block-id: sara/section2:b0018; role: provision; provision-id: sara/section2(b)(2); source-lines: 43-45; relation: formalizes-preceding -->
 ```catala
-# This structural heading introduces no rule independently of its immediately following subprovisions.
+declaration subsection_b_status_after_special_rules content boolean
+  depends on paragraph_one_status content boolean,
+             special_rule_status content boolean
+  equals paragraph_one_status or special_rule_status
 ```
 
         (A) an individual who is legally separated from his spouse under a decree of divorce or of separate maintenance shall not be considered as married;
@@ -983,277 +342,106 @@ scope HouseholdForParent:
 
 <!-- rtdf-block-id: sara/section2:b0019; role: provision; provision-id: sara/section2(b)(2)(A); source-lines: 47-47; relation: formalizes-preceding -->
 ```catala
-scope LegallySeparatedFrom:
-  definition holds equals
-    exists m among (W.marriage_event_values of world) such that
-      m.agents contains taxpayer
-      and m.agents contains spouse
-      and taxpayer.id != spouse.id
-      and (output of S7703.LegalSeparation with {
-             -- world: world -- marriage: m
-             -- taxable_year: taxable_year }).separated
+declaration separated_individual_not_married content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             period content W.TaxPeriod
+  equals exists separation among
+           (W.relationship_events_of_kind of world, W.EventKind.LegalSeparation)
+         such that W.has_agent of separation, taxpayer
+                   and W.overlaps_period of separation.starts,
+                                                separation.ends, period
 ```
-
-```catala-metadata
-declaration scope LegallySeparatedFrom:
-  input world content W.World
-  input taxpayer content W.Entity
-  input spouse content W.Entity
-  input taxable_year content integer
-  output holds content boolean
-```
-
-
 
         (B) a taxpayer shall be considered as not married at the close of his taxable year if at any time during the taxable year his spouse is a nonresident alien; and
 
 
 <!-- rtdf-block-id: sara/section2:b0020; role: provision; provision-id: sara/section2(b)(2)(B); source-lines: 49-49; relation: formalizes-preceding -->
 ```catala
-scope SpouseNonresidentAlien:
-  definition holds equals
-    exists m among (W.marriage_event_values of world) such that
-      m.agents contains taxpayer
-      # No `sp.id != taxpayer.id` here, deliberately. §7703(a)(1) writes
-      # `Taxp\==Spouse` and this provision does not:
-      #
-      #     s2_b_2_B(Taxp,Spouse,Taxy) :-
-      #         marriage_(Marriage),
-      #         agent_(Marriage,Taxp),
-      #         agent_(Marriage,Spouse),      % no distinctness guard
-      #
-      # so on a marriage naming a single agent, SARA lets the taxpayer be
-      # their own nonresident-alien spouse and (b)(2)(B) holds. Requiring the
-      # two to differ is a tidier rule than the one enacted, and it made the
-      # port disagree on a four-fact world.
-      and (exists sp among m.agents such that
-             (match spouse with pattern
-                  -- Absent: true
-                  -- Present content s: s.id = sp.id)
-             and (exists ev among (W.nonresident_alien_event_values of world) such that
-                    ev.agents contains sp
-                    and (nra_in_year of ev.starts, ev.ends, taxable_year)))
-
+declaration spouse_nonresident_treated_not_married content boolean
+  depends on world content W.World,
+             spouses content list of W.Entity,
+             period content W.TaxPeriod
+  equals exists spouse among spouses such that
+    nonresident_alien_during_year of world, spouse, period
 ```
-
-```catala-metadata
-declaration scope SpouseNonresidentAlien:
-  input world content W.World
-  input taxpayer content W.Entity
-  input spouse content optional of W.Entity
-  input taxable_year content integer
-  output holds content boolean
-
-```
-
-
 
         (C) a taxpayer shall be considered as married at the close of his taxable year if his spouse (other than a spouse described in subparagraph (B)) died during the taxable year.
 
 
 <!-- rtdf-block-id: sara/section2:b0021; role: provision; provision-id: sara/section2(b)(2)(C); source-lines: 51-51; relation: formalizes-preceding -->
 ```catala
-scope SpouseDiedInYear:
-  definition holds equals
-    exists m among (W.marriage_event_values of world) such that
-      m.agents contains taxpayer
-      and (exists sp among m.agents such that
-             (match spouse with pattern
-              -- Absent: true
-              -- Present content s: s.id = sp.id)
-             and not (output of SpouseNonresidentAlien with {
-                        -- world: world -- taxpayer: taxpayer
-                        -- spouse: Present content sp
-                        -- taxable_year: taxable_year }).holds
-             and (exists dv among (W.death_event_values of world) such that
-                    dv.agents contains sp
-                    and (exists td among (W.date_values of dv.starts) such that
-                           ((number of (W.date_values of m.ends)) = 0
-                            or (exists me among (W.date_values of m.ends) such that td <= me))
-                           and (W.first_day_year of taxable_year) <= td
-                           and td <= (W.last_day_year of taxable_year))))
+declaration spouse_death_preserves_married_status content boolean
+  depends on world content W.World,
+             spouses content list of W.Entity,
+             period content W.TaxPeriod
+  equals exists spouse among spouses such that
+    exists death among (W.relationship_events_of_kind of world, W.EventKind.Death)
+    such that W.has_agent of death, spouse
+              and W.overlaps_period of death.starts, death.ends, period
 ```
-
-```catala-metadata
-declaration scope SpouseDiedInYear:
-  input world content W.World
-  input taxpayer content W.Entity
-  input spouse content optional of W.Entity
-  input taxable_year content integer
-  output holds content boolean
-```
-
-
 
     (3) Limitations
 
     Notwithstanding paragraph (1), for purposes of this subtitle a taxpayer shall not be considered to be a head of a household-
 
 
-<!-- rtdf-block-id: sara/section2:b0022; role: provision; provision-id: sara/section2(b)(3); source-lines: 53-55; relation: formalizes-preceding -->
 ```catala
-scope HouseholdMemberOnly:
-
-scope HouseholdMemberOnly:
-  definition dependant_given equals
-    match dependant with pattern
-    -- Present content dp: true
-    -- Absent: false
-
-scope HouseholdMemberOnly:
-  definition candidates equals
-    match dependant with pattern
-    -- Present content d: [d]
-    -- Absent:
-        (combine all ps
-           among (map each ev among
-                   (list of e among (W.residence_event_values of world)
-                    such that e.agents contains taxpayer)
-                  to (residents_at of world, ev.ident))
-           in acc initially []
-           with acc ++ ps)
-        ++ (map each k among
-             (child_of ++ sibling_of ++ descendent_of ++ stepsibling_of)
-            to k.subject)
-        # `s152_d_2_H(Dependent,Taxp,Taxy,_,StartH,EndH)` is where SARA *binds*
-        # the dependant, and a case that grants (H) supplies rows the event
-        # base does not. Without them a world whose only content is the grant
-        # offers no candidate at all, and §2(b)(3)(B) came out false on a
-        # dependant SARA finds.
-        ++ (list of e among
-              (map each inj among
-                 ((W.injections_for_6_23 of injections, P.pred_s152_d_2_H_6, taxpayer.id, W.num_key of taxable_year))
-               to (match (W.injection_entity of inj, 1) with pattern
-                   -- Absent: taxpayer
-                   -- Present content d: d))
-            such that e.id != taxpayer.id)
-
-scope HouseholdMemberOnly:
-  definition holds equals
-    exists dep among candidates such that
-      # \+ s152_b(Dependent,Taxp,Taxy)
-      (not ((output of S152.Ineligible with {
-               -- injections: injections -- world: world
-               -- person: taxpayer -- taxable_year: taxable_year
-               -- child_of: child_of -- sibling_of: sibling_of
-               -- descendent_of: descendent_of
-               -- stepsibling_of: stepsibling_of
-               -- stepparent_of: stepparent_of
-               -- child_in_law_of: child_in_law_of
-               -- parent_in_law_of: parent_in_law_of
-               -- sibling_in_law_of: sibling_in_law_of }).holds
-            or (output of S152.MarriedDependent with {
-                  -- injections: injections -- world: world -- dependant: dep -- spouse: Absent
-                  -- taxable_year: taxable_year }).holds))
-      # \+ s152_a_1(Dependent,Taxp,Taxy)
-      and not (output of S152.QualifyingChild with {
-                 -- injections: injections -- world: world
-                 -- dependant: dep -- taxpayer: taxpayer
-                 -- taxable_year: taxable_year
-                 -- child_of: child_of -- sibling_of: sibling_of
-                 -- descendent_of: descendent_of
-                 -- stepsibling_of: stepsibling_of }).holds_c
-      # s152_d_1_B and s152_d_1_D
-      # `s152_d_1_B(Dependent,Taxy)` runs *before* `s152_d_2_H` binds the
-      # dependant, so when the goal left it unbound this is the world-wide sum
-      # and not a test of `dep` -- one person's income defeats it for everybody.
-      and (output of S152.NoIncome with {
-             -- world: world -- injections: injections -- dependant: dep
-             -- dependant_unbound: (not dependant_given)
-             -- taxable_year: taxable_year
-             -- child_of: child_of -- sibling_of: sibling_of
-             -- descendent_of: descendent_of
-             -- stepsibling_of: stepsibling_of }).holds
-      and not (output of S152.AnyQualifyingChildTaxpayer with {
-                 -- injections: injections -- world: world
-                 -- dependant: dep -- taxable_year: taxable_year
-                 -- child_of: child_of -- sibling_of: sibling_of
-                 -- descendent_of: descendent_of
-                 -- stepsibling_of: stepsibling_of }).holds
-      # ... and no relationship under (A)-(G) that had lapsed by year end
-      and (let qr equals
-             (output of S152.QualifyingRelativeRelationship with {
-                -- dependant: dep -- taxpayer: taxpayer
-                -- windows_h: []
-                -- child_of: child_of -- sibling_of: sibling_of
-                -- descendent_of: descendent_of
-                -- stepsibling_of: stepsibling_of
-                -- stepparent_of: stepparent_of
-                -- child_in_law_of: child_in_law_of
-                -- parent_in_law_of: parent_in_law_of
-                -- sibling_in_law_of: sibling_in_law_of }) in
-           not (exists w among qr.windows
-                such that window_lapsed of w, taxable_year))
-      # ... but (H) does hold, across the whole year
-      and (exists w among
-            (output of S152.MemberOfHousehold with {
-               -- injections: injections -- world: world
-               -- dependant: dep -- taxpayer: taxpayer
-               -- taxpayer_generated: false
-               -- dependant_generated: (not dependant_given)
-               -- taxable_year: taxable_year }).windows
-           such that window_covers of w, taxable_year)
+declaration head_of_household_limitations_clear content boolean
+  depends on world content W.World,
+             taxpayer content W.Entity,
+             period content W.TaxPeriod,
+             qualifying_only_under_152_d_2_h content boolean
+  equals not (nonresident_alien_during_year of world, taxpayer, period)
+         and not qualifying_only_under_152_d_2_h
 ```
-
-```catala-metadata
-declaration scope HouseholdMemberOnly:
-  input injections content list of W.Injection
-  input world content W.World
-  input taxpayer content W.Entity
-  input dependant content optional of W.Entity
-  input taxable_year content integer
-  input child_of content list of K.Kinship
-  input sibling_of content list of K.Kinship
-  input descendent_of content list of K.Kinship
-  input stepsibling_of content list of K.Kinship
-  input stepparent_of content list of K.Kinship
-  input child_in_law_of content list of K.Kinship
-  input parent_in_law_of content list of K.Kinship
-  input sibling_in_law_of content list of K.Kinship
-  output candidates content list of W.Entity
-  ## Did the goal name the dependant? It decides which reading of
-  ## §152(d)(1)(B) applies.
-  output dependant_given content boolean
-  output holds content boolean
-  output legal_holds content boolean
-```
-
-
 
         (A) if at any time during the taxable year he is a nonresident alien; or
 
 
 <!-- rtdf-block-id: sara/section2:b0023; role: provision; provision-id: sara/section2(b)(3)(A); source-lines: 57-57; relation: formalizes-preceding -->
 ```catala
-scope NonresidentAlienTaxpayer:
-  definition holds equals
-    exists ev among (W.nonresident_alien_event_values of world) such that
-      ev.agents contains taxpayer
-      and (((number of ev.starts) = 0
-            and ((number of (W.date_values of ev.ends)) = 0
-                 or (exists e among (W.date_values of ev.ends) such that
-                       (W.first_day_year of taxable_year) <= e)))
-           or ((exists s among ev.starts such that
-                  s <= (W.last_day_year of taxable_year))
-               and ((number of (W.date_values of ev.ends)) = 0
-                    or (exists e among (W.date_values of ev.ends) such that
-                          (W.last_day_year of taxable_year) <= e))))
+declaration nonresident_alien_during_year content boolean
+  depends on world content W.World,
+             person content W.Entity,
+             period content W.TaxPeriod
+  equals exists alien among
+           (W.status_events_of_kind of world, W.EventKind.NonresidentAlien)
+         such that W.has_agent of alien, person
+           and W.overlaps_period of alien.starts, alien.ends, period
 ```
-
-```catala-metadata
-declaration scope NonresidentAlienTaxpayer:
-  input world content W.World
-  input taxpayer content W.Entity
-  input taxable_year content integer
-  output holds content boolean
-```
-
-
 
         (B) by reason of an individual who would not be a dependent for the taxable year but for subparagraph (H) of section 152(d)(2).
 
 <!-- rtdf-block-id: sara/section2:b0024; role: provision; provision-id: sara/section2(b)(3)(B); source-lines: 59-59; relation: formalizes-preceding -->
 ```catala
-scope HouseholdMemberOnly:
-  definition legal_holds equals holds
+scope FilingStatusFor:
+  definition marital.world equals world
+  definition marital.taxpayer equals taxpayer
+  definition marital.period equals period
+  definition surviving_scope.world equals world
+  definition surviving_scope.taxpayer equals taxpayer
+  definition surviving_scope.period equals period
+  definition head_scope.world equals world
+  definition head_scope.taxpayer equals taxpayer
+  definition head_scope.period equals period
+  definition spouse equals
+    let joint_spouses equals
+      list of candidate among marital.result.spouses such that
+        W.has_full_year_joint_return of world, taxpayer, candidate, period in
+    if joint_spouses != []
+    then List.first_element of joint_spouses
+    else List.first_element of marital.result.spouses
+
+scope FilingStatusFor:
+  definition status equals
+    let joint equals
+      match spouse with pattern
+      -- Absent: false
+      -- Present content other:
+         W.has_full_year_joint_return of world, taxpayer, other, period in
+    if joint or surviving_scope.holds then FilingStatus.JointOrSurviving
+    else if head_scope.holds then FilingStatus.HeadOfHousehold
+    else if marital.result.married then FilingStatus.MarriedFilingSeparately
+    else FilingStatus.Unmarried
 ```

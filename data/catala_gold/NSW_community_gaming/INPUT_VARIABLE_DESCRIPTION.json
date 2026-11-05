@@ -1,0 +1,264 @@
+{
+  "enums": {
+    "BenefitingOrganisation": "",
+    "OrganisationType": ""
+  },
+  "fields": {
+    "artUnion": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.grossProceeds": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.holdsAuthority": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.maxAmountMoneyAsSeparatePrize": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.proceedsToBenefitingOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.totalValueOfThePrizes": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "artUnion.typeOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_art_union.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.grossProceeds": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.maxTicketsPerParticipant": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.proceedsToBenefitingOrganisation": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.totalValueOfExpenses": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.totalValueOfThePrizes": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "charityHousie.typeOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_charity_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo.bonusPrizeMaxValue": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo.bonusPrizeOffered": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo.prizeContent": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo.registeredClub": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "clubBingo.totalValuePrizePerGame": {
+      "description": "",
+      "scopes": [
+        "nsw_club_bingo.catala_en::GamingAuthorized"
+      ]
+    },
+    "drawLottery": {
+      "description": "",
+      "scopes": [
+        "nsw_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "drawLottery.grossProceeds": {
+      "description": "",
+      "scopes": [
+        "nsw_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "drawLottery.proceedsToBenefitingOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "drawLottery.totalValueOfThePrizes": {
+      "description": "",
+      "scopes": [
+        "nsw_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "drawLottery.typeOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery.grossProceeds": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery.maxTickets": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery.proceedsToBenefitingOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery.totalValueOfThePrizes": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "noDrawLottery.typeOrg": {
+      "description": "",
+      "scopes": [
+        "nsw_no_draw_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "progressiveLottery": {
+      "description": "",
+      "scopes": [
+        "nsw_progressive_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "progressiveLottery.holdsAuthority": {
+      "description": "",
+      "scopes": [
+        "nsw_progressive_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "progressiveLottery.maxAmountPayable": {
+      "description": "",
+      "scopes": [
+        "nsw_progressive_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "progressiveLottery.totalValueOfThePrizes": {
+      "description": "",
+      "scopes": [
+        "nsw_progressive_lottery.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie.applicationOf2007Licence": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie.investmentReturn": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie.jackpotPrizeValue": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie.socialPurposeOnly": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    },
+    "socialHousie.totalValuePrizePerSession": {
+      "description": "",
+      "scopes": [
+        "nsw_social_housie.catala_en::GamingAuthorized"
+      ]
+    }
+  },
+  "schema_version": 3,
+  "structs": {
+    "ArtUnion": "",
+    "CharityHousie": "",
+    "ClubBingo": "",
+    "DrawLottery": "",
+    "NoDrawLottery": "",
+    "ProgressiveLottery": "",
+    "SocialHousie": ""
+  }
+}

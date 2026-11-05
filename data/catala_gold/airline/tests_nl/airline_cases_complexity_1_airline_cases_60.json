@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_60",
+  "label": "3096",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Linda is a Premium Economy Class passenger flying from Mumbai to Chicago with the following items: 1. A backpack: 20 x 13 x 6 inches, 6 lbs; 2. A backpack: 37 x 15 x 13 inches, 84 lbs; 3. A luggage box: 35 x 18 x 10 inches, 59 lbs; 4. A backpack: 36 x 18 x 10 inches, 56 lbs; 5. A luggage box: 50 x 31 x 24 inches, 56 lbs; 6. A luggage box: 38 x 12 x 14 inches, 83 lbs; 7. A backpack: 35 x 18 x 12 inches, 52 lbs; 8. A backpack: 33 x 16 x 14 inches, 90 lbs; Linda's flight ticket is $316."
+}

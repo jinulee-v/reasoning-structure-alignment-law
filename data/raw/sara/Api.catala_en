@@ -1,0 +1,31 @@
+# SARA evaluator API
+
+This file is the evaluator-facing contract. The required scope and output below
+are fixed; add factual inputs, internal variables, and section subscopes without
+renaming or removing them.
+
+- Requirement ID `SARA-TOTAL-TAX`: scope `TotalTax`, output `total_tax`.
+
+> Module Api
+> Using Definitions as W
+> Using Section1 as S1
+> Using Section2 as S2
+> Using Section63 as S63
+> Using Section68 as S68
+> Using Section151 as S151
+> Using Section152 as S152
+> Using Section3301 as S3301
+> Using Section3306 as S3306
+> Using Section7703 as S7703
+
+```catala-metadata
+declaration scope TotalTax:
+  # Add factual inputs, internal variables, and section subscopes here.
+  # Keep the predeclared output below unchanged.
+  output total_tax content money
+```
+
+```catala
+# Define TotalTax.total_tax by composing the statutory section scopes. Keep
+# cross-section orchestration here rather than assigning it to one provision.
+```

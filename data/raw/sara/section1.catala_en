@@ -1,11 +1,11 @@
 <!-- rtdf-document-id: sara/section1 -->
 
-<!-- rtdf-block-id: sara/section1:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+> Module Section1
+> Using Definitions as W
+
 ```catala-metadata
 ```
 
-
-<!-- rtdf-block-id: sara/section1:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -16,7 +16,6 @@
 There is hereby imposed on the taxable income of-
 
 
-<!-- rtdf-block-id: sara/section1:b0003; role: provision; provision-id: sara/section1(a); source-lines: 3-5; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -37,7 +36,6 @@ There is hereby imposed on the taxable income of-
 a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0006; role: provision; provision-id: sara/section1(a):flush; source-lines: 11-11; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -77,7 +75,6 @@ a tax determined in accordance with the following:
 There is hereby imposed on the taxable income of every head of a household (as defined in section 2(b)) a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0012; role: provision; provision-id: sara/section1(b); source-lines: 19-21; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -117,7 +114,6 @@ There is hereby imposed on the taxable income of every head of a household (as d
 There is hereby imposed on the taxable income of every individual (other than a surviving spouse as defined in section 2(a) or the head of a household as defined in section 2(b)) who is not a married individual (as defined in section 7703) a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0018; role: provision; provision-id: sara/section1(c); source-lines: 29-31; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -157,7 +153,6 @@ There is hereby imposed on the taxable income of every individual (other than a 
 There is hereby imposed on the taxable income of every married individual (as defined in section 7703) who does not make a single return jointly with his spouse, a tax determined in accordance with the following:
 
 
-<!-- rtdf-block-id: sara/section1:b0024; role: provision; provision-id: sara/section1(d); source-lines: 39-41; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -190,4 +185,3 @@ There is hereby imposed on the taxable income of every married individual (as de
 <!-- rtdf-block-id: sara/section1:b0029; role: provision; provision-id: sara/section1(d)(v); source-lines: 47-47; relation: formalizes-preceding -->
 ```catala
 ```
-

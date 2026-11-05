@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_58",
+  "label": "2332",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Michael is a Premium Economy Class passenger flying from Dallas to Austin with the following items: 1. A backpack: 20 x 13 x 6 inches, 9 lbs; 2. A luggage box: 35 x 19 x 11 inches, 66 lbs; 3. A backpack: 35 x 16 x 12 inches, 75 lbs; 4. A luggage box: 38 x 15 x 12 inches, 56 lbs; 5. A luggage box: 45 x 31 x 20 inches, 51 lbs; 6. A backpack: 50 x 33 x 31 inches, 51 lbs; 7. A backpack: 40 x 23 x 16 inches, 98 lbs; 8. A luggage box: 35 x 17 x 11 inches, 77 lbs; Michael's flight ticket is $182."
+}

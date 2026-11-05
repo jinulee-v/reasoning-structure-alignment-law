@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_0_airline_cases_6",
+  "label": "2314",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "Karen is a Main Cabin Class passenger flying from Wuhan to Portland with the following items: 1. A backpack: 22 x 13 x 9 inches, 12 lbs; 2. A luggage box: 43 x 27 x 17 inches, 52 lbs; 3. A luggage box: 49 x 30 x 23 inches, 52 lbs; 4. A luggage box: 37 x 18 x 9 inches, 60 lbs; 5. A luggage box: 35 x 17 x 13 inches, 53 lbs; Karen's flight ticket is $1284."
+}

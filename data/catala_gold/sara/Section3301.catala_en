@@ -1,16 +1,17 @@
 <!-- rtdf-document-id: sara/section3301 -->
 
 > Module Section3301
+> Using Definitions as W
+> Using Section3306 as S3306
 
-<!-- rtdf-block-id: sara/section3301:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
-declaration unemployment_tax content money
-  depends on wages content money
-```
-
-
-<!-- rtdf-block-id: sara/section3301:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
-```catala
+declaration scope UnemploymentTax:
+  input world content W.World
+  input employer content W.Entity
+  input period content W.TaxPeriod
+  wages scope S3306.EmployerAndWages
+  output taxable_wages content money
+  output tax content money
 ```
 
 §3301. Rate of tax
@@ -18,7 +19,11 @@ declaration unemployment_tax content money
 There is hereby imposed on every employer (as defined in section 3306(a)) for each calendar year an excise tax, with respect to having individuals in his employ, equal to 6 percent of the total wages (as defined in section 3306(b)) paid by such employer during the calendar year with respect to employment (as defined in section 3306(c)).
 <!-- rtdf-block-id: sara/section3301:b0003; role: provision; provision-id: sara/section3301; source-lines: 3-3; relation: formalizes-preceding -->
 ```catala
-declaration unemployment_tax content money
-  depends on wages content money
-  equals money of (round of (decimal of (wages * 0.06)))
+scope UnemploymentTax:
+  definition wages.world equals world
+  definition wages.employer equals employer
+  definition wages.period equals period
+  definition taxable_wages equals wages.taxable_wages
+  definition tax equals
+    if wages.is_employer then round of (6% * taxable_wages) else $0
 ```

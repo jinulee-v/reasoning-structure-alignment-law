@@ -1,0 +1,8 @@
+{
+  "domain": "airline",
+  "hard": false,
+  "id": "airline_cases_complexity_1_airline_cases_52",
+  "label": "3645",
+  "question": "What is the total cost (including the flight ticket fee, checked bag fees, cost of special needs) according to the policies for the passenger?",
+  "text": "William is a Main Plus Class passenger flying from Beijing to Sacramento with the following items: 1. A backpack: 22 x 14 x 9 inches, 9 lbs; 2. A luggage box: 33 x 18 x 14 inches, 90 lbs; 3. A backpack: 38 x 15 x 12 inches, 72 lbs; 4. A luggage box: 38 x 13 x 14 inches, 93 lbs; 5. A luggage box: 46 x 30 x 19 inches, 83 lbs; 6. A luggage box: 34 x 16 x 13 inches, 53 lbs; 7. A luggage box: 38 x 17 x 9 inches, 52 lbs; 8. A backpack: 42 x 22 x 19 inches, 53 lbs; William's flight ticket is $585."
+}

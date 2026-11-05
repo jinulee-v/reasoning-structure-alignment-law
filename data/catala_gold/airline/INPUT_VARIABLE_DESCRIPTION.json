@@ -1,0 +1,118 @@
+{
+  "enums": {
+    "Definitions.Cabin": "The ticketed cabin: BasicEconomy, MainCabin, MainPlus, PremiumEconomy, Business, or First.",
+    "Definitions.City": "The named origin or destination city. Choose the matching city constructor from the closed 73-city itinerary gazetteer.",
+    "Definitions.EliteStatus": "The passenger's AAdvantage or equivalent oneworld tier at the stated time: NoStatus, Gold, Platinum, PlatinumPro, or ExecutivePlatinum.",
+    "Definitions.ItemKind": "The kind of carried item: OrdinaryBag, SoftSidedGarmentBag, DiaperBag, BreastPump, BreastMilkCooler, ChildSafetySeat, Stroller, or MedicalOrMobilityDevice.",
+    "Definitions.MilitaryStatus": "The passenger's U.S. military travel category: NotMilitary, OnOrders, or PersonalTravel."
+  },
+  "fields": {
+    "itinerary": {
+      "description": "The passenger's complete itinerary and baggage facts used to calculate total trip cost.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.cabin": {
+      "description": "The cabin in which the passenger is ticketed.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.cardmember": {
+      "description": "Whether the passenger is an eligible AAdvantage Aviator or Citi/AAdvantage cardmember.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.children": {
+      "description": "The nonnegative number of children travelling with the passenger, used for the one-diaper-bag-per-child allowance.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.destination": {
+      "description": "The itinerary's destination city.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.flagship": {
+      "description": "Whether the passenger has a confirmed Flagship First or Flagship Business Plus fare product.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items": {
+      "description": "The ordered list of items the passenger presents; order determines checked-bag position and fees.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items[].height": {
+      "description": "The item's nonnegative height in inches.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items[].kind": {
+      "description": "The item's baggage or exempt-item category.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items[].length": {
+      "description": "The item's nonnegative length in inches.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items[].weight": {
+      "description": "The item's nonnegative weight in pounds.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.items[].width": {
+      "description": "The item's nonnegative width in inches.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.military": {
+      "description": "The passenger's U.S. military travel status, including whether travel is on orders or personal.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.origin": {
+      "description": "The itinerary's origin city.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.status_at_checkin": {
+      "description": "The passenger's AAdvantage or equivalent oneworld elite status at check-in.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.status_at_ticketing": {
+      "description": "The passenger's AAdvantage or equivalent oneworld elite status at ticketing.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    },
+    "itinerary.ticket": {
+      "description": "The nonnegative base ticket price as a monetary amount, before baggage fees.",
+      "scopes": [
+        "Api.catala_en::TotalCost"
+      ]
+    }
+  },
+  "schema_version": 3,
+  "structs": {
+    "Definitions.Item": "One carried item, recording its kind, dimensions in inches, and weight in pounds.",
+    "Definitions.Itinerary": "A passenger itinerary containing route, cabin, ticket price, ordered items, benefit statuses, and child count."
+  }
+}
