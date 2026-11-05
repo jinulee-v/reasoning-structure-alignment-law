@@ -1,0 +1,296 @@
+# Catala-specific questions
+
+<div id="tocw"></div>
+
+## When to choose `condition`, `rule` *vs* booleans?
+
+You may have noticed the keywords `condition` and `rule` in Catala scopes,
+for instance:
+
+```catala-code-en
+declaration scope Foo:
+  input i content integer
+  output x condition
+
+scope Foo:
+  rule x under condition i = 42 consequence fulfilled
+```
+
+The above is strictly equivalent to the following program:
+
+```catala-code-en
+declaration scope Foo:
+  input i content integer
+  output x content boolean
+
+scope Foo:
+  definition x equals false
+
+  exception definition x under condition i = 42 consequence equals true
+```
+
+As the example shows, `condition` is a [syntactic sugar](https://en.wikipedia.org/wiki/Syntactic_sugar)
+for declaring a boolean scope variable whose default value is `false`. In the body
+of the scope, you must use `rule` instead of `definition` for defining under which
+conditions the `condition` should be `fulfilled` (`true`) or `not fulfilled` (`false`).
+It is possible to use `exception` and `label` on rules like for definitions,
+but all the `rule`s are implicitly exceptions of a base case where the condition
+is `false`.
+
+This behavior for `condition` and `rule` matches the legal intuition, making this
+syntax easier to read for pieces of programs with complex code to set a boolean
+variable.
+
+## Why do I have to cast values?
+
+Some programming languages, like Javascript, do not make any distinction between
+decimals and integers (there is a unique `Number` type). In others, like Python,
+the distinction is hidden because the compiler or interpreter inserts implicit
+casts whenever you use an integer when a decimal was needed. This approach eases
+programming as you do not need to worry how the number is represented in memory,
+things just *work*.
+
+However, this approach has a downside, precisely because the language decides
+for you how the number is represented in memory. The downside is that you are
+not in control of how precise the computations are, and how values are casted
+from one representation to another. For instance, when casting a decimal to an
+integer, you will lose precision because of rounding or truncating; there are
+multiple ways to convert a number of months into a number of days depending on
+what you are computing.
+
+The philosophy of Catala is to give you full control over those choices, at
+the expense of require explicit casting. Hence, Catala's base types (`boolean`,
+`integer`, `decimal`, `money`, `date`, `duration`) strictly distinct and require
+explicit casting between them. Using a `decimal` where an `integer` is needed
+will yield a type error like the following:
+
+```text
+┌─[ERROR]─
+│
+│  I don't know how to apply operator + on types integer and decimal
+│
+├─➤ example.catala_en:
+│    │
+│ 13 │   1 + 2.0
+│    │   ‾‾‾‾‾‾‾
+│
+│ Type integer coming from expression:
+├─➤ example.catala_en:
+│    │
+│ 13 │  1 + 2.0
+│    │  ‾
+│
+│ Type decimal coming from expression:
+├─➤ example.catala_en:
+│    │
+│ 13 │   1 + 2.0
+│    │       ‾‾‾
+└─
+```
+
+This error can be fixed by tweaking `2.0` to `integer of 2.0`. See the
+relevant section of the [language reference](./5-2-types.md#base-types) for more
+details about how to create literals with the correct type.
+
+## Why is there a distinct money type?
+
+Correctly performing financial computations is hard. The precision and rounding
+rules required may vary from application to application, and should be balanced
+with performance requirements.
+
+This is why Catala separates strictly the `money` type from `integer`s or
+`decimal`s. Using `money` values in Catala, along with explicit casting (see
+above), lets the compiler warn you when you're mixing money and non-money
+numbers in your computation. Money, and the currency unit, becomes like a
+dimensional unit in a physical formula that needs to check out coherently.
+
+Once that we have these separate `money` value, we have to give them a behavior
+that accommodates most uses and respects the philosophy of the language. Hence,
+`money` values in Catala are a integer number of cents. Multiplying a `money`
+value by a `decimal` can yield a value that is not an exact number of cent;
+in that case Catala rounds the result to the nearest cent.
+
+If you want more precision for values representing money amount, you should
+represent them as `decimal` and cast them in (with the occasional rounding) and
+out of `money` when you need to.
+
+
+## How to round money up or down to a specific precision?
+
+In Catala, monetary values are represented as an integer number of cents (see
+above). A calculation with the catala `money` type always result in an amount
+rounded to the nearest cent. This means, that, when performing intermediate
+computations on money, rounding must be considered by the programmer at each
+step. This aims at making review by domain experts easier, since for each
+intermediate value, they can follow along and perform example computations with
+a simple desk calculator.
+
+To round to the nearest monetary unit, use `round of`. To round an
+amount to an arbitrary multiple of a cent, you may use the [dedicated
+helper functions](./5-7-standard-library.md#module-money) present in
+the Catala standard library ([section 5-7](./5-7-standard-library.md)).
+For instance, `Money.round_by_excess of $4.13` yields `$5`,
+`Money.round_by_default of $4.13` yields `$4`. And, if one needs to
+round to the nearest 10 cents, you can use `Money.round_to_decimal of
+$123.45, 1 = $123.5` where `1` defines the `n-th` decimal to round
+on. If a negative number is provided, you may round on the amount
+before the decimal part. For example, `Money.round_to_decimal of
+$123.45, -2 = $100.0` rounds to the nearest hundred of monetary unit.
+
+These helper functions are also available for `decimal` values in the
+dedicated [standard library
+module](./5-7-standard-library.md#module-decimal).
+
+## Why mathematical integers and decimals instead of machine integers and floats?
+
+Precision! Machine integers have a maximum and minimum value and wrap on overflow
+or underflow. Floating-point values cannot represent arbitrary small intervals
+between numbers and lose precision by accumulating errors, computation after
+computation. These weaknesses are usually ignored by computer scientists, as
+machine integers and floating points are precise enough for most applications,
+but financial computations for automatic administrative decision-making should not
+fail, even rarely, due to these low-level problems.
+
+Hence, Catala uses the [GMP](https://gmplib.org/) library to feature true
+mathematically sound integers and decimal values whose representation in memory
+grows as more and more precision is needed from them. This choice adds some
+performance overhead but GMP includes state-of-the-art optimizations tailored
+for every architecture using assembly tricks to lower or even cancel this
+overhead for computations that don't really require the extra precision.
+
+For instance and under the hood, Catala's `decimal` are actually GMP rationals,
+irreducible fractions made of two GMP infinite-precision integers.
+
+## How to create dates and durations from integers?
+
+To get a duration, simply multiply the desired duration unit by the integer or decimal:
+
+```catala-code-en
+# 1 month * 24 = 24 month
+
+declaration duration_of_days content duration
+  depends on number_of_days content integer
+  equals
+    1 day * number_of_days
+```
+
+However, you cannot build a `YYYY-MM−DD` by directly concatenating together the
+`integer` values of `YYYY-MM-DD`. Instead, use the `Date.of_year_month_day`
+function.
+
+## Why are there no strings?
+
+The absence of strings in Catala is *a feature, not a bug*. Catala is meant to
+be a domain-specific programming language for computations described in legal
+texts, that lawyers understand. If you find a legal text that requires actual
+string manipulation operations to be automated, please tell the Catala team!
+In absence of such a legal text, the decision was made to not include strings,
+for several reasons.
+
+First, the common operations present in legal texts that can be done with
+strings, can also be done better with other Catala features. For instance, it is
+better to represent tags and codes with `enumeration`s that can contain payload
+and have a built-in exhaustiveness check in pattern matching. The Catala team
+thus advises you to really think your problem through and see whether it really
+requires strings as a first-class value type in Catala to be solved.
+
+Second, the preferred way of performing low-level, computation-intensive
+operations not described by legal text but used in a Catala program is to simply
+to them outside of Catala and provide their output as inputs of a Catala scope,
+or define an external module. See the [language reference for more
+details](./5-6-modules.md#declaring-external-modules).
+
+Third, including string manipulations in the Catala runtime will heavily
+increase the size and complexity of the runtime, as it will probably require a
+fully-fledged regexp library as a dependency. Moreover, this regexp library dependency
+should be available in every backend programming language that Catala supports,
+to ensure that the semantics of string operations is absolutely the same whatever
+the backend. This is a lot of work and later, maintenance, for the Catala team.
+
+## How do I add an exception from *outside* a scope?
+
+Sometimes, the law is quite convoluted. For instance, [article 1731
+bis](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044981364) of
+the French tax code describes how to compute fines for tax fraud or late income
+declaration. This article specifies that, when computing the fine amount, the
+main tax computation should be tweaked to neutralize certain deductions. If you
+were to implement this in Catala, you would have two scopes `FinesComputation`
+and `IncomeTaxComputation`; article 1731 bis requires you to call
+`IncomeTaxComputation` from `FinesComputation` while tweaking certain
+computation rules inside `IncomeTaxComputation`.
+
+This pattern amounts to declaring an exception to a variable of
+`IncomeTaxComputation`, from the outside of `IncomeTaxComputation`. Turns out
+there is a specific Catala feature to handle this case, extending the
+`exception`s in a principled way across scopes : context variables. See the
+[language reference for more details](./5-3-scopes-toplevel.md#context-variables).
+
+## Do I have to repeat every field in a struct when I want to only change one of them?
+
+No! See "Updating structs" in the [language reference for more
+details](./5-5-expressions.md#structures).
+
+## How are dates and durations handled?
+
+What is the result of `Jan 31st + 1 month`? Is it Feb 28th, Feb 29th or March
+1st? This question reveals the subtle tricks behind date computations in the
+Gregorian calendar. The variable number of days in a month and leap years cause
+ambiguities in many date computations specified in the law. The way these
+ambiguities are resolved influences the outcome of administrative automated
+decisions, which is why the Catala team has been very cautious about this topic.
+The motivations and design choices are outlined in a [scientific
+article](https://hal.science/hal-04536403); in summary a [custom date
+computation library](https://github.com/CatalaLang/dates-calc) that lets the
+user choose how to round ambiguous dates computations had to be implemented.
+
+Otherwise, dates in Catala are standard dates in the Gregorian calendar, precise
+to the day (and not more). Durations are a combination of a number of days,
+months and/or years. See the [language reference](./5-2-types.md#dates) for more
+details.
+
+
+## Which programming languages can Catala target?
+
+The Catala compiler natively targets :
+* C (standard C89);
+* Python;
+* Java;
+* OCaml;
+
+From the OCaml backend, Javascript can be targeted through
+[`js_of_ocaml`](https://ocsigen.org/js_of_ocaml/latest/manual/overview).
+
+The [runtimes for these
+backends](https://github.com/CatalaLang/catala/tree/master/runtimes) have two
+dependencies outside the standard library of the target programming languages:
+[GMP](https://gmplib.org/) for multi-precision arithmetic and our [custom date
+computation library](https://github.com/CatalaLang/dates-calc).
+
+
+## Why scope declarations cannot be split like scope definitions ?
+
+In Catala, there can be [multiple `definition`s for the same scope
+variable](./5-4-definitions-exceptions.md). This allows for splitting the code
+defining the value of a variable along the bits of specification scattered
+across the legal text. Following this logic, one might want to be able to split
+scope or data structure `declaration`s  across the codebase in the same way,
+thereby justifying the presence of each particular input or internal scope
+variable by a bit of legal text. Such a feature would be reminiscent of
+extensible types, a feature present in languages like
+[OCaml](https://ocaml.org/manual/extensiblevariants.html).
+
+However, the Catala team chose not to implement such a feature. Indeed,
+empirical experiments showed that contraty to `definition`s which should always
+be justified by the legal specification, the choice of how to arrange data
+structures and scope prototype is largely up to the programmer, and a lot of it
+is rather motivated by programming constraints than legal requirements. This is
+why the Catala team advises programmers to put all data structure and scope
+declarations inside a "prologue" section distinct from the legal sources, rather
+than scattering them across the codebase.
+
+Furthermore, having all data structure and scope declarations unified and at the
+same place is helpful during programming since the programmer always know where
+to look to find these declarations. Of course, advanced tooling in development
+environments propose the "Go to declaration" feature that could alleviate this
+problem, but this advanced tooling might not always be available to users
+outside the development team that still want to read and understand the program.

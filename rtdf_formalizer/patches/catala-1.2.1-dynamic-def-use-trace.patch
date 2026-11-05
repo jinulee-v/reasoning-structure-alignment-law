@@ -1,0 +1,363 @@
+--- a/runtimes/ocaml/catala_runtime.ml	2026-07-06 08:03:32.000000000 -0500
++++ b/runtimes/ocaml/catala_runtime.ml	2026-11-04 08:40:43.000000000 -0600
+@@ -709,10 +709,17 @@
+ 
+ type information = string list
+ 
++type read_dependency = {
++  definition_id : int;
++  field : string option;
++}
++
+ type raw_event =
+   | BeginCall of information
+   | EndCall of information
+   | VariableDefinition of information * io_log * Value.t
++  | VariableDefinitionWithReads of
++      information * io_log * Value.t * int * read_dependency list
+   | DecisionTaken of code_location
+ 
+ type event =
+@@ -888,6 +895,23 @@
+          "value": %a
+          }|}
+         (String.concat "." name) io_log io runtime_value value
++    | VariableDefinitionWithReads (name, io, value, definition_id, reads) ->
++      let read buf { definition_id; field } =
++        Printf.bprintf buf {|{"definition_id":%d|} definition_id;
++        Option.iter (Printf.bprintf buf {|,"field":%a|} quote) field;
++        Buffer.add_char buf '}'
++      in
++      Printf.bprintf buf
++        {|{
++         "event": "VariableDefinition",
++         "name": "%s",
++         "io": %a,
++         "value": %a,
++         "definition_id": %d,
++         "reads": [%a]
++         }|}
++        (String.concat "." name) io_log io runtime_value value definition_id
++        (list read) reads
+     | DecisionTaken source_pos ->
+       Printf.bprintf buf {|{"event": "DecisionTaken", "pos": %a}|} code_location
+         source_pos
+@@ -908,7 +932,18 @@
+ end
+ 
+ let log_ref : raw_event list ref = ref []
+-let reset_log () = log_ref := []
++let next_definition_id = ref 0
++let latest_definitions : (string, int) Hashtbl.t = Hashtbl.create 97
++let read_stack : read_dependency list ref list ref = ref []
++let pending_scope_inputs : int list ref = ref []
++
++let reset_log () =
++  log_ref := [];
++  next_definition_id := 0;
++  Hashtbl.clear latest_definitions;
++  read_stack := [];
++  pending_scope_inputs := []
++
+ let retrieve_log () = List.rev !log_ref
+ 
+ let log_begin_call info f =
+@@ -919,6 +954,68 @@
+   log_ref := EndCall info :: !log_ref;
+   x
+ 
++let record_read token field =
++  match !read_stack, Hashtbl.find_opt latest_definitions token with
++  | reads :: _, Some definition_id ->
++    let dependency = { definition_id; field } in
++    if not (List.mem dependency !reads) then reads := dependency :: !reads
++  | _ -> ()
++
++let log_variable_read token x =
++  record_read token None;
++  x
++
++let log_variable_field_read token field x =
++  record_read token (Some field);
++  x
++
++let log_value_condition f =
++  let control_reads = ref [] in
++  read_stack := control_reads :: !read_stack;
++  match f () with
++  | x ->
++    read_stack := List.tl !read_stack;
++    x
++  | exception exn ->
++    read_stack := List.tl !read_stack;
++    raise exn
++
++let log_scope_input token x =
++  match !pending_scope_inputs with
++  | definition_id :: rest ->
++    pending_scope_inputs := rest;
++    Hashtbl.replace latest_definitions token definition_id;
++    x
++  | [] -> x
++
++let log_variable_alias token source_token x =
++  (match Hashtbl.find_opt latest_definitions source_token with
++   | Some definition_id -> Hashtbl.replace latest_definitions token definition_id
++   | None -> ());
++  x
++
++let log_variable_definition_with_reads token (info : string list) (io : io_log)
++    embed f =
++  let reads = ref [] in
++  read_stack := reads :: !read_stack;
++  match f () with
++  | x ->
++    read_stack := List.tl !read_stack;
++    let definition_id = !next_definition_id in
++    incr next_definition_id;
++    Hashtbl.replace latest_definitions token definition_id;
++    (match io.io_input with
++     | OnlyInput -> pending_scope_inputs := definition_id :: !pending_scope_inputs
++     | NoInput | Reentrant -> ());
++    log_ref :=
++      VariableDefinitionWithReads
++        (info, io, embed x, definition_id, List.rev !reads)
++      :: !log_ref;
++    x
++  | exception exn ->
++    read_stack := List.tl !read_stack;
++    raise exn
++
+ let log_variable_definition (info : string list) (io : io_log) embed (x : 'a) =
+   log_ref := VariableDefinition (info, io, embed x) :: !log_ref;
+   x
+@@ -1044,6 +1141,10 @@
+       Printf.sprintf "VariableDefinition([ %s ], %s, %s)"
+         (String.concat ", " name) (io_log_to_string io)
+         (Json.runtime_value value)
++    | VariableDefinitionWithReads (name, io, value, _, _) ->
++      Printf.sprintf "VariableDefinition([ %s ], %s, %s)"
++        (String.concat ", " name) (io_log_to_string io)
++        (Json.runtime_value value)
+     | DecisionTaken pos ->
+       Printf.sprintf "DecisionTaken(%s:%d.%d-%d.%d)" pos.filename pos.start_line
+         pos.start_column pos.end_line pos.end_column
+@@ -1059,6 +1160,14 @@
+     | _ -> [], l
+ 
+   let parse_raw_events raw_events =
++    let raw_events =
++      List.map
++        (function
++          | VariableDefinitionWithReads (name, io, value, _, _) ->
++            VariableDefinition (name, io, value)
++          | event -> event)
++        raw_events
++    in
+     let nb_raw_events = List.length raw_events
+     and is_function_call infos = 2 = List.length infos
+     and is_subscope_call infos = 3 = List.length infos
+--- a/runtimes/ocaml/catala_runtime.mli	2026-07-06 08:03:32.000000000 -0500
++++ b/runtimes/ocaml/catala_runtime.mli	2026-11-04 08:40:43.000000000 -0600
+@@ -223,11 +223,19 @@
+ 
+ (** {3 The raw events} *)
+ 
++type read_dependency = {
++  definition_id : int;
++  field : string option;
++}
++
+ type raw_event =
+   | BeginCall of information  (** Subscope or function call. *)
+   | EndCall of information  (** End of a subscope or a function call. *)
+   | VariableDefinition of information * io_log * Value.t
+       (** Definition of a variable or a function argument. *)
++  | VariableDefinitionWithReads of
++      information * io_log * Value.t * int * read_dependency list
++      (** Definition with concrete data dependencies for dynamic slicing. *)
+   | DecisionTaken of code_location  (** Source code position of an event. *)
+ 
+ (** {3 The structured events} *)
+@@ -318,6 +326,15 @@
+ val log_variable_definition :
+   string list -> io_log -> ('a -> Value.t) -> 'a -> 'a
+ 
++val log_variable_definition_with_reads :
++  string -> string list -> io_log -> ('a -> Value.t) -> (unit -> 'a) -> 'a
++
++val log_variable_read : string -> 'a -> 'a
++val log_variable_field_read : string -> string -> 'a -> 'a
++val log_value_condition : (unit -> 'a) -> 'a
++val log_scope_input : string -> 'a -> 'a
++val log_variable_alias : string -> string -> 'a -> 'a
++
+ val log_decision_taken : code_location -> bool -> bool
+ 
+ (** {3 Pretty printers} *)
+--- a/compiler/lcalc/to_ocaml.ml	2026-07-06 08:03:32.000000000 -0500
++++ b/compiler/lcalc/to_ocaml.ml	2026-11-04 08:40:43.000000000 -0600
+@@ -312,11 +312,16 @@
+ let format_var (fmt : Format.formatter) (v : 'm Var.t) : unit =
+   format_var_str fmt (Bindlib.name_of v)
+ 
++let variable_token v =
++  Printf.sprintf "%s#%d" (Bindlib.name_of v) (Bindlib.uid_of v)
++
++let current_definition_token : string option ref = ref None
++
+ let rec needs_parens ?context (e : 'm expr) : bool =
+   match Mark.remove e with
+   | EApp { f = EAbs { binder; _ }, _; _ } -> (
+     match context with
+-    | Some ((EInj _ | EArray _ | EApp _ | EAppOp _), _) -> true
++    | Some ((EInj _ | EArray _ | EStruct _ | EApp _ | EAppOp _), _) -> true
+     | _ ->
+       let _, body = Bindlib.unmbind binder in
+       needs_parens ?context body)
+@@ -335,6 +340,9 @@
+     else format_expr fmt e1
+   in
+   match Mark.remove e with
++  | EVar v when Global.options.trace <> None ->
++    Format.fprintf fmt "(log_variable_read@ %S@ %a)" (variable_token v)
++      format_var v
+   | EVar v -> Format.fprintf fmt "%a" format_var v
+   | EExternal { name } -> (
+     let path =
+@@ -377,6 +385,11 @@
+          (fun fmt i ->
+            Format.pp_print_string fmt (if i = index then "x" else "_")))
+       (List.init size Fun.id) format_with_parens e
++  | EStructAccess { e = (EVar v, _); field; name }
++    when Global.options.trace <> None ->
++    Format.fprintf fmt "(log_variable_field_read@ %S@ %S@ %a.%a)"
++      (variable_token v) (StructField.original_string field) format_var v
++      format_struct_field_name (Some name, field)
+   | EStructAccess { e; field; name } ->
+     Format.fprintf fmt "%a.%a" format_with_parens e format_struct_field_name
+       (Some name, field)
+@@ -457,7 +470,8 @@
+   | EAppOp { op = Log (VarDef var_def_info, info), _; args = [arg1]; _ }
+     when Global.options.trace <> None ->
+     Format.fprintf fmt
+-      "(log_variable_definition@ %a@ {io_input=%s;@ io_output=%b}@ (%a)@ %a)"
++      "(log_variable_definition_with_reads@ %S@ %a@ {io_input=%s;@ io_output=%b}@ (%a)@ (fun () ->@ %a))"
++      (Option.value ~default:"<anonymous>" !current_definition_token)
+       format_uid_list info
+       (match var_def_info.log_io_input with
+       | NoInput -> "NoInput"
+@@ -488,11 +502,17 @@
+          format_with_parens)
+       args
+   | EIfThenElse { cond; etrue; efalse } ->
++    let format_condition fmt cond =
++      if Global.options.trace <> None then
++        Format.fprintf fmt "(log_value_condition@ (fun () ->@ %a))"
++          format_expr cond
++      else format_expr fmt cond
++    in
+     let rec pr_else = function
+       | EIfThenElse { cond; etrue; efalse }, _ ->
+         Format.fprintf fmt
+           "@ @[<hv 2>else if@ @[<hov>%a@]@]@ @[<hv 2>then@ @[<hov>%a@]@]"
+-          format_expr cond format_with_parens etrue;
++          format_condition cond format_with_parens etrue;
+         pr_else efalse
+       | ELit LUnit, _ -> Format.fprintf fmt "@]"
+       | efalse ->
+@@ -500,8 +520,8 @@
+           efalse
+     in
+     Format.fprintf fmt
+-      "@[<hv>@[<hv 2>if@ @[<hov>%a@]@]@ @[<hv 2>then@ @[<hov>%a@]@]" format_expr
+-      cond format_with_parens etrue;
++      "@[<hv>@[<hv 2>if@ @[<hov>%a@]@]@ @[<hv 2>then@ @[<hov>%a@]@]"
++      format_condition cond format_with_parens etrue;
+     pr_else efalse
+   | EAppOp { op = ((And | Or) as op), _; args = [e1; e2]; _ } ->
+     Format.fprintf fmt "@[<hov 2>%a %s@ %a@]" format_with_parens e1
+@@ -734,9 +754,21 @@
+   let last_e =
+     BoundList.iter
+       ~f:(fun scope_let_var scope_let ->
++        let previous_token = !current_definition_token in
++        current_definition_token := Some (variable_token scope_let_var);
++        let format_scope_let fmt expr =
++          match Mark.remove expr, Global.options.trace with
++          | EVar source, Some _
++          | EStructAccess { e = (EVar source, _); _ }, Some _ ->
++            Format.fprintf fmt "(log_variable_alias@ %S@ %S@ %a)"
++              (variable_token scope_let_var) (variable_token source)
++              (format_expr ctx) expr
++          | _ -> format_expr ctx fmt expr
++        in
+         Format.fprintf fmt "@[<hv>@[<hov 2>let %a: %a =@ %a@]@ in@]@ "
+           format_var scope_let_var format_typ scope_let.scope_let_typ
+-          (format_expr ctx) scope_let.scope_let_expr)
++          format_scope_let scope_let.scope_let_expr;
++        current_definition_token := previous_token)
+       scope_lets
+   in
+   format_expr ctx fmt last_e;
+@@ -769,12 +801,16 @@
+               format_to_module_name (`Sname body.scope_body_output_struct));
+           Format.fprintf ppml "@,(* Scope %a *)" ScopeName.format name;
+           Format.fprintf ppml
+-            "@,@[<hv 2>@[<hov 2>let %a :@ %a.t -> %a.t =@ fun %a ->@]@ %a@]@,"
++            "@,@[<hv 2>@[<hov 2>let %a :@ %a.t -> %a.t =@ fun %a ->@]@ %a%a@]@,"
+             format_var var format_to_module_name
+             (`Sname body.scope_body_input_struct) format_to_module_name
+             (`Sname body.scope_body_output_struct) format_var scope_input_var
+-            (format_scope_body_expr ctx)
+-            scope_body_expr)
++            (fun fmt () ->
++              if Global.options.trace <> None then
++                Format.fprintf fmt "let %a = log_scope_input %S %a in@ "
++                  format_var scope_input_var (variable_token scope_input_var)
++                  format_var scope_input_var)
++            () (format_scope_body_expr ctx) scope_body_expr)
+   in
+   pp [ppml; ppi] "@]";
+   exports
+--- a/compiler/shared_ast/interpreter.ml	2026-07-06 08:03:32.000000000 -0500
++++ b/compiler/shared_ast/interpreter.ml	2026-09-28 19:55:22.000000000 -0500
+@@ -52,7 +52,8 @@
+     let level = max 0 (level - 1) in
+     logprintf level EndCall " %a" pp_infos infos;
+     level
+-  | Runtime.VariableDefinition (infos, io, value) ->
++  | Runtime.VariableDefinition (infos, io, value)
++  | Runtime.VariableDefinitionWithReads (infos, io, value, _, _) ->
+     logprintf level
+       (VarDef
+          {
+--- a/runtimes/jsoo/runtime_jsoo.ml	2026-07-06 08:03:32.000000000 -0500
++++ b/runtimes/jsoo/runtime_jsoo.ml	2026-09-28 19:55:22.000000000 -0500
+@@ -130,6 +130,7 @@
+           val mutable information =
+             (match evt with
+               | BeginCall info | EndCall info | VariableDefinition (info, _, _)
++              | VariableDefinitionWithReads (info, _, _, _, _)
+                 ->
+                 List.map Js.string info
+               | DecisionTaken _ -> [])
+@@ -138,14 +139,16 @@
+ 
+           val mutable loggedIOJson =
+             match evt with
+-            | VariableDefinition (_, io, _) ->
++            | VariableDefinition (_, io, _)
++            | VariableDefinitionWithReads (_, io, _, _, _) ->
+               io |> R_ocaml.Json.io_log |> Js.string
+             | EndCall _ | BeginCall _ | DecisionTaken _ ->
+               "unavailable" |> Js.string
+ 
+           val mutable loggedValueJson =
+             match evt with
+-            | VariableDefinition (_, _, v) ->
++            | VariableDefinition (_, _, v)
++            | VariableDefinitionWithReads (_, _, v, _, _) ->
+               v |> R_ocaml.Json.runtime_value |> Js.string
+             | EndCall _ | BeginCall _ | DecisionTaken _ ->
+               "<no value>" |> Js.string

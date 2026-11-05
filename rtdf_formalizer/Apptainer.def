@@ -1,0 +1,21 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%labels
+    org.opencontainers.image.title RTDF formalizer base
+    org.opencontainers.image.description Contained userspace for host-bound Catala and agent binaries
+
+%post
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        bash ca-certificates coreutils findutils git jq ninja-build python3 ripgrep
+    rm -rf /var/lib/apt/lists/*
+    mkdir -p /workspace /rtdf /opt/rtdf/agent /agent-home
+    chmod 0777 /workspace /agent-home
+
+%environment
+    export LANG=C.UTF-8
+    export LC_ALL=C.UTF-8
+
+%runscript
+    exec "$@"
