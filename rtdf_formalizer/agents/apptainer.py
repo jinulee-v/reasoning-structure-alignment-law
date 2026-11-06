@@ -17,7 +17,9 @@ from .base import (
     DOCUMENTATION_MOUNT,
     FEEDBACK_MOUNT,
     INPUT_REQUIREMENTS_HELPER_MOUNT,
+    MINI_SWE_AGENT_HELPER_MOUNT,
     PROMPT_MOUNT,
+    REGENERATE_ANALYSIS_HELPER_MOUNT,
     SUBMISSION_CHECK_HELPER_MOUNT,
     WORKSPACE_MOUNT,
     AgentConfigurationError,
@@ -28,6 +30,10 @@ DOCUMENTATION_SOURCE = Path(__file__).resolve().parents[1] / "catala_book"
 SUBMISSION_CHECK_HELPER_SOURCE = (
     Path(__file__).resolve().parents[1] / "check_submission.sh"
 )
+REGENERATE_ANALYSIS_HELPER_SOURCE = (
+    Path(__file__).resolve().parents[1] / "regenerate_scope_analysis.py"
+)
+MINI_SWE_AGENT_HELPER_SOURCE = Path(__file__).with_name("run_mini_swe_agent.py")
 SUBMISSION_CHECK_DIRECTORY_MOUNT = "/rtdf/submission-check"
 SUBMISSION_CHECK_SOCKET_MOUNT = f"{SUBMISSION_CHECK_DIRECTORY_MOUNT}/validator.sock"
 
@@ -88,7 +94,11 @@ def configurations(
             f"host environment variables are not set: {', '.join(missing)}"
         )
     binary = args.agent_binary
-    if binary is None and args.use_host_agent:
+    if (
+        binary is None
+        and args.use_host_agent
+        and agent.get("prefer_host_binary", True)
+    ):
         discovered = shutil.which(agent["command"][0])
         binary = Path(discovered) if discovered else None
     binary = binary.expanduser().resolve() if binary else None
@@ -169,6 +179,10 @@ def invocation(
         "--bind",
         f"{SUBMISSION_CHECK_HELPER_SOURCE}:{SUBMISSION_CHECK_HELPER_MOUNT}:ro",
         "--bind",
+        f"{REGENERATE_ANALYSIS_HELPER_SOURCE}:{REGENERATE_ANALYSIS_HELPER_MOUNT}:ro",
+        "--bind",
+        f"{MINI_SWE_AGENT_HELPER_SOURCE}:{MINI_SWE_AGENT_HELPER_MOUNT}:ro",
+        "--bind",
         f"{agent_home}:/agent-home:rw",
     ]
     if submission_check_directory is not None:
@@ -228,7 +242,7 @@ def environment(
         if not key.startswith(("APPTAINERENV_", "SINGULARITYENV_"))
     }
     toolchain = config["runtime"].get("host_toolchain")
-    path = ["/opt/rtdf/agent"]
+    path = ["/opt/rtdf/agent", "/opt/mini-swe-agent/bin"]
     if toolchain:
         path += [f"{toolchain}/opam/catala/bin", f"{toolchain}/opam/cutecat/bin"]
         path += [f"{toolchain}/envs/catala/bin", f"{toolchain}/envs/cutecat/bin"]
@@ -242,6 +256,11 @@ def environment(
     ]
     result["APPTAINERENV_XDG_CACHE_HOME"] = "/agent-home/.cache"
     result["APPTAINERENV_PATH"] = ":".join(path)
+    if config["agent"].get("base_url"):
+        result["APPTAINERENV_OPENAI_API_BASE"] = config["agent"]["base_url"]
+        result["APPTAINERENV_OPENAI_API_KEY"] = os.environ[
+            config["agent"]["api_key_env"]
+        ]
     if submission_check:
         result["APPTAINERENV_RTDF_SUBMISSION_CHECK_SOCKET"] = (
             SUBMISSION_CHECK_SOCKET_MOUNT
@@ -252,7 +271,11 @@ def environment(
 
 
 @contextlib.contextmanager
-def submission_check_service(socket_path: Path, check: Callable[[], tuple[bool, str]]):
+def submission_check_service(
+    socket_path: Path,
+    check: Callable[[], tuple[bool, str]],
+    commands: dict[str, Callable[[], dict[str, Any]]] | None = None,
+):
     # Serve opaque host-side submission validation to the contained agent.
     socket_path.parent.mkdir(parents=True, exist_ok=True)
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -271,19 +294,20 @@ def submission_check_service(socket_path: Path, check: Callable[[], tuple[bool, 
                 break
             with connection:
                 try:
-                    request = connection.recv(64)
-                    if request.strip() != b"check":
-                        response = {
-                            "accepted": False,
-                            "message": "invalid submission check request",
-                        }
-                    else:
+                    request = connection.recv(4096).strip()
+                    if request == b"check":
                         accepted, message = check()
                         response = {"accepted": accepted, "message": message}
-                except Exception:
+                    else:
+                        value = json.loads(request)
+                        command = value.get("command") if isinstance(value, dict) else None
+                        if command not in (commands or {}):
+                            raise ValueError("invalid service command")
+                        response = {"accepted": True, **commands[command]()}
+                except Exception as error:
                     response = {
                         "accepted": False,
-                        "message": "submission check unavailable",
+                        "message": f"service command failed: {type(error).__name__}: {error}",
                     }
                 connection.sendall((json.dumps(response) + "\n").encode("utf-8"))
 

@@ -8,6 +8,12 @@ from .dotenv import load_dotenv
 OAUTH_VARIABLE = "CLAUDE_CODE_OAUTH_TOKEN"
 
 
+def configure_command(
+    command: list[str], provider: str | None, model: str
+) -> list[str]:
+    return command + ["--model", model]
+
+
 def prepare_auth(root: Path) -> tuple[str, ...]:
     load_dotenv(root / ".env")
     if not os.environ.get(OAUTH_VARIABLE):
@@ -20,6 +26,7 @@ def prepare_auth(root: Path) -> tuple[str, ...]:
 DEFINITION = AgentDefinition(
     name="claude-code",
     prepare_auth=prepare_auth,
+    configure_default_command=configure_command,
     default_command=(
         "claude",
         "-p",

@@ -6,6 +6,9 @@ from pathlib import Path
 from .base import AgentConfigurationError, AgentDefinition, formalization_prompt
 
 
+DEFAULT_REASONING_EFFORT = "xhigh"
+
+
 def credential_file() -> Path:
     return Path(os.environ.get("CODEX_HOME", "~/.codex")).expanduser() / "auth.json"
 
@@ -63,7 +66,13 @@ def persist_auth(agent_home: Path) -> None:
 def configure_command(
     command: list[str], provider: str | None, model: str
 ) -> list[str]:
-    return command[:-1] + ["--model", model, command[-1]]
+    return command[:-1] + [
+        "--model",
+        model,
+        "-c",
+        f'model_reasoning_effort="{DEFAULT_REASONING_EFFORT}"',
+        command[-1],
+    ]
 
 
 DEFINITION = AgentDefinition(

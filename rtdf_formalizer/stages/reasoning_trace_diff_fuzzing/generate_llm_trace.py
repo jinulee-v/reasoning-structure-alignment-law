@@ -580,15 +580,16 @@ def reason(
     )
     provisions = _allowed_provision_ids(statutes)
     execution_tree_schema = _execution_tree_schema(provisions)
+    usage_stage = state.get("_usage_stage", "reasoning")
     usage_context = {
         "run_id": config["run_id"],
         "iteration": state["iteration"],
-        "stage": "reasoning",
+        "stage": usage_stage,
         "framework": "api",
         "provider": config["reasoning_trace"]["provider"],
         "model": config["reasoning_trace"]["model"],
     }
-    extraction_usage_context = {**usage_context, "stage": "reasoning-extraction"}
+    extraction_usage_context = {**usage_context, "stage": f"{usage_stage}-extraction"}
 
     def sample_case(case: dict[str, Any]) -> dict[str, Any]:
         destination = root / f"{case['id']}.json"
@@ -604,6 +605,9 @@ def reason(
             descriptions.get(requirement_id) if requirement_id else None,
         )
         prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        cache_fingerprint = hashlib.sha256(
+            (prompt_sha256 + state.get("_reasoning_cache_nonce", "")).encode()
+        ).hexdigest()
         if destination.is_file():
             existing = exp.load_json(destination)
             if (
@@ -628,7 +632,7 @@ def reason(
             sampled = usage_tracking.api_call(
                 run_directory,
                 {**usage_context, "case_id": case["id"]},
-                prompt_sha256,
+                cache_fingerprint,
                 lambda: _sample(config, prompt),
             )
         except Exception as error:
@@ -650,13 +654,19 @@ def reason(
             extraction_prompt_sha256 = hashlib.sha256(
                 extraction_prompt.encode("utf-8")
             ).hexdigest()
+            extraction_cache_fingerprint = hashlib.sha256(
+                (
+                    extraction_prompt_sha256
+                    + state.get("_reasoning_cache_nonce", "")
+                ).encode()
+            ).hexdigest()
             extraction_prompt_file = root / f"{case['id']}.execution-tree.prompt.txt"
             extraction_prompt_file.write_text(extraction_prompt, encoding="utf-8")
             try:
                 extraction_sampled = usage_tracking.api_call(
                     run_directory,
                     {**extraction_usage_context, "case_id": case["id"]},
-                    extraction_prompt_sha256,
+                    extraction_cache_fingerprint,
                     lambda: _sample(config, extraction_prompt, execution_tree_schema),
                 )
                 try:

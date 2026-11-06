@@ -261,8 +261,13 @@ def literal(value: str) -> str:
 
 
 class DecoderGenerator:
-    def __init__(self, definitions: dict[str, Any]):
+    def __init__(
+        self,
+        definitions: dict[str, Any],
+        plain_scope_optionals: set[str] | None = None,
+    ):
         self.definitions = definitions
+        self.plain_scope_optionals = plain_scope_optionals or set()
         self.reachable: set[str] = set()
 
     def visit(self, schema: dict[str, Any]) -> None:
@@ -314,7 +319,12 @@ class DecoderGenerator:
                 decoder = self.decoder(value)
                 # Catala exposes every defaulted record field as Optional.t.
                 if key not in required:
-                    helper = "optional_field" if suffix else "optional_value_field"
+                    label = field_identifier(key) + suffix
+                    helper = (
+                        "optional_value_field"
+                        if not suffix or label in self.plain_scope_optionals
+                        else "optional_field"
+                    )
                     decoded = f"{helper} ({decoder}) {literal(key)} j"
                 else:
                     decoded = f"({decoder}) (field {literal(key)} j)"
@@ -632,7 +642,15 @@ def generate_source(
                 raise ValueError(f"conflicting JSON definition {name!r}")
             definitions[name] = schema
     roots = [scope["input_schema"] for scope in scopes]
-    decoders = DecoderGenerator(definitions).generate(roots)
+    plain_scope_optionals = {
+        match.group(1)
+        for match in re.finditer(
+            r"(?m)^\s+([a-zA-Z0-9_]+_in):\s+\(([^\n]*)\) Optional\.t;",
+            generated_ml,
+        )
+        if "code_location" not in match.group(2)
+    }
+    decoders = DecoderGenerator(definitions, plain_scope_optionals).generate(roots)
     arms = []
     for scope in scopes:
         scope_name = scope["scope"]
@@ -669,7 +687,7 @@ let () =
           let events = Catala_runtime.retrieve_log () |> List.map
             (fun event -> Json_input.from_string (Catala_runtime.Json.raw_event event)) in
           print_endline (Json_input.to_string (`Assoc [
-            "dependency_semantics", `String "runtime_reads_conditions_call_returns_scope_inputs_v4";
+            "dependency_semantics", `String "runtime_reads_branch_outcomes_call_returns_scope_inputs_v5";
             "result", Json_input.from_string result;
             "events", `List events]))
         end else print_endline result

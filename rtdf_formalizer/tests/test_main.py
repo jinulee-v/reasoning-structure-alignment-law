@@ -6,6 +6,7 @@ import os
 import re
 import socket
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -23,6 +24,7 @@ from rtdf_formalizer.agents import (
     apptainer,
     claude_code,
     codex,
+    run_mini_swe_agent,
 )
 from rtdf_formalizer.agents.base import (
     DOCUMENTATION_MOUNT,
@@ -177,7 +179,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         return argparse.Namespace(
             dataset=str(self.dataset),
             run_id="test-run",
-            agent="opencode",
+            agent="mini-swe-agent",
             image="example/agent:test",
             agent_provider="openai",
             agent_model="test-model",
@@ -287,50 +289,6 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             result["error"], "translation not happening for all provisions"
         )
 
-    def test_opencode_usage_aggregates_provider_reported_steps(self) -> None:
-        stdout = self.root / "opencode.jsonl"
-        events = [
-            {
-                "type": "step_finish",
-                "part": {
-                    "tokens": {
-                        "total": 120,
-                        "input": 70,
-                        "output": 10,
-                        "reasoning": 2,
-                        "cache": {"read": 40, "write": 0},
-                    }
-                },
-            },
-            {
-                "type": "step_finish",
-                "part": {
-                    "tokens": {
-                        "total": 93,
-                        "input": 55,
-                        "output": 5,
-                        "reasoning": 0,
-                        "cache": {"read": 30, "write": 3},
-                    }
-                },
-            },
-        ]
-        stdout.write_text(
-            "".join(json.dumps(event) + "\n" for event in events),
-            encoding="utf-8",
-        )
-
-        usage = main.extract_usage(stdout, "ignored fallback prompt")
-
-        self.assertEqual(usage["input_tokens"], 198)
-        self.assertEqual(usage["uncached_input_tokens"], 128)
-        self.assertEqual(usage["cached_input_tokens"], 70)
-        self.assertEqual(usage["cache_write_tokens"], 3)
-        self.assertEqual(usage["output_tokens"], 15)
-        self.assertEqual(usage["reasoning_tokens"], 2)
-        self.assertEqual(usage["total_tokens"], 213)
-        self.assertEqual(usage["count_source"], "provider-reported")
-
     def test_live_progress_aggregates_tokens_tools_and_fences(self) -> None:
         stdout = self.root / "live.jsonl"
         events = [
@@ -438,6 +396,14 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertIn("`/workspace/REQUIREMENT_OUTPUTS.json`", prompt)
         self.assertIn("Catala source file", prompt)
         self.assertIn("`file`, `scope`, and `output`", prompt)
+        self.assertIn(
+            "Statutory intermediate quantities must be derived by the Catala program",
+            prompt,
+        )
+        self.assertIn(
+            "must not be required as API inputs merely because a provision refers",
+            prompt,
+        )
         self.assertIn("top-level output variable", prompt)
         self.assertIn(
             "`/rtdf/check_submission.sh /workspace "
@@ -478,6 +444,9 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertIn("`Definitions.catala_en` is exclusively", prompt)
         self.assertIn("Do not rename or remove those scopes or outputs", prompt)
         self.assertIn("implement only cross-section composition", prompt)
+        self.assertIn("gross-income amounts explicitly stated", prompt)
+        self.assertIn("deduction-related factual amounts and circumstances", prompt)
+        self.assertNotIn("taxpayer income, deductions", prompt)
         self.assertNotIn("`/workspace/REQUIREMENT_OUTPUTS.json`", prompt)
         self.assertNotIn("fill every ID", prompt)
 
@@ -625,6 +594,11 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertIn(
             f"{apptainer.SUBMISSION_CHECK_HELPER_SOURCE}:"
             f"{SUBMISSION_CHECK_HELPER_MOUNT}:ro",
+            command,
+        )
+        self.assertIn(
+            f"{apptainer.MINI_SWE_AGENT_HELPER_SOURCE}:"
+            "/rtdf/run_mini_swe_agent.py:ro",
             command,
         )
         self.assertIn(
@@ -1145,13 +1119,21 @@ class VerificationTest(unittest.TestCase):
             },
         )
 
-    def test_requirement_mapping_replaces_llm_scope_and_path_selection(self) -> None:
-        schema = information_extraction._plan_schema(
-            ["example.catala_en::Calculate"], ["EXAMPLE-ANSWER"]
+    def test_requirement_mapping_deterministically_selects_scope_and_path(self) -> None:
+        plan = information_extraction._deterministic_plan(
+            "sara",
+            {"label": "42"},
+            {
+                "requirement_id": "EXAMPLE-ANSWER",
+                "file": "example.catala_en",
+                "scope": "Calculate",
+                "output": "answer",
+            },
         )
-        self.assertIn("requirement_id", schema["properties"])
-        self.assertNotIn("scope_id", schema["properties"])
-        self.assertNotIn("output_path", schema["properties"])
+        self.assertEqual(plan["scope_id"], "example.catala_en::Calculate")
+        self.assertEqual(plan["output_path"], ["answer"])
+        self.assertEqual(plan["comparison"], "equals_claim")
+        self.assertEqual(plan["claim"], "$42")
 
     def test_input_descriptions_match_nested_schema_exactly(self) -> None:
         candidate_format = {
@@ -1643,27 +1625,129 @@ class AgentAuthenticationTest(unittest.TestCase):
             self.assertNotIn("subscription-token", json.dumps(configured))
             self.assertNotIn("enabled value", json.dumps(configured))
 
-    def test_opencode_default_command_selects_provider_and_model(self) -> None:
+    def test_claude_code_default_command_selects_model(self) -> None:
+        with mock.patch.dict(
+            os.environ, {"CLAUDE_CODE_OAUTH_TOKEN": "subscription-token"}, clear=True
+        ):
+            configured = agents.configuration(
+                argparse.Namespace(
+                    agent="claude-code",
+                    agent_command=None,
+                    agent_provider="anthropic",
+                    agent_model="claude-opus-5",
+                ),
+                self.root,
+            )
+        self.assertEqual(configured["command"][-2:], ["--model", "claude-opus-5"])
+
+    def test_mini_swe_agent_default_command_selects_provider_and_model(self) -> None:
         configured = agents.configuration(
             argparse.Namespace(
-                agent="opencode",
+                agent="mini-swe-agent",
                 agent_command=None,
-                agent_provider="deepinfra",
-                agent_model="zai-org/GLM-5.3-Flash",
+                agent_provider="openai",
+                agent_model="gpt-5.6-luna",
             ),
             self.root,
         )
         self.assertEqual(
             configured["command"],
             [
-                "opencode",
-                "run",
-                "--format",
-                "json",
+                "python3",
+                "/rtdf/run_mini_swe_agent.py",
+                "--yolo",
+                "--exit-immediately",
+                "--cost-limit",
+                "0",
                 "--model",
-                "deepinfra/zai-org/GLM-5.3-Flash",
+                "openai/gpt-5.6-luna",
             ],
         )
+        self.assertFalse(configured["prefer_host_binary"])
+
+    def test_mini_swe_agent_selects_kimi_through_moonshot(self) -> None:
+        with mock.patch.dict(os.environ, {"MOONSHOT_API_KEY": "secret"}, clear=True):
+            (self.root / ".env").write_text("MOONSHOT_API_KEY=secret\n")
+            configured = agents.configuration(
+                argparse.Namespace(
+                    agent="mini-swe-agent",
+                    agent_command=None,
+                    agent_provider="moonshot",
+                    agent_model="kimi-k3.1-pro",
+                ),
+                self.root,
+            )
+        self.assertEqual(
+            configured["command"][-2:],
+            ["--model", "moonshot/kimi-k3.1-pro"],
+        )
+
+    def test_mini_swe_agent_runner_reads_the_mounted_prompt(self) -> None:
+        with (
+            mock.patch.object(sys, "argv", ["run_mini_swe_agent.py", "--yolo"]),
+            mock.patch.object(Path, "read_text", return_value="formalize this"),
+            mock.patch.object(Path, "home", return_value=self.root),
+            mock.patch.dict(os.environ, {}, clear=True),
+            mock.patch.object(os, "execvp") as execute,
+        ):
+            run_mini_swe_agent.main()
+            self.assertEqual(os.environ["MSWEA_CONFIGURED"], "true")
+        execute.assert_called_once_with(
+            "mini", ["mini", "--yolo", "--task", "formalize this"]
+        )
+
+    def test_mini_swe_agent_supports_openai_compatible_gateway(self) -> None:
+        with mock.patch.dict(os.environ, {"LUMEN_API_KEY": "secret"}, clear=True):
+            configured = agents.configuration(
+                argparse.Namespace(
+                    agent="mini-swe-agent",
+                    agent_command=None,
+                    agent_provider="openai",
+                    agent_model="available-model",
+                    agent_base_url="https://lumen.computes.illinois.edu/v1",
+                    agent_api_key_env="LUMEN_API_KEY",
+                ),
+                self.root,
+            )
+            process_environment = apptainer.environment(
+                {"runtime": {"host_toolchain": None}, "agent": configured}
+            )
+        self.assertEqual(
+            process_environment["APPTAINERENV_OPENAI_API_BASE"],
+            "https://lumen.computes.illinois.edu/v1",
+        )
+        self.assertEqual(process_environment["APPTAINERENV_OPENAI_API_KEY"], "secret")
+        self.assertNotIn("secret", json.dumps(configured))
+
+    def test_agent_gateway_options_must_be_complete_and_mini_swe_agent_only(self) -> None:
+        with self.assertRaisesRegex(
+            agents.AgentConfigurationError, "must be supplied together"
+        ):
+            agents.configuration(
+                argparse.Namespace(
+                    agent="mini-swe-agent",
+                    agent_command=None,
+                    agent_provider="openai",
+                    agent_model="model",
+                    agent_base_url="https://example.test/v1",
+                    agent_api_key_env=None,
+                ),
+                self.root,
+            )
+        with self.assertRaisesRegex(
+            agents.AgentConfigurationError, "only by mini-swe-agent"
+        ):
+            agents.configuration(
+                argparse.Namespace(
+                    agent="claude-code",
+                    agent_command=None,
+                    agent_provider="anthropic",
+                    agent_model="model",
+                    agent_base_url="https://example.test/v1",
+                    agent_api_key_env="KEY",
+                ),
+                self.root,
+            )
 
     def test_codex_default_command_selects_model(self) -> None:
         configured = agents.configuration(
@@ -1675,19 +1759,16 @@ class AgentAuthenticationTest(unittest.TestCase):
             ),
             self.root,
         )
-        self.assertEqual(configured["command"][-3:], ["--model", "gpt-5.6-luna", "-"])
-
-    def test_opencode_explicit_command_remains_an_override(self) -> None:
-        configured = agents.configuration(
-            argparse.Namespace(
-                agent="opencode",
-                agent_command='["custom-opencode", "run"]',
-                agent_provider="deepinfra",
-                agent_model="zai-org/GLM-5.3-Flash",
-            ),
-            self.root,
+        self.assertEqual(
+            configured["command"][-5:],
+            [
+                "--model",
+                "gpt-5.6-luna",
+                "-c",
+                'model_reasoning_effort="xhigh"',
+                "-",
+            ],
         )
-        self.assertEqual(configured["command"], ["custom-opencode", "run"])
 
     def test_codex_stages_credential_and_persists_refresh(self) -> None:
         codex_home = self.root / "codex-home"

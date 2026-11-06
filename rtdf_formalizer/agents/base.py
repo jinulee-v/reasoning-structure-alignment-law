@@ -17,6 +17,8 @@ FEEDBACK_MOUNT = "/rtdf/feedback"
 DOCUMENTATION_MOUNT = "/rtdf/catala-book"
 INPUT_REQUIREMENTS_HELPER_MOUNT = "/rtdf/extract_input_requirements.sh"
 SUBMISSION_CHECK_HELPER_MOUNT = "/rtdf/check_submission.sh"
+REGENERATE_ANALYSIS_HELPER_MOUNT = "/rtdf/regenerate_scope_analysis.py"
+MINI_SWE_AGENT_HELPER_MOUNT = "/rtdf/run_mini_swe_agent.py"
 
 
 class AgentConfigurationError(ValueError):
@@ -31,6 +33,7 @@ class AgentDefinition:
     prepare_auth: Callable[[Path], tuple[str, ...]] | None = None
     stage_auth: Callable[[Path], None] | None = None
     persist_auth: Callable[[Path], None] | None = None
+    prefer_host_binary: bool = True
     configure_default_command: (
         Callable[[list[str], str | None, str], list[str]] | None
     ) = None
@@ -111,6 +114,9 @@ If Catala implementation is wrong, fix it.\n"
         f"Read `{WORKSPACE_MOUNT}/{guidance_name}.md`. {interface_guidance}"
         "Inputs must represent case facts rather than conclusions "
         "that the statute or policy is supposed to derive. "
+        "Statutory intermediate quantities must be derived by the Catala program "
+        "and must not be required as API inputs merely because a provision refers "
+        "to them. "
         f"{output_contract_guidance}"
         f"After the Catala scopes typecheck and {helper_contract} is complete, run "
         f"`{INPUT_REQUIREMENTS_HELPER_MOUNT}`. The helper calls `clerk json-schema` "
@@ -196,6 +202,15 @@ unwrap an optional. Define a Catala input default only when the statute or task
 specifies that exact default independently of whether the caller supplied the
 fact. Keep every required evaluator-facing output non-optional; use an optional
 output only when the task itself says that no result may exist.
+
+Encode intrinsic validity constraints for factual inputs as Catala assertions
+so generated cases remain within each fact's natural domain. Examples include
+shares between 0% and 100%, and nonnegative ages, durations, counts, or amounts
+when negative values are meaningless. Encode structural and chronological
+invariants inherent in a field's definition as well. Add only constraints
+imposed by the statute, task, or meaning of the fact; never narrow the domain
+merely to make tests convenient. State the same constraints precisely in the
+corresponding `INPUT_VARIABLE_DESCRIPTION.json` descriptions.
 
 {edit_policy} Do not add or remove fences or files. Work directly in
 {WORKSPACE_MOUNT}; do not merely print proposed code in your response.

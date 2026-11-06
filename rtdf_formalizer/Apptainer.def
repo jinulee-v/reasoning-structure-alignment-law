@@ -3,12 +3,16 @@ From: ubuntu:24.04
 
 %labels
     org.opencontainers.image.title RTDF formalizer base
-    org.opencontainers.image.description Contained userspace for host-bound Catala and agent binaries
+    org.opencontainers.image.description Contained userspace for Catala and coding agents
 
 %post
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        bash ca-certificates coreutils findutils git jq ninja-build python3 ripgrep
+        bash ca-certificates coreutils findutils git jq ninja-build python3 \
+        python3-venv ripgrep
+    python3 -m venv /opt/mini-swe-agent
+    /opt/mini-swe-agent/bin/pip install --no-cache-dir \
+        mini-swe-agent==2.4.6 mcp==2.3.0
     rm -rf /var/lib/apt/lists/*
     mkdir -p /workspace /rtdf /opt/rtdf/agent /agent-home
     chmod 0777 /workspace /agent-home

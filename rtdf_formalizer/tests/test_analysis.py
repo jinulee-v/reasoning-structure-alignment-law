@@ -156,6 +156,14 @@ class PostValidationTest(unittest.TestCase):
             'Facts.nickname = optional_value_field (text) "nickname" j;', generated
         )
 
+        generated = compiled_json.DecoderGenerator(
+            definitions, {"default_count_in"}
+        ).generate([{"$ref": "#/definitions/Example_in"}])
+        self.assertIn(
+            'Example_in.default_count_in = optional_value_field (integer) "default_count" j;',
+            generated,
+        )
+
     def test_optional_field_helper_treats_missing_and_null_as_absent(self):
         self.assertIn(
             "| None | Some `Null -> Catala_runtime.Optional.Absent",
@@ -725,11 +733,24 @@ class PostValidationTest(unittest.TestCase):
             )
             observed = json.loads(completed.stdout)
             self.assertEqual(observed["result"], {"result": "3"})
+            branches = [
+                event
+                for event in observed["events"]
+                if event["event"] == "BranchTaken"
+            ]
+            self.assertEqual(len(branches), 1)
+            self.assertEqual(branches[0]["outcome"], False)
             tree = trace_stage.execution_tree(observed["events"])
             self.assertEqual(tree[0]["kind"], "call")
             self.assertTrue(
                 any(
                     event["event"] == "DecisionTaken"
+                    for event in trace_stage.execution_tree_events(tree)
+                )
+            )
+            self.assertTrue(
+                any(
+                    event["event"] == "BranchTaken"
                     for event in trace_stage.execution_tree_events(tree)
                 )
             )
@@ -795,6 +816,54 @@ class PostValidationTest(unittest.TestCase):
             dynamic = json.loads((root / "dynamic_slice_tree.json").read_text())
             self.assertIn("Answer.unused", json.dumps(complete))
             self.assertNotIn("Answer.unused", json.dumps(dynamic))
+
+    def test_causal_execution_trace_attaches_branch_guards(self):
+        events = [
+            {"event": "BeginCall", "name": "Answer"},
+            {
+                "event": "BranchTaken",
+                "pos": {
+                    "filename": "../law.catala_en",
+                    "start_line": 3,
+                    "start_column": 8,
+                    "end_line": 3,
+                    "end_column": 16,
+                },
+                "outcome": False,
+            },
+            {
+                "event": "VariableDefinition",
+                "name": "Answer.choice",
+                "io": {"io_output": False},
+                "value": 0,
+                "definition_id": 0,
+                "reads": [],
+            },
+            {
+                "event": "VariableDefinition",
+                "name": "Answer.total",
+                "io": {"io_output": True},
+                "value": 0,
+                "definition_id": 1,
+                "reads": [{"definition_id": 0}],
+            },
+            {"event": "EndCall", "name": "Answer"},
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "law.catala_en").write_text(
+                "scope Answer:\n  definition choice equals\n    if eligible then 1 else 0\n",
+                encoding="utf-8",
+            )
+            tree = trace_stage.execution_tree(events, deduplicate=False)
+            causal = trace_stage.causal_execution_trace(root, tree)
+        self.assertEqual(causal[0]["branch_guards"][0]["condition"], "eligible")
+        self.assertEqual(causal[0]["branch_guards"][0]["outcome"], False)
+        self.assertEqual(causal[0]["branch_guards"][0]["selected_arm"], "else")
+        self.assertEqual(causal[0]["branch_guards"][0]["relation"], "direct")
+        self.assertEqual(causal[1]["branch_guards"][0]["relation"], "inherited")
+        replayed = trace_stage.execution_tree_events(tree)
+        self.assertIn("BranchTaken", {event["event"] for event in replayed})
 
     def test_dynamic_slice_follows_dependencies_not_execution_prefix(self):
         events = [

@@ -28,9 +28,9 @@ _DOCUMENT_ID = re.compile(r"<!--\s*rtdf-document-id:\s*([^\s>]+)\s*-->")
 _HTML_COMMENT = re.compile(r"<!--[\s\S]*?-->")
 _FENCE = re.compile(r"^```(?:catala[^\n]*)?$", re.MULTILINE)
 _ANSWER_BLOCK = re.compile(r"<answer>\s*([\s\S]*?)\s*</answer>", re.IGNORECASE)
-DYNAMIC_SLICE_SCHEMA_VERSION = 11
+DYNAMIC_SLICE_SCHEMA_VERSION = 12
 DYNAMIC_SLICE_DEPENDENCY_SEMANTICS = (
-    "runtime_reads_conditions_call_returns_scope_inputs_v4"
+    "runtime_reads_branch_outcomes_call_returns_scope_inputs_v5"
 )
 DYNAMIC_SLICE_METHOD = "runtime_definition_dependency_closure"
 REQUIREMENT_DESCRIPTIONS_FILE = "REQUIREMENT_DESCRIPTIONS.json"
@@ -356,6 +356,15 @@ def execution_tree(
             children().append(
                 {"kind": "decision", "pos": event.get("pos"), "children": []}
             )
+        elif kind == "BranchTaken":
+            children().append(
+                {
+                    "kind": "branch",
+                    "pos": event.get("pos"),
+                    "outcome": event.get("outcome"),
+                    "children": [],
+                }
+            )
     return _merge_execution_nodes(roots) if deduplicate else roots
 
 
@@ -450,7 +459,7 @@ def slice_execution_tree(
         pending: list[dict[str, Any]] = []
         for offset, node in enumerate(nodes):
             kind = node.get("kind")
-            if kind in {"decision", "call"}:
+            if kind in {"decision", "branch", "call"}:
                 pending.append(node)
             elif kind == "variable":
                 if node["definition_id"] in live:
@@ -507,7 +516,109 @@ def execution_tree_events(tree: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
         elif kind == "decision":
             events.append({"event": "DecisionTaken", "pos": node.get("pos")})
+        elif kind == "branch":
+            events.append(
+                {
+                    "event": "BranchTaken",
+                    "pos": node.get("pos"),
+                    "outcome": node.get("outcome"),
+                }
+            )
     return events
+
+
+def _source_span(snapshot: Path, position: Any) -> str | None:
+    if not isinstance(position, dict):
+        return None
+    filename = position.get("filename")
+    start_line = position.get("start_line")
+    end_line = position.get("end_line")
+    if not isinstance(filename, str) or not isinstance(start_line, int):
+        return None
+    source = snapshot / Path(filename).name
+    if not source.is_file():
+        return None
+    lines = source.read_text(encoding="utf-8").splitlines()
+    end_line = end_line if isinstance(end_line, int) else start_line
+    if start_line < 1 or end_line < start_line or end_line > len(lines):
+        return None
+    selected = lines[start_line - 1 : end_line]
+    start_column = position.get("start_column")
+    end_column = position.get("end_column")
+    if isinstance(end_column, int) and selected:
+        selected[-1] = selected[-1][: max(0, end_column - 1)]
+    if isinstance(start_column, int) and selected:
+        selected[0] = selected[0][max(0, start_column - 1) :]
+    text = " ".join(line.strip() for line in selected).strip()
+    return re.sub(r"\s+", " ", text) or None
+
+
+def causal_execution_trace(
+    snapshot: Path, tree: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    # Flatten a sliced execution and attach direct and inherited branch guards.
+    nodes: list[dict[str, Any]] = []
+
+    def guard(branch: dict[str, Any], relation: str) -> dict[str, Any]:
+        position = branch.get("pos") or {}
+        filename = position.get("filename")
+        line = position.get("start_line")
+        outcome = branch.get("outcome")
+        return {
+            "condition": _source_span(snapshot, position),
+            "outcome": outcome,
+            "selected_arm": (
+                "then" if outcome is True else "else" if outcome is False else None
+            ),
+            "source": (
+                f"{Path(filename).name}:{line}"
+                if isinstance(filename, str) and isinstance(line, int)
+                else None
+            ),
+            "relation": relation,
+        }
+
+    def visit(items: list[dict[str, Any]]) -> None:
+        pending: list[dict[str, Any]] = []
+        for item in items:
+            if item.get("kind") == "branch":
+                pending.append(guard(item, "direct"))
+            if item.get("kind") == "variable":
+                nodes.append(
+                    {
+                        "id": item.get("definition_id"),
+                        "concept": item.get("name"),
+                        "value": item.get("value"),
+                        "depends_on": [
+                            read.get("definition_id")
+                            for read in item.get("reads", [])
+                            if isinstance(read, dict)
+                        ],
+                        "branch_guards": list(pending),
+                    }
+                )
+                pending.clear()
+            visit(item.get("children", []))
+
+    visit(tree)
+    by_id = {
+        node["id"]: node for node in nodes if isinstance(node.get("id"), int)
+    }
+    for node in nodes:
+        inherited = []
+        for dependency in node["depends_on"]:
+            for original in by_id.get(dependency, {}).get("branch_guards", []):
+                candidate = {**original, "relation": "inherited"}
+                identity = {k: v for k, v in candidate.items() if k != "relation"}
+                existing = [*node["branch_guards"], *inherited]
+                if not any(
+                    {k: v for k, v in former.items() if k != "relation"}
+                    == identity
+                    for former in existing
+                ):
+                    inherited.append(candidate)
+        node["branch_guards"].extend(inherited)
+    return nodes
 
 
 def execution_tree_size(tree: list[dict[str, Any]]) -> int:
@@ -679,7 +790,7 @@ def traced_provision_path(
             block = _call_block(snapshot, event.get("name"))
         if event.get("event") in {"BeginCall", "EndCall"}:
             previous_block = None
-        if event.get("event") == "DecisionTaken":
+        if event.get("event") in {"DecisionTaken", "BranchTaken"}:
             position = event.get("pos") or {}
             filename, line = position.get("filename"), position.get("start_line")
             if isinstance(filename, str) and isinstance(line, int):
@@ -692,7 +803,7 @@ def traced_provision_path(
                     block = candidates[0]
         # A decision is a concrete visit even when the same rule fires twice.
         if block and (
-            event.get("event") in {"BeginCall", "DecisionTaken"}
+            event.get("event") in {"BeginCall", "DecisionTaken", "BranchTaken"}
             or block != previous_block
         ):
             result.append(block)
@@ -723,7 +834,7 @@ def execution_statute_tree(snapshot: Path, tree: list[dict[str, Any]]) -> list[A
         block = None
         if node.get("kind") == "call":
             block = _call_block(snapshot, node.get("name"))
-        elif node.get("kind") == "decision":
+        elif node.get("kind") in {"decision", "branch"}:
             position = node.get("pos") or {}
             filename, line = position.get("filename"), position.get("start_line")
             if isinstance(filename, str) and isinstance(line, int):

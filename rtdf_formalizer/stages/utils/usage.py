@@ -234,7 +234,6 @@ def find_usage_objects(value: Any) -> Iterator[dict[str, Any]]:
 
 def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
     candidates: list[dict[str, Any]] = []
-    opencode_steps: list[dict[str, Any]] = []
     claude_messages: dict[str, dict[str, Any]] = {}
     final_usage = False
     for raw_line in stdout_path.read_text(
@@ -258,45 +257,7 @@ def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
             and isinstance(message.get("usage"), dict)
         ):
             claude_messages[message["id"]] = api_counts(message["usage"])
-        # OpenCode emits one provider-usage record for every model turn.
-        if event.get("type") == "step_finish":
-            part = event.get("part")
-            tokens = part.get("tokens") if isinstance(part, dict) else None
-            if isinstance(tokens, dict) and all(
-                isinstance(tokens.get(key), (int, float))
-                for key in ("input", "output", "total")
-            ):
-                opencode_steps.append(tokens)
         candidates.extend(find_usage_objects(event))
-
-    if opencode_steps:
-        uncached_input = sum(int(step["input"]) for step in opencode_steps)
-        cached_input = sum(
-            int(cache.get("read", 0))
-            for step in opencode_steps
-            if isinstance((cache := step.get("cache")), dict)
-            and isinstance(cache.get("read", 0), (int, float))
-        )
-        cache_write = sum(
-            int(cache.get("write", 0))
-            for step in opencode_steps
-            if isinstance((cache := step.get("cache")), dict)
-            and isinstance(cache.get("write", 0), (int, float))
-        )
-        return {
-            "input_tokens": uncached_input + cached_input + cache_write,
-            "uncached_input_tokens": uncached_input + cache_write,
-            "output_tokens": sum(int(step["output"]) for step in opencode_steps),
-            "reasoning_tokens": sum(
-                int(step.get("reasoning", 0))
-                for step in opencode_steps
-                if isinstance(step.get("reasoning", 0), (int, float))
-            ),
-            "cached_input_tokens": cached_input,
-            "cache_write_tokens": cache_write,
-            "total_tokens": sum(int(step["total"]) for step in opencode_steps),
-            "count_source": "provider-reported",
-        }
 
     if claude_messages and not final_usage:
         keys = (

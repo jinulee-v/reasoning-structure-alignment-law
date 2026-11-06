@@ -257,6 +257,10 @@ def run_agent_stage(
                 "All Catala blocks are reachable from the union of contracted outputs."
             )
 
+        def regenerate_scope_analysis() -> dict[str, Any]:
+            cleanup_clerk_artifacts(run_directory / "workspace")
+            return repair.regenerate_active_scope(run_directory, config, state)
+
         command = apptainer.invocation(
             config,
             run_directory,
@@ -299,7 +303,9 @@ def run_agent_stage(
                         flush=True,
                     )
                 with apptainer.submission_check_service(
-                    submission_check_socket, check_submission
+                    submission_check_socket,
+                    check_submission,
+                    {"regenerate_scope_analysis": regenerate_scope_analysis},
                 ):
                     exit_code, timed_out, elapsed = apptainer.execute(
                         command,

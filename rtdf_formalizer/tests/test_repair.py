@@ -59,6 +59,16 @@ class RepairTest(unittest.TestCase):
         with self.assertRaisesRegex(exp.RunnerError, "must be"):
             repair.mode({"repair": {"mode": "rsa"}})
 
+    def test_recursive_prompt_localizes_changes(self):
+        prompt = repair.prompt(
+            "initial",
+            repair.RepairMode.RECURSIVE,
+            1,
+            {"scope": "Leaf", "source": "law.catala_en"},
+        )
+        self.assertIn("Keep changes minimal and localized to the target scope", prompt)
+        self.assertIn("smallest necessary external change", prompt)
+
     def test_recursive_scope_order_is_dependency_first(self):
         scopes = [
             {"compiler_file": "api", "scope": "Top"},
@@ -75,6 +85,101 @@ class RepairTest(unittest.TestCase):
         self.assertEqual(
             [item["scope"] for item in plan], ["LeafA", "LeafB", "Middle", "Top"]
         )
+
+    def test_recursive_scope_order_follows_entry_execution_order(self):
+        scopes = [
+            {"compiler_file": "api", "scope": "Top"},
+            {"compiler_file": "law", "scope": "LateLeaf"},
+            {"compiler_file": "law", "scope": "EarlyParent"},
+            {"compiler_file": "law", "scope": "EarlyLeaf"},
+        ]
+        sid = recursive_repair.scope_id
+        top = sid("api", "Top")
+        early_parent = sid("law", "EarlyParent")
+        early_leaf = sid("law", "EarlyLeaf")
+        late_leaf = sid("law", "LateLeaf")
+        dependencies = {
+            top: {late_leaf, early_parent},
+            early_parent: {early_leaf},
+        }
+        plan = recursive_repair.topological_scope_order(
+            scopes,
+            dependencies,
+            {top: [early_parent, late_leaf], early_parent: [early_leaf]},
+        )
+        self.assertEqual(
+            [item["scope"] for item in plan],
+            ["EarlyLeaf", "EarlyParent", "LateLeaf", "Top"],
+        )
+
+    def test_declared_scope_calls_define_execution_order(self):
+        (self.run / "Api.catala_en").write_text(
+            """```catala-metadata
+declaration scope Top:
+  first scope Law.Early
+  second scope Law.Late
+```
+""",
+            encoding="utf-8",
+        )
+        scopes = [
+            {"file": "Api.catala_en", "compiler_file": "Api.catala_en", "scope": "Top"},
+            {"file": "law.catala_en", "compiler_file": "law.catala_en", "scope": "Late"},
+            {"file": "law.catala_en", "compiler_file": "law.catala_en", "scope": "Early"},
+        ]
+        sid = recursive_repair.scope_id
+        top = sid("Api.catala_en", "Top")
+        early = sid("law.catala_en", "Early")
+        late = sid("law.catala_en", "Late")
+        order = recursive_repair._declared_dependency_order(
+            self.run, scopes, {top: {late, early}}
+        )
+        self.assertEqual(order[top], [early, late])
+
+    def test_old_recursive_plan_is_requeued_in_execution_order(self):
+        initial = self.run / "initial"
+        (initial / "validation").mkdir(parents=True)
+        (initial / "snapshot").mkdir()
+        (initial / "snapshot/Api.catala_en").write_text(
+            """```catala-metadata
+declaration scope Top:
+  early scope Law.Early
+  late scope Law.Late
+```
+""",
+            encoding="utf-8",
+        )
+        scopes = [
+            {"file": "Api.catala_en", "compiler_file": "Api.catala_en", "scope": "Top"},
+            {"file": "law.catala_en", "compiler_file": "law.catala_en", "scope": "Late"},
+            {"file": "law.catala_en", "compiler_file": "law.catala_en", "scope": "Early"},
+        ]
+        (initial / "validation/input_formats.json").write_text(
+            json.dumps({"candidate": {"scopes": scopes}}), encoding="utf-8"
+        )
+        sid = recursive_repair.scope_id
+        top = sid("Api.catala_en", "Top")
+        early = sid("law.catala_en", "Early")
+        late = sid("law.catala_en", "Late")
+        state = {
+            "recursive_phase": "scope",
+            "recursive_repair_plan": [
+                {"id": late, "source": "law.catala_en", "scope": "Late", "dependencies": []},
+                {"id": early, "source": "law.catala_en", "scope": "Early", "dependencies": []},
+                {"id": top, "source": "Api.catala_en", "scope": "Top", "dependencies": [late, early]},
+            ],
+            "recursive_processed": {late: {"fingerprint": "old"}},
+            "recursive_revisions": {late: 1},
+            "recursive_active_scope": early,
+        }
+        self.assertTrue(recursive_repair.migrate_scope_order(self.run, state))
+        self.assertEqual(
+            [record["id"] for record in state["recursive_repair_plan"]],
+            [early, late, top],
+        )
+        self.assertEqual(state["recursive_active_scope"], early)
+        self.assertEqual(state["recursive_repair_queue"], [late, top])
+        self.assertEqual(state["recursive_processed"], {})
 
     def test_recursive_descendant_edit_requeues_descendant(self):
         plan = [

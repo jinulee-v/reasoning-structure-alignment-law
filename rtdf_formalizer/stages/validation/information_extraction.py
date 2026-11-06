@@ -27,14 +27,7 @@ from rtdf_formalizer.bobcat.compiled_json import (
 )
 
 
-EXTRACTION_SCHEMA_VERSION = 3
-COMPARISONS = (
-    "reference_value",
-    "direct_boolean",
-    "equals_claim",
-    "canonical_equals_claim",
-    "rounded_equals_claim",
-)
+EXTRACTION_SCHEMA_VERSION = 4
 
 
 def _case_id(relative: str, line_number: int, row: dict[str, Any]) -> str:
@@ -263,138 +256,19 @@ def _root_properties(schema: dict[str, Any]) -> dict[str, Any]:
     return properties if isinstance(properties, dict) else {}
 
 
-def _plan_schema(
-    scope_ids: list[str], requirement_ids: list[str] | None = None
+def _deterministic_plan(
+    dataset: str, row: dict[str, Any], requirement: dict[str, Any]
 ) -> dict[str, Any]:
-    properties: dict[str, Any] = {
-        "supported": {"type": "boolean"},
-        "reason": {"type": "string"},
-        "comparison": {"type": "string", "enum": list(COMPARISONS)},
-        "claim": {"type": "string"},
-    }
-    required = ["supported", "reason", "comparison", "claim"]
-    if requirement_ids is None:
-        properties.update(
-            {
-                "scope_id": {"type": "string", "enum": scope_ids},
-                "output_path": {"type": "array", "items": {"type": "string"}},
-            }
-        )
-        required.extend(("scope_id", "output_path"))
-    else:
-        properties["requirement_id"] = {
-            "type": "string",
-            "enum": requirement_ids,
-        }
-        required.append("requirement_id")
+    canonical = dataset.casefold().replace("-", "_")
+    comparison = "reference_value" if canonical == "airline" else "equals_claim"
+    claim = "" if canonical == "airline" else f"${row['label']}"
     return {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": properties,
-        "required": required,
+        "requirement_id": requirement["requirement_id"],
+        "scope_id": f"{requirement['file']}::{requirement['scope']}",
+        "output_path": [requirement["output"]],
+        "comparison": comparison,
+        "claim": claim,
     }
-
-
-def _scope_catalog(scopes: list[dict[str, Any]]) -> str:
-    records = []
-    for scope in scopes:
-        records.append(
-            {
-                "scope_id": f"{scope['file']}::{scope['scope']}",
-                "input_schema": scope["input_schema"],
-                "output_schema": scope["output_schema"],
-            }
-        )
-    return json.dumps(records, ensure_ascii=False, indent=2, sort_keys=True)
-
-
-def _plan_prompt(
-    dataset: str,
-    natural: dict[str, str],
-    scopes: list[dict[str, Any]],
-    requirement_outputs: dict[str, Any] | None = None,
-) -> str:
-    mapped = requirement_outputs is not None
-    expected_rule = (
-        "The benchmark observes only the itinerary's total cost. Use comparison "
-        "`reference_value` and an empty claim."
-        if dataset.casefold().replace("-", "_") == "airline"
-        else "The benchmark records whether the proposition in the question is true. "
-        "Use `direct_boolean` if the selected output directly states that proposition. "
-        "Use `equals_claim`, `canonical_equals_claim`, or `rounded_equals_claim` if "
-        "the output is a value that must be compared with the value stated in the "
-        "question; put only that stated value in claim."
-    )
-    selection = (
-        "Select the one declared requirement that answers this human-authored case. "
-        "The scope and top-level output variable are fixed by that requirement; "
-        "return only its requirement_id."
-        if mapped
-        else "Select the one candidate Catala scope that answers this human-authored case."
-    )
-    output_instruction = (
-        "Do not invent a different scope or output variable."
-        if mapped
-        else "output_path is a sequence of JSON object keys from the scope output root "
-        "to the observed value."
-    )
-    if mapped:
-        mapped_scope_ids = {
-            f"{entry['file']}::{entry['scope']}"
-            for entry in requirement_outputs["requirements"]
-        }
-        mapped_scopes = [
-            scope
-            for scope in scopes
-            if f"{scope['file']}::{scope['scope']}" in mapped_scope_ids
-        ]
-        catalog = json.dumps(
-            {
-                "requirements": requirement_outputs["requirements"],
-                "scopes": [
-                    {
-                        "scope_id": f"{scope['file']}::{scope['scope']}",
-                        "input_schema": scope["input_schema"],
-                        "output_schema": scope["output_schema"],
-                    }
-                    for scope in mapped_scopes
-                ],
-            },
-            ensure_ascii=False,
-            indent=2,
-            sort_keys=True,
-        )
-    else:
-        catalog = _scope_catalog(scopes)
-    catalog_heading = (
-        "Declared requirements, mapped scopes, output variables, and extracted schemas:"
-        if mapped
-        else "Callable candidate scopes and exact JSON schemas:"
-    )
-    return f"""{selection}
-
-Do not select a self-test, demonstration, fixture, or input-free scope. Do not solve
-the statute. Do not derive or invent an input fact. A scope is unsupported
-if it requires a legal conclusion that the case does not explicitly supply, cannot
-represent a needed fact, or has no output corresponding to the question.
-{output_instruction}
-Judge representability independently of the expected result: negative and
-counterexample cases intentionally contain facts that do not establish the queried
-proposition. A mismatch of years, people, amounts, or other values between a premise
-and the question must be preserved, not treated as missing support. An explicitly
-stated statutory premise may be encoded as such when the candidate provides a field
-for supplied assumptions.
-{expected_rule}
-
-Facts:
-{natural["facts"]}
-
-Question:
-{natural["question"]}
-
-{catalog_heading}
-{catalog}
-"""
 
 
 def _catala_code(project: Path, relative: str) -> str:
@@ -512,7 +386,6 @@ def extract(
         ]
     by_id = {f"{scope['file']}::{scope['scope']}": scope for scope in scopes}
     description_registry = input_variable_descriptions or {}
-    scope_ids = sorted(by_id)
     mapped_by_requirement: dict[str, dict[str, Any]] = {}
     if requirement_outputs is not None:
         mapped_by_requirement = {
@@ -535,7 +408,21 @@ def extract(
                 }
                 for relative, line, row in _rows(human_tests)
             ]
-    requirement_ids = sorted(mapped_by_requirement) if mapped_by_requirement else None
+    if len(mapped_by_requirement) != 1:
+        detail = (
+            "natural-language extraction requires exactly one declared requirement; "
+            f"found {len(mapped_by_requirement)}"
+        )
+        return [
+            {
+                "id": _case_id(relative, line, row),
+                "row": row,
+                "status": "error",
+                "detail": detail,
+            }
+            for relative, line, row in _rows(human_tests)
+        ]
+    requirement = next(iter(mapped_by_requirement.values()))
     settings = config["information_extraction"]
     extraction_root = artifact_directory / "extractions"
     extraction_root.mkdir(parents=True, exist_ok=True)
@@ -569,18 +456,17 @@ def extract(
         if destination.is_file():
             cached = exp.load_json(destination)
             if cached.get("fingerprint") == fingerprint:
-                for phase in ("plan", "input"):
-                    response = cached.get(f"{phase}_response")
-                    if response and not cached.get(f"{phase}_usage_id"):
-                        usage_tracking.cached_response(
-                            run_directory,
-                            _usage_context(config, state, phase),
-                            {
-                                "request_id": response.get("id"),
-                                "usage": response.get("usage"),
-                            },
-                            f"{identifier}:{fingerprint}",
-                        )
+                response = cached.get("input_response")
+                if response and not cached.get("input_usage_id"):
+                    usage_tracking.cached_response(
+                        run_directory,
+                        _usage_context(config, state, "input"),
+                        {
+                            "request_id": response.get("id"),
+                            "usage": response.get("usage"),
+                        },
+                        f"{identifier}:{fingerprint}",
+                    )
                 if "reference_verdict" in natural:
                     cached["reference_verdict"] = natural["reference_verdict"]
                 return cached
@@ -595,79 +481,45 @@ def extract(
             "detail": None,
         }
         try:
-            plan_prompt = _plan_prompt(
-                config["dataset"]["name"], natural, scopes, requirement_outputs
+            plan = _deterministic_plan(config["dataset"]["name"], row, requirement)
+            record["plan"] = plan
+            scope = by_id[plan["scope_id"]]
+            relevant_descriptions = (
+                _relevant_input_descriptions(
+                    scope["input_schema"], description_registry
+                )
+                if input_variable_descriptions is not None
+                else None
             )
-            (extraction_root / f"{stem}.plan.prompt.txt").write_text(
-                plan_prompt, encoding="utf-8"
+            prompt = _input_prompt(natural, scope, candidate, relevant_descriptions)
+            (extraction_root / f"{stem}.input.prompt.txt").write_text(
+                prompt, encoding="utf-8"
             )
-            planned = usage_tracking.api_call(
+            sampled = usage_tracking.api_call(
                 run_directory,
-                {**_usage_context(config, state, "plan"), "case_id": identifier},
-                fingerprint + exp.sha256_bytes(plan_prompt.encode()),
+                {**_usage_context(config, state, "input"), "case_id": identifier},
+                fingerprint + exp.sha256_bytes(prompt.encode()),
                 lambda: _call_openai(
                     settings,
-                    plan_prompt,
-                    _plan_schema(scope_ids, requirement_ids),
-                    name="candidate_scope_plan",
+                    prompt,
+                    scope["input_schema"],
+                    name="candidate_scope_input",
                 ),
             )
-            record["plan_response"] = planned["raw_response"]
-            record["plan_usage_id"] = planned.get("_usage_id")
-            if planned.get("parse_error"):
-                raise ValueError(planned["parse_error"])
-            plan = planned["parsed"]
-            if mapped_by_requirement:
-                mapped = mapped_by_requirement[plan["requirement_id"]]
-                plan["scope_id"] = f"{mapped['file']}::{mapped['scope']}"
-                plan["output_path"] = [mapped["output"]]
-            record["plan"] = plan
-            record["plan_response"] = planned["raw_response"]
-            if not plan["supported"]:
-                record["detail"] = f"unsupported candidate interface: {plan['reason']}"
-            else:
-                scope = by_id[plan["scope_id"]]
-                relevant_descriptions = (
-                    _relevant_input_descriptions(
-                        scope["input_schema"], description_registry
-                    )
-                    if input_variable_descriptions is not None
-                    else None
-                )
-                prompt = _input_prompt(
-                    natural,
-                    scope,
-                    candidate,
-                    relevant_descriptions,
-                )
-                (extraction_root / f"{stem}.input.prompt.txt").write_text(
-                    prompt, encoding="utf-8"
-                )
-                sampled = usage_tracking.api_call(
-                    run_directory,
-                    {**_usage_context(config, state, "input"), "case_id": identifier},
-                    fingerprint + exp.sha256_bytes(prompt.encode()),
-                    lambda: _call_openai(
-                        settings,
-                        prompt,
-                        scope["input_schema"],
-                        name="candidate_scope_input",
-                    ),
-                )
-                record["input_response"] = sampled["raw_response"]
-                record["input_usage_id"] = sampled.get("_usage_id")
-                if sampled.get("parse_error"):
-                    raise ValueError(sampled["parse_error"])
-                inputs = _strip_optional_nulls(sampled["parsed"], scope["input_schema"])
-                # Catala describes integer-valued money with overlapping draft-04 `oneOf` branches (integer and number).
-                Draft202012Validator(
-                    _validation_schema(scope["input_schema"])
-                ).validate(inputs)
-                record.update(
-                    status="extracted",
-                    inputs=inputs,
-                    input_response=sampled["raw_response"],
-                )
+            record["input_response"] = sampled["raw_response"]
+            record["input_usage_id"] = sampled.get("_usage_id")
+            if sampled.get("parse_error"):
+                raise ValueError(sampled["parse_error"])
+            inputs = _strip_optional_nulls(sampled["parsed"], scope["input_schema"])
+            # Catala money schemas overlap on integer-valued amounts.
+            Draft202012Validator(_validation_schema(scope["input_schema"])).validate(
+                inputs
+            )
+            record.update(
+                status="extracted",
+                inputs=inputs,
+                input_response=sampled["raw_response"],
+            )
         except Exception as error:
             record["detail"] = f"{type(error).__name__}: {error}"
         exp.atomic_json(destination, record)

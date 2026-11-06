@@ -16,6 +16,11 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Iterable
 
+for _package_root in [Path("/rtdf/python"), *Path(__file__).resolve().parents]:
+    if (_package_root / "rtdf_formalizer").is_dir():
+        sys.path.insert(0, str(_package_root))
+        break
+
 from rtdf_formalizer.stages import utils as exp
 from rtdf_formalizer.stages.utils.common import RunnerError, atomic_json, load_json
 
@@ -208,8 +213,15 @@ def prompt(
             focus_instruction = (
                 f"This session refines scope {focus['scope']} in {focus['source']}. "
                 "Read the scope-local evidence mounted at /rtdf/feedback. Compare each "
-                "Catala result with the raw LLM reasoning and both execution trees. You may "
-                "edit this scope, descendant scopes, and shared helpers. Replays use cached "
+                "Catala result with the raw LLM reasoning and both execution trees. Start "
+                "with catala_causal_trace.yaml, whose branch_guards record the concrete "
+                "condition outcomes controlling each Catala value; use the raw Catala tree "
+                "only when the compact trace is insufficient. You may "
+                "edit this scope, descendant scopes, and shared helpers. Keep changes minimal "
+                "and localized to the target scope. Edit a descendant scope or shared helper "
+                "only when the evidence shows that the target cannot be corrected within the "
+                "target scope itself, and make only the smallest necessary external change. "
+                "Do not perform opportunistic refactoring or unrelated fixes. Replays use cached "
                 "inputs and traces unless the runner detects an incompatible interface. "
                 "If a generated test assigns values outside the scope's meaningful input "
                 "domain, making sound natural-language reasoning impossible, encode the "
@@ -217,6 +229,12 @@ def prompt(
                 "variables, such as numeric bounds or structural invariants. Add only "
                 "genuine domain preconditions, not constraints introduced merely to "
                 "eliminate a disagreement. "
+                "After a semantic or domain fix invalidates the current evidence, run "
+                "python3 /rtdf/regenerate_scope_analysis.py to generate fresh BOBCat "
+                "cases, Catala executions, LLM traces, and execution trees for this "
+                "scope. The refreshed evidence replaces /rtdf/feedback/cases and its "
+                "LLM usage is recorded by the runner. Use this after a relevant fix, "
+                "not merely to seek a more favorable LLM answer. "
                 "To replay every cached input against the current workspace, run "
                 "python3 /rtdf/python/rtdf_formalizer/stages/reasoning_trace_diff_fuzzing/repair.py "
                 "/rtdf/feedback --workspace /workspace. "
@@ -266,8 +284,9 @@ def revision_directory(run: Path, state: dict[str, Any]) -> Path:
 def topological_scope_order(
     scopes: Iterable[dict[str, Any]],
     dependencies: dict[str, set[str]],
+    dependency_order: dict[str, list[str]] | None = None,
 ) -> list[dict[str, Any]]:
-    # Order every declared scope so each callee precedes every caller.
+    # Traverse entry scopes in execution order while placing every callee first.
     unique: dict[str, dict[str, Any]] = {}
     for record in scopes:
         source = record.get("compiler_file") or record.get("file")
@@ -284,30 +303,85 @@ def topological_scope_order(
                 "schema_error": record.get("schema_error"),
             },
         )
-    remaining = {
-        identifier: set(dependencies.get(identifier, set())) & set(unique)
-        for identifier in unique
-    }
-    ordered: list[dict[str, Any]] = []
-    while remaining:
-        ready = sorted(
-            identifier for identifier, needed in remaining.items() if not needed
+    identifiers = set(unique)
+    ordered_dependencies: dict[str, list[str]] = {}
+    for identifier in unique:
+        needed = set(dependencies.get(identifier, set())) & identifiers
+        preferred = (dependency_order or {}).get(identifier, [])
+        ordered_dependencies[identifier] = [
+            dependency for dependency in preferred if dependency in needed
+        ]
+        ordered_dependencies[identifier].extend(
+            sorted(needed - set(ordered_dependencies[identifier]))
         )
-        if not ready:
+    called = {
+        dependency
+        for values in ordered_dependencies.values()
+        for dependency in values
+    }
+    roots = [identifier for identifier in unique if identifier not in called]
+    ordered: list[dict[str, Any]] = []
+    visited: set[str] = set()
+    visiting: list[str] = []
+
+    def visit(identifier: str) -> None:
+        if identifier in visited:
+            return
+        if identifier in visiting:
+            cycle = visiting[visiting.index(identifier) :] + [identifier]
             raise ValueError(
-                "scope dependency graph contains a cycle: "
-                + ", ".join(sorted(remaining))
+                "scope dependency graph contains a cycle: " + ", ".join(cycle)
             )
-        for identifier in ready:
-            record = dict(unique[identifier])
-            record["dependencies"] = sorted(
-                dependencies.get(identifier, set()) & set(unique)
-            )
-            ordered.append(record)
-            remaining.pop(identifier)
-        for needed in remaining.values():
-            needed.difference_update(ready)
+        visiting.append(identifier)
+        for dependency in ordered_dependencies[identifier]:
+            visit(dependency)
+        visiting.pop()
+        visited.add(identifier)
+        record = dict(unique[identifier])
+        record["dependencies"] = ordered_dependencies[identifier]
+        ordered.append(record)
+
+    for identifier in [*roots, *unique]:
+        visit(identifier)
     return ordered
+
+
+def _declared_dependency_order(
+    project: Path,
+    scopes: list[dict[str, Any]],
+    dependencies: dict[str, set[str]],
+) -> dict[str, list[str]]:
+    by_id = {
+        scope_id(record.get("compiler_file") or record.get("file"), record["scope"]): record
+        for record in scopes
+    }
+    result: dict[str, list[str]] = {}
+    for caller, needed in dependencies.items():
+        record = by_id.get(caller)
+        if record is None:
+            continue
+        source = project / record.get("file", record.get("compiler_file"))
+        try:
+            text = source.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        declaration = re.search(
+            r"(?m)^declaration[ \t]+scope[ \t]+"
+            + re.escape(record["scope"])
+            + r"[ \t]*:",
+            text,
+        )
+        start = declaration.start() if declaration else 0
+        positions = {}
+        for dependency in needed:
+            target = by_id.get(dependency)
+            position = text.find(target["scope"], start) if target else -1
+            positions[dependency] = position if position >= 0 else len(text)
+        result[caller] = sorted(
+            needed,
+            key=lambda dependency: (positions[dependency], dependency),
+        )
+    return result
 
 
 def _graph_scope_mapping(
@@ -386,14 +460,57 @@ def discover_scope_order(
             dependencies.setdefault(mapping[caller], set()).update(
                 mapping[callee] for callee in callees if callee in mapping
             )
-    return topological_scope_order(scopes, dependencies)
+    execution_order = _declared_dependency_order(project, scopes, dependencies)
+    return topological_scope_order(scopes, dependencies, execution_order)
 
 
 def install_plan(state: dict[str, Any], plan: list[dict[str, Any]]) -> None:
     state["recursive_repair_plan"] = plan
     state["recursive_repair_queue"] = [record["id"] for record in plan]
+    state["recursive_order_version"] = 2
     state.setdefault("recursive_processed", {})
     state.setdefault("recursive_revisions", {})
+
+
+def migrate_scope_order(run: Path, state: dict[str, Any]) -> bool:
+    if int(state.get("recursive_order_version", 1)) >= 2:
+        return False
+    formats = json.loads(
+        (run / "initial/validation/input_formats.json").read_text(encoding="utf-8")
+    )["candidate"]["scopes"]
+    previous = state["recursive_repair_plan"]
+    dependencies = {
+        record["id"]: set(record.get("dependencies", [])) for record in previous
+    }
+    execution_order = _declared_dependency_order(
+        run / "initial/snapshot", formats, dependencies
+    )
+    plan = topological_scope_order(formats, dependencies, execution_order)
+    processed = state.setdefault("recursive_processed", {})
+    completed_prefix: list[str] = []
+    for record in plan:
+        if record["id"] not in processed:
+            break
+        completed_prefix.append(record["id"])
+    keep = set(completed_prefix)
+    state["recursive_processed"] = {
+        identifier: value
+        for identifier, value in processed.items()
+        if identifier in keep
+    }
+    state["recursive_repair_plan"] = plan
+    state["recursive_repair_queue"] = [
+        record["id"] for record in plan if record["id"] not in keep
+    ]
+    state["recursive_order_version"] = 2
+    state["recursive_invalidation_reason"] = (
+        "scope traversal changed to dependency-first execution order"
+    )
+    state.pop("recursive_active_scope", None)
+    state.pop("recursive_before_schema_fingerprint", None)
+    activate_next(state)
+    state.update(next_stage="scope_analysis", recursive_step="analysis", status="running")
+    return True
 
 
 def current_scope(state: dict[str, Any]) -> dict[str, Any] | None:
@@ -662,7 +779,10 @@ def write_scope_bundle(
     natural: list[dict[str, Any]],
     previous_summary: dict[str, Any] | None = None,
 ) -> Path:
-    # Give the repair agent raw case evidence without comparison or BOBCat metadata.
+    # Give the repair agent scope-local evidence without comparison metadata.
+    import yaml
+
+    from rtdf_formalizer.bobcat.trace import causal_execution_trace
     from rtdf_formalizer.stages import utils as exp
     from rtdf_formalizer.stages import reasoning_trace_diff_fuzzing as pipeline
 
@@ -701,9 +821,14 @@ def write_scope_bundle(
                 or reasoning.get("execution_tree_extraction_error"),
             },
         )
-        exp.atomic_json(
-            destination / "catala_execution_tree.json",
-            prune_execution_tree(formal.get("execution_tree", []), state),
+        sliced_tree = prune_execution_tree(
+            formal.get("dynamic_slice_tree", formal.get("execution_tree", [])), state
+        )
+        exp.atomic_json(destination / "catala_execution_tree.json", sliced_tree)
+        causal = causal_execution_trace(root / "snapshot", sliced_tree)
+        (destination / "catala_causal_trace.yaml").write_text(
+            yaml.safe_dump(causal, allow_unicode=True, sort_keys=False),
+            encoding="utf-8",
         )
         exp.atomic_json(
             destination / "llm_execution_tree.json", reasoning.get("execution_tree")
@@ -910,6 +1035,53 @@ def analyze_scope(
     state["updated_at"] = exp.utc_now()
     exp.atomic_json(run / "state.json", state)
     return summary
+
+
+def regenerate_active_scope(
+    run: Path, config: dict[str, Any], state: dict[str, Any]
+) -> dict[str, Any]:
+    # Rebuild scope-local evidence from the agent's edited workspace.
+    from rtdf_formalizer.stages import reasoning_trace_diff_fuzzing as pipeline
+
+    active = current_scope(state)
+    if active is None or state.get("recursive_step") != "session":
+        raise exp.RunnerError("analysis regeneration requires an active repair session")
+    parent = scope_revision_root(run, state) / "agent_regeneration"
+    indices = [int(path.name) for path in parent.glob("[0-9][0-9][0-9]")]
+    root = parent / f"{max(indices, default=-1) + 1:03d}"
+    regenerated_state = {
+        **state,
+        "_stage_directory": str(root),
+        "_reasoning_cache_nonce": str(root.relative_to(run)),
+        "_usage_stage": "repair-regeneration-reasoning",
+    }
+    root.mkdir(parents=True)
+    current_schema = _refresh_active_schema(run, config, regenerated_state, root)
+    options = {**pipeline.backfill_options(run, config), "_scope_record": active}
+    cases = pipeline.generate_tests(run, config, regenerated_state, options)
+    if cases:
+        symbolic = pipeline.replay_compiled(run, config, regenerated_state, cases)
+        natural = pipeline.reason(run, config, regenerated_state, cases)
+        summary = pipeline.compare(run, regenerated_state, symbolic, natural)
+    else:
+        symbolic, natural = [], []
+        summary = {"total": 0, "cases": []}
+        exp.atomic_json(root / "tests_bobcat_comparison/summary.json", summary)
+    refreshed = write_scope_bundle(
+        root, regenerated_state, cases, symbolic, natural, _latest_summary(run, active)
+    )
+    mounted = run / state["recursive_scope_task"]
+    shutil.rmtree(mounted / "cases", ignore_errors=True)
+    shutil.copytree(refreshed, mounted, dirs_exist_ok=True)
+    result = {
+        "scope": active["id"],
+        "schema_fingerprint": current_schema,
+        "case_count": len(cases),
+        "analysis_path": str(root.relative_to(run)),
+        "usage_stage": "repair-regeneration-reasoning",
+    }
+    exp.atomic_json(root / "regeneration.json", result)
+    return result
 
 
 def _summary_schema(case_ids: set[str]) -> dict[str, Any]:
@@ -1267,10 +1439,6 @@ def replay(
 
 
 def main() -> int:
-    for root in [Path("/rtdf/python"), *Path(__file__).resolve().parents]:
-        if (root / "rtdf_formalizer").is_dir():
-            sys.path.insert(0, str(root))
-            break
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report", type=Path)
     parser.add_argument(
@@ -1391,6 +1559,11 @@ def _resume_recursive_run(
     from rtdf_formalizer.stages import formalization, validation
 
     # Run one initial formalization followed by scope-local sessions from a dynamic work queue.
+
+    if state.get("recursive_phase") == "scope" and migrate_scope_order(
+        run_directory, state
+    ):
+        atomic_json(run_directory / "state.json", state)
 
     while True:
         stage = state["next_stage"]

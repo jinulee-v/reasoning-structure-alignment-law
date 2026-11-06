@@ -91,6 +91,8 @@ def snapshot_manifest(snapshot: Path, iteration: int) -> dict[str, Any]:
 
 def stage_directory(run_directory: Path, state: dict[str, Any]) -> Path:
     # Resolve legacy iterations and recursive scope revisions through one artifact boundary.
+    if state.get("_stage_directory"):
+        return Path(state["_stage_directory"])
     if state.get("recursive_phase") == "initial":
         return run_directory / "initial"
     if state.get("recursive_phase") == "scope":
