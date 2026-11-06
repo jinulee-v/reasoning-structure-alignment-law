@@ -3,10 +3,11 @@
 Formalize the supplied Internal Revenue Code provisions as needed to calculate
 a taxpayer's final tax liability.
 
-The code may be given these input facts: taxpayer income, deductions, tax year,
-filing election, marital and household circumstances, family relationships,
-ages, residency, support, employment, remuneration, payroll, and any other
-relevant facts stated by a case.
+The code may be given these input facts: gross-income amounts explicitly stated
+by a case, deduction-related factual amounts and circumstances, tax year, filing
+election, marital and household circumstances, family relationships, ages,
+residency, support, employment, remuneration, payroll, and any other relevant
+facts explicitly stated by the case.
 
 Some facts may be absent. Preserve that absence using Catala `optional` values:
 JSON `null` corresponds to Catala `Absent`. Do not substitute fabricated values
@@ -50,6 +51,13 @@ otherwise use `optional` and preserve the distinction between an absent fact and
 a present value. This restriction applies to input representation, not to
 control flow: an `Absent` match branch must still continue without the missing
 value and produce the required final result.
+
+Encode the intrinsic domain of factual inputs with Catala assertions. Constrain
+shares to 0% through 100%, and ages, durations, counts, or amounts to be
+nonnegative when negative values are meaningless. Also assert structural or
+chronological invariants inherent in a fact's definition. Do not add constraints
+merely to suppress difficult tests, and describe every asserted domain in
+`INPUT_VARIABLE_DESCRIPTION.json`.
 
 ## Input variable descriptions
 

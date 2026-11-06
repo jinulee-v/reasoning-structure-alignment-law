@@ -54,6 +54,13 @@ absent fact and a present value. This restriction applies to input
 representation, not to control flow: an `Absent` match branch must still
 continue without the missing value and produce the required final result.
 
+Encode the intrinsic domain of factual inputs with Catala assertions. Constrain
+shares to 0% through 100%, and ages, durations, counts, or amounts to be
+nonnegative when negative values are meaningless. Also assert structural or
+chronological invariants inherent in a fact's definition. Do not add constraints
+merely to suppress difficult tests, and describe every asserted domain in
+`INPUT_VARIABLE_DESCRIPTION.json`.
+
 ## Input variable descriptions
 
 After the Catala scopes typecheck, run `/rtdf/extract_input_requirements.sh`.
