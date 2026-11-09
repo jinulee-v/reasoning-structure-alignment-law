@@ -431,7 +431,7 @@ let duration value = Dates_calc.make_period
 
 
 def _parenthesize_record_field_lets(generated_ml: str) -> str:
-    # Repair Catala 1.2.1's missing parentheses around let-valued fields.
+    # Repair the 1.2-series OCaml backend's missing parentheses around let-valued fields.
     lines = generated_ml.splitlines(keepends=True)
     let_field = re.compile(r"^(\s+)\{?[A-Z][A-Za-z0-9_]*\.[a-z][A-Za-z0-9_]*\s*=\s*$")
     any_field = re.compile(r"^(\s+)\{?[A-Z][A-Za-z0-9_]*\.[a-z][A-Za-z0-9_]*\s*=")

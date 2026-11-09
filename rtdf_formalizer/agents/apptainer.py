@@ -244,6 +244,7 @@ def environment(
     toolchain = config["runtime"].get("host_toolchain")
     path = ["/opt/rtdf/agent", "/opt/mini-swe-agent/bin"]
     if toolchain:
+        path += [f"{toolchain}/bobcat/bin"]
         path += [f"{toolchain}/opam/catala/bin", f"{toolchain}/opam/cutecat/bin"]
         path += [f"{toolchain}/envs/catala/bin", f"{toolchain}/envs/cutecat/bin"]
     path += [
@@ -256,6 +257,13 @@ def environment(
     ]
     result["APPTAINERENV_XDG_CACHE_HOME"] = "/agent-home/.cache"
     result["APPTAINERENV_PATH"] = ":".join(path)
+    if toolchain:
+        result["APPTAINERENV_CATALA_SOURCE_ROOT"] = (
+            f"{toolchain}/src/catala-bobcat"
+        )
+        result["APPTAINERENV_LD_LIBRARY_PATH"] = ":".join(
+            (f"{toolchain}/bobcat-z3/lib", f"{toolchain}/envs/catala/lib")
+        )
     if config["agent"].get("base_url"):
         result["APPTAINERENV_OPENAI_API_BASE"] = config["agent"]["base_url"]
         result["APPTAINERENV_OPENAI_API_KEY"] = os.environ[

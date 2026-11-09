@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -56,6 +57,7 @@ class RepairTest(unittest.TestCase):
             set(action.choices), {"no-testing", "answer-only", "recursive"}
         )
         self.assertEqual(start.get_default("max_iteration"), 2)
+        self.assertEqual(start.get_default("reasoning_jobs"), 8)
         with self.assertRaisesRegex(exp.RunnerError, "must be"):
             repair.mode({"repair": {"mode": "rsa"}})
 
@@ -68,6 +70,147 @@ class RepairTest(unittest.TestCase):
         )
         self.assertIn("Keep changes minimal and localized to the target scope", prompt)
         self.assertIn("smallest necessary external change", prompt)
+
+    def test_copy_cache_excludes_build_directories(self):
+        source = self.run / "source"
+        destination = self.run / "destination"
+        tests = source / "tests_bobcat"
+        natural = source / "tests_bobcat_natural_language_results"
+        (tests / "build").mkdir(parents=True)
+        (tests / "nested" / "_build").mkdir(parents=True)
+        natural.mkdir(parents=True)
+        (tests / "cases.json").write_text("{}", encoding="utf-8")
+        (tests / "build" / "readonly.cmi").write_text("compiled", encoding="utf-8")
+        (tests / "nested" / "_build" / "generated").write_text(
+            "generated", encoding="utf-8"
+        )
+        (natural / "case.txt").write_text("reasoning", encoding="utf-8")
+        destination.mkdir()
+
+        repair._copy_cache(source, destination)
+
+        self.assertTrue((destination / "tests_bobcat/cases.json").is_file())
+        self.assertFalse((destination / "tests_bobcat/build").exists())
+        self.assertFalse((destination / "tests_bobcat/nested/_build").exists())
+        self.assertTrue(
+            (
+                destination / "tests_bobcat_natural_language_results/case.txt"
+            ).is_file()
+        )
+        self.assertEqual(list(destination.glob(".tests_bobcat.*")), [])
+
+    def test_copy_cache_does_not_publish_failed_copy(self):
+        source = self.run / "source"
+        destination = self.run / "destination"
+        (source / "tests_bobcat").mkdir(parents=True)
+        destination.mkdir()
+
+        with mock.patch.object(shutil, "copytree", side_effect=OSError("failed")):
+            with self.assertRaisesRegex(OSError, "failed"):
+                repair._copy_cache(source, destination)
+
+        self.assertFalse((destination / "tests_bobcat").exists())
+        self.assertEqual(list(destination.glob(".tests_bobcat.*")), [])
+
+    def test_result_uses_latest_regenerated_analysis(self):
+        identifier = "law::Leaf"
+        record = {"id": identifier, "source": "law", "scope": "Leaf"}
+        state = {
+            "recursive_step": "result",
+            "recursive_active_scope": identifier,
+            "recursive_revision": 1,
+            "recursive_repair_plan": [record],
+            "recursive_before_schema_fingerprint": "schema",
+        }
+        root = self.run / "result"
+        snapshot = root / "snapshot"
+        snapshot.mkdir(parents=True)
+        (snapshot / "law.catala_en").write_text("fixed", encoding="utf-8")
+        analysis = recursive_repair.scope_revision_root(self.run, state) / "analysis"
+        (analysis / "snapshot").mkdir(parents=True)
+        (analysis / "snapshot/law.catala_en").write_text(
+            "before", encoding="utf-8"
+        )
+        regenerated = self.run / "regenerated"
+        regenerated.mkdir()
+        state["recursive_latest_regeneration"] = {
+            "scope": identifier,
+            "revision": 1,
+            "schema_fingerprint": "schema",
+            "workspace_fingerprint": exp.tree_hash(snapshot),
+            "analysis_path": "regenerated",
+        }
+
+        cached, schema = repair._analysis_cache(
+            self.run, state, root, "schema"
+        )
+
+        self.assertEqual(cached, regenerated)
+        self.assertEqual(schema, "schema")
+
+    def test_result_regenerates_after_post_regeneration_edit(self):
+        identifier = "law::Leaf"
+        record = {"id": identifier, "source": "law", "scope": "Leaf"}
+        state = {
+            "recursive_step": "result",
+            "recursive_active_scope": identifier,
+            "recursive_revision": 1,
+            "recursive_repair_plan": [record],
+            "recursive_before_schema_fingerprint": "schema",
+        }
+        root = self.run / "result"
+        snapshot = root / "snapshot"
+        snapshot.mkdir(parents=True)
+        (snapshot / "law.catala_en").write_text("newer edit", encoding="utf-8")
+        analysis = recursive_repair.scope_revision_root(self.run, state) / "analysis"
+        (analysis / "snapshot").mkdir(parents=True)
+        (analysis / "snapshot/law.catala_en").write_text(
+            "before", encoding="utf-8"
+        )
+        regenerated = self.run / "regenerated"
+        regenerated.mkdir()
+        prior = self.run / "prior"
+        prior.mkdir()
+        (prior / "law.catala_en").write_text("fixed", encoding="utf-8")
+        state["recursive_latest_regeneration"] = {
+            "scope": identifier,
+            "revision": 1,
+            "schema_fingerprint": "schema",
+            "workspace_fingerprint": exp.tree_hash(prior),
+            "analysis_path": "regenerated",
+        }
+
+        cached, schema = repair._analysis_cache(
+            self.run, state, root, "schema"
+        )
+
+        self.assertIsNone(cached)
+        self.assertIsNone(schema)
+
+    def test_result_reuses_original_analysis_without_edits(self):
+        identifier = "law::Leaf"
+        record = {"id": identifier, "source": "law", "scope": "Leaf"}
+        state = {
+            "recursive_step": "result",
+            "recursive_active_scope": identifier,
+            "recursive_revision": 0,
+            "recursive_repair_plan": [record],
+            "recursive_before_schema_fingerprint": "schema",
+        }
+        analysis = recursive_repair.scope_revision_root(self.run, state) / "analysis"
+        (analysis / "snapshot").mkdir(parents=True)
+        (analysis / "snapshot/law.catala_en").write_text(
+            "unchanged", encoding="utf-8"
+        )
+        root = self.run / "result"
+        exp.publish_copy(analysis / "snapshot", root / "snapshot")
+
+        cached, schema = repair._analysis_cache(
+            self.run, state, root, "schema"
+        )
+
+        self.assertEqual(cached, analysis)
+        self.assertEqual(schema, "schema")
 
     def test_recursive_scope_order_is_dependency_first(self):
         scopes = [
@@ -181,7 +324,7 @@ declaration scope Top:
         self.assertEqual(state["recursive_repair_queue"], [late, top])
         self.assertEqual(state["recursive_processed"], {})
 
-    def test_recursive_descendant_edit_requeues_descendant(self):
+    def test_completed_scope_does_not_requeue_or_invalidate_others(self):
         plan = [
             {"id": "law::Leaf", "source": "law", "scope": "Leaf", "dependencies": []},
             {
@@ -198,33 +341,130 @@ declaration scope Top:
             "recursive_revision": 0,
             "recursive_processed": {"law::Leaf": {"fingerprint": "old"}},
         }
-        requeued = recursive_repair.record_processed(
-            state, {"law::Leaf": "new", "law::Top": "same"}, {"law::Leaf"}
+        recursive_repair.record_processed(
+            state, {"law::Leaf": "unchanged", "law::Top": "new"}
         )
-        self.assertEqual(requeued, {"law::Leaf"})
-        self.assertEqual(state["recursive_repair_queue"], ["law::Leaf"])
+        self.assertEqual(state["recursive_repair_queue"], [])
+        self.assertEqual(state["recursive_processed"]["law::Leaf"]["fingerprint"], "old")
+        self.assertEqual(state["recursive_processed"]["law::Top"]["fingerprint"], "new")
 
-    def test_later_descendant_change_invalidates_processed_caller(self):
+    def test_failed_bobcat_result_is_not_an_empty_scope(self):
+        analysis = self.run / "analysis/tests_bobcat"
+        analysis.mkdir(parents=True)
+        (analysis / "scope.json").write_text(
+            json.dumps(
+                {
+                    "returncode": 123,
+                    "finished": False,
+                    "timed_out": False,
+                    "cases": [],
+                }
+            ),
+            encoding="utf-8",
+        )
+        self.assertTrue(recursive_repair._failed_bobcat_analysis(self.run / "analysis"))
+
+    def test_recursive_resume_requeues_failed_scopes_in_plan_order(self):
+        low = "law::Low"
+        active = "law::Active"
+        top = "law::Top"
+        failed = self.run / "failed/tests_bobcat"
+        failed.mkdir(parents=True)
+        (failed / "low.json").write_text(
+            json.dumps({"returncode": 123, "finished": False, "cases": []}),
+            encoding="utf-8",
+        )
+        state = {
+            "recursive_phase": "scope",
+            "next_stage": "scope_analysis",
+            "recursive_step": "analysis",
+            "recursive_active_scope": active,
+            "recursive_revision": 0,
+            "recursive_revisions": {active: 1},
+            "recursive_repair_plan": [
+                {"id": low, "source": "law", "scope": "Low"},
+                {"id": active, "source": "law", "scope": "Active"},
+                {"id": top, "source": "law", "scope": "Top"},
+            ],
+            "recursive_repair_queue": [top],
+            "recursive_processed": {low: {"analysis_path": "failed"}},
+        }
+        self.assertTrue(recursive_repair.recover_recursive_resume(self.run, state))
+        self.assertEqual(state["recursive_active_scope"], low)
+        self.assertEqual(state["recursive_repair_queue"], [active, top])
+        self.assertNotIn(low, state["recursive_processed"])
+
+    def test_recursive_resume_restores_interrupted_session(self):
+        identifier = "law::Leaf"
+        state = {
+            "recursive_phase": "scope",
+            "next_stage": "agent",
+            "recursive_step": "session",
+            "recursive_active_scope": identifier,
+            "recursive_revision": 0,
+            "recursive_repair_plan": [
+                {"id": identifier, "source": "law", "scope": "Leaf"}
+            ],
+            "recursive_repair_queue": [],
+            "recursive_processed": {},
+            "active_attempt": "attempt-000",
+        }
+        root = recursive_repair.scope_revision_root(self.run, state)
+        snapshot = root / "analysis/snapshot"
+        snapshot.mkdir(parents=True)
+        (snapshot / "law.catala_en").write_text("before", encoding="utf-8")
+        attempt = root / "session/agent/attempt-000"
+        attempt.mkdir(parents=True)
+        (self.run / "workspace/law.catala_en").write_text("partial", encoding="utf-8")
+        self.assertTrue(recursive_repair.recover_recursive_resume(self.run, state))
+        self.assertEqual(
+            (self.run / "workspace/law.catala_en").read_text(encoding="utf-8"),
+            "before",
+        )
+        self.assertTrue((attempt / "interrupted_workspace/law.catala_en").is_file())
+        self.assertIsNone(state["active_attempt"])
+        self.assertEqual(state["next_stage"], "agent")
+
+    def test_restart_from_scope_restores_checkpoint_and_order(self):
+        low = "law.catala_en::Low"
+        target = "law.catala_en::Target"
+        top = "law.catala_en::Top"
         plan = [
-            {"id": "law::Leaf", "source": "law", "scope": "Leaf", "dependencies": []},
-            {
-                "id": "law::Top",
-                "source": "law",
-                "scope": "Top",
-                "dependencies": ["law::Leaf"],
-            },
+            {"id": low, "source": "law.catala_en", "file": "law.catala_en", "scope": "Low"},
+            {"id": target, "source": "law.catala_en", "file": "law.catala_en", "scope": "Target"},
+            {"id": top, "source": "law.catala_en", "file": "law.catala_en", "scope": "Top"},
         ]
         state = {
+            "recursive_phase": "scope",
             "recursive_repair_plan": plan,
+            "recursive_processed": {low: {}, target: {}},
+            "recursive_revisions": {low: 1, target: 1},
+            "recursive_active_scope": top,
             "recursive_repair_queue": [],
-            "recursive_active_scope": "law::Leaf",
-            "recursive_revision": 1,
-            "recursive_processed": {"law::Top": {"fingerprint": "old"}},
+            "active_attempt": "attempt-000",
         }
-        recursive_repair.record_processed(
-            state, {"law::Leaf": "new", "law::Top": "same"}, {"law::Leaf"}
+        record = plan[1]
+        snapshot = (
+            self.run
+            / "refinement"
+            / recursive_repair.scope_slug(record)
+            / "revisions/000/analysis/snapshot"
         )
-        self.assertEqual(state["recursive_repair_queue"], ["law::Top"])
+        snapshot.mkdir(parents=True)
+        (snapshot / "law.catala_en").write_text("checkpoint", encoding="utf-8")
+        (self.run / "workspace/law.catala_en").write_text("current", encoding="utf-8")
+        archive = recursive_repair.restart_from_scope(self.run, state, target)
+        self.assertEqual(
+            (self.run / "workspace/law.catala_en").read_text(encoding="utf-8"),
+            "checkpoint",
+        )
+        self.assertEqual(
+            (archive / "workspace/law.catala_en").read_text(encoding="utf-8"),
+            "current",
+        )
+        self.assertEqual(state["recursive_active_scope"], target)
+        self.assertEqual(state["recursive_repair_queue"], [top])
+        self.assertEqual(set(state["recursive_processed"]), {low})
 
     def test_processed_scope_tree_is_collapsed_without_inputs(self):
         state = {
@@ -315,13 +555,6 @@ declaration scope Top:
         self.assertIs(recursive_repair.validate_summary(value, "Leaf", {"a"}), value)
         with self.assertRaisesRegex(ValueError, "case IDs"):
             recursive_repair.validate_summary(value, "Leaf", {"a", "b"})
-
-    def test_changed_helper_requeues_its_scope_users(self):
-        affected = {"law::shared": {"law::Leaf", "law::Top"}}
-        self.assertEqual(
-            recursive_repair.helper_affected_scopes({"law::shared"}, affected),
-            {"law::Leaf", "law::Top"},
-        )
 
     def test_answer_only_pauses_before_reasoning(self):
         state = self.state(stage="reasoning_trace_diff_fuzzing")

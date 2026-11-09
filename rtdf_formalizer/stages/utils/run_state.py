@@ -193,8 +193,14 @@ def create_run(args: Any) -> Path:
     repair.mode(repair_config)
     repair.max_iteration(repair_config)
     dataset = resolve_dataset(args.dataset)
+    reasoning_trace_provider = (
+        getattr(args, "reasoning_trace_provider", None) or args.agent_provider
+    )
+    reasoning_trace_model = (
+        getattr(args, "reasoning_trace_model", None) or args.agent_model
+    )
     run_id = args.run_id or new_run_id(
-        dataset, args.agent, args.agent_model, args.reasoning_trace_model
+        dataset, args.agent, args.agent_model, reasoning_trace_model
     )
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", run_id):
         raise RunnerError("run ID may contain only letters, digits, '.', '_' and '-'")
@@ -219,8 +225,9 @@ def create_run(args: Any) -> Path:
         "agent": agent,
         "repair": repair_settings,
         "reasoning_trace": {
-            "provider": args.reasoning_trace_provider,
-            "model": args.reasoning_trace_model,
+            "provider": reasoning_trace_provider,
+            "model": reasoning_trace_model,
+            "jobs": getattr(args, "reasoning_jobs", 8),
             **(
                 {"base_url": args.reasoning_base_url}
                 if getattr(args, "reasoning_base_url", None)
@@ -235,7 +242,7 @@ def create_run(args: Any) -> Path:
         },
         "information_extraction": {
             "provider": getattr(args, "extraction_provider", "openai"),
-            "model": getattr(args, "extraction_model", args.reasoning_trace_model),
+            "model": getattr(args, "extraction_model", None) or "gpt-6-luna",
             **(
                 {"base_url": args.extraction_base_url}
                 if getattr(args, "extraction_base_url", None)
@@ -253,7 +260,7 @@ def create_run(args: Any) -> Path:
         "reasoning_trace_diff_fuzzing": {
             "bobcat_timeout_seconds": getattr(args, "bobcat_timeout_seconds", 1800),
             "bobcat_positive_hundred_money_inputs": getattr(
-                args, "bobcat_positive_hundred_money_inputs", False
+                args, "bobcat_positive_hundred_money_inputs", True
             ),
             "bobcat_max_list_length": getattr(args, "bobcat_max_list_length", None),
             "bobcat_representation_capacity": getattr(

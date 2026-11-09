@@ -53,6 +53,15 @@ SCOPE_OUTPUT = re.compile(
     re.MULTILINE,
 )
 RTDF_BLOCK_ID = re.compile(rb"<!--[ \t]*rtdf-block-id:[ \t]*([^;>]+)[ \t]*;")
+MODULE_DECLARATION = re.compile(
+    r"(?m)^[ \t]*>[ \t]*Module[ \t]+([^\s]+)[ \t]*$"
+)
+DECLARATION_SYMBOL = re.compile(
+    r"^[ \t]*(?:#[^\n]*\n[ \t]*)*(?:declaration|déclaration)[ \t]+"
+    r"(?:(?:scope|structure|enumeration|champ[ \t]+d'application|"
+    r"énumération)[ \t]+)?([^\W\d]\w*)",
+    re.MULTILINE,
+)
 
 
 def valid_catala_block(block: bytes) -> bool:
@@ -66,9 +75,9 @@ def valid_catala_block(block: bytes) -> bool:
 
 
 def catala_block_symbols(block: bytes) -> tuple[set[str], set[tuple[str, str]]]:
-    # Return declared scopes and scope variables defined by one fence body.
+    # Return declared symbols and scope variables defined by one fence body.
     text = block.decode("utf-8", errors="replace")
-    declared = set(SCOPE_DECLARATION.findall(text))
+    declared = set(DECLARATION_SYMBOL.findall(text))
     definitions: set[tuple[str, str]] = set()
     current_scope: str | None = None
     for line in text.splitlines():
@@ -83,6 +92,46 @@ def catala_block_symbols(block: bytes) -> tuple[set[str], set[tuple[str, str]]]:
         if current_scope is not None and definition:
             definitions.add((current_scope, definition.group(1)))
     return declared, definitions
+
+
+def _module_name(source: Path) -> str | None:
+    match = MODULE_DECLARATION.search(
+        source.read_text(encoding="utf-8", errors="replace")
+    )
+    return match.group(1) if match else None
+
+
+def _qualified_symbol_matches_module(
+    qualified: str,
+    module: str | None,
+    symbol: str,
+    *,
+    allow_unqualified: bool = False,
+) -> bool:
+    """Whether a whole-program graph symbol belongs to one source module."""
+    parts = qualified.split(".")
+    if not parts or parts[-1] != symbol:
+        return False
+    return (allow_unqualified and qualified == symbol) or (
+        module is not None and module in parts[:-1]
+    )
+
+
+def _named_dependency_edges(payload: Any) -> dict[str, set[str]]:
+    """Decode one named graph payload as dependent-to-dependencies."""
+    if not isinstance(payload, dict):
+        return {}
+    nodes = {
+        str(identifier): str(name)
+        for identifier, name in payload.get("nodes", {}).items()
+    }
+    dependencies = {name: set() for name in nodes.values()}
+    for edge in payload.get("edges", []):
+        source = nodes.get(str(edge.get("from")))
+        target = nodes.get(str(edge.get("to")))
+        if source is not None and target is not None:
+            dependencies.setdefault(target, set()).add(source)
+    return dependencies
 
 
 def declared_scope_outputs(source: Path) -> dict[str, set[str]]:
@@ -224,7 +273,12 @@ def dependency_live_definitions(
             environment=environment,
             timeout=300,
         )
-        for owner, selected in selected_by_owner.items():
+        graph_by_owner: dict[Path, dict[str, Any]] = {}
+
+        def dependency_graph(owner: Path) -> dict[str, Any]:
+            cached = graph_by_owner.get(owner)
+            if cached is not None:
+                return cached
             relative_owner = owner.relative_to(workspace).as_posix()
             completed = run_checked(
                 [
@@ -248,6 +302,15 @@ def dependency_live_definitions(
                 raise RunnerError(
                     f"could not parse Catala dependency graph for {relative_owner}: {error}"
                 ) from error
+            graph_by_owner[owner] = graph
+            return graph
+
+        # First compute whole-program reachability from every contracted output.
+        # The graph uses module-qualified names for imported scopes and helpers.
+        reachable_symbols: set[str] = set()
+        selected_graph_by_owner: dict[Path, dict[str, set[str]]] = {}
+        for owner, selected in selected_by_owner.items():
+            graph = dependency_graph(owner)
             intra, inter = _dependency_graph_edges(graph)
             graph_scopes = set(inter)
             graph_scopes.update(key.split("\0", 1)[0] for key in intra)
@@ -257,42 +320,85 @@ def dependency_live_definitions(
                 if graph_scope is None:
                     raise RunnerError(
                         f"mapped scope is absent or ambiguous in dependency graph: "
-                        f"{relative_owner}::{scope}"
+                        f"{owner.relative_to(workspace).as_posix()}::{scope}"
                     )
                 selected_graph.setdefault(graph_scope, set()).update(outputs)
 
             reachable_scopes = _dependency_closure(inter, set(selected_graph))
-            authored_outputs = outputs_by_owner.get(owner, {})
-            live_variables: set[tuple[str, str]] = set()
-            live_scopes: set[str] = set()
-            for graph_scope in reachable_scopes:
-                short_scope = graph_scope.rsplit(".", 1)[-1]
-                targets = selected_graph.get(graph_scope)
-                if targets is None:
-                    targets = authored_outputs.get(short_scope, set())
+            reachable_symbols.update(reachable_scopes)
+            reachable_symbols.update(
+                _dependency_closure(
+                    _named_dependency_edges(graph.get("types", {})),
+                    reachable_scopes,
+                )
+            )
+            selected_graph_by_owner[owner] = selected_graph
+
+            # Validate the contracted outputs against the root compilation unit.
+            for graph_scope, targets in selected_graph.items():
                 qualified_targets = {f"{graph_scope}\0{target}" for target in targets}
                 existing_targets = qualified_targets & set(intra)
-                if (
-                    graph_scope in selected_graph
-                    and existing_targets != qualified_targets
-                ):
+                if existing_targets != qualified_targets:
                     missing = sorted(
                         target.split("\0", 1)[1]
                         for target in qualified_targets - existing_targets
                     )
                     raise RunnerError(
                         f"mapped outputs are absent from dependency graph for "
-                        f"{relative_owner}::{short_scope}: {missing}"
+                        f"{owner.relative_to(workspace).as_posix()}::"
+                        f"{graph_scope.rsplit('.', 1)[-1]}: {missing}"
                     )
+
+        # Catala emits intra-scope edges only for scopes authored by the file
+        # passed to `dependency-graph`, even with --whole-program. Compile each
+        # imported module separately, then attribute its local graph back to it.
+        for owner in sorted(set(owner_by_file.values())):
+            graph = dependency_graph(owner)
+            intra, _ = _dependency_graph_edges(graph)
+            module = _module_name(owner)
+            authored_outputs = outputs_by_owner.get(owner, {})
+            live_variables: set[tuple[str, str]] = set()
+            live_symbols = {
+                symbol.rsplit(".", 1)[-1]
+                for symbol in reachable_symbols
+                if _qualified_symbol_matches_module(
+                    symbol,
+                    module,
+                    symbol.rsplit(".", 1)[-1],
+                    allow_unqualified=owner in selected_by_owner,
+                )
+            }
+            local_scopes = {key.split("\0", 1)[0] for key in intra}
+            selected_graph = selected_graph_by_owner.get(owner, {})
+            for local_scope in local_scopes:
+                if not any(
+                    _qualified_symbol_matches_module(
+                        symbol,
+                        module,
+                        local_scope,
+                        allow_unqualified=owner in selected_by_owner,
+                    )
+                    for symbol in reachable_symbols
+                ):
+                    continue
+                targets = None
+                for selected_scope, selected_targets in selected_graph.items():
+                    if selected_scope.rsplit(".", 1)[-1] == local_scope:
+                        targets = selected_targets
+                        break
+                if targets is None:
+                    targets = authored_outputs.get(local_scope, set())
+                qualified_targets = {f"{local_scope}\0{target}" for target in targets}
+                existing_targets = qualified_targets & set(intra)
                 live = _dependency_closure(intra, existing_targets)
                 if existing_targets:
-                    live_scopes.add(short_scope)
+                    live_symbols.add(local_scope)
                 live_variables.update(
-                    (short_scope, item.split("\0", 1)[1])
+                    (local_scope, item.split("\0", 1)[1])
                     for item in live
-                    if item.startswith(f"{graph_scope}\0")
+                    if item.startswith(f"{local_scope}\0")
                 )
-            live_by_owner[owner] = (live_scopes, live_variables)
+            live_by_owner[owner] = (live_symbols, live_variables)
 
     result: dict[str, tuple[set[str], set[tuple[str, str]]]] = {}
     for relative, owner in owner_by_file.items():
@@ -309,7 +415,22 @@ def dependency_valid_catala_block(
     if not valid_catala_block(block):
         return False
     declared, definitions = catala_block_symbols(block)
-    return bool(declared & live_scopes or definitions & live_variables)
+    if declared & live_scopes or definitions & live_variables:
+        return True
+    # Catala's graph names stateful variables as `variable@state`, while the
+    # authored definition line contains only the base variable name.
+    if any(
+        live_scope == scope and live_variable.startswith(f"{variable}@")
+        for scope, variable in definitions
+        for live_scope, live_variable in live_variables
+    ):
+        return True
+    # Assertions have compiler-generated node names, so associate an
+    # assertion-only fence with its reachable containing scope.
+    text = block.decode("utf-8", errors="replace")
+    block_scopes = set(SCOPE_DEFINITION_START.findall(text))
+    has_assertion = bool(re.search(r"(?m)^[ \t]*assertion[ \t]+", text))
+    return has_assertion and bool(block_scopes & live_scopes)
 
 
 def catala_block_ids(source: Path) -> tuple[str, ...]:

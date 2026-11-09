@@ -13,6 +13,7 @@ from pathlib import Path
 from unittest import mock
 
 from rtdf_formalizer import runner
+from rtdf_formalizer import main as cli_main
 from rtdf_formalizer.stages import validation as apply_nl_test
 from rtdf_formalizer.stages.validation import verification as validation_verification
 from rtdf_formalizer import agents
@@ -200,6 +201,48 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             progress_interval=0,
         )
 
+    def test_cli_defaults_extraction_and_reasoning_models(self) -> None:
+        args = cli_main.argument_parser().parse_args(
+            [
+                "start",
+                "--dataset",
+                str(self.dataset),
+                "--agent",
+                "mini-swe-agent",
+                "--agent-provider",
+                "openai",
+                "--agent-model",
+                "test-model",
+                "--image",
+                "example/agent:test",
+            ]
+        )
+        self.assertIsNone(args.reasoning_trace_provider)
+        self.assertIsNone(args.reasoning_trace_model)
+        self.assertEqual(args.extraction_provider, "openai")
+        self.assertEqual(args.extraction_model, "gpt-6-luna")
+
+    def test_run_defaults_reasoning_to_agent(self) -> None:
+        args = self.arguments()
+        args.reasoning_trace_provider = None
+        args.reasoning_trace_model = None
+        with mock.patch.object(run_state, "RUNS", self.root / "runs"):
+            run_directory = runner.create_run(args)
+        config = main.load_json(run_directory / "config.json")
+        self.assertEqual(
+            config["reasoning_trace"],
+            {"provider": "openai", "model": "test-model", "jobs": 8},
+        )
+        self.assertEqual(
+            config["information_extraction"],
+            {
+                "provider": "openai",
+                "model": "gpt-6-luna",
+                "corpora": ["original"],
+                "jobs": 8,
+            },
+        )
+
     def test_agent_stage_is_durable_and_idempotent(self) -> None:
         runs = self.root / "runs"
         with mock.patch.object(run_state, "RUNS", runs):
@@ -227,7 +270,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             self.assertEqual(config["agent"]["provider"], "openai")
             self.assertEqual(
                 config["reasoning_trace"],
-                {"provider": "openai", "model": "reasoning-model"},
+                {"provider": "openai", "model": "reasoning-model", "jobs": 8},
             )
             attempts_before = list(
                 (run_directory / "iterations/000/agent").glob("attempt-*")
@@ -661,6 +704,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             "agent": {"environment": []},
         }
         path = apptainer.environment(config)["APPTAINERENV_PATH"].split(":")
+        self.assertIn("/toolchain/bobcat/bin", path)
         self.assertIn("/toolchain/envs/cutecat/bin", path)
         self.assertIn("/toolchain/envs/catala/bin", path)
 
@@ -827,6 +871,44 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertEqual(
             main._dependency_closure(inter, {"Calculate"}),
             {"Calculate", "Helper"},
+        )
+
+    def test_dependency_gate_matches_imported_modules_and_state_variables(self) -> None:
+        self.assertTrue(
+            main._qualified_symbol_matches_module(
+                "Api.Section1.IncomeTax", "Section1", "IncomeTax"
+            )
+        )
+        self.assertFalse(
+            main._qualified_symbol_matches_module(
+                "TotalTax", "Section1", "TotalTax"
+            )
+        )
+        self.assertTrue(
+            main.dependency_valid_catala_block(
+                b"scope Calculate:\n"
+                b"  definition amount state general equals 42\n",
+                {"Calculate"},
+                {("Calculate", "amount@general")},
+            )
+        )
+
+    def test_dependency_gate_accepts_live_assertions_and_top_level_declarations(
+        self,
+    ) -> None:
+        self.assertTrue(
+            main.dependency_valid_catala_block(
+                b"scope Calculate:\n  assertion input_value >= 0\n",
+                {"Calculate"},
+                set(),
+            )
+        )
+        self.assertTrue(
+            main.dependency_valid_catala_block(
+                b"declaration structure Facts:\n  data amount content money\n",
+                {"Facts"},
+                set(),
+            )
         )
 
     def test_unreachable_blocks_are_reported_by_rtdf_id(self) -> None:
@@ -1619,9 +1701,16 @@ class AgentAuthenticationTest(unittest.TestCase):
             )
             self.assertEqual(
                 configured["environment"],
-                ["CLAUDE_CODE_OAUTH_TOKEN", "EXTRA_AGENT_OPTION"],
+                [
+                    "CLAUDE_CODE_OAUTH_TOKEN",
+                    "EXTRA_AGENT_OPTION",
+                    "OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX",
+                ],
             )
             self.assertEqual(os.environ["EXTRA_AGENT_OPTION"], "enabled value")
+            self.assertEqual(
+                os.environ["OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX"], "65536"
+            )
             self.assertNotIn("subscription-token", json.dumps(configured))
             self.assertNotIn("enabled value", json.dumps(configured))
 

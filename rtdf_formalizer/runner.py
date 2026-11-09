@@ -81,6 +81,9 @@ def resume_run(
                 reasoning_trace_diff_fuzzing.repair.DEFAULT_MAX_ITERATION
             )
             atomic_json(run_directory / "config.json", config)
+        if "jobs" not in config["reasoning_trace"]:
+            config["reasoning_trace"]["jobs"] = 8
+            atomic_json(run_directory / "config.json", config)
         usage.reconcile(run_directory)
         reasoning_trace_diff_fuzzing.backfill_options(run_directory, config)
         if (

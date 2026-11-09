@@ -14,7 +14,7 @@ from rtdf_formalizer.stages import utils as exp
 
 DEFAULTS = {
     "bobcat_timeout_seconds": 1800,
-    "bobcat_positive_hundred_money_inputs": False,
+    "bobcat_positive_hundred_money_inputs": True,
     "bobcat_max_list_length": None,
     "bobcat_representation_capacity": bobcat_run.DEFAULT_REPRESENTATION_CAPACITY,
     "bobcat_solver_timeout_ms": None,

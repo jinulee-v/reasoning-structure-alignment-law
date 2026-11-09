@@ -161,7 +161,22 @@ def generate_tests(
             try:
                 project = bobcat_run.prepare_project(target)
                 outcome = bobcat_run.run_bobcat(target, project)
+                capture = root / "raw"
+                capture.mkdir(exist_ok=True)
+                (capture / f"{name}.stdout").write_text(
+                    outcome.stdout, encoding="utf-8"
+                )
+                (capture / f"{name}.stderr").write_text(
+                    outcome.stderr, encoding="utf-8"
+                )
+                if outcome.returncode not in (0, None):
+                    detail = outcome.stderr.strip() or outcome.stdout.strip()
+                    raise RuntimeError(
+                        f"BOBCat exited {outcome.returncode}: {detail[-2000:]}"
+                    )
                 parsed = parse.parse_run(outcome.stdout, outcome.stderr)
+                if not outcome.timed_out and not parsed.finished:
+                    raise RuntimeError("BOBCat exited without a completion marker")
                 rows = [
                     {
                         "id": f"{name}:{path.index}",
@@ -218,14 +233,6 @@ def generate_tests(
                     "unparsed": parsed.unparsed,
                     "cases": rows,
                 }
-                capture = root / "raw"
-                capture.mkdir(exist_ok=True)
-                (capture / f"{name}.stdout").write_text(
-                    outcome.stdout, encoding="utf-8"
-                )
-                (capture / f"{name}.stderr").write_text(
-                    outcome.stderr, encoding="utf-8"
-                )
             except Exception as error:
                 record = {
                     "scope": scope,
@@ -261,13 +268,20 @@ def generate_tests(
                     case["id"] = f"{original['id']}:req-{suffix}"
             cases.append(case)
     missing = []
+    failures = []
     for scope, path in zip(scopes, result_files):
         record = exp.load_json(path) if path.is_file() else {}
+        if record.get("error"):
+            failures.append(
+                f"{scope['compiler_file']}::{scope['scope']} ({record['error']})"
+            )
         if not record.get("cases"):
             missing.append(
                 f"{scope['compiler_file']}::{scope['scope']}"
                 + (f" ({record['error']})" if record.get("error") else "")
             )
+    if failures:
+        raise exp.RunnerError("BOBCat invocation failed: " + "; ".join(failures))
     if missing and requested is None:
         raise exp.RunnerError(
             "BOBCat did not generate a test case for every eligible scope: "

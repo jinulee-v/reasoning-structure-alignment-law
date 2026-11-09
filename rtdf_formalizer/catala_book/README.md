@@ -2,7 +2,7 @@
 
 This is the task-relevant subset of the [Catala book](https://github.com/CatalaLang/catala-book)
 at tag `1.2.0` (commit `3535509eeb4e05208744a0bd22819a91840f7987`),
-which matches this repository's Catala 1.2.1 toolchain. The upstream Markdown
+which matches this repository's Catala 1.2-series toolchain. The upstream Markdown
 is retained except for references to omitted French, exercise, and external
 example-program material.
 

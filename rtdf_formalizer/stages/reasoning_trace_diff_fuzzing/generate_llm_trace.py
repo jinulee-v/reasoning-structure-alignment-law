@@ -711,7 +711,7 @@ def reason(
             )
         return record
 
-    jobs = max(1, int(config["reasoning_trace"].get("jobs", 1)))
+    jobs = max(1, int(config["reasoning_trace"].get("jobs", 8)))
     if jobs == 1:
         return [sample_case(case) for case in cases]
     with ThreadPoolExecutor(max_workers=jobs) as executor:

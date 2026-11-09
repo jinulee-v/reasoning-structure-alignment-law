@@ -216,12 +216,12 @@ def prompt(
                 "Catala result with the raw LLM reasoning and both execution trees. Start "
                 "with catala_causal_trace.yaml, whose branch_guards record the concrete "
                 "condition outcomes controlling each Catala value; use the raw Catala tree "
-                "only when the compact trace is insufficient. You may "
-                "edit this scope, descendant scopes, and shared helpers. Keep changes minimal "
-                "and localized to the target scope. Edit a descendant scope or shared helper "
-                "only when the evidence shows that the target cannot be corrected within the "
-                "target scope itself, and make only the smallest necessary external change. "
-                "Do not perform opportunistic refactoring or unrelated fixes. Replays use cached "
+                "only when the compact trace is insufficient. You may edit this scope, "
+                "descendant scopes, and shared helpers. Keep changes minimal and localized to "
+                "the target scope. Edit a descendant scope or shared helper only when the "
+                "evidence shows that the target cannot be corrected within the target scope "
+                "itself, and make only the smallest necessary external change. Do not perform "
+                "opportunistic refactoring or unrelated fixes. Replays use cached "
                 "inputs and traces unless the runner detects an incompatible interface. "
                 "If a generated test assigns values outside the scope's meaningful input "
                 "domain, making sound natural-language reasoning impossible, encode the "
@@ -526,6 +526,7 @@ def current_scope(state: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def activate_next(state: dict[str, Any]) -> dict[str, Any] | None:
+    state.pop("recursive_latest_regeneration", None)
     queue = state.setdefault("recursive_repair_queue", [])
     if not queue:
         state.pop("recursive_active_scope", None)
@@ -536,39 +537,6 @@ def activate_next(state: dict[str, Any]) -> dict[str, Any] | None:
     state["recursive_revision"] = int(revisions.get(identifier, 0))
     revisions[identifier] = state["recursive_revision"] + 1
     return current_scope(state)
-
-
-def reverse_dependencies(plan: list[dict[str, Any]]) -> dict[str, set[str]]:
-    result = {record["id"]: set() for record in plan}
-    for record in plan:
-        for dependency in record.get("dependencies", []):
-            result.setdefault(dependency, set()).add(record["id"])
-    return result
-
-
-def dependent_closure(plan: list[dict[str, Any]], changed: set[str]) -> set[str]:
-    reverse = reverse_dependencies(plan)
-    result, pending = set(changed), list(changed)
-    while pending:
-        for dependent in reverse.get(pending.pop(), set()):
-            if dependent not in result:
-                result.add(dependent)
-                pending.append(dependent)
-    return result
-
-
-def enqueue(state: dict[str, Any], identifiers: Iterable[str]) -> None:
-    order = {
-        record["id"]: index
-        for index, record in enumerate(state["recursive_repair_plan"])
-    }
-    queue = state.setdefault("recursive_repair_queue", [])
-    active = state.get("recursive_active_scope")
-    pending = set(queue)
-    pending.update(identifier for identifier in identifiers if identifier != active)
-    queue[:] = sorted(
-        pending, key=lambda identifier: (order.get(identifier, 10**9), identifier)
-    )
 
 
 def _scope_fragments(text: str, name: str) -> list[str]:
@@ -603,89 +571,6 @@ def scope_fingerprints(workspace: Path, plan: list[dict[str, Any]]) -> dict[str,
     return {record["id"]: scope_fingerprint(workspace, record) for record in plan}
 
 
-def helper_inventory(workspace: Path) -> dict[str, dict[str, str]]:
-    # Index top-level Catala values and functions separately from scopes.
-    inventory: dict[str, dict[str, str]] = {}
-    heading = re.compile(
-        r"(?m)^[ \t]*declaration[ \t]+(?!scope\b)"
-        r"(?:(?:structure|enumeration)[ \t]+)?([^\s:]+)[^\n]*$"
-    )
-    boundary = re.compile(
-        r"(?m)^[ \t]*(?:declaration[ \t]+|(?:declaration[ \t]+)?scope[ \t]+|```)"
-    )
-    for source in sorted(workspace.rglob("*.catala_*")):
-        text = source.read_text(encoding="utf-8")
-        relative = source.relative_to(workspace).as_posix()
-        boundaries = list(boundary.finditer(text))
-        for match in heading.finditer(text):
-            end = next(
-                (item.start() for item in boundaries if item.start() > match.start()),
-                len(text),
-            )
-            key = f"{relative}::{match.group(1)}"
-            inventory[key] = {
-                "name": match.group(1),
-                "source": relative,
-                "text": text[match.start() : end].strip(),
-            }
-    return inventory
-
-
-def helper_graph(
-    workspace: Path, plan: list[dict[str, Any]]
-) -> tuple[dict[str, str], dict[str, set[str]]]:
-    # Compute conservative static helper-to-scope dependencies from authored source references.
-    inventory = helper_inventory(workspace)
-    fingerprints = {
-        key: hashlib.sha256(value["text"].encode()).hexdigest()
-        for key, value in inventory.items()
-    }
-    direct_helpers: dict[str, set[str]] = {key: set() for key in inventory}
-    for key, value in inventory.items():
-        for candidate, target in inventory.items():
-            if candidate != key and re.search(
-                r"\b" + re.escape(target["name"]) + r"\b", value["text"]
-            ):
-                direct_helpers[key].add(candidate)
-    affected: dict[str, set[str]] = {key: set() for key in inventory}
-    for record in plan:
-        source = workspace / record.get("file", record["source"])
-        text = "\n".join(
-            _scope_fragments(
-                source.read_text(encoding="utf-8") if source.is_file() else "",
-                record["scope"],
-            )
-        )
-        pending = [
-            key
-            for key, value in inventory.items()
-            if re.search(r"\b" + re.escape(value["name"]) + r"\b", text)
-        ]
-        seen = set(pending)
-        while pending:
-            for dependency in direct_helpers.get(pending.pop(), set()):
-                if dependency not in seen:
-                    seen.add(dependency)
-                    pending.append(dependency)
-        for helper in seen:
-            affected.setdefault(helper, set()).add(record["id"])
-    return fingerprints, affected
-
-
-def changed_helpers(before: dict[str, str], after: dict[str, str]) -> set[str]:
-    return {
-        identifier
-        for identifier in set(before) | set(after)
-        if before.get(identifier) != after.get(identifier)
-    }
-
-
-def helper_affected_scopes(
-    changed: set[str], affected: dict[str, set[str]]
-) -> set[str]:
-    return {scope for helper in changed for scope in affected.get(helper, set())}
-
-
 def schema_fingerprint(record: dict[str, Any]) -> str:
     payload = {
         "input": record.get("input_schema"),
@@ -694,37 +579,17 @@ def schema_fingerprint(record: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
 
-def changed_scopes(before: dict[str, str], after: dict[str, str]) -> set[str]:
-    return {
-        identifier
-        for identifier in set(before) | set(after)
-        if before.get(identifier) != after.get(identifier)
-    }
-
-
 def record_processed(
     state: dict[str, Any],
     fingerprints: dict[str, str],
-    changed: set[str],
-) -> set[str]:
-    # Accept the session, then requeue changed descendants and later-invalidated callers.
+) -> None:
+    # A completed scope is final; later sessions cannot modify or invalidate it.
     active = state["recursive_active_scope"]
     processed = state.setdefault("recursive_processed", {})
     processed[active] = {
         "fingerprint": fingerprints.get(active),
         "revision": int(state.get("recursive_revision", 0)),
     }
-    invalidated = dependent_closure(state["recursive_repair_plan"], changed) & set(
-        processed
-    )
-    for identifier in invalidated:
-        if identifier != active:
-            processed.pop(identifier, None)
-    targets = set(changed)
-    targets.discard(active)
-    targets.update(identifier for identifier in invalidated if identifier != active)
-    enqueue(state, targets)
-    return targets
 
 
 def _node_scope(node: dict[str, Any], plan: list[dict[str, Any]]) -> str | None:
@@ -905,11 +770,6 @@ def initialize(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None
     state["recursive_initial_fingerprints"] = scope_fingerprints(
         run / "workspace", plan
     )
-    helper_hashes, helper_users = helper_graph(run / "workspace", plan)
-    state["recursive_helper_fingerprints"] = helper_hashes
-    state["recursive_helper_users"] = {
-        key: sorted(value) for key, value in helper_users.items()
-    }
     state["recursive_phase"] = "scope"
     if int(config.get("repair", {}).get("max_iteration", 2)) == 0:
         state["recursive_exhausted"] = list(state["recursive_repair_queue"])
@@ -929,8 +789,56 @@ def _copy_cache(source: Path, destination: Path) -> None:
     for name in ("tests_bobcat", "tests_bobcat_natural_language_results"):
         candidate = source / name
         target = destination / name
-        if candidate.is_dir() and not target.exists():
-            shutil.copytree(candidate, target)
+        if not candidate.is_dir() or target.exists():
+            continue
+        temporary_root = Path(
+            tempfile.mkdtemp(prefix=f".{name}.", dir=destination)
+        )
+        staged = temporary_root / name
+        try:
+            shutil.copytree(
+                candidate,
+                staged,
+                ignore=shutil.ignore_patterns("build", "_build"),
+            )
+            if not target.exists():
+                os.replace(staged, target)
+        finally:
+            shutil.rmtree(temporary_root, ignore_errors=True)
+
+
+def _analysis_cache(
+    run: Path,
+    state: dict[str, Any],
+    root: Path,
+    current_schema: str,
+) -> tuple[Path | None, str | None]:
+    active = current_scope(state)
+    if active is None:
+        return None, None
+    if state.get("recursive_step") != "result":
+        processed = state.get("recursive_processed", {}).get(active["id"], {})
+        relative = processed.get("analysis_path")
+        return (
+            run / relative if relative else None,
+            processed.get("schema_fingerprint"),
+        )
+    analysis = scope_revision_root(run, state) / "analysis"
+    final_fingerprint = exp.tree_hash(root / "snapshot")
+    regenerated = state.get("recursive_latest_regeneration", {})
+    relative = regenerated.get("analysis_path")
+    if (
+        regenerated.get("scope") == active["id"]
+        and regenerated.get("revision") == int(state.get("recursive_revision", 0))
+        and regenerated.get("workspace_fingerprint") == final_fingerprint
+        and regenerated.get("schema_fingerprint") == current_schema
+        and relative
+        and (run / relative).is_dir()
+    ):
+        return run / relative, regenerated["schema_fingerprint"]
+    if exp.tree_hash(analysis / "snapshot") == final_fingerprint:
+        return analysis, state.get("recursive_before_schema_fingerprint")
+    return None, None
 
 
 def _latest_summary(run: Path, record: dict[str, Any]) -> dict[str, Any] | None:
@@ -1002,15 +910,10 @@ def analyze_scope(
     if active is None:
         raise exp.RunnerError("recursive analysis has no active scope")
     current_schema = _refresh_active_schema(run, config, state, root)
-    processed = state.get("recursive_processed", {}).get(active["id"], {})
-    if state.get("recursive_step") == "result":
-        cached_path = scope_revision_root(run, state) / "analysis"
-        cached_schema = state.get("recursive_before_schema_fingerprint")
-    else:
-        cached_path = (
-            run / processed["analysis_path"] if processed.get("analysis_path") else None
-        )
-        cached_schema = processed.get("schema_fingerprint")
+    cached_path, cached_schema = _analysis_cache(
+        run, state, root, current_schema
+    )
+    if state.get("recursive_step") != "result":
         state["recursive_before_schema_fingerprint"] = current_schema
     if cached_path and cached_schema == current_schema:
         _copy_cache(cached_path, root)
@@ -1075,12 +978,17 @@ def regenerate_active_scope(
     shutil.copytree(refreshed, mounted, dirs_exist_ok=True)
     result = {
         "scope": active["id"],
+        "revision": int(state.get("recursive_revision", 0)),
         "schema_fingerprint": current_schema,
+        "workspace_fingerprint": exp.tree_hash(root / "snapshot"),
         "case_count": len(cases),
         "analysis_path": str(root.relative_to(run)),
         "usage_stage": "repair-regeneration-reasoning",
     }
     exp.atomic_json(root / "regeneration.json", result)
+    state["recursive_latest_regeneration"] = result
+    state["updated_at"] = exp.utc_now()
+    exp.atomic_json(run / "state.json", state)
     return result
 
 
@@ -1203,7 +1111,7 @@ def generate_summary(
 
 
 def finalize_scope(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None:
-    # Accept the valid session, summarize it, and update the dependency work queue.
+    # Accept the valid scope-local session and advance through the fixed work queue.
     from rtdf_formalizer.stages import utils as exp
 
     root = scope_revision_root(run, state)
@@ -1215,22 +1123,8 @@ def finalize_scope(run: Path, config: dict[str, Any], state: dict[str, Any]) -> 
     )
     summary = generate_summary(run, config, state, comparison, before, after)
     plan = state["recursive_repair_plan"]
-    before_scopes = state.get(
-        "recursive_before_fingerprints", scope_fingerprints(before, plan)
-    )
     after_scopes = scope_fingerprints(after, plan)
-    changed = changed_scopes(before_scopes, after_scopes)
-    before_helpers = state.get("recursive_before_helper_fingerprints", {})
-    after_helpers, after_users = helper_graph(after, plan)
-    helper_changes = changed_helpers(before_helpers, after_helpers)
-    users = {
-        key: set(value)
-        for key, value in state.get("recursive_helper_users", {}).items()
-    }
-    for key, value in after_users.items():
-        users.setdefault(key, set()).update(value)
-    changed.update(helper_affected_scopes(helper_changes, users))
-    requeued = record_processed(state, after_scopes, changed)
+    record_processed(state, after_scopes)
     active = state["recursive_active_scope"]
     state["recursive_processed"][active].update(
         {
@@ -1239,12 +1133,8 @@ def finalize_scope(run: Path, config: dict[str, Any], state: dict[str, Any]) -> 
             "summary": str((root / "summary.json").relative_to(run)),
         }
     )
-    state["recursive_helper_fingerprints"] = after_helpers
-    state["recursive_helper_users"] = {
-        key: sorted(value) for key, value in after_users.items()
-    }
     state["recursive_last_change_summary"] = summary
-    state["recursive_last_requeued"] = sorted(requeued)
+    state.pop("recursive_last_requeued", None)
     state.pop("recursive_invalidation_reason", None)
     state["recursive_active_scope"] = None
     maximum = int(config.get("repair", {}).get("max_iteration", 2))
@@ -1262,10 +1152,6 @@ def finalize_scope(run: Path, config: dict[str, Any], state: dict[str, Any]) -> 
             status="running",
             completed_stages=["initialized"],
         )
-        if next_scope["id"] in requeued:
-            state["recursive_invalidation_reason"] = (
-                "A later scope session changed this scope or a static dependency."
-            )
     state["updated_at"] = exp.utc_now()
     exp.atomic_json(run / "state.json", state)
 
@@ -1553,12 +1439,186 @@ def _resume_controller(
         state = load_json(run_directory / "state.json")
 
 
+def _failed_bobcat_analysis(directory: Path) -> bool:
+    for path in (directory / "tests_bobcat").glob("*.json"):
+        if path.name == "scopes.json":
+            continue
+        try:
+            record = load_json(path)
+        except (OSError, ValueError):
+            return True
+        if record.get("error") or record.get("returncode") not in (None, 0):
+            return True
+        if not record.get("timed_out") and record.get("finished") is False:
+            return True
+    return False
+
+
+def _restore_interrupted_scope(run: Path, state: dict[str, Any]) -> None:
+    root = scope_revision_root(run, state)
+    snapshot = root / "analysis/snapshot"
+    if not snapshot.is_dir():
+        raise RunnerError(f"cannot resume repair without {snapshot}")
+    workspace = run / "workspace"
+    attempt_name = state.get("active_attempt")
+    recovery = root / "session/recovery"
+    if attempt_name:
+        recovery = root / "session/agent" / attempt_name
+    recovery.mkdir(parents=True, exist_ok=True)
+    archive = recovery / "interrupted_workspace"
+    suffix = 0
+    while archive.exists():
+        suffix += 1
+        archive = recovery / f"interrupted_workspace_{suffix:03d}"
+    if workspace.exists():
+        shutil.move(str(workspace), archive)
+    exp.publish_copy(snapshot, workspace)
+
+
+def recover_recursive_resume(
+    run: Path, state: dict[str, Any]
+) -> bool:
+    if state.get("recursive_phase") != "scope":
+        return False
+    active = current_scope(state)
+    interrupted = False
+    if active is not None and state.get("next_stage") == "agent":
+        attempt_name = state.get("active_attempt")
+        if attempt_name:
+            result = (
+                scope_revision_root(run, state)
+                / "session/agent"
+                / attempt_name
+                / "result.json"
+            )
+            interrupted = not result.is_file()
+
+    invalid = set()
+    for identifier, record in state.get("recursive_processed", {}).items():
+        relative = record.get("analysis_path")
+        if relative and _failed_bobcat_analysis(run / relative):
+            invalid.add(identifier)
+    if active is not None:
+        root = scope_revision_root(run, state)
+        if _failed_bobcat_analysis(root / "analysis") or _failed_bobcat_analysis(
+            root / "result"
+        ):
+            invalid.add(active["id"])
+
+    if not invalid and not interrupted:
+        return False
+    if active is not None and (interrupted or active["id"] in invalid):
+        _restore_interrupted_scope(run, state)
+        state.pop("recursive_latest_regeneration", None)
+    state["active_attempt"] = None
+
+    if invalid:
+        processed = state.setdefault("recursive_processed", {})
+        for identifier in invalid:
+            processed.pop(identifier, None)
+        pending = set(state.get("recursive_repair_queue", [])) | invalid
+        if active is not None:
+            pending.add(active["id"])
+        order = {
+            record["id"]: index
+            for index, record in enumerate(state["recursive_repair_plan"])
+        }
+        state["recursive_repair_queue"] = sorted(
+            pending, key=lambda identifier: (order.get(identifier, 10**9), identifier)
+        )
+        state["recursive_active_scope"] = None
+        activate_next(state)
+        state.update(
+            next_stage="scope_analysis",
+            recursive_step="analysis",
+            completed_stages=["initialized"],
+            status="running",
+            recursive_resume_reason=(
+                "requeued scopes whose BOBCat invocation did not complete"
+            ),
+        )
+    else:
+        state.update(
+            next_stage="agent",
+            recursive_step="session",
+            status="running",
+            recursive_resume_reason="restarted interrupted scope session",
+        )
+    state["updated_at"] = exp.utc_now()
+    atomic_json(run / "state.json", state)
+    return True
+
+
+def restart_from_scope(run: Path, state: dict[str, Any], identifier: str) -> Path:
+    plan = state.get("recursive_repair_plan", [])
+    order = {record["id"]: index for index, record in enumerate(plan)}
+    if identifier not in order:
+        raise RunnerError(f"scope is absent from the repair plan: {identifier}")
+    record = plan[order[identifier]]
+    revisions = run / "refinement" / scope_slug(record) / "revisions"
+    snapshots = sorted(revisions.glob("*/analysis/snapshot"))
+    if not snapshots:
+        raise RunnerError(f"scope has no analysis checkpoint: {identifier}")
+
+    archives = run / "restarts"
+    indices = [
+        int(path.name.split("-", 1)[0])
+        for path in archives.glob("[0-9]*-*")
+        if path.name.split("-", 1)[0].isdigit()
+    ]
+    archive = archives / f"{max(indices, default=-1) + 1:03d}-from-{scope_slug(record)}"
+    archive.mkdir(parents=True)
+    atomic_json(archive / "state.json", state)
+    workspace = run / "workspace"
+    if workspace.is_dir():
+        exp.publish_copy(workspace, archive / "workspace")
+        shutil.rmtree(workspace)
+    exp.publish_copy(snapshots[0], workspace)
+
+    keep = {item["id"] for item in plan[: order[identifier]]}
+    state["recursive_processed"] = {
+        key: value
+        for key, value in state.get("recursive_processed", {}).items()
+        if key in keep
+    }
+    state["recursive_repair_queue"] = [
+        item["id"] for item in plan[order[identifier] :]
+    ]
+    state["recursive_active_scope"] = None
+    state["active_attempt"] = None
+    for key in list(state):
+        if key.startswith("recursive_before_") or key in {
+            "recursive_scope_task",
+            "recursive_last_analysis",
+            "recursive_last_summary",
+            "recursive_last_change_summary",
+            "recursive_last_requeued",
+            "recursive_invalidation_reason",
+            "recursive_exhausted",
+        }:
+            state.pop(key, None)
+    activate_next(state)
+    state.update(
+        next_stage="scope_analysis",
+        recursive_step="analysis",
+        completed_stages=["initialized"],
+        status="running",
+        recursive_restart_scope=identifier,
+        recursive_restart_archive=str(archive.relative_to(run)),
+        updated_at=exp.utc_now(),
+    )
+    atomic_json(run / "state.json", state)
+    return archive
+
+
 def _resume_recursive_run(
     run_directory: Path, config: dict[str, Any], state: dict[str, Any]
 ) -> dict[str, Any]:
     from rtdf_formalizer.stages import formalization, validation
 
     # Run one initial formalization followed by scope-local sessions from a dynamic work queue.
+
+    recover_recursive_resume(run_directory, state)
 
     if state.get("recursive_phase") == "scope" and migrate_scope_order(
         run_directory, state
@@ -1581,17 +1641,6 @@ def _resume_recursive_run(
             else:
                 raise RunnerError(f"unsupported initial recursive stage: {stage}")
         elif stage == "scope_analysis":
-            plan = state["recursive_repair_plan"]
-            state["recursive_before_fingerprints"] = (
-                recursive_repair.scope_fingerprints(run_directory / "workspace", plan)
-            )
-            helper_hashes, helper_users = recursive_repair.helper_graph(
-                run_directory / "workspace", plan
-            )
-            state["recursive_before_helper_fingerprints"] = helper_hashes
-            state["recursive_helper_users"] = {
-                key: sorted(value) for key, value in helper_users.items()
-            }
             state["recursive_step"] = "analysis"
             atomic_json(run_directory / "state.json", state)
             recursive_repair.analyze_scope(run_directory, config, state)

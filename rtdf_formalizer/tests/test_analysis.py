@@ -1284,7 +1284,11 @@ scope Defaulted:
                     "branches": [],
                 }
                 return bobcat_run.RunResult(
-                    stdout="[RESULT] BOBCAT_REPLAY " + json.dumps(payload) + "\n",
+                    stdout=(
+                        "[RESULT] BOBCAT_REPLAY "
+                        + json.dumps(payload)
+                        + "\n[RESULT] BOBCAT_DONE 0\n"
+                    ),
                     stderr="",
                     returncode=0,
                     seconds=0.1,
@@ -1357,7 +1361,11 @@ scope Defaulted:
                     "branches": [],
                 }
                 return bobcat_run.RunResult(
-                    stdout="[RESULT] BOBCAT_REPLAY " + json.dumps(payload) + "\n",
+                    stdout=(
+                        "[RESULT] BOBCAT_REPLAY "
+                        + json.dumps(payload)
+                        + "\n[RESULT] BOBCAT_DONE 0\n"
+                    ),
                     stderr="",
                     returncode=0,
                     seconds=0.1,
@@ -1381,6 +1389,56 @@ scope Defaulted:
             self.assertEqual(seen, [("Answer", None), ("Helper", None)])
             self.assertEqual({row["target"] for row in rows}, {"Answer", "Helper"})
             self.assertTrue(all("requirement_id" not in row for row in rows))
+
+    def test_generate_tests_rejects_failed_bobcat_invocation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            snapshot = root / "iterations/000/snapshot"
+            snapshot.mkdir(parents=True)
+            (snapshot / "program.catala_en").write_text("", encoding="utf-8")
+            scopes = [
+                {
+                    "scope": "Answer",
+                    "file": "program.catala_en",
+                    "compiler_file": "program.catala_en",
+                    "input_schema": {
+                        "type": "object",
+                        "properties": {"number": {"type": "integer"}},
+                    },
+                    "output_schema": {
+                        "type": "object",
+                        "properties": {"answer": {"type": "integer"}},
+                    },
+                }
+            ]
+            failed = bobcat_run.RunResult(
+                stdout="",
+                stderr="interface mismatch on Catala_runtime",
+                returncode=123,
+                seconds=0.1,
+                timed_out=False,
+                command=["catala", "bobcat"],
+            )
+            with (
+                mock.patch.object(
+                    stage.exp, "publish_iteration_snapshot", return_value=snapshot
+                ),
+                mock.patch.object(bobcat_stage, "_all_scopes", return_value=scopes),
+                mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
+                mock.patch.object(bobcat_run, "run_bobcat", return_value=failed),
+                self.assertRaisesRegex(experiment.RunnerError, "exited 123"),
+            ):
+                bobcat_stage.generate_tests(
+                    root,
+                    {"dataset": {"name": "fixture"}},
+                    {"iteration": 0},
+                    trace_stage.DEFAULTS,
+                )
+            stderr = root / "iterations/000/tests_bobcat/raw"
+            self.assertIn(
+                "interface mismatch",
+                next(stderr.glob("*.stderr")).read_text(encoding="utf-8"),
+            )
 
     def test_block_path_keeps_first_concrete_visit_per_statute(self):
         with tempfile.TemporaryDirectory() as directory:

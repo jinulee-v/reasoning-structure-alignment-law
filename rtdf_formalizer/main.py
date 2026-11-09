@@ -41,8 +41,15 @@ def argument_parser() -> argparse.ArgumentParser:
             "scope for recursive mode (default: 2)"
         ),
     )
-    start.add_argument("--reasoning-trace-provider", required=True)
-    start.add_argument("--reasoning-trace-model", required=True)
+    start.add_argument(
+        "--reasoning-trace-provider",
+        help="reasoning-trace provider (default: coding-agent provider)",
+    )
+    start.add_argument(
+        "--reasoning-trace-model",
+        help="reasoning-trace model (default: coding-agent model)",
+    )
+    start.add_argument("--reasoning-jobs", type=int, default=8)
     start.add_argument(
         "--statute-source",
         choices=("gold", "search"),
@@ -52,8 +59,12 @@ def argument_parser() -> argparse.ArgumentParser:
     start.add_argument("--bobcat-timeout-seconds", type=int, default=1800)
     start.add_argument(
         "--bobcat-positive-hundred-money-inputs",
-        action="store_true",
-        help="require every money input to be > 0 and divisible by $100",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "require every money input to be > 0 and divisible by $100 "
+            "(default: enabled)"
+        ),
     )
     start.add_argument("--bobcat-max-list-length", type=int)
     start.add_argument("--bobcat-representation-capacity", type=int, default=64)
@@ -73,13 +84,16 @@ def argument_parser() -> argparse.ArgumentParser:
     start.add_argument(
         "--extraction-provider",
         choices=("openai",),
-        required=True,
-        help="provider for per-test natural-language information extraction",
+        default="openai",
+        help="provider for per-test natural-language information extraction (default: openai)",
     )
     start.add_argument(
         "--extraction-model",
-        required=True,
-        help="model for per-test scope selection and schema-constrained extraction",
+        default="gpt-6-luna",
+        help=(
+            "model for per-test scope selection and schema-constrained extraction "
+            "(default: gpt-6-luna)"
+        ),
     )
     start.add_argument("--extraction-base-url")
     start.add_argument("--extraction-api-key-env", default="OPENAI_API_KEY")

@@ -11,12 +11,15 @@ from .base import AgentConfigurationError
 
 
 ASSIGNMENT = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$")
+DEFAULTS = {"OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX": "65536"}
 
 
 def load_dotenv(path: Path) -> tuple[str, ...]:
     # Load every assignment in *path*, preserving values from the host.
+    for name, value in DEFAULTS.items():
+        os.environ.setdefault(name, value)
     if not path.is_file():
-        return ()
+        return tuple(DEFAULTS)
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError as error:
@@ -44,4 +47,4 @@ def load_dotenv(path: Path) -> tuple[str, ...]:
 
     for name, value in values.items():
         os.environ.setdefault(name, value)
-    return tuple(values)
+    return tuple(DEFAULTS | values)

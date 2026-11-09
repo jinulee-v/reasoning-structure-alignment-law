@@ -27,6 +27,7 @@ def toolchain_environment(config: dict[str, Any]) -> dict[str, str]:
     configured = config.get("runtime", {}).get("host_toolchain")
     toolchain = Path(configured) if configured else ROOT / ".toolchain"
     prefixes = [
+        toolchain / "bobcat/bin",
         toolchain / "opam/catala/bin",
         toolchain / "envs/catala/bin",
     ]
@@ -34,11 +35,14 @@ def toolchain_environment(config: dict[str, Any]) -> dict[str, str]:
         [str(path) for path in prefixes if path.is_dir()]
         + [environment.get("PATH", "")]
     )
-    library = toolchain / "envs/catala/lib"
-    if library.is_dir():
-        environment["LD_LIBRARY_PATH"] = os.pathsep.join(
-            (str(library), environment.get("LD_LIBRARY_PATH", ""))
-        )
+    source_root = toolchain / "src/catala-bobcat"
+    if source_root.is_dir():
+        environment["CATALA_SOURCE_ROOT"] = str(source_root)
+    libraries = [toolchain / "bobcat-z3/lib", toolchain / "envs/catala/lib"]
+    environment["LD_LIBRARY_PATH"] = os.pathsep.join(
+        [str(path) for path in libraries if path.is_dir()]
+        + [environment.get("LD_LIBRARY_PATH", "")]
+    )
     return environment
 
 
