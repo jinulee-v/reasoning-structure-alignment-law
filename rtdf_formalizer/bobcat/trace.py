@@ -20,6 +20,8 @@ DEFAULTS = {
     "bobcat_solver_timeout_ms": None,
     "bobcat_solver_timeout_max_ms": None,
     "bobcat_objective_timeout_ms": None,
+    "llm_generated_tests_per_scope": 6,
+    "metamorphic_pairs_per_scope": 6,
     "statute_source": "gold",
 }
 _SITE = re.compile(r"@([^@:=>/]+\.catala_[A-Za-z]+):(\d+):")
@@ -67,6 +69,22 @@ def effective_options(config: dict[str, Any]) -> dict[str, Any]:
     ):
         if options[key] is not None and int(options[key]) <= 0:
             raise exp.RunnerError(f"{key} must be positive")
+    if (
+        isinstance(options["llm_generated_tests_per_scope"], bool)
+        or not isinstance(options["llm_generated_tests_per_scope"], int)
+        or options["llm_generated_tests_per_scope"] < 0
+    ):
+        raise exp.RunnerError(
+            "LLM-generated tests per scope must be a non-negative integer"
+        )
+    if (
+        isinstance(options["metamorphic_pairs_per_scope"], bool)
+        or not isinstance(options["metamorphic_pairs_per_scope"], int)
+        or options["metamorphic_pairs_per_scope"] < 0
+    ):
+        raise exp.RunnerError(
+            "metamorphic pairs per scope must be a non-negative integer"
+        )
     if (
         options["bobcat_solver_timeout_ms"] is not None
         and options["bobcat_solver_timeout_max_ms"] is not None
@@ -527,11 +545,59 @@ def execution_tree_events(tree: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return events
 
 
+def _position_file_line(position: Any) -> tuple[str | None, int | None]:
+    """Normalize legacy Catala positions and JSON trace source ranges."""
+    if not isinstance(position, dict):
+        return None, None
+    filename = position.get("filename") or position.get("file")
+    line = position.get("start_line")
+    if not isinstance(line, int):
+        start = position.get("start")
+        # Catala's JSON locations are zero-based; legacy trace positions are
+        # already one-based.
+        if isinstance(start, dict) and isinstance(start.get("line"), int):
+            line = start["line"] + 1
+    return (
+        filename if isinstance(filename, str) else None,
+        line if isinstance(line, int) else None,
+    )
+
+
+def branch_provision_outcomes(
+    snapshot: Path, tree: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Return concrete branch outcomes attached to their exact mapped provision."""
+    provisions = _block_provisions(snapshot)
+    result: list[dict[str, Any]] = []
+
+    def visit(nodes: list[dict[str, Any]]) -> None:
+        for node in nodes:
+            if node.get("kind") == "branch":
+                filename, line = _position_file_line(node.get("pos"))
+                block = (
+                    _block_at_position(snapshot / Path(filename).name, line)
+                    if filename and line
+                    else None
+                )
+                provision = provisions.get(block) if block else None
+                if provision:
+                    result.append(
+                        {
+                            "provision": provision,
+                            "outcome": node.get("outcome"),
+                            "source": f"{Path(filename).name}:{line}",
+                        }
+                    )
+            visit(node.get("children", []))
+
+    visit(tree)
+    return result
+
+
 def _source_span(snapshot: Path, position: Any) -> str | None:
     if not isinstance(position, dict):
         return None
-    filename = position.get("filename")
-    start_line = position.get("start_line")
+    filename, start_line = _position_file_line(position)
     end_line = position.get("end_line")
     if not isinstance(filename, str) or not isinstance(start_line, int):
         return None
@@ -561,8 +627,7 @@ def causal_execution_trace(
 
     def guard(branch: dict[str, Any], relation: str) -> dict[str, Any]:
         position = branch.get("pos") or {}
-        filename = position.get("filename")
-        line = position.get("start_line")
+        filename, line = _position_file_line(position)
         outcome = branch.get("outcome")
         return {
             "condition": _source_span(snapshot, position),
@@ -792,7 +857,7 @@ def traced_provision_path(
             previous_block = None
         if event.get("event") in {"DecisionTaken", "BranchTaken"}:
             position = event.get("pos") or {}
-            filename, line = position.get("filename"), position.get("start_line")
+            filename, line = _position_file_line(position)
             if isinstance(filename, str) and isinstance(line, int):
                 block = _block_at_position(snapshot / Path(filename).name, line)
         elif event.get("event") == "VariableDefinition":
@@ -836,7 +901,7 @@ def execution_statute_tree(snapshot: Path, tree: list[dict[str, Any]]) -> list[A
             block = _call_block(snapshot, node.get("name"))
         elif node.get("kind") in {"decision", "branch"}:
             position = node.get("pos") or {}
-            filename, line = position.get("filename"), position.get("start_line")
+            filename, line = _position_file_line(position)
             if isinstance(filename, str) and isinstance(line, int):
                 block = _block_at_position(snapshot / Path(filename).name, line)
         elif node.get("kind") == "variable":

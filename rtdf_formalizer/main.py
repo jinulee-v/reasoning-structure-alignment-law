@@ -12,7 +12,6 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from rtdf_formalizer import runner
-from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing.repair import RepairMode
 from rtdf_formalizer import agents
 from rtdf_formalizer.agents import apptainer
 from rtdf_formalizer.agents.dotenv import load_dotenv
@@ -27,19 +26,16 @@ def argument_parser() -> argparse.ArgumentParser:
     start.add_argument("--dataset", required=True)
     start.add_argument("--run-id")
     start.add_argument(
-        "--repair-mode",
-        choices=[mode.value for mode in RepairMode],
-        default=RepairMode.NO_TESTING.value,
-        help=("repair strategy: no-testing, answer-only, dependency-first recursive"),
-    )
-    start.add_argument(
-        "--max-iteration",
+        "--max-scope-revisions",
         type=int,
         default=2,
-        help=(
-            "global inclusive iteration cap for legacy modes; maximum attempts per "
-            "scope for recursive mode (default: 2)"
-        ),
+        help="maximum accepted repair revisions per scope (default: 2)",
+    )
+    start.add_argument(
+        "--repair-scope-selection",
+        choices=("all", "entry"),
+        default="all",
+        help="repair all scopes or only top-level entry scopes (default: all)",
     )
     start.add_argument(
         "--reasoning-trace-provider",
@@ -72,9 +68,16 @@ def argument_parser() -> argparse.ArgumentParser:
     start.add_argument("--bobcat-solver-timeout-max-ms", type=int)
     start.add_argument("--bobcat-objective-timeout-ms", type=int)
     start.add_argument(
-        "--stop-before-reasoning",
-        action="store_true",
-        help="legacy pause setting; answer-only always pauses before reasoning",
+        "--llm-generated-tests-per-scope",
+        type=int,
+        default=6,
+        help="scope-mapped NL specification tests designed during recursive repair (default: 6)",
+    )
+    start.add_argument(
+        "--metamorphic-pairs-per-scope",
+        type=int,
+        default=6,
+        help="provision-preserving BOBCat/LLM pairs per scope (default: 6)",
     )
     start.add_argument(
         "--reasoning-base-url",
@@ -102,15 +105,6 @@ def argument_parser() -> argparse.ArgumentParser:
     apptainer.add_cli_arguments(start, runner.ROOT)
     resume = commands.add_parser("resume", help="continue a durable run")
     resume.add_argument("run_directory", type=Path)
-    resume.add_argument(
-        "--continue-reasoning",
-        action="store_true",
-        help="authorize reasoning for the current answer-only iteration",
-    )
-    migrate = commands.add_parser(
-        "migrate-snapshots", help="backfill iteration snapshots in existing runs"
-    )
-    migrate.add_argument("runs_directory", nargs="?", type=Path, default=runner.RUNS)
     return parser
 
 
@@ -119,22 +113,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         load_dotenv(runner.ROOT / ".env")
-        if args.subcommand == "migrate-snapshots":
-            migrated = runner.migrate_run_snapshots(args.runs_directory)
-            print(
-                json.dumps(
-                    {"migrated": [str(path.resolve()) for path in migrated]}, indent=2
-                )
-            )
-            return 0
         run_directory = (
             runner.create_run(args)
             if args.subcommand == "start"
             else args.run_directory
         )
-        state = runner.resume_run(
-            run_directory, continue_reasoning=getattr(args, "continue_reasoning", False)
-        )
+        state = runner.resume_run(run_directory)
     except (agents.AgentConfigurationError, runner.RunnerError) as error:
         parser.exit(2, f"error: {error}\n")
     print(

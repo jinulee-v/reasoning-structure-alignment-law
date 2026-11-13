@@ -30,7 +30,6 @@ from .common import (
 )
 
 REQUIREMENT_OUTPUTS_FILE = "REQUIREMENT_OUTPUTS.json"
-INPUT_VARIABLE_DESCRIPTION_FILE = "INPUT_VARIABLE_DESCRIPTION.json"
 REQUIREMENT_ID = re.compile(r"(?m)^-[ \t]+`([A-Z0-9][A-Z0-9-]*)`:")
 API_REQUIREMENT = re.compile(
     r"(?m)^-[ \t]+Requirement ID[ \t]+`([A-Z0-9][A-Z0-9-]*)`:"
@@ -598,174 +597,6 @@ def _root_schema_properties(schema: dict[str, Any]) -> dict[str, Any]:
     return properties if isinstance(properties, dict) else {}
 
 
-def load_input_variable_descriptions(dataset: Path) -> dict[str, Any]:
-    # Load the agent-authored natural-language contract for Catala inputs.
-    path = dataset / INPUT_VARIABLE_DESCRIPTION_FILE
-    if not path.is_file():
-        raise RunnerError(f"dataset has no {INPUT_VARIABLE_DESCRIPTION_FILE}")
-    value = load_json(path)
-    if not isinstance(value, dict) or set(value) != {
-        "schema_version",
-        "fields",
-        "enums",
-        "structs",
-    }:
-        raise RunnerError(
-            f"{INPUT_VARIABLE_DESCRIPTION_FILE} must contain only schema_version, "
-            "fields, enums, and structs"
-        )
-    if value.get("schema_version") != 3:
-        raise RunnerError(
-            f"{INPUT_VARIABLE_DESCRIPTION_FILE} must have schema_version 3"
-        )
-    fields = value["fields"]
-    if not isinstance(fields, dict):
-        raise RunnerError(f"{INPUT_VARIABLE_DESCRIPTION_FILE}.fields must be an object")
-    for name, entry in fields.items():
-        if (
-            not isinstance(name, str)
-            or not name
-            or not isinstance(entry, dict)
-            or set(entry) != {"scopes", "description"}
-            or not isinstance(entry["scopes"], list)
-            or not entry["scopes"]
-            or len(entry["scopes"]) != len(set(entry["scopes"]))
-            or not all(isinstance(scope, str) and scope for scope in entry["scopes"])
-            or not isinstance(entry["description"], str)
-            or not entry["description"].strip()
-        ):
-            raise RunnerError(
-                f"{INPUT_VARIABLE_DESCRIPTION_FILE}.fields.{name} must contain "
-                "unique non-empty scopes and a non-blank description"
-            )
-    for collection in ("enums", "structs"):
-        entries = value[collection]
-        if not isinstance(entries, dict) or not all(
-            isinstance(name, str)
-            and name
-            and isinstance(description, str)
-            and description.strip()
-            for name, description in entries.items()
-        ):
-            raise RunnerError(
-                f"{INPUT_VARIABLE_DESCRIPTION_FILE}.{collection} "
-                "must map every non-empty name to a non-blank description"
-            )
-    return value
-
-
-def _input_description_inventory(
-    schema: dict[str, Any],
-) -> tuple[list[str], list[str], list[str]]:
-    # Return nested paths and reachable named enums and structs for one scope.
-    definitions = schema.get("definitions", {})
-    root_reference = schema.get("$ref", "")
-    root_name = root_reference.rsplit("/", 1)[-1] if root_reference else None
-    fields: set[str] = set()
-    enums: set[str] = set()
-    structs: set[str] = set()
-    primitive_names = {
-        "money",
-        "decimal",
-        "date",
-        "duration",
-        "unit",
-        "integer",
-        "boolean",
-        "string",
-        "number",
-    }
-
-    def walk(node: Any, path: str, seen: frozenset[str]) -> None:
-        if not isinstance(node, dict):
-            return
-        reference = node.get("$ref")
-        if isinstance(reference, str) and reference.startswith("#/definitions/"):
-            name = reference.rsplit("/", 1)[-1]
-            if name != root_name and name not in primitive_names:
-                definition = definitions.get(name, {})
-                if isinstance(definition.get("enum"), list):
-                    enums.add(name)
-                elif isinstance(definition.get("properties"), dict):
-                    structs.add(name)
-            if name in seen:
-                return
-            walk(definitions.get(name, {}), path, seen | {name})
-            return
-        if node.get("type") == "array":
-            walk(node.get("items", {}), path + "[]", seen)
-            return
-        properties = node.get("properties", {})
-        if isinstance(properties, dict):
-            for name, child in properties.items():
-                child_path = f"{path}.{name}" if path else name
-                fields.add(child_path)
-                walk(child, child_path, seen)
-
-    walk(schema, "", frozenset())
-    return sorted(fields), sorted(enums), sorted(structs)
-
-
-def validate_input_variable_descriptions(
-    candidate: Path,
-    candidate_format: dict[str, Any],
-    requirement_outputs: dict[str, Any] | None = None,
-) -> dict[str, Any]:
-    # Require the description inventory to exactly match callable Catala inputs.
-    value = load_input_variable_descriptions(candidate)
-    selected_scope_ids = (
-        {
-            f"{entry['file']}::{entry['scope']}"
-            for entry in requirement_outputs["requirements"]
-        }
-        if requirement_outputs is not None
-        else None
-    )
-    expected: dict[str, tuple[list[str], list[str], list[str]]] = {}
-    for scope in candidate_format.get("scopes", []):
-        schema = scope.get("input_schema")
-        if not isinstance(schema, dict) or not _root_schema_properties(schema):
-            continue
-        if str(scope.get("scope", "")).casefold().startswith("test"):
-            continue
-        scope_id = f"{scope['file']}::{scope['scope']}"
-        if selected_scope_ids is not None and scope_id not in selected_scope_ids:
-            continue
-        expected[scope_id] = _input_description_inventory(schema)
-    expected_global = {
-        "fields": sorted(
-            {name for inventory in expected.values() for name in inventory[0]}
-        ),
-        "enums": sorted(
-            {name for inventory in expected.values() for name in inventory[1]}
-        ),
-        "structs": sorted(
-            {name for inventory in expected.values() for name in inventory[2]}
-        ),
-    }
-    for collection, names in expected_global.items():
-        actual_names = sorted(value[collection])
-        if actual_names != names:
-            raise RunnerError(
-                f"stale global {collection} descriptions "
-                f"(missing={sorted(set(names) - set(actual_names))}, "
-                f"extra={sorted(set(actual_names) - set(names))})"
-            )
-    expected_field_scopes: dict[str, set[str]] = {}
-    for scope_id, (fields, _, _) in expected.items():
-        for name in fields:
-            expected_field_scopes.setdefault(name, set()).add(scope_id)
-    for name, scopes in expected_field_scopes.items():
-        actual_scopes = set(value["fields"][name]["scopes"])
-        if actual_scopes != scopes:
-            raise RunnerError(
-                f"stale scope references for field {name} "
-                f"(missing={sorted(scopes - actual_scopes)}, "
-                f"extra={sorted(actual_scopes - scopes)})"
-            )
-    return value
-
-
 def validate_requirement_scope_outputs(
     candidate: Path, candidate_format: dict[str, Any]
 ) -> dict[str, Any] | None:
@@ -809,13 +640,8 @@ def validate_requirement_scope_outputs(
 
 def validate_workspace(input_directory: Path, workspace: Path) -> dict[str, Any]:
     # Validate protected inputs and reject insubstantial Catala submissions.
-    from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing import repair
-
     baseline_files = relative_files(input_directory)
     workspace_files = relative_files(workspace)
-    # The live workspace and its immutable iteration snapshot both contain runner-managed repair inputs.
-    for name in repair.checked_artifacts(workspace, input_directory.parent):
-        workspace_files.pop(name, None)
     if baseline_files.keys() != workspace_files.keys():
         added = sorted(workspace_files.keys() - baseline_files.keys())
         removed = sorted(baseline_files.keys() - workspace_files.keys())
@@ -830,8 +656,18 @@ def validate_workspace(input_directory: Path, workspace: Path) -> dict[str, Any]
     documents = 0
     candidate_blocks: dict[str, tuple[bytes, ...]] = {}
     file_hashes: dict[str, str] = {}
+    fixed_definitions = any(
+        (input_directory / f"{name}.md").is_file()
+        for name in ("airline", "sara")
+    )
     for relative, baseline_path in baseline_files.items():
         candidate_path = workspace_files[relative]
+        if (
+            fixed_definitions
+            and relative.startswith(("Definition.catala_", "Definitions.catala_"))
+            and baseline_path.read_bytes() != candidate_path.read_bytes()
+        ):
+            raise RunnerError(f"agent changed fixed shared input {relative}")
         if baseline_path.suffix.startswith(".catala_"):
             baseline = parse_fenced_document(baseline_path)
             candidate = parse_fenced_document(candidate_path)
@@ -852,8 +688,6 @@ def validate_workspace(input_directory: Path, workspace: Path) -> dict[str, Any]
             candidate_blocks[relative] = candidate.blocks
         elif relative == REQUIREMENT_OUTPUTS_FILE:
             pass
-        elif relative == INPUT_VARIABLE_DESCRIPTION_FILE:
-            load_input_variable_descriptions(workspace)
         elif baseline_path.read_bytes() != candidate_path.read_bytes():
             raise RunnerError(f"agent changed non-Catala input {relative}")
         file_hashes[relative] = sha256_file(candidate_path)

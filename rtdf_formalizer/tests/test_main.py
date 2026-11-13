@@ -15,6 +15,7 @@ from unittest import mock
 from rtdf_formalizer import runner
 from rtdf_formalizer import main as cli_main
 from rtdf_formalizer.stages import validation as apply_nl_test
+from rtdf_formalizer.stages import formalization
 from rtdf_formalizer.stages.validation import verification as validation_verification
 from rtdf_formalizer import agents
 from rtdf_formalizer.stages import utils as main
@@ -29,7 +30,6 @@ from rtdf_formalizer.agents import (
 )
 from rtdf_formalizer.agents.base import (
     DOCUMENTATION_MOUNT,
-    INPUT_REQUIREMENTS_HELPER_MOUNT,
     SUBMISSION_CHECK_HELPER_MOUNT,
     formalization_prompt,
 )
@@ -226,8 +226,18 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         args = self.arguments()
         args.reasoning_trace_provider = None
         args.reasoning_trace_model = None
+        legacy_file = self.dataset / "INPUT_VARIABLE_DESCRIPTION.json"
+        legacy_file.write_text("{}\n", encoding="utf-8")
+        oracle_tests = self.dataset / "tests_catala"
+        oracle_tests.mkdir()
+        (oracle_tests / "Case.catala_en").write_text("#[test]\n", encoding="utf-8")
         with mock.patch.object(run_state, "RUNS", self.root / "runs"):
             run_directory = runner.create_run(args)
+        self.assertTrue(legacy_file.is_file())
+        self.assertFalse((run_directory / "input" / legacy_file.name).exists())
+        self.assertFalse((run_directory / "workspace" / legacy_file.name).exists())
+        self.assertFalse((run_directory / "input/tests_catala").exists())
+        self.assertFalse((run_directory / "workspace/tests_catala").exists())
         config = main.load_json(run_directory / "config.json")
         self.assertEqual(
             config["reasoning_trace"],
@@ -247,24 +257,20 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         runs = self.root / "runs"
         with mock.patch.object(run_state, "RUNS", runs):
             run_directory = runner.create_run(self.arguments())
-            # Exercise the historical stage-at-a-time resume contract here; the repair-iteration controller has its own repair tests.
-            config = main.load_json(run_directory / "config.json")
-            config.pop("repair")
-            main.atomic_json(run_directory / "config.json", config)
             state = runner.resume_run(run_directory)
             self.assertEqual(state["next_stage"], "validation")
             self.assertEqual(state["status"], "agent_completed")
             self.assertIn("agent", state["completed_stages"])
             self.assertIn("snapshot", state["completed_stages"])
-            snapshot = run_directory / "iterations/000/snapshot"
+            snapshot = run_directory / "initial/snapshot"
             self.assertTrue(snapshot.is_dir())
             self.assertEqual(
                 main.tree_hash(snapshot), main.tree_hash(run_directory / "workspace")
             )
-            manifest = main.load_json(run_directory / "iterations/000/snapshot.json")
+            manifest = main.load_json(run_directory / "initial/snapshot.json")
             self.assertEqual(manifest["tree_sha256"], main.tree_hash(snapshot))
 
-            result = main.load_json(run_directory / "iterations/000/agent/result.json")
+            result = main.load_json(run_directory / "initial/agent/result.json")
             self.assertEqual(result["integrity"]["changed_blocks"], 2)
             config = main.load_json(run_directory / "config.json")
             self.assertEqual(config["agent"]["provider"], "openai")
@@ -272,16 +278,14 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
                 config["reasoning_trace"],
                 {"provider": "openai", "model": "reasoning-model", "jobs": 8},
             )
-            attempts_before = list(
-                (run_directory / "iterations/000/agent").glob("attempt-*")
-            )
+            invocation = run_directory / "initial/agent/invocation.json"
+            invocation_before = invocation.read_bytes()
 
-            resumed = runner.resume_run(run_directory)
-            attempts_after = list(
-                (run_directory / "iterations/000/agent").glob("attempt-*")
-            )
+            formalization.run(run_directory, config, state)
+            resumed = main.load_json(run_directory / "state.json")
             self.assertEqual(resumed["next_stage"], "validation")
-            self.assertEqual(attempts_before, attempts_after)
+            self.assertEqual(invocation_before, invocation.read_bytes())
+            self.assertFalse((run_directory / "initial/agent/recovery").exists())
 
             usage = json.loads((run_directory / "usage.jsonl").read_text().strip())
             self.assertEqual(usage["total_tokens"], 150)
@@ -299,9 +303,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
                 ),
                 encoding="utf-8",
             )
-            self.assertEqual(
-                main.publish_iteration_snapshot(run_directory, 0), snapshot
-            )
+            self.assertEqual(main.publish_stage_snapshot(run_directory, state), snapshot)
             self.assertEqual((snapshot / "statute.catala_en").read_bytes(), frozen)
 
     def test_agent_stage_persists_rejected_insubstantial_submission(self) -> None:
@@ -322,10 +324,8 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
 
         state = main.load_json(run_directory / "state.json")
         self.assertNotIn("agent", state["completed_stages"])
-        self.assertFalse((run_directory / "iterations/000/snapshot").exists())
-        result = main.load_json(
-            run_directory / "iterations/000/agent/attempt-000/result.json"
-        )
+        self.assertFalse((run_directory / "initial/snapshot").exists())
+        result = main.load_json(run_directory / "initial/agent/result.json")
         self.assertEqual(result["status"], "failed")
         self.assertIsNone(result["integrity"])
         self.assertEqual(
@@ -448,18 +448,9 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             prompt,
         )
         self.assertIn("top-level output variable", prompt)
-        self.assertIn(
-            "`/rtdf/check_submission.sh /workspace "
-            "/workspace/INPUT_VARIABLE_DESCRIPTION.json --check`",
-            prompt,
-        )
-        self.assertIn("`/rtdf/extract_input_requirements.sh`", prompt)
-        self.assertIn("until it prints `submission accepted`", prompt)
-        self.assertIn("calls `clerk json-schema`", prompt)
-        self.assertIn("`/workspace/INPUT_VARIABLE_DESCRIPTION.json`", prompt)
-        self.assertIn("unique field path, enum, and struct", prompt)
-        self.assertIn("exact `FILE::SCOPE` identifiers", prompt)
-        self.assertIn("Do not leave descriptions blank", prompt)
+        self.assertIn("`/rtdf/check_submission.sh /workspace`", prompt)
+        self.assertNotIn("extract_input_requirements.sh", prompt)
+        self.assertNotIn("INPUT_VARIABLE_DESCRIPTION.json", prompt)
         self.assertIn("deliberately does not specify an interface", prompt)
         self.assertIn("do not collect them in one block", prompt)
         self.assertIn(
@@ -483,14 +474,27 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
 
     def test_sara_prompt_uses_the_predeclared_api_contract(self) -> None:
         prompt = formalization_prompt("sara", False)
+        self.assertNotIn("clerk test .", prompt)
+        self.assertIn("protected evaluator tests run during verification", prompt)
         self.assertIn("`Api.catala_en` as the evaluator-facing contract", prompt)
         self.assertIn("`Definitions.catala_en` is exclusively", prompt)
         self.assertIn("Do not rename or remove those scopes or outputs", prompt)
         self.assertIn("implement only cross-section composition", prompt)
-        self.assertIn("gross-income amounts explicitly stated", prompt)
-        self.assertIn("deduction-related factual amounts and circumstances", prompt)
+        self.assertIn("predeclared `world`, `taxpayer`, and `period`", prompt)
+        self.assertIn("Do not edit `Definitions.catala_en`", prompt)
+        self.assertIn("fixed shared input contract", prompt)
         self.assertNotIn("taxpayer income, deductions", prompt)
         self.assertNotIn("`/workspace/REQUIREMENT_OUTPUTS.json`", prompt)
+        self.assertNotIn("fill every ID", prompt)
+
+    def test_airline_prompt_uses_the_predeclared_api_contract(self) -> None:
+        prompt = formalization_prompt("airline", False)
+        self.assertNotIn("clerk test .", prompt)
+        self.assertIn("protected evaluator tests run during verification", prompt)
+        self.assertIn("`Api.catala_en` as the evaluator-facing contract", prompt)
+        self.assertIn("Do not rename or remove those scopes or outputs", prompt)
+        self.assertIn("Do not edit `Definitions.catala_en`", prompt)
+        self.assertNotIn("REQUIREMENT_OUTPUTS", prompt)
         self.assertNotIn("fill every ID", prompt)
 
     def test_all_benchmark_datasets_have_guidance(self) -> None:
@@ -504,17 +508,20 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
             with self.subTest(dataset=dataset):
                 value = semantic_guidance(dataset)
                 self.assertIsNotNone(value)
-                directory = main.ROOT / "data/raw" / dataset
+                raw_root = "data/raw" if dataset == "sara" else "data/raw_without_definitions"
+                directory = main.ROOT / raw_root / dataset
                 mapping = main.load_requirement_outputs(
                     directory, require_resolved=False
                 )
-                self.assertEqual(
-                    [item["requirement_id"] for item in mapping["requirements"]],
-                    main.required_functionality_ids(directory),
-                )
-                self.assertTrue(
-                    "machine-callable" in value or "appelables par machine" in value
-                )
+                requirements = main.required_functionality_ids(directory)
+                if requirements:
+                    self.assertEqual(
+                        [item["requirement_id"] for item in mapping["requirements"]],
+                        requirements,
+                    )
+                else:
+                    self.assertTrue(mapping["requirements"])
+                self.assertGreater(len(value), 100)
 
     def test_guidance_does_not_expose_gold_signatures(self) -> None:
         for dataset in ("airline", "sara", "NSW_community_gaming"):
@@ -631,11 +638,6 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         )
         self.assertIn(
             f"{apptainer.SUBMISSION_CHECK_HELPER_SOURCE}:"
-            f"{INPUT_REQUIREMENTS_HELPER_MOUNT}:ro",
-            command,
-        )
-        self.assertIn(
-            f"{apptainer.SUBMISSION_CHECK_HELPER_SOURCE}:"
             f"{SUBMISSION_CHECK_HELPER_MOUNT}:ro",
             command,
         )
@@ -654,6 +656,40 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertIn(f"{self.root / 'agent-home'}:/agent-home:rw", command)
         self.assertIn("/usr/bin/env", command)
         self.assertIn("HOME=/agent-home", command)
+
+    def test_shared_input_invocation_mounts_definitions_read_only(self) -> None:
+        workspace = self.root / "workspace"
+        workspace.mkdir()
+        definitions = workspace / "Definitions.catala_en"
+        definitions.write_text("```catala\n```\n", encoding="utf-8")
+        original = self.root / "input"
+        original.mkdir()
+        (original / definitions.name).write_bytes(definitions.read_bytes())
+        config = {
+            "dataset": {"name": "sara"},
+            "runtime": {"binary": "apptainer", "host_toolchain": None,
+                        "network_policy": "host", "cpus": None,
+                        "memory": None, "pids_limit": None},
+            "agent": {"image": "example/agent:test", "command": ["fake-agent"],
+                      "mounts": [], "host_binary": None},
+        }
+
+        for dataset in ("sara", "airline"):
+            config["dataset"]["name"] = dataset
+            command = apptainer.invocation(
+                config, self.root, self.root / "prompt.txt", self.root / "runtime",
+                self.root / "agent-home", None,
+            )
+            self.assertIn(
+                f"{definitions}:/workspace/Definitions.catala_en:ro", command
+            )
+
+        definitions.write_text("```catala\ndeclaration Changed content integer\n```\n")
+        with self.assertRaisesRegex(apptainer.AgentConfigurationError, "differs"):
+            apptainer.invocation(
+                config, self.root, self.root / "prompt.txt", self.root / "runtime",
+                self.root / "agent-home", None,
+            )
 
     def test_environment_leaves_home_to_the_agent_process_wrapper(self) -> None:
         config = {"runtime": {"host_toolchain": None}, "agent": {"environment": []}}
@@ -719,6 +755,27 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         )
         with self.assertRaisesRegex(main.RunnerError, "statute prose"):
             main.validate_workspace(self.dataset, workspace)
+
+    def test_fixed_input_integrity_check_rejects_definition_body_changes(self) -> None:
+        definitions = self.dataset / "Definitions.catala_en"
+        definitions.write_text(
+            "```catala\ndeclaration Shared content integer\n```\n",
+            encoding="utf-8",
+        )
+        for name in ("airline", "sara"):
+            with self.subTest(dataset=name):
+                guidance = self.dataset / f"{name}.md"
+                guidance.write_text(f"# {name}\n", encoding="utf-8")
+                workspace = self.root / f"workspace-{name}"
+                main.publish_copy(self.dataset, workspace)
+                (workspace / definitions.name).write_text(
+                    "```catala\ndeclaration Changed content integer\n```\n",
+                    encoding="utf-8",
+                )
+
+                with self.assertRaisesRegex(main.RunnerError, "fixed shared input"):
+                    main.validate_workspace(self.dataset, workspace)
+                guidance.unlink()
 
     def test_integrity_check_tolerates_protected_whitespace_changes(self) -> None:
         workspace = self.root / "workspace"
@@ -1076,7 +1133,7 @@ class VerificationTest(unittest.TestCase):
             "cases": [
                 {
                     "id": "a",
-                    "source": "bobcat",
+                    "source": "original",
                     "status": "pass",
                     "reference_output": {"x": 1},
                     "candidate_output": {"x": 1},
@@ -1217,112 +1274,7 @@ class VerificationTest(unittest.TestCase):
         self.assertEqual(plan["comparison"], "equals_claim")
         self.assertEqual(plan["claim"], "$42")
 
-    def test_input_descriptions_match_nested_schema_exactly(self) -> None:
-        candidate_format = {
-            "scopes": [
-                {
-                    "file": "example.catala_en",
-                    "scope": "Calculate",
-                    "input_schema": {
-                        "$ref": "#/definitions/Calculate_in",
-                        "definitions": {
-                            "Calculate_in": {
-                                "type": "object",
-                                "properties": {
-                                    "person": {"$ref": "#/definitions/Person"},
-                                    "payments": {
-                                        "type": "array",
-                                        "items": {"$ref": "#/definitions/Payment"},
-                                    },
-                                    "status": {"$ref": "#/definitions/Status"},
-                                },
-                            },
-                            "Person": {
-                                "type": "object",
-                                "properties": {"age": {"type": "integer"}},
-                            },
-                            "Payment": {
-                                "type": "object",
-                                "properties": {"amount": {"type": "number"}},
-                            },
-                            "Status": {
-                                "type": "string",
-                                "enum": ["Active", "Inactive"],
-                            },
-                        },
-                    },
-                }
-            ]
-        }
-        descriptions = {
-            "schema_version": 3,
-            "fields": {
-                "person": {
-                    "scopes": ["example.catala_en::Calculate"],
-                    "description": "The person whose eligibility is calculated.",
-                },
-                "person.age": {
-                    "scopes": ["example.catala_en::Calculate"],
-                    "description": "That person's age in completed years.",
-                },
-                "payments": {
-                    "scopes": ["example.catala_en::Calculate"],
-                    "description": "Payments received by that person.",
-                },
-                "payments[].amount": {
-                    "scopes": ["example.catala_en::Calculate"],
-                    "description": "Each payment amount in dollars.",
-                },
-                "status": {
-                    "scopes": ["example.catala_en::Calculate"],
-                    "description": "The person's status during the relevant period.",
-                },
-            },
-            "enums": {"Status": "Whether the person was active during the period."},
-            "structs": {
-                "Person": "Facts about the eligibility subject.",
-                "Payment": "One payment received in the relevant period.",
-            },
-        }
-        path = self.root / main.INPUT_VARIABLE_DESCRIPTION_FILE
-        path.write_text(json.dumps(descriptions), encoding="utf-8")
-
-        self.assertEqual(
-            main.validate_input_variable_descriptions(self.root, candidate_format),
-            descriptions,
-        )
-        registry = {
-            category: {
-                **descriptions[category],
-                f"unrelated_{category}": (
-                    {
-                        "scopes": ["other.catala_en::Other"],
-                        "description": "Other scope.",
-                    }
-                    if category == "fields"
-                    else "Other scope."
-                ),
-            }
-            for category in ("fields", "enums", "structs")
-        }
-        relevant = information_extraction._relevant_input_descriptions(
-            candidate_format["scopes"][0]["input_schema"], registry
-        )
-        self.assertEqual(
-            relevant["fields"],
-            {
-                name: entry["description"]
-                for name, entry in descriptions["fields"].items()
-            },
-        )
-        self.assertEqual(relevant["enums"], descriptions["enums"])
-        self.assertEqual(relevant["structs"], descriptions["structs"])
-        descriptions["fields"].pop("person.age")
-        path.write_text(json.dumps(descriptions), encoding="utf-8")
-        with self.assertRaisesRegex(main.RunnerError, "missing=.*person.age"):
-            main.validate_input_variable_descriptions(self.root, candidate_format)
-
-    def test_input_prompt_receives_only_selected_scope_descriptions(self) -> None:
+    def test_input_prompt_uses_catala_schema_without_description_file(self) -> None:
         source = self.root / "example.catala_en"
         source.write_text(
             "```catala\ndeclaration A content integer\n```\n", encoding="utf-8"
@@ -1336,20 +1288,13 @@ class VerificationTest(unittest.TestCase):
                 "properties": {"amount": {"type": "number"}},
             },
         }
-        selected = {
-            "scope_id": "example.catala_en::Calculate",
-            "fields": {"amount": "Amount paid by the claimant in dollars."},
-            "enums": {},
-            "structs": {},
-        }
         prompt = information_extraction._input_prompt(
             {"facts": "A person paid $10.", "question": "Are they eligible?"},
             scope,
             self.root,
-            selected,
         )
-        self.assertIn("Amount paid by the claimant in dollars.", prompt)
-        self.assertNotIn("descriptions for another scope", prompt)
+        self.assertIn('"amount"', prompt)
+        self.assertNotIn("INPUT_VARIABLE_DESCRIPTION.json", prompt)
 
     def test_strict_extraction_schema_uses_null_for_optional_fields(self) -> None:
         schema = {
@@ -1547,119 +1492,72 @@ print(json.dumps({'target': 'Run', 'path': 'program.catala_en', 'inputs': {},
         receipt = main.load_json(tool.parent / "trial_receipt.json")
         self.assertEqual(receipt["translator_sha256"], main.sha256_file(translator))
 
-    def test_missing_gold_leaves_ad_hoc_run_resumable(self) -> None:
+    def test_native_catala_verification_uses_protected_tests_and_cache(self) -> None:
+        source = self.root / "dataset"
+        tests = source / "tests_catala"
+        tests.mkdir(parents=True)
+        (tests / "Case.catala_en").write_text(
+            "#[test]\ndeclaration scope TestCase:\n", encoding="utf-8"
+        )
         run = self.root / "run"
-        run.mkdir()
-        state = {"iteration": 0}
-        with mock.patch.object(main, "ROOT", self.root):
-            self.assertFalse(
-                apply_nl_test.run_verification_stage(
-                    run,
-                    {"dataset": {"name": "not-a-benchmark"}},
-                    state,
-                )
-            )
-
-    def test_verification_stage_reuses_script_and_result_cache(self) -> None:
-        gold = self.root / "gold"
-        workspace = self.root / "run/workspace"
-        gold.mkdir()
-        workspace.mkdir(parents=True)
-        for directory in (gold, workspace):
-            (directory / "program.catala_en").write_text(
-                "```catala-metadata\n"
-                "declaration scope Run:\n"
-                "  output answer content integer\n"
-                "```\n",
-                encoding="utf-8",
-            )
-            (directory / "clerk.toml").write_text("[project]\n", encoding="utf-8")
-        run = workspace.parent
-        input_directory = run / "input"
-        input_directory.mkdir()
-        (input_directory / "program.catala_en").write_text(
-            "```catala-metadata\n\n```\n", encoding="utf-8"
+        snapshot = run / "initial/snapshot"
+        snapshot.mkdir(parents=True)
+        (snapshot / "program.catala_en").write_text(
+            "> Module Program\n", encoding="utf-8"
         )
-        (input_directory / "clerk.toml").write_text("[project]\n", encoding="utf-8")
-        snapshot = run / "iterations/000/snapshot"
-        snapshot.parent.mkdir(parents=True)
-        main.publish_copy(workspace, snapshot)
-        main.atomic_json(
-            snapshot.parent / "snapshot.json", main.snapshot_manifest(snapshot, 0)
-        )
-        (workspace / "program.catala_en").write_text(
-            "```catala-metadata\ndeclaration scope ChangedAfterSnapshot:\n```\n",
-            encoding="utf-8",
-        )
-        state = {"iteration": 0, "completed_stages": ["agent"]}
+        state = {"recursive_phase": "initial", "completed_stages": ["agent"]}
         config = {
             "run_id": "run",
-            "dataset": {"name": "example"},
-            "runtime": {"host_toolchain": None, "timeout_seconds": 30},
+            "dataset": {"name": "example", "source": str(source)},
+            "runtime": {"timeout_seconds": 30},
         }
-        script = """import argparse, json
-p = argparse.ArgumentParser()
-p.add_argument('--reference-test')
-a = p.parse_args()
-print(json.dumps(json.loads(a.reference_test)))
-"""
-
-        def generate(_temporary, destination, **_kwargs):
-            destination.write_text(script, encoding="utf-8")
-            return {
-                "model": main.TRANSLATOR_MODEL,
-                "elapsed_seconds": 1.0,
-                "sha256": main.sha256_file(destination),
-                "usage": {
-                    "input_tokens": 1,
-                    "output_tokens": 1,
-                    "total_tokens": 2,
-                    "count_source": "provider-reported",
-                },
-            }
-
-        formats = {"schema_version": 1, "project_files": [], "scopes": []}
+        report = json.dumps({
+            "test-results": [{
+                "file": "Case.catala_en",
+                "tests": {"scopes": [{
+                    "scope_name": "TestCase", "success": True, "errors": [],
+                }]},
+            }],
+        })
+        completed = subprocess.CompletedProcess(["clerk"], 0, report, "")
         with (
             mock.patch.object(
-                validation_verification, "resolve_gold_dataset", return_value=gold
+                validation_verification, "publish_stage_snapshot",
+                return_value=snapshot,
             ),
             mock.patch.object(
-                validation_verification, "extract_input_formats", return_value=formats
+                validation_verification, "extract_input_formats",
+                return_value={"schema_version": 1, "scopes": []},
             ),
             mock.patch.object(
-                validation_verification, "generate_translator", side_effect=generate
-            ) as called,
+                validation_verification, "validate_requirement_scope_outputs",
+                return_value=None,
+            ),
+            mock.patch.object(
+                validation_verification, "toolchain_environment",
+                return_value={},
+            ),
+            mock.patch.object(
+                validation_verification.subprocess, "run", return_value=completed,
+            ) as execute,
         ):
             self.assertTrue(apply_nl_test.run_verification_stage(run, config, state))
-            self.assertEqual(called.call_count, 1)
+            result = main.load_json(run / "initial/validation/results.json")
+            self.assertEqual(result["summary"]["passed"], 1)
+            self.assertEqual(execute.call_count, 1)
+            self.assertTrue(apply_nl_test.run_verification_stage(run, config, state))
+            self.assertEqual(execute.call_count, 1)
         self.assertEqual(state["next_stage"], "reasoning_trace_diff_fuzzing")
-        self.assertTrue((run / "translate_test_cases.py").is_file())
-        cache = main.load_json(run / "iterations/000/validation/cache.json")
-        self.assertEqual(cache["fingerprint"]["workspace"], main.tree_hash(snapshot))
-        self.assertNotEqual(
-            cache["fingerprint"]["workspace"], main.tree_hash(workspace)
-        )
 
-        resumed = {"iteration": 0, "completed_stages": ["agent"]}
-        with (
-            mock.patch.object(
-                validation_verification,
-                "resolve_gold_dataset",
-                return_value=gold,
-            ),
-            mock.patch.object(
-                validation_verification,
-                "extract_input_formats",
-                side_effect=AssertionError("cache miss"),
-            ),
-            mock.patch.object(
-                validation_verification,
-                "generate_translator",
-                side_effect=AssertionError("regenerated"),
-            ),
-        ):
-            self.assertTrue(apply_nl_test.run_verification_stage(run, config, resumed))
-        self.assertEqual(resumed["status"], "verified")
+    def test_native_catala_verification_requires_cases(self) -> None:
+        source = self.root / "empty-dataset"
+        source.mkdir()
+        with self.assertRaisesRegex(main.RunnerError, "no Catala test cases"):
+            apply_nl_test.run_verification_stage(
+                self.root / "run",
+                {"dataset": {"name": "example", "source": str(source)}},
+                {"recursive_phase": "initial"},
+            )
 
 
 class AgentAuthenticationTest(unittest.TestCase):

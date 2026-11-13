@@ -1,4 +1,4 @@
-"""Validate formalized programs against natural-language test cases."""
+"""Validate formalized programs against protected Catala test cases."""
 
 from .translator import (
     generate_translator,

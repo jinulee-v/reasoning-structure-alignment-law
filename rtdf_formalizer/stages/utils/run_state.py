@@ -13,6 +13,7 @@ from typing import Any
 from rtdf_formalizer import agents
 from rtdf_formalizer.agents import apptainer
 from rtdf_formalizer.agents.base import AgentConfigurationError
+from .guidance import canonical_dataset_name, without_input_description_guidance
 from .catala import tree_hash
 from .common import (
     ROOT,
@@ -26,7 +27,7 @@ from .common import (
     sha256_file,
     utc_now,
 )
-from .workspace_validation import integrity_manifest_matches, validate_workspace
+from .workspace_validation import validate_workspace
 
 
 def resolve_dataset(value: str) -> Path:
@@ -75,22 +76,21 @@ def publish_copy(source: Path, destination: Path) -> None:
             shutil.rmtree(temporary)
 
 
-def snapshot_manifest(snapshot: Path, iteration: int) -> dict[str, Any]:
-    # Describe an immutable per-iteration copy of the agent workspace.
+def snapshot_manifest(snapshot: Path) -> dict[str, Any]:
+    # Describe an immutable copy of the agent workspace.
     files = {
         relative: sha256_file(path)
         for relative, path in sorted(relative_files(snapshot).items())
     }
     return {
         "schema_version": SNAPSHOT_SCHEMA_VERSION,
-        "iteration": iteration,
         "tree_sha256": tree_hash(snapshot),
         "files": files,
     }
 
 
 def stage_directory(run_directory: Path, state: dict[str, Any]) -> Path:
-    # Resolve legacy iterations and recursive scope revisions through one artifact boundary.
+    # Resolve the initial draft and recursive scope revisions through one boundary.
     if state.get("_stage_directory"):
         return Path(state["_stage_directory"])
     if state.get("recursive_phase") == "initial":
@@ -101,15 +101,14 @@ def stage_directory(run_directory: Path, state: dict[str, Any]) -> Path:
         )
 
         return recursive_repair.revision_directory(run_directory, state)
-    return run_directory / "iterations" / f"{int(state['iteration']):03d}"
+    raise RunnerError("run state has no recursive phase")
 
 
 def publish_stage_snapshot(run_directory: Path, state: dict[str, Any]) -> Path:
     # Publish or validate the frozen workspace used by the active stage.
-    iteration = int(state.get("iteration", 0))
-    iteration_directory = stage_directory(run_directory, state)
-    snapshot = iteration_directory / "snapshot"
-    manifest_path = iteration_directory / "snapshot.json"
+    stage_root = stage_directory(run_directory, state)
+    snapshot = stage_root / "snapshot"
+    manifest_path = stage_root / "snapshot.json"
 
     if not snapshot.exists():
         validate_workspace(run_directory / "input", run_directory / "workspace")
@@ -117,7 +116,7 @@ def publish_stage_snapshot(run_directory: Path, state: dict[str, Any]) -> Path:
     elif not snapshot.is_dir():
         raise RunnerError(f"stage snapshot is not a directory: {snapshot}")
     validate_workspace(run_directory / "input", snapshot)
-    expected = snapshot_manifest(snapshot, iteration)
+    expected = snapshot_manifest(snapshot)
     if manifest_path.is_file():
         if load_json(manifest_path) != expected:
             raise RunnerError(f"stage snapshot no longer matches {manifest_path}")
@@ -126,72 +125,15 @@ def publish_stage_snapshot(run_directory: Path, state: dict[str, Any]) -> Path:
     return snapshot
 
 
-def publish_iteration_snapshot(run_directory: Path, iteration: int) -> Path:
-    # Publish or validate the frozen workspace used by an iteration.
-    return publish_stage_snapshot(
-        run_directory, {"iteration": iteration, "recursive_phase": None}
-    )
-
-
-def migrate_run_snapshots(runs_directory: Path = RUNS) -> list[Path]:
-    # Backfill the current iteration of pre-snapshot, non-archived runs.
-    migrated: list[Path] = []
-    if not runs_directory.is_dir():
-        return migrated
-    for run_directory in sorted(runs_directory.iterdir()):
-        if (
-            not run_directory.is_dir()
-            or run_directory.name in {"_archive", "_archives"}
-            or run_directory.name.startswith(".")
-            or not (run_directory / "state.json").is_file()
-        ):
-            continue
-        state = load_json(run_directory / "state.json")
-        if "agent" not in state.get("completed_stages", []):
-            continue
-        iteration = int(state["iteration"])
-        snapshot = run_directory / "iterations" / f"{iteration:03d}" / "snapshot"
-        manifest = snapshot.parent / "snapshot.json"
-        changed = not snapshot.is_dir() or not manifest.is_file()
-        if not snapshot.exists():
-            result_path = snapshot.parent / "agent" / "result.json"
-            if not result_path.is_file():
-                raise RunnerError(
-                    f"cannot migrate run without an agent result: {run_directory}"
-                )
-            result = load_json(result_path)
-            integrity = validate_workspace(
-                run_directory / "input", run_directory / "workspace"
-            )
-            if result.get("status") != "completed" or not integrity_manifest_matches(
-                result.get("integrity"), integrity
-            ):
-                raise RunnerError(
-                    f"workspace no longer matches the completed agent result: {run_directory}"
-                )
-        publish_iteration_snapshot(run_directory, iteration)
-        if "snapshot" not in state.get("completed_stages", []):
-            stages = state.setdefault("completed_stages", [])
-            insertion = stages.index("agent") + 1 if "agent" in stages else len(stages)
-            stages.insert(insertion, "snapshot")
-            state["updated_at"] = utc_now()
-            atomic_json(run_directory / "state.json", state)
-            changed = True
-        if changed:
-            migrated.append(run_directory)
-    return migrated
-
-
 def create_run(args: Any) -> Path:
     from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing import repair
 
     repair_settings = {
-        "mode": getattr(args, "repair_mode", repair.RepairMode.NO_TESTING.value),
-        "max_iteration": getattr(args, "max_iteration", repair.DEFAULT_MAX_ITERATION),
+        "max_revisions_per_scope": getattr(args, "max_scope_revisions", 2),
+        "scope_selection": getattr(args, "repair_scope_selection", "all"),
     }
-    repair_config = {"repair": repair_settings}
-    repair.mode(repair_config)
-    repair.max_iteration(repair_config)
+    repair.max_revisions_per_scope({"repair": repair_settings})
+    repair.scope_selection({"repair": repair_settings})
     dataset = resolve_dataset(args.dataset)
     reasoning_trace_provider = (
         getattr(args, "reasoning_trace_provider", None) or args.agent_provider
@@ -273,39 +215,47 @@ def create_run(args: Any) -> Path:
             "bobcat_objective_timeout_ms": getattr(
                 args, "bobcat_objective_timeout_ms", None
             ),
+            "llm_generated_tests_per_scope": getattr(
+                args, "llm_generated_tests_per_scope", 6
+            ),
+            "metamorphic_pairs_per_scope": getattr(
+                args, "metamorphic_pairs_per_scope", 6
+            ),
             "statute_source": getattr(args, "statute_source", "gold"),
-            "stop_before_reasoning": getattr(args, "stop_before_reasoning", False),
         },
         "runtime": runtime,
     }
     try:
         atomic_json(staging_directory / "config.json", config)
         publish_copy(dataset, staging_directory / "input")
+        (staging_directory / "input" / "INPUT_VARIABLE_DESCRIPTION.json").unlink(
+            missing_ok=True
+        )
+        # Oracle tests are kept outside the coding agent's editable workspace.
+        shutil.rmtree(staging_directory / "input" / "tests_catala", ignore_errors=True)
+        canonical_name = canonical_dataset_name(dataset.name)
+        if canonical_name is not None:
+            guidance_path = staging_directory / "input" / f"{canonical_name}.md"
+            if guidance_path.is_file():
+                guidance_path.write_text(
+                    without_input_description_guidance(
+                        guidance_path.read_text(encoding="utf-8")
+                    ) + "\n",
+                    encoding="utf-8",
+                )
         publish_copy(staging_directory / "input", staging_directory / "workspace")
         state = {
             "schema_version": SCHEMA_VERSION,
             "run_id": run_id,
-            "iteration": 0,
             "completed_stages": ["initialized"],
             "next_stage": "formalization",
             "status": "running",
-            "active_attempt": None,
             "updated_at": utc_now(),
         }
-        if repair_settings["mode"] == repair.RepairMode.RECURSIVE.value:
-            state["recursive_phase"] = "initial"
+        state["recursive_phase"] = "initial"
         atomic_json(staging_directory / "state.json", state)
         os.replace(staging_directory, run_directory)
     finally:
         if staging_directory.exists():
             shutil.rmtree(staging_directory)
     return run_directory
-
-
-def next_attempt_directory(agent_directory: Path) -> Path:
-    indices = []
-    for path in agent_directory.glob("attempt-*"):
-        match = re.fullmatch(r"attempt-(\d+)", path.name)
-        if match:
-            indices.append(int(match.group(1)))
-    return agent_directory / f"attempt-{max(indices, default=-1) + 1:03d}"

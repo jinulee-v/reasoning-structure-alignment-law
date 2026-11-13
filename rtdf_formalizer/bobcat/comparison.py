@@ -97,8 +97,8 @@ def compare(
             if llm_error or code_error
             else compiled_json.json_equivalent(final_answer, catala_answer, schema)
         )
-        iteration = exp.stage_directory(run_directory, state)
-        snapshot = iteration / "snapshot"
+        stage_root = exp.stage_directory(run_directory, state)
+        snapshot = stage_root / "snapshot"
         execution_nodes = execution_tree_size(formal.get("execution_tree", []))
         slice_nodes = execution_tree_size(formal.get("dynamic_slice_tree", []))
         executed_blocks = execution_blocks(snapshot, formal.get("execution_tree", []))
@@ -118,6 +118,15 @@ def compare(
             statute_tree_ids(catala_slice_statutes),
             reasoning_tree_provision_ids(llm_execution_tree),
         )
+        generated_reasoning_tree = formal.get("generated_reasoning_tree")
+        generation_provision_alignment = (
+            compare_provision_ids(
+                statute_tree_ids(catala_slice_statutes),
+                reasoning_tree_provision_ids(generated_reasoning_tree),
+            )
+            if isinstance(generated_reasoning_tree, dict)
+            else None
+        )
         records.append(
             {
                 "id": formal["id"],
@@ -126,6 +135,15 @@ def compare(
                 "target": formal.get("target"),
                 "requirement_id": formal.get("requirement_id"),
                 "output_name": output_name,
+                "case_origin": formal.get("case_origin", "bobcat"),
+                "test_strategy": formal.get("test_strategy"),
+                "test_rationale": formal.get("test_rationale"),
+                "natural_language_facts": formal.get("natural_language_facts"),
+                "natural_language_question": formal.get("natural_language_question"),
+                "generated_expected_answer": formal.get("generated_expected_answer"),
+                "generated_reasoning_tree": generated_reasoning_tree,
+                "generation_provision_alignment": generation_provision_alignment,
+                "mapped_provision_ids": formal.get("mapped_provision_ids"),
                 "code_execution_error": bool(code_error),
                 "code_execution_diagnostic": str(code_error) if code_error else None,
                 "llm_reasoning_error": bool(llm_error),
@@ -183,6 +201,21 @@ def compare(
         "final_answer_parse_errors": sum(
             row["final_answer_parse_error"] is not None for row in records
         ),
+        "by_case_origin": {
+            origin: {
+                "total": sum(row["case_origin"] == origin for row in records),
+                "aligned": sum(
+                    row["case_origin"] == origin and row["final_answer_aligned"] is True
+                    for row in records
+                ),
+                "misaligned": sum(
+                    row["case_origin"] == origin
+                    and row["final_answer_aligned"] is False
+                    for row in records
+                ),
+            }
+            for origin in sorted({row["case_origin"] for row in records})
+        },
         "block_sizes": {
             "execution_blocks": sum(
                 row["catala_execution_block_count"] for row in records
@@ -210,6 +243,11 @@ def compare(
         },
         "cases": records,
     }
+    generation_summary = (
+        exp.stage_directory(run_directory, state) / "tests_llm_generated/summary.json"
+    )
+    if generation_summary.is_file():
+        summary["llm_nl_test_generation"] = exp.load_json(generation_summary)
     exp.atomic_json(root / "summary.json", summary, indent=4)
     print(
         f"Generated reasoning traces for {summary['llm_traces_generated']} of "
@@ -224,17 +262,17 @@ def refresh_completed_comparison(
     run_directory: Path, state: dict[str, Any]
 ) -> dict[str, Any]:
     # Upgrade an existing completed comparison using saved answers only.
-    iteration = exp.stage_directory(run_directory, state)
-    summary = exp.load_json(iteration / "tests_bobcat_comparison/summary.json")
+    stage_root = exp.stage_directory(run_directory, state)
+    summary = exp.load_json(stage_root / "tests_bobcat_comparison/summary.json")
     symbolic, natural = [], []
     for row in summary["cases"]:
         symbolic.append(
             exp.load_json(
-                iteration / "tests_bobcat_symbolic_results" / f"{row['id']}.json"
+                stage_root / "tests_bobcat_symbolic_results" / f"{row['id']}.json"
             )
         )
         response = (
-            iteration / "tests_bobcat_natural_language_results" / f"{row['id']}.json"
+            stage_root / "tests_bobcat_natural_language_results" / f"{row['id']}.json"
         )
         if response.is_file():
             natural.append(exp.load_json(response))
@@ -248,7 +286,7 @@ def refresh_completed_comparison(
         if key in summary:
             refreshed[key] = summary[key]
     exp.atomic_json(
-        iteration / "tests_bobcat_comparison/summary.json", refreshed, indent=4
+        stage_root / "tests_bobcat_comparison/summary.json", refreshed, indent=4
     )
     return refreshed
 

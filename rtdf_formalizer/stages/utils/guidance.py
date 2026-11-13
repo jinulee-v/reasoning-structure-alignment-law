@@ -43,14 +43,30 @@ def canonical_dataset_name(name: str) -> str | None:
     return DATASET_ALIASES.get(normalized)
 
 
+def without_input_description_guidance(guidance: str) -> str:
+    # Legacy dataset notes may still request an obsolete generated artifact.
+    guidance = re.sub(
+        r"(?ms)^## (?:Input variable descriptions|Description des variables d'entrée)\n"
+        r".*?(?=^## |\Z)",
+        "",
+        guidance,
+    )
+    return "\n\n".join(
+        paragraph for paragraph in guidance.strip().split("\n\n")
+        if "INPUT_VARIABLE_DESCRIPTION.json" not in paragraph
+        and "extract_input_requirements.sh" not in paragraph
+    )
+
+
 def semantic_guidance(name: str) -> str | None:
     # Return the prompt fragment for a known benchmark dataset.
     canonical = canonical_dataset_name(name)
     if canonical is None:
         return None
     dataset_directory = RAW_DATASET_DIRECTORIES[canonical]
-    path = REPOSITORY_ROOT / "data/raw" / dataset_directory / f"{canonical}.md"
-    return path.read_text(encoding="utf-8").strip()
+    raw_root = "data/raw" if canonical == "sara" else "data/raw_without_definitions"
+    path = REPOSITORY_ROOT / raw_root / dataset_directory / f"{canonical}.md"
+    return without_input_description_guidance(path.read_text(encoding="utf-8"))
 
 
 def public_endpoint_scopes(name: str) -> tuple[str, ...]:

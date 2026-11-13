@@ -199,8 +199,19 @@ def _prompt(
     answer_example = json.dumps(
         _answer_example(output_schema), ensure_ascii=False, indent=2
     )
+    natural_case = ""
+    if case.get("natural_language_facts"):
+        natural_case = (
+            "The test designer stated this case in natural language. Treat these as "
+            "the governing case facts; the JSON below is only the implementation "
+            "transport produced by a separate information-extraction step. Do not "
+            "discard a stated fact merely because the transport cannot express it.\n\n"
+            f"Facts:\n{case['natural_language_facts']}\n\n"
+            f"Question:\n{case.get('natural_language_question', '')}\n\n"
+        )
     return (
         f"Statutes:\n{statutes}\n\n"
+        f"{natural_case}"
         "The case is as follows (YAML):\n"
         f"{yaml.safe_dump(symbolic, allow_unicode=True, sort_keys=False)}\n"
         "Calculate these values under the supplied statutes:\n"
@@ -560,15 +571,15 @@ def reason(
     state: dict[str, Any],
     cases: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    iteration = exp.stage_directory(run_directory, state)
-    root = iteration / "tests_bobcat_natural_language_results"
+    stage_root = exp.stage_directory(run_directory, state)
+    root = stage_root / "tests_bobcat_natural_language_results"
     root.mkdir(parents=True, exist_ok=True)
     statutes = _statutes(run_directory, config)
     dataset_name = config.get("dataset", {}).get("name")
     if dataset_name:
         statutes = statutes.replace(f"[{dataset_name}/", "[")
     formats = exp.load_json(
-        iteration / "tests_bobcat_symbolic_results/input_formats.json"
+        stage_root / "tests_bobcat_symbolic_results/input_formats.json"
     )
     schemas = {
         (item["compiler_file"], item["scope"]): item["output_schema"]
@@ -583,7 +594,6 @@ def reason(
     usage_stage = state.get("_usage_stage", "reasoning")
     usage_context = {
         "run_id": config["run_id"],
-        "iteration": state["iteration"],
         "stage": usage_stage,
         "framework": "api",
         "provider": config["reasoning_trace"]["provider"],
@@ -597,8 +607,9 @@ def reason(
         if case.get("output_name"):
             schema = compiled_json.named_output_schema(schema, case["output_name"])
         requirement_id = case.get("requirement_id")
+        case_statutes = case.get("statute_context") or statutes
         prompt = _prompt(
-            statutes,
+            case_statutes,
             case,
             schema,
             dataset_name,
@@ -656,8 +667,7 @@ def reason(
             ).hexdigest()
             extraction_cache_fingerprint = hashlib.sha256(
                 (
-                    extraction_prompt_sha256
-                    + state.get("_reasoning_cache_nonce", "")
+                    extraction_prompt_sha256 + state.get("_reasoning_cache_nonce", "")
                 ).encode()
             ).hexdigest()
             extraction_prompt_file = root / f"{case['id']}.execution-tree.prompt.txt"

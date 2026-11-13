@@ -19,7 +19,6 @@ from .stages.utils.common import (
     run_lock,
 )
 from .stages.utils.run_state import create_run as _create_run
-from .stages.utils.run_state import migrate_run_snapshots as _migrate_run_snapshots
 
 __all__ = ["ROOT", "RUNS", "RunnerError", "create_run", "resume_run"]
 
@@ -43,10 +42,6 @@ def create_run(args: Any) -> Path:
     return _create_run(args)
 
 
-def migrate_run_snapshots(runs_directory: Path = RUNS) -> list[Path]:
-    return _migrate_run_snapshots(runs_directory)
-
-
 def _canonicalize_stage(state: dict[str, Any]) -> bool:
     stage = state.get("next_stage")
     if stage == "agent":
@@ -64,9 +59,7 @@ def _canonicalize_stage(state: dict[str, Any]) -> bool:
     return True
 
 
-def resume_run(
-    run_directory: Path, *, continue_reasoning: bool = False
-) -> dict[str, Any]:
+def resume_run(run_directory: Path) -> dict[str, Any]:
     run_directory = run_directory.expanduser().resolve()
     if not run_directory.is_dir():
         raise RunnerError(f"run directory does not exist: {run_directory}")
@@ -75,12 +68,6 @@ def resume_run(
         state = load_json(run_directory / "state.json")
         if _canonicalize_stage(state):
             atomic_json(run_directory / "state.json", state)
-        selected_mode = reasoning_trace_diff_fuzzing.repair.mode(config)
-        if selected_mode is not None and "max_iteration" not in config["repair"]:
-            config["repair"]["max_iteration"] = (
-                reasoning_trace_diff_fuzzing.repair.DEFAULT_MAX_ITERATION
-            )
-            atomic_json(run_directory / "config.json", config)
         if "jobs" not in config["reasoning_trace"]:
             config["reasoning_trace"]["jobs"] = 8
             atomic_json(run_directory / "config.json", config)
@@ -101,23 +88,12 @@ def resume_run(
         if stage == "formalization":
             formalization.run(run_directory, config, state)
         elif stage == "validation":
-            if not validation.run(run_directory, config, state) and selected_mode:
-                raise RunnerError("repair requires validation/scoring support")
+            if not validation.run(run_directory, config, state):
+                raise RunnerError("recursive repair requires validation/scoring support")
         elif stage == "reasoning_trace_diff_fuzzing":
-            if selected_mode is None:
-                if continue_reasoning:
-                    raise RunnerError(
-                        "--continue-reasoning requires answer-only repair mode"
-                    )
-                reasoning_trace_diff_fuzzing.run(run_directory, config, state)
-            else:
-                return reasoning_trace_diff_fuzzing.repair.resume(
-                    run_directory,
-                    config,
-                    state,
-                    selected_mode,
-                    continue_reasoning=continue_reasoning,
-                )
+            return reasoning_trace_diff_fuzzing.repair.resume(
+                run_directory, config, state
+            )
         elif stage != "finished":
             raise RunnerError(f"unsupported next stage: {stage}")
         return load_json(run_directory / "state.json")

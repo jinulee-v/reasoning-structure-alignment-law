@@ -8,7 +8,7 @@ renaming or removing them.
 
 > Module Api
 > Using Definitions as W
-> Using Section1NonTextual as S1
+> Using AirlinePolicy as S1
 
 ```catala-metadata
 declaration scope TotalCost:

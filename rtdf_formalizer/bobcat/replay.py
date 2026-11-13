@@ -24,6 +24,29 @@ from .trace import (
 )
 
 
+_CASE_METADATA = (
+    "case_origin",
+    "test_strategy",
+    "test_rationale",
+    "natural_language_facts",
+    "natural_language_question",
+    "generated_expected_answer",
+    "generated_reasoning_tree",
+    "generated_design_id",
+    "mapped_provision_ids",
+)
+
+
+def _sync_case_metadata(result: dict[str, Any], case: dict[str, Any]) -> bool:
+    changed = False
+    for key in _CASE_METADATA:
+        value = case.get(key)
+        if result.get(key) != value:
+            result[key] = value
+            changed = True
+    return changed
+
+
 def _compiler_dependencies(
     project: Path, source: str, environment: dict[str, str], timeout: int
 ) -> dict[str, dict[str, set[str]]]:
@@ -56,8 +79,8 @@ def replay_compiled(
     state: dict[str, Any],
     cases: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    iteration = exp.stage_directory(run_directory, state)
-    root = iteration / "tests_bobcat_symbolic_results"
+    stage_root = exp.stage_directory(run_directory, state)
+    root = stage_root / "tests_bobcat_symbolic_results"
     root.mkdir(parents=True, exist_ok=True)
     cached = [(root / f"{case['id']}.json") for case in cases]
     dependency_cache = root / "dependency_graphs.json"
@@ -81,15 +104,18 @@ def replay_compiled(
         outputs = []
         for case, path in zip(cases, cached):
             output = exp.load_json(path)
+            changed = _sync_case_metadata(output, case)
             if output.get("source") != case["source"]:
                 output["source"] = case["source"]
+                changed = True
+            if changed:
                 exp.atomic_json(path, output)
             outputs.append(output)
         persist_execution_forests(root, outputs)
         return outputs
     project = root / "project"
     if not project.is_dir():
-        exp.copy_project(iteration / "snapshot", project)
+        exp.copy_project(stage_root / "snapshot", project)
         gold = exp.resolve_gold_dataset(config["dataset"]["name"])
         if gold is not None:
             exp.stage_reference_dependencies(gold, project)
@@ -152,8 +178,11 @@ def replay_compiled(
             and cached_result.get("dependency_semantics")
             == DYNAMIC_SLICE_DEPENDENCY_SEMANTICS
         ):
+            changed = _sync_case_metadata(cached_result, case)
             if cached_result.get("source") != case["source"]:
                 cached_result["source"] = case["source"]
+                changed = True
+            if changed:
                 exp.atomic_json(destination, cached_result)
             outputs.append(cached_result)
             continue
@@ -167,6 +196,15 @@ def replay_compiled(
             "inputs": case["inputs"],
             "branches": case["branches"],
             "statute_ids": case["statute_ids"],
+            "case_origin": case.get("case_origin", "bobcat"),
+            "test_strategy": case.get("test_strategy"),
+            "test_rationale": case.get("test_rationale"),
+            "natural_language_facts": case.get("natural_language_facts"),
+            "natural_language_question": case.get("natural_language_question"),
+            "generated_expected_answer": case.get("generated_expected_answer"),
+            "generated_reasoning_tree": case.get("generated_reasoning_tree"),
+            "generated_design_id": case.get("generated_design_id"),
+            "mapped_provision_ids": case.get("mapped_provision_ids"),
             "output": None,
             "error": None,
             "dynamic_slice_schema_version": DYNAMIC_SLICE_SCHEMA_VERSION,
@@ -225,7 +263,7 @@ def replay_compiled(
                             graphs.get(case["source"], {}),
                         )
                         result["statute_ids"] = traced_provision_path(
-                            iteration / "snapshot",
+                            stage_root / "snapshot",
                             execution_tree_events(result["dynamic_slice_tree"]),
                             case["target"],
                             case["source"],

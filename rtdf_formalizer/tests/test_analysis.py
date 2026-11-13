@@ -26,25 +26,6 @@ from bobcat_scripts.bobcatlib import run as bobcat_run
 
 
 class PostValidationTest(unittest.TestCase):
-    def test_stop_before_reasoning_preserves_resumable_boundary(self):
-        config = {"reasoning_trace_diff_fuzzing": {"stop_before_reasoning": True}}
-        state = {"completed_stages": ["verification"]}
-        with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
-            with (
-                mock.patch.object(stage, "backfill_options", return_value={}),
-                mock.patch.object(stage, "generate_tests", return_value=[]),
-                mock.patch.object(stage, "replay_compiled", return_value=[]),
-                mock.patch.object(stage, "reason") as reason,
-            ):
-                stage.run(root, config, state)
-                reason.assert_not_called()
-            self.assertEqual(state["next_stage"], "reasoning")
-            self.assertEqual(
-                state["completed_stages"], ["verification", "bobcat", "compiled_replay"]
-            )
-            self.assertEqual(experiment.load_json(root / "state.json"), state)
-
     def test_json_comparison_tolerates_only_money_errors_below_one(self):
         schema = {
             "$ref": "#/definitions/Output",
@@ -189,6 +170,19 @@ class PostValidationTest(unittest.TestCase):
         repaired = compiled_json._parenthesize_record_field_lets(generated)
         self.assertIn("     (let value = inner () in", repaired)
         self.assertIn("     {Inner.answer = value});", repaired)
+
+    def test_compiled_bridge_names_anonymous_traced_scope_input(self):
+        generated = (
+            "let hidden = fun _ ->\n"
+            '  let _ = log_scope_input "_#6573" _ in\n'
+            "  {Result.answer = true}\n"
+        )
+
+        repaired = compiled_json._name_anonymous_scope_inputs(generated)
+
+        self.assertIn("fun __rtdf_scope_input ->", repaired)
+        self.assertIn('log_scope_input "_#6573" __rtdf_scope_input', repaired)
+        self.assertNotIn('log_scope_input "_#6573" _ in', repaired)
 
     def test_compiled_bridge_traces_only_selected_constant_arm(self):
         source = (
@@ -1201,10 +1195,10 @@ scope Defaulted:
     def test_generation_excludes_scopes_with_empty_input_or_output(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            snapshot = root / "iterations/000/snapshot"
+            snapshot = root / "initial/snapshot"
             snapshot.mkdir(parents=True)
             (snapshot / "program.catala_en").write_text("", encoding="utf-8")
-            cached = root / "iterations/000/validation/input_formats.json"
+            cached = root / "initial/validation/input_formats.json"
             cached.parent.mkdir()
             cached.write_text(
                 json.dumps(
@@ -1298,13 +1292,13 @@ scope Defaulted:
 
             with (
                 mock.patch.object(
-                    stage.exp, "publish_iteration_snapshot", return_value=snapshot
+                    stage.exp, "publish_stage_snapshot", return_value=snapshot
                 ),
                 mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
                 mock.patch.object(bobcat_run, "run_bobcat", side_effect=fake_run),
             ):
                 rows = bobcat_stage.generate_tests(
-                    root, config, {"iteration": 0}, trace_stage.DEFAULTS
+                    root, config, {"recursive_phase": "initial"}, trace_stage.DEFAULTS
                 )
             self.assertEqual({scope for scope, _, _ in seen}, {"First", "Second"})
             self.assertTrue(
@@ -1318,8 +1312,8 @@ scope Defaulted:
     def test_generate_tests_include_scopes_outside_requirement_mapping(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            iteration = root / "iterations/000"
-            validation = iteration / "validation"
+            stage_root = root / "initial"
+            validation = stage_root / "validation"
             validation.mkdir(parents=True)
             (validation / "requirement_outputs.json").write_text(
                 json.dumps(
@@ -1335,7 +1329,7 @@ scope Defaulted:
                     }
                 )
             )
-            snapshot = iteration / "snapshot"
+            snapshot = stage_root / "snapshot"
             snapshot.mkdir()
             source = snapshot / "program.catala_en"
             source.write_text("", encoding="utf-8")
@@ -1376,14 +1370,14 @@ scope Defaulted:
             config = {"dataset": {"name": "fixture"}}
             with (
                 mock.patch.object(
-                    stage.exp, "publish_iteration_snapshot", return_value=snapshot
+                    stage.exp, "publish_stage_snapshot", return_value=snapshot
                 ),
                 mock.patch.object(bobcat_stage, "_all_scopes", return_value=scopes),
                 mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
                 mock.patch.object(bobcat_run, "run_bobcat", side_effect=fake_run),
             ):
                 rows = bobcat_stage.generate_tests(
-                    root, config, {"iteration": 0}, trace_stage.DEFAULTS
+                    root, config, {"recursive_phase": "initial"}, trace_stage.DEFAULTS
                 )
 
             self.assertEqual(seen, [("Answer", None), ("Helper", None)])
@@ -1393,7 +1387,7 @@ scope Defaulted:
     def test_generate_tests_rejects_failed_bobcat_invocation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            snapshot = root / "iterations/000/snapshot"
+            snapshot = root / "initial/snapshot"
             snapshot.mkdir(parents=True)
             (snapshot / "program.catala_en").write_text("", encoding="utf-8")
             scopes = [
@@ -1421,7 +1415,7 @@ scope Defaulted:
             )
             with (
                 mock.patch.object(
-                    stage.exp, "publish_iteration_snapshot", return_value=snapshot
+                    stage.exp, "publish_stage_snapshot", return_value=snapshot
                 ),
                 mock.patch.object(bobcat_stage, "_all_scopes", return_value=scopes),
                 mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
@@ -1431,10 +1425,10 @@ scope Defaulted:
                 bobcat_stage.generate_tests(
                     root,
                     {"dataset": {"name": "fixture"}},
-                    {"iteration": 0},
+                    {"recursive_phase": "initial"},
                     trace_stage.DEFAULTS,
                 )
-            stderr = root / "iterations/000/tests_bobcat/raw"
+            stderr = root / "initial/tests_bobcat/raw"
             self.assertIn(
                 "interface mismatch",
                 next(stderr.glob("*.stderr")).read_text(encoding="utf-8"),
@@ -1573,7 +1567,7 @@ scope Defaulted:
     def test_summary_retains_reasoning_and_uses_blocks_as_slice_units(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            snapshot = root / "iterations/000/snapshot"
+            snapshot = root / "initial/snapshot"
             snapshot.mkdir(parents=True)
             (snapshot / "law.catala_en").write_text(
                 "<!-- rtdf-block-id: a; role: provision; provision-id: law/a; source-lines: 1-1; relation: formalizes-preceding -->\n"
@@ -1624,7 +1618,9 @@ scope Defaulted:
                     "output_text": 'The amount is wrong.\n<answer>{"amount": 3}</answer>',
                 },
             ]
-            result = comparison_stage.compare(root, {"iteration": 0}, formal, natural)
+            result = comparison_stage.compare(
+                root, {"recursive_phase": "initial"}, formal, natural
+            )
             self.assertEqual((result["total"], result["llm_traces_generated"]), (2, 2))
             self.assertEqual(
                 (
@@ -1685,13 +1681,13 @@ scope Defaulted:
                 },
             )
             self.assertTrue(
-                (root / "iterations/000/tests_bobcat_comparison/summary.json").is_file()
+                (root / "initial/tests_bobcat_comparison/summary.json").is_file()
             )
 
     def test_summary_does_not_count_provider_error_text_as_a_trace(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "iterations/000/snapshot").mkdir(parents=True)
+            (root / "initial/snapshot").mkdir(parents=True)
             formal = [
                 {
                     "id": "one",
@@ -1709,7 +1705,9 @@ scope Defaulted:
                     "error": "HTTP 429",
                 }
             ]
-            result = comparison_stage.compare(root, {"iteration": 0}, formal, natural)
+            result = comparison_stage.compare(
+                root, {"recursive_phase": "initial"}, formal, natural
+            )
             self.assertEqual(result["llm_traces_generated"], 0)
             self.assertEqual(result["final_answers_parsed"], 0)
             self.assertEqual(result["final_answer_parse_errors"], 1)
@@ -1718,13 +1716,13 @@ scope Defaulted:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             formats = (
-                root / "iterations/000/tests_bobcat_symbolic_results/input_formats.json"
+                root / "initial/tests_bobcat_symbolic_results/input_formats.json"
             )
             formats.parent.mkdir(parents=True)
             formats.write_text(json.dumps({"scopes": []}))
             destination = (
                 root
-                / "iterations/000/tests_bobcat_natural_language_results"
+                / "initial/tests_bobcat_natural_language_results"
                 / "case-1.json"
             )
             destination.parent.mkdir()
@@ -1765,7 +1763,9 @@ scope Defaulted:
                 mock.patch.object(llm_stage, "_prompt", return_value="test prompt"),
                 mock.patch.object(llm_stage, "_sample", return_value=sampled) as sent,
             ):
-                observed = llm_stage.reason(root, config, {"iteration": 0}, [case])
+                observed = llm_stage.reason(
+                    root, config, {"recursive_phase": "initial"}, [case]
+                )
             self.assertEqual(sent.call_count, 2)
             self.assertEqual(len(sent.call_args_list[0].args), 2)
             self.assertIsInstance(sent.call_args_list[1].args[2], dict)
@@ -1778,7 +1778,7 @@ scope Defaulted:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             formats = (
-                root / "iterations/000/tests_bobcat_symbolic_results/input_formats.json"
+                root / "initial/tests_bobcat_symbolic_results/input_formats.json"
             )
             formats.parent.mkdir(parents=True)
             formats.write_text(json.dumps({"scopes": []}))
@@ -1808,11 +1808,13 @@ scope Defaulted:
                 with self.assertRaisesRegex(
                     experiment.RunnerError, "reasoning case case-1"
                 ):
-                    llm_stage.reason(root, config, {"iteration": 0}, [case])
+                    llm_stage.reason(
+                        root, config, {"recursive_phase": "initial"}, [case]
+                    )
             saved = json.loads(
                 (
                     root
-                    / "iterations/000/tests_bobcat_natural_language_results"
+                    / "initial/tests_bobcat_natural_language_results"
                     / "case-1.json"
                 ).read_text()
             )
@@ -1834,7 +1836,7 @@ scope Defaulted:
                 )
             )
             formats = (
-                root / "iterations/000/tests_bobcat_symbolic_results/input_formats.json"
+                root / "initial/tests_bobcat_symbolic_results/input_formats.json"
             )
             formats.parent.mkdir(parents=True)
             formats.write_text(
@@ -1859,7 +1861,7 @@ scope Defaulted:
                     }
                 )
             )
-            snapshot = root / "iterations/000/snapshot"
+            snapshot = root / "initial/snapshot"
             snapshot.mkdir()
             (snapshot / "statute.catala_en").write_text(
                 "<!-- rtdf-block-id: b1; role: provision; provision-id: law/a; source-lines: 1-1; relation: formalizes-preceding -->\n"
@@ -1902,7 +1904,9 @@ scope Defaulted:
             with mock.patch.object(
                 llm_stage, "_sample", side_effect=[sampled, extracted]
             ):
-                results = llm_stage.reason(root, config, {"iteration": 0}, [case])
+                results = llm_stage.reason(
+                    root, config, {"recursive_phase": "initial"}, [case]
+                )
             self.assertEqual(
                 results[0]["output_text"], "Apply law/a. The amount is 5000."
             )
@@ -1913,7 +1917,7 @@ scope Defaulted:
             self.assertNotIn("response_schema", results[0])
             prompt = (
                 root
-                / "iterations/000/tests_bobcat_natural_language_results/case-1.prompt.txt"
+                / "initial/tests_bobcat_natural_language_results/case-1.prompt.txt"
             ).read_text()
             self.assertIn("The case is as follows (YAML):", prompt)
             self.assertNotIn("secret code", prompt)

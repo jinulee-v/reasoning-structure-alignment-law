@@ -585,6 +585,7 @@ def _instrument_trace_source(
     generated_ml: str, source_text: str, source_name: str
 ) -> str:
     # Add complete call/dependency instrumentation to traced Catala OCaml.
+    generated_ml = _name_anonymous_scope_inputs(generated_ml)
     before, runtime_open, after = generated_ml.partition("open Catala_runtime\n")
     helper = (
         "let log_value_condition f = f ()\n"
@@ -613,6 +614,15 @@ def _instrument_trace_source(
     return _trace_generated_function_calls(generated_ml, source_name)
 
 
+def _name_anonymous_scope_inputs(generated_ml: str) -> str:
+    return re.sub(
+        r'\bfun _ ->(\s*)let _ = log_scope_input ("[^"\n]+") _ in',
+        r"fun __rtdf_scope_input ->\1let __rtdf_scope_input = "
+        r"log_scope_input \2 __rtdf_scope_input in",
+        generated_ml,
+    )
+
+
 def generate_source(
     generated_ml: str,
     scopes: list[dict[str, Any]],
@@ -620,6 +630,10 @@ def generate_source(
     source_text: str | None = None,
     source_name: str | None = None,
 ) -> str:
+    # Catala prints an unused scope argument as `_`, while trace mode then tries
+    # to read that wildcard back when logging it. Give only that generated
+    # binder a real local name; the scope body does not otherwise reference it.
+    generated_ml = _name_anonymous_scope_inputs(generated_ml)
     # The old runtime's log_value_condition discards predicate reads.
     generated_ml = _instrument_trace_source(
         generated_ml, source_text or "", source_name or "unknown"

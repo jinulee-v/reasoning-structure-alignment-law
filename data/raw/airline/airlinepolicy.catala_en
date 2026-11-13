@@ -1,6 +1,6 @@
 <!-- rtdf-document-id: airline/section1_non_textual -->
 
-> Module Section1NonTextual
+> Module AirlinePolicy
 > Using Definitions as W
 
 <!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
@@ -72,13 +72,6 @@ Your soft-sided garment bag cannot exceed 51 inches / 130 cm (length + width + h
 
 
 ## Checked bags
-Bag fees have been updated effective for tickets issued on / after February 20, 2024.
-
-<!-- rtdf-block-id: airline/section1_non_textual:b0010; role: provision; provision-id: airline/section1_non_textual:p0008; source-lines: 26-26; relation: formalizes-preceding -->
-```catala
-```
-
-
 Travel within / between the U.S., Puerto Rico, and U.S. Virgin Islands – 1st checked bag fee is $40 and the 2nd checked bag fee is $45.
 
 <!-- rtdf-block-id: airline/section1_non_textual:b0011; role: provision; provision-id: airline/section1_non_textual:p0009; source-lines: 28-28; relation: formalizes-preceding -->

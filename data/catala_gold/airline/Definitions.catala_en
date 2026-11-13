@@ -277,7 +277,7 @@ declaration enumeration ItemKind:
 ## are inches; `weight` is pounds. The statute adds the three dimensions and
 ## never uses them separately except for the carry-on box. These physical
 ## measurements are required to be nonnegative by the
-## `Section1NonTextual.Trip` scope.
+## `AirlinePolicy.Trip` scope.
 declaration structure Item:
   data kind content ItemKind
   data length content integer
@@ -302,7 +302,7 @@ declaration structure Itinerary:
   ## "the benefits are based on your highest status level at time of ticketing
   ## or check-in". The statute then says what to do when the two differ, and
   ## both branches come to the same thing: the higher one applies. So both are
-  ## carried and `Section1NonTextual.effective_status` takes the better.
+  ## carried and `AirlinePolicy.effective_status` takes the better.
   data status_at_ticketing content EliteStatus
   data status_at_checkin content EliteStatus
   ## "Eligible AAdvantage Aviator and Citi / AAdvantage cardmembers (on

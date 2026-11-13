@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 
 from rtdf_formalizer.stages import utils as exp
-from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing import repair
 from rtdf_formalizer.bobcat.comparison import compare, refresh_completed_comparison
 from rtdf_formalizer.bobcat.replay import replay_compiled
 from rtdf_formalizer.bobcat.trace import DEFAULTS, backfill_options, target_name
@@ -45,22 +44,6 @@ def run(run_directory: Path, config: dict[str, Any], state: dict[str, Any]) -> N
         state["completed_stages"].append("compiled_replay")
     state["next_stage"] = "reasoning"
     exp.atomic_json(run_directory / "state.json", state)
-    answer_only = repair.mode(config) is repair.RepairMode.ANSWER_ONLY
-    authorized = (
-        state.get("reasoning_authorized_iteration") == state.get("iteration")
-        if answer_only
-        else False
-    )
-    if (answer_only and not authorized) or (
-        not answer_only
-        and config.get("reasoning_trace_diff_fuzzing", {}).get(
-            "stop_before_reasoning", False
-        )
-    ):
-        if answer_only:
-            state.update(status="awaiting_reasoning", updated_at=exp.utc_now())
-            exp.atomic_json(run_directory / "state.json", state)
-        return
     natural = reason(run_directory, config, state, cases)
     if "reasoning" not in state["completed_stages"]:
         state["completed_stages"].append("reasoning")

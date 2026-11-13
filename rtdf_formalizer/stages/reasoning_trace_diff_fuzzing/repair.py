@@ -12,7 +12,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from enum import Enum
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -25,236 +24,103 @@ from rtdf_formalizer.stages import utils as exp
 from rtdf_formalizer.stages.utils.common import RunnerError, atomic_json, load_json
 
 
-class RepairMode(str, Enum):
-    NO_TESTING = "no-testing"
-    ANSWER_ONLY = "answer-only"
-    RECURSIVE = "recursive"
-
-
-DEFAULT_MAX_ITERATION = 2
-
-REPLAY_SCRIPT = "replay_cases.py"
-
-ARTIFACT_MANIFEST = "repair_artifacts.json"
-
-
-def mode(config: dict[str, Any]) -> RepairMode | None:
-    # Old runs remain opt-in; all new runs explicitly store their mode.
-    from rtdf_formalizer.stages import utils as exp
-
-    if "repair" not in config:
-        return None
-    try:
-        selected = RepairMode(config["repair"]["mode"])
-    except (ValueError, KeyError, TypeError) as error:
-        raise exp.RunnerError(
-            "repair.mode must be no-testing, answer-only, or recursive"
-        ) from error
-    return selected
-
-
-def max_iteration(config: dict[str, Any]) -> int:
-    # Return the inclusive repair-iteration cap persisted in a run config.
-    value = config.get("repair", {}).get("max_iteration", DEFAULT_MAX_ITERATION)
+def max_revisions_per_scope(config: dict[str, Any]) -> int:
+    value = config.get("repair", {}).get("max_revisions_per_scope", 2)
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
-        from rtdf_formalizer.stages import utils as exp
-
-        raise exp.RunnerError("repair.max_iteration must be a non-negative integer")
+        raise RunnerError(
+            "repair.max_revisions_per_scope must be a non-negative integer"
+        )
     return value
 
 
-def report_name(iteration: int) -> str:
-    return f"iter{iteration}_testing_report.json"
+def scope_selection(config: dict[str, Any]) -> str:
+    """Return whether repair visits every scope or only graph entry scopes."""
+    value = config.get("repair", {}).get("scope_selection", "all")
+    if value not in {"all", "entry"}:
+        raise RunnerError("repair.scope_selection must be 'all' or 'entry'")
+    return value
 
 
-def install_artifact(run: Path, name: str, source: Path) -> None:
-    manifest_path = run / ARTIFACT_MANIFEST
-    manifest = exp.load_json(manifest_path) if manifest_path.is_file() else {}
-    manifest[name] = exp.sha256_file(source)
-    # Write the allowlist first: interruption before copying is recoverable.
-    exp.atomic_json(manifest_path, manifest)
-    exp.atomic_copy(source, run / "workspace" / name)
-
-
-def checked_artifacts(workspace: Path, run: Path | None = None) -> set[str]:
-    # Exclude only runner-installed, unmodified files from submission checks.
-    manifest_path = (run if run is not None else workspace.parent) / ARTIFACT_MANIFEST
-    if run is None and workspace.name != "workspace":
-        return set()
-    if not manifest_path.is_file():
-        return set()
-    manifest = exp.load_json(manifest_path)
-    for name, digest in manifest.items():
-        if name != REPLAY_SCRIPT and not re.fullmatch(
-            r"iter\d+_testing_report\.json", name
-        ):
-            raise exp.RunnerError(f"invalid managed repair artifact: {name}")
-        path = workspace / name
-        if path.is_symlink() or not path.is_file() or exp.sha256_file(path) != digest:
-            raise exp.RunnerError(
-                f"runner-managed repair artifact changed or missing: {name}"
-            )
-    return set(manifest)
-
-
-def publish_report(run: Path, state: dict[str, Any], summary: dict[str, Any]) -> Path:
-    iteration = int(state["iteration"])
-    config_path = run / "config.json"
-    selected = (
-        mode(exp.load_json(config_path))
-        if config_path.is_file()
-        else RepairMode.ANSWER_ONLY
-    )
-    rows = []
-    for row in summary["cases"]:
-        if selected is RepairMode.ANSWER_ONLY and (
-            not row.get("requirement_id") or not row.get("output_name")
-        ):
-            raise exp.RunnerError(
-                "answer-only reports require a requirement/output mapping for every case"
-            )
-        trace = row.get("llm_reasoning_trace") or ""
-        # Remove only the final answer block; the existing explanation is not summarized.
-        blocks = list(
-            re.finditer(r"<answer>[\s\S]*?</answer>", trace, flags=re.IGNORECASE)
-        )
-        if blocks:
-            final = blocks[-1]
-            trace = trace[: final.start()] + trace[final.end() :]
-        trace = trace.strip()
-        rows.append(
-            {
-                "requirement_id": row.get("requirement_id"),
-                "source": row.get("source"),
-                "scope": row.get("target"),
-                "output_name": row.get("output_name"),
-                "input": row["inputs"],
-                "code_execution_output": row["catala_answer"],
-                "llm_reasoning_trace": trace,
-                "llm_answer": row["llm_final_answer"],
-                "code_execution_error": bool(row.get("code_execution_error")),
-                "code_execution_diagnostic": row.get("code_execution_diagnostic"),
-                "llm_reasoning_error": bool(row.get("llm_reasoning_error")),
-                "llm_reasoning_diagnostic": row.get("llm_reasoning_diagnostic"),
-            }
-        )
-    destination = (
-        run / "iterations" / f"{iteration:03d}" / "feedback" / report_name(iteration)
-    )
-    exp.atomic_json(destination, rows)
-    install_artifact(run, destination.name, destination)
-    return destination
-
-
-def prepare_agent(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None:
-    if mode(config) is not RepairMode.ANSWER_ONLY or int(state["iteration"]) == 0:
-        return
-    previous = int(state["iteration"]) - 1
-    report = run / "iterations" / f"{previous:03d}" / "feedback" / report_name(previous)
-    if not report.is_file():
-        raise exp.RunnerError(f"missing repair feedback: {report}")
-    install_artifact(run, report.name, report)
-    install_artifact(run, REPLAY_SCRIPT, Path(__file__))
-
-
-def advance(
-    run: Path, state: dict[str, Any], maximum: int = DEFAULT_MAX_ITERATION
-) -> bool:
-    # Archive completed iteration state before moving to the next code version.
-    iteration = int(state["iteration"])
-    exp.atomic_json(run / "iterations" / f"{iteration:03d}" / "state.json", state)
-    if iteration >= maximum:
-        state.update(
-            next_stage="finished", status="completed", updated_at=exp.utc_now()
-        )
-        state.pop("reasoning_authorized_iteration", None)
-        exp.atomic_json(run / "state.json", state)
-        return False
-    for key in (
-        "comparison_summary",
-        "verification_summary",
-        "reasoning_authorized_iteration",
-    ):
-        state.pop(key, None)
-    state.update(
-        iteration=iteration + 1,
-        next_stage="agent",
-        status="running",
-        completed_stages=["initialized"],
-        active_attempt=None,
-        updated_at=exp.utc_now(),
-    )
-    exp.atomic_json(run / "state.json", state)
-    return True
+def selected_repair_plan(
+    plan: list[dict[str, Any]],
+    config: dict[str, Any],
+    endpoint_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Keep top-level API scopes while retaining their dependency metadata."""
+    if scope_selection(config) == "all":
+        return plan
+    if endpoint_ids:
+        return [record for record in plan if record["id"] in endpoint_ids]
+    dependencies = {
+        dependency
+        for record in plan
+        for dependency in record.get("dependencies", [])
+    }
+    return [record for record in plan if record["id"] not in dependencies]
 
 
 def prompt(
     initial_prompt: str,
-    selected: RepairMode,
-    iteration: int,
     focus: dict[str, Any] | None = None,
 ) -> str:
-    if iteration == 0 and not (selected is RepairMode.RECURSIVE and focus):
+    if not focus:
         return initial_prompt
     initial_instruction = (
         "You must formalize the entire dataset in a single run; don't stop until "
         "you achieve the best possible draft.\n"
     )
-    if selected is RepairMode.NO_TESTING:
-        instruction = (
-            "Review the existing Catala implementation against the supplied statutes and "
-            "requirements. Identify and fix any discrepancies you find.\n"
-        )
-    else:
-        focus_instruction = ""
-        if selected is RepairMode.RECURSIVE:
-            if not focus:
-                raise ValueError("recursive repair requires a current scope")
-            focus_instruction = (
-                f"This session refines scope {focus['scope']} in {focus['source']}. "
-                "Read the scope-local evidence mounted at /rtdf/feedback. Compare each "
-                "Catala result with the raw LLM reasoning and both execution trees. Start "
-                "with catala_causal_trace.yaml, whose branch_guards record the concrete "
-                "condition outcomes controlling each Catala value; use the raw Catala tree "
-                "only when the compact trace is insufficient. You may edit this scope, "
-                "descendant scopes, and shared helpers. Keep changes minimal and localized to "
-                "the target scope. Edit a descendant scope or shared helper only when the "
-                "evidence shows that the target cannot be corrected within the target scope "
-                "itself, and make only the smallest necessary external change. Do not perform "
-                "opportunistic refactoring or unrelated fixes. Replays use cached "
-                "inputs and traces unless the runner detects an incompatible interface. "
-                "If a generated test assigns values outside the scope's meaningful input "
-                "domain, making sound natural-language reasoning impossible, encode the "
-                "admissible domain as Catala assertions over the scope's input context "
-                "variables, such as numeric bounds or structural invariants. Add only "
-                "genuine domain preconditions, not constraints introduced merely to "
-                "eliminate a disagreement. "
-                "After a semantic or domain fix invalidates the current evidence, run "
-                "python3 /rtdf/regenerate_scope_analysis.py to generate fresh BOBCat "
-                "cases, Catala executions, LLM traces, and execution trees for this "
-                "scope. The refreshed evidence replaces /rtdf/feedback/cases and its "
-                "LLM usage is recorded by the runner. Use this after a relevant fix, "
-                "not merely to seek a more favorable LLM answer. "
-                "To replay every cached input against the current workspace, run "
-                "python3 /rtdf/python/rtdf_formalizer/stages/reasoning_trace_diff_fuzzing/repair.py "
-                "/rtdf/feedback --workspace /workspace. "
-            )
-        instruction = (
-            ""
-            if selected is RepairMode.RECURSIVE
-            else (
-                f"Read /workspace/{report_name(iteration - 1)}. It contains all tested inputs "
-                "and their LLM and Catala answers, including matches and failures. Compare only "
-                "the named requirement output. Money differences strictly below one currency "
-                "unit count as equal; a difference of exactly one does not. Decide whether the "
-                "Catala implementation, the LLM reasoning/answer, or both are wrong. Do not "
-                "assume the LLM answer is authoritative. Fix the code where necessary.\n"
-                f"To check current code, run: python3 /workspace/{REPLAY_SCRIPT} "
-                f"/workspace/{report_name(iteration - 1)}\n"
-                "This returns current answers in report order. Keep the report and helper unchanged.\n"
-            )
-        )
-        instruction = focus_instruction + instruction
+    instruction = (
+        f"This session refines scope {focus['scope']} in {focus['source']}. "
+        "Read the scope-local evidence mounted at /rtdf/feedback. Compare each "
+        "Catala result with the raw LLM reasoning and both execution trees. Check "
+        "information_requirement_gaps.json when present: a material "
+        "NL fact marked partial or missing may require correcting the scope input "
+        "declarations and descriptions before it can become executable. Also inspect "
+        "metamorphic_pairs.json when present. A preserved BOBCat pair identifies the "
+        "exact provision-attached branch where outputs diverge; an LLM pair is "
+        "evidence only when both its output and one-sided provision properties are "
+        "marked preserved by the Catala traces and both member case files mark "
+        "llm_oracle_complete true. For an "
+        "LLM-generated case, treat a mismatch as actionable only when case.json marks "
+        "llm_oracle_complete true: the independent reasoner must supply every top-level "
+        "output. A null or incomplete LLM answer usually means the natural-language "
+        "case omitted facts or asked only for an intermediate determination; report "
+        "that test-quality problem instead of changing Catala to match it. "
+        "Compare the independent answer with generated_expected_answer as an additional "
+        "consistency check. For an "
+        "executable mismatch, start with catala_causal_trace.yaml, whose "
+        "branch_guards record the concrete "
+        "condition outcomes controlling each Catala value; use the raw Catala tree "
+        "only when the compact trace is insufficient. You may edit this scope, "
+        "descendant scopes, and shared helpers. Keep changes minimal and localized to "
+        "the target scope. Edit a descendant scope or shared helper only when the "
+        "evidence shows that the target cannot be corrected within the target scope "
+        "itself, and make only the smallest necessary external change. Do not perform "
+        "opportunistic refactoring or unrelated fixes. Replays use cached "
+        "inputs and traces unless the runner detects an incompatible interface. "
+        "Do not add Catala assertions merely because BOBCat sampled unusual values "
+        "or a generated case is incomplete. Add a domain assertion only when the "
+        "authoritative natural-language provisions explicitly make the value "
+        "impossible and the same restriction belongs to the public endpoint contract; "
+        "otherwise report a test-quality problem. A repair must not improve its "
+        "evidence score by making previously executable cases disappear. "
+        "After a semantic or domain fix invalidates the current evidence, run "
+        "python3 /rtdf/regenerate_scope_analysis.py to generate fresh BOBCat "
+        "cases, scope-mapped NL specification cases, information-requirement gap "
+        "audits, Catala executions, LLM traces, "
+        "and execution trees for this scope. The refreshed evidence replaces "
+        "/rtdf/feedback/cases and its LLM usage is recorded by the runner. Use "
+        "this after a relevant fix, not merely to seek a more favorable LLM answer. "
+        "Call the regeneration command at most twice in this revision. Use the first "
+        "only when an interface change is needed to make evidence executable; batch "
+        "the resulting evidence-driven corrections before the second, final refresh. "
+        "After the final refresh, do not make another semantic or interface edit: "
+        "replay, run the submission check, and report any remaining issue for a later "
+        "revision. This bound prevents an unbounded repair/regeneration loop. "
+        "To replay every cached input against the current workspace, run "
+        "python3 /rtdf/python/rtdf_formalizer/stages/reasoning_trace_diff_fuzzing/repair.py "
+        "/rtdf/feedback --workspace /workspace. "
+    )
     return instruction + initial_prompt.replace(initial_instruction, "", 1)
 
 
@@ -315,9 +181,7 @@ def topological_scope_order(
             sorted(needed - set(ordered_dependencies[identifier]))
         )
     called = {
-        dependency
-        for values in ordered_dependencies.values()
-        for dependency in values
+        dependency for values in ordered_dependencies.values() for dependency in values
     }
     roots = [identifier for identifier in unique if identifier not in called]
     ordered: list[dict[str, Any]] = []
@@ -352,7 +216,9 @@ def _declared_dependency_order(
     dependencies: dict[str, set[str]],
 ) -> dict[str, list[str]]:
     by_id = {
-        scope_id(record.get("compiler_file") or record.get("file"), record["scope"]): record
+        scope_id(
+            record.get("compiler_file") or record.get("file"), record["scope"]
+        ): record
         for record in scopes
     }
     result: dict[str, list[str]] = {}
@@ -417,6 +283,18 @@ def discover_scope_order(
 ) -> list[dict[str, Any]]:
     # Read Catala's static scope-call graph while retaining non-JSON scopes.
     from rtdf_formalizer.stages import utils as exp
+
+    actual_sources = {
+        path.name.casefold(): path.name for path in project.glob("*.catala_*")
+    }
+    normalized_scopes = []
+    for record in scopes:
+        source = record.get("compiler_file") or record.get("file")
+        actual = actual_sources.get(str(source).casefold(), source)
+        normalized_scopes.append(
+            {**record, "file": actual, "compiler_file": actual}
+        )
+    scopes = normalized_scopes
 
     environment = exp.toolchain_environment(config)
     catala = shutil.which("catala", path=environment.get("PATH"))
@@ -509,7 +387,9 @@ def migrate_scope_order(run: Path, state: dict[str, Any]) -> bool:
     state.pop("recursive_active_scope", None)
     state.pop("recursive_before_schema_fingerprint", None)
     activate_next(state)
-    state.update(next_stage="scope_analysis", recursive_step="analysis", status="running")
+    state.update(
+        next_stage="scope_analysis", recursive_step="analysis", status="running"
+    )
     return True
 
 
@@ -661,8 +541,30 @@ def write_scope_bundle(
             "case_ids": [case["id"] for case in cases],
             "previous_summary": previous_summary,
             "invalidation_reason": state.get("recursive_invalidation_reason"),
+            "llm_nl_test_summary": (
+                exp.load_json(root / "tests_llm_generated/summary.json")
+                if (root / "tests_llm_generated/summary.json").is_file()
+                else None
+            ),
+            "metamorphic_pair_summary": (
+                exp.load_json(root / "tests_metamorphic_pairs/summary.json")
+                if (root / "tests_metamorphic_pairs/summary.json").is_file()
+                else None
+            ),
         },
     )
+    grounding = root / "tests_llm_generated/grounding.json"
+    if grounding.is_file():
+        exp.atomic_json(
+            bundle / "information_requirement_gaps.json",
+            exp.load_json(grounding),
+            indent=2,
+        )
+    pairs = root / "tests_metamorphic_pairs/summary.json"
+    if pairs.is_file():
+        exp.atomic_json(
+            bundle / "metamorphic_pairs.json", exp.load_json(pairs), indent=2
+        )
     symbolic_by_id = {record["id"]: record for record in symbolic}
     natural_by_id = {record["id"]: record for record in natural}
     for case in cases:
@@ -673,6 +575,11 @@ def write_scope_bundle(
         llm_answer, parse_error = pipeline.parse_final_answer(
             reasoning.get("output_text")
         )
+        llm_oracle_complete = (
+            isinstance(llm_answer, dict)
+            and bool(llm_answer)
+            and all(value is not None for value in llm_answer.values())
+        )
         exp.atomic_json(
             destination / "case.json",
             {
@@ -681,9 +588,23 @@ def write_scope_bundle(
                 "catala_output": formal.get("output"),
                 "catala_error": formal.get("error"),
                 "llm_answer": llm_answer,
+                "llm_oracle_complete": llm_oracle_complete,
                 "llm_error": reasoning.get("error")
                 or parse_error
                 or reasoning.get("execution_tree_extraction_error"),
+                **(
+                    {
+                        "natural_language_facts": case["natural_language_facts"],
+                        "natural_language_question": case.get(
+                            "natural_language_question"
+                        ),
+                        "generated_expected_answer": case.get(
+                            "generated_expected_answer"
+                        ),
+                    }
+                    if case.get("natural_language_facts")
+                    else {}
+                ),
             },
         )
         sliced_tree = prune_execution_tree(
@@ -752,6 +673,19 @@ def initialize(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None
         raise exp.RunnerError(
             "recursive refinement requires validated initial artifacts"
         )
+    if max_revisions_per_scope(config) == 0:
+        state.update(
+            recursive_phase="scope",
+            recursive_repair_plan=[],
+            recursive_repair_queue=[],
+            recursive_processed={},
+            recursive_exhausted=[],
+            next_stage="finished",
+            status="completed",
+            updated_at=exp.utc_now(),
+        )
+        exp.atomic_json(run / "state.json", state)
+        return
     formats = exp.load_json(formats_path)["candidate"]
     scopes = list(formats.get("scopes", []))
     project = initial / "dependency_project"
@@ -765,17 +699,24 @@ def initialize(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None
             environment=exp.toolchain_environment(config),
             timeout=int(config.get("runtime", {}).get("timeout_seconds", 7200)),
         )
+    endpoint_ids = None
+    if scope_selection(config) == "entry":
+        mapping = exp.load_requirement_outputs(snapshot, require_resolved=True)
+        if mapping:
+            endpoint_ids = {
+                scope_id(entry["file"], entry["scope"])
+                for entry in mapping["requirements"]
+            }
     plan = discover_scope_order(project, scopes, config)
+    selected = selected_repair_plan(plan, config, endpoint_ids)
     install_plan(state, plan)
+    state["recursive_selected_scope_ids"] = [record["id"] for record in selected]
+    state["recursive_repair_queue"] = list(state["recursive_selected_scope_ids"])
     state["recursive_initial_fingerprints"] = scope_fingerprints(
         run / "workspace", plan
     )
     state["recursive_phase"] = "scope"
-    if int(config.get("repair", {}).get("max_iteration", 2)) == 0:
-        state["recursive_exhausted"] = list(state["recursive_repair_queue"])
-        state["recursive_repair_queue"] = []
-        state.update(next_stage="finished", status="completed")
-    elif activate_next(state) is None:
+    if activate_next(state) is None:
         state.update(next_stage="finished", status="completed")
     else:
         state.update(
@@ -786,14 +727,17 @@ def initialize(run: Path, config: dict[str, Any], state: dict[str, Any]) -> None
 
 
 def _copy_cache(source: Path, destination: Path) -> None:
-    for name in ("tests_bobcat", "tests_bobcat_natural_language_results"):
+    for name in (
+        "tests_bobcat",
+        "tests_llm_generated",
+        "tests_metamorphic_pairs",
+        "tests_bobcat_natural_language_results",
+    ):
         candidate = source / name
         target = destination / name
         if not candidate.is_dir() or target.exists():
             continue
-        temporary_root = Path(
-            tempfile.mkdtemp(prefix=f".{name}.", dir=destination)
-        )
+        temporary_root = Path(tempfile.mkdtemp(prefix=f".{name}.", dir=destination))
         staged = temporary_root / name
         try:
             shutil.copytree(
@@ -824,20 +768,22 @@ def _analysis_cache(
             processed.get("schema_fingerprint"),
         )
     analysis = scope_revision_root(run, state) / "analysis"
-    final_fingerprint = exp.tree_hash(root / "snapshot")
     regenerated = state.get("recursive_latest_regeneration", {})
     relative = regenerated.get("analysis_path")
     if (
         regenerated.get("scope") == active["id"]
         and regenerated.get("revision") == int(state.get("recursive_revision", 0))
-        and regenerated.get("workspace_fingerprint") == final_fingerprint
         and regenerated.get("schema_fingerprint") == current_schema
         and relative
         and (run / relative).is_dir()
     ):
         return run / relative, regenerated["schema_fingerprint"]
-    if exp.tree_hash(analysis / "snapshot") == final_fingerprint:
-        return analysis, state.get("recursive_before_schema_fingerprint")
+    before_schema = state.get("recursive_before_schema_fingerprint")
+    if before_schema == current_schema and analysis.is_dir():
+        # Preserve the immutable pre-repair cases and NL oracles. _copy_cache omits
+        # symbolic execution results, so analyze_scope recompiles and replays the
+        # edited Catala while avoiding costly, selection-biased LLM resampling.
+        return analysis, before_schema
     return None, None
 
 
@@ -910,9 +856,7 @@ def analyze_scope(
     if active is None:
         raise exp.RunnerError("recursive analysis has no active scope")
     current_schema = _refresh_active_schema(run, config, state, root)
-    cached_path, cached_schema = _analysis_cache(
-        run, state, root, current_schema
-    )
+    cached_path, cached_schema = _analysis_cache(run, state, root, current_schema)
     if state.get("recursive_step") != "result":
         state["recursive_before_schema_fingerprint"] = current_schema
     if cached_path and cached_schema == current_schema:
@@ -920,6 +864,16 @@ def analyze_scope(
     options = pipeline.backfill_options(run, config)
     options = {**options, "_scope_record": active}
     cases = pipeline.generate_tests(run, config, state, options)
+    from .generate_llm_test import augment_tests
+
+    cases = augment_tests(
+        run,
+        config,
+        state,
+        active,
+        cases,
+        int(options["llm_generated_tests_per_scope"]),
+    )
     if cases:
         symbolic = pipeline.replay_compiled(run, config, state, cases)
         natural = pipeline.reason(run, config, state, cases)
@@ -928,6 +882,17 @@ def analyze_scope(
         symbolic, natural = [], []
         summary = {"total": 0, "cases": []}
         exp.atomic_json(root / "tests_bobcat_comparison/summary.json", summary)
+    from .metamorphic_pairs import evaluate_pairs
+
+    evaluate_pairs(
+        run,
+        config,
+        state,
+        active,
+        symbolic,
+        int(options["metamorphic_pairs_per_scope"]),
+        comparison=summary,
+    )
     previous = _latest_summary(run, active)
     bundle = write_scope_bundle(root, state, cases, symbolic, natural, previous)
     state["recursive_last_analysis"] = str(root.relative_to(run))
@@ -951,6 +916,10 @@ def regenerate_active_scope(
         raise exp.RunnerError("analysis regeneration requires an active repair session")
     parent = scope_revision_root(run, state) / "agent_regeneration"
     indices = [int(path.name) for path in parent.glob("[0-9][0-9][0-9]")]
+    if len(indices) >= 2:
+        raise exp.RunnerError(
+            "analysis regeneration is limited to two calls per scope revision"
+        )
     root = parent / f"{max(indices, default=-1) + 1:03d}"
     regenerated_state = {
         **state,
@@ -962,6 +931,16 @@ def regenerate_active_scope(
     current_schema = _refresh_active_schema(run, config, regenerated_state, root)
     options = {**pipeline.backfill_options(run, config), "_scope_record": active}
     cases = pipeline.generate_tests(run, config, regenerated_state, options)
+    from .generate_llm_test import augment_tests
+
+    cases = augment_tests(
+        run,
+        config,
+        regenerated_state,
+        active,
+        cases,
+        int(options["llm_generated_tests_per_scope"]),
+    )
     if cases:
         symbolic = pipeline.replay_compiled(run, config, regenerated_state, cases)
         natural = pipeline.reason(run, config, regenerated_state, cases)
@@ -970,8 +949,24 @@ def regenerate_active_scope(
         symbolic, natural = [], []
         summary = {"total": 0, "cases": []}
         exp.atomic_json(root / "tests_bobcat_comparison/summary.json", summary)
+    from .metamorphic_pairs import evaluate_pairs
+
+    evaluate_pairs(
+        run,
+        config,
+        regenerated_state,
+        active,
+        symbolic,
+        int(options["metamorphic_pairs_per_scope"]),
+        comparison=summary,
+    )
     refreshed = write_scope_bundle(
-        root, regenerated_state, cases, symbolic, natural, _latest_summary(run, active)
+        root,
+        regenerated_state,
+        cases,
+        symbolic,
+        natural,
+        _latest_summary(run, active),
     )
     mounted = run / state["recursive_scope_task"]
     shutil.rmtree(mounted / "cases", ignore_errors=True)
@@ -1068,7 +1063,6 @@ def generate_summary(
                 run,
                 {
                     "run_id": config["run_id"],
-                    "iteration": state.get("iteration", 0),
                     "stage": "recursive-summary",
                     "framework": "api",
                     "provider": config["reasoning_trace"]["provider"],
@@ -1137,7 +1131,7 @@ def finalize_scope(run: Path, config: dict[str, Any], state: dict[str, Any]) -> 
     state.pop("recursive_last_requeued", None)
     state.pop("recursive_invalidation_reason", None)
     state["recursive_active_scope"] = None
-    maximum = int(config.get("repair", {}).get("max_iteration", 2))
+    maximum = max_revisions_per_scope(config)
     next_scope = activate_next(state)
     while next_scope is not None and int(state["recursive_revision"]) >= maximum:
         state.setdefault("recursive_exhausted", []).append(next_scope["id"])
@@ -1357,88 +1351,6 @@ recursive = sys.modules[__name__]
 recursive_repair = recursive
 
 
-def _resume_controller(
-    run_directory: Path,
-    config: dict[str, Any],
-    state: dict[str, Any],
-    selected_mode: RepairMode,
-    *,
-    continue_reasoning: bool,
-) -> dict[str, Any]:
-    from rtdf_formalizer.stages import formalization, validation
-    from rtdf_formalizer.stages import reasoning_trace_diff_fuzzing as pipeline
-
-    if selected_mode is RepairMode.RECURSIVE:
-        return _resume_recursive_run(run_directory, config, state)
-
-    if continue_reasoning:
-        if selected_mode is not RepairMode.ANSWER_ONLY:
-            raise RunnerError("--continue-reasoning requires answer-only repair mode")
-        if state["next_stage"] != "reasoning":
-            raise RunnerError(
-                "--continue-reasoning requires a run paused before reasoning"
-            )
-        state["reasoning_authorized_iteration"] = int(state["iteration"])
-        atomic_json(run_directory / "state.json", state)
-    maximum = max_iteration(config)
-    while True:
-        if not 0 <= int(state["iteration"]) <= maximum:
-            raise RunnerError(
-                f"repair iteration must be in iter0 through iter{maximum}"
-            )
-        stage = state["next_stage"]
-        if stage == "finished" and state.get("status") == "completed":
-            return state
-        if stage == "agent":
-            formalization.run(run_directory, config, state)
-        elif stage == "validation":
-            if not validation.run(run_directory, config, state):
-                raise RunnerError(
-                    "repair requires a dataset with validation/scoring support"
-                )
-        elif stage in (
-            "reasoning_trace_diff_fuzzing",
-            "bobcat",
-            "compiled_replay",
-            "reasoning",
-            "comparison",
-            "finished",
-        ):
-            if selected_mode is RepairMode.NO_TESTING:
-                if "verification" not in state["completed_stages"]:
-                    raise RunnerError(
-                        "no-testing repair cannot advance without a validation score"
-                    )
-                if not advance(run_directory, state, maximum):
-                    return state
-            elif "comparison" in state["completed_stages"]:
-                summary = load_json(
-                    run_directory
-                    / "iterations"
-                    / f"{state['iteration']:03d}"
-                    / "tests_bobcat_comparison/summary.json"
-                )
-                if any(
-                    "code_execution_diagnostic" not in row for row in summary["cases"]
-                ):
-                    summary = pipeline.refresh_completed_comparison(
-                        run_directory, state
-                    )
-                    state["comparison_summary"] = {
-                        key: value for key, value in summary.items() if key != "cases"
-                    }
-                publish_report(run_directory, state, summary)
-                if not advance(run_directory, state, maximum):
-                    return state
-            else:
-                pipeline.run(run_directory, config, state)
-                if state.get("status") == "awaiting_reasoning":
-                    return state
-        else:
-            raise RunnerError(f"unsupported repair stage: {stage}")
-        state = load_json(run_directory / "state.json")
-
-
 def _failed_bobcat_analysis(directory: Path) -> bool:
     for path in (directory / "tests_bobcat").glob("*.json"):
         if path.name == "scopes.json":
@@ -1460,10 +1372,7 @@ def _restore_interrupted_scope(run: Path, state: dict[str, Any]) -> None:
     if not snapshot.is_dir():
         raise RunnerError(f"cannot resume repair without {snapshot}")
     workspace = run / "workspace"
-    attempt_name = state.get("active_attempt")
     recovery = root / "session/recovery"
-    if attempt_name:
-        recovery = root / "session/agent" / attempt_name
     recovery.mkdir(parents=True, exist_ok=True)
     archive = recovery / "interrupted_workspace"
     suffix = 0
@@ -1475,23 +1384,17 @@ def _restore_interrupted_scope(run: Path, state: dict[str, Any]) -> None:
     exp.publish_copy(snapshot, workspace)
 
 
-def recover_recursive_resume(
-    run: Path, state: dict[str, Any]
-) -> bool:
+def recover_recursive_resume(run: Path, state: dict[str, Any]) -> bool:
     if state.get("recursive_phase") != "scope":
         return False
     active = current_scope(state)
     interrupted = False
     if active is not None and state.get("next_stage") == "agent":
-        attempt_name = state.get("active_attempt")
-        if attempt_name:
-            result = (
-                scope_revision_root(run, state)
-                / "session/agent"
-                / attempt_name
-                / "result.json"
-            )
-            interrupted = not result.is_file()
+        agent = scope_revision_root(run, state) / "session/agent"
+        invocation = agent / "invocation.json"
+        result_path = agent / "result.json"
+        result = load_json(result_path) if result_path.is_file() else {}
+        interrupted = invocation.is_file() and result.get("status") != "completed"
 
     invalid = set()
     for identifier, record in state.get("recursive_processed", {}).items():
@@ -1510,8 +1413,6 @@ def recover_recursive_resume(
     if active is not None and (interrupted or active["id"] in invalid):
         _restore_interrupted_scope(run, state)
         state.pop("recursive_latest_regeneration", None)
-    state["active_attempt"] = None
-
     if invalid:
         processed = state.setdefault("recursive_processed", {})
         for identifier in invalid:
@@ -1581,11 +1482,8 @@ def restart_from_scope(run: Path, state: dict[str, Any], identifier: str) -> Pat
         for key, value in state.get("recursive_processed", {}).items()
         if key in keep
     }
-    state["recursive_repair_queue"] = [
-        item["id"] for item in plan[order[identifier] :]
-    ]
+    state["recursive_repair_queue"] = [item["id"] for item in plan[order[identifier] :]]
     state["recursive_active_scope"] = None
-    state["active_attempt"] = None
     for key in list(state):
         if key.startswith("recursive_before_") or key in {
             "recursive_scope_task",
@@ -1672,17 +1570,11 @@ def _resume_recursive_run(
         state = load_json(run_directory / "state.json")
 
 
-def resume(run_directory, config, state, selected_mode, *, continue_reasoning=False):
+def resume(run_directory, config, state):
     step = state.pop("reasoning_trace_diff_fuzzing_step", None)
     if step is not None:
         state["next_stage"] = step
-    result = _resume_controller(
-        run_directory,
-        config,
-        state,
-        selected_mode,
-        continue_reasoning=continue_reasoning,
-    )
+    result = _resume_recursive_run(run_directory, config, state)
     stage = result.get("next_stage")
     if stage not in ("formalization", "validation", "finished"):
         result["reasoning_trace_diff_fuzzing_step"] = stage

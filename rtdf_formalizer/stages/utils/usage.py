@@ -1,4 +1,4 @@
-"""Durable, deduplicated accounting for API requests and agent attempts."""
+"""Durable, deduplicated accounting for API requests and agent sessions."""
 
 from __future__ import annotations
 
@@ -88,14 +88,14 @@ def _reconcile_locked(run: Path, updated: dict[str, Any] | None = None) -> None:
         indexed[updated["usage_id"]] = updated
     # Upgrading a cached request must not count its old ledger row again.
     identities = {
-        (row.get("iteration"), row.get("stage"), row.get("request_id"))
+        (row.get("stage"), row.get("request_id"))
         for row in indexed.values()
         if row.get("request_id")
     }
     legacy = [
         row
         for row in legacy
-        if (row.get("iteration"), row.get("stage"), row.get("request_id"))
+        if (row.get("stage"), row.get("request_id"))
         not in identities
     ]
     temporary = run / ".usage.jsonl.tmp"
@@ -191,7 +191,7 @@ def cached_response(
     usage = response.get("usage") or {}
     record(
         run,
-        f"cached:{context['iteration']}:{context['stage']}:{key}",
+        f"cached:{context['stage']}:{key}",
         {
             **context,
             "request_id": response.get("request_id"),

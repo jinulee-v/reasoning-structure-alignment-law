@@ -16,7 +16,6 @@ from typing import Any, Callable, Sequence
 from .base import (
     DOCUMENTATION_MOUNT,
     FEEDBACK_MOUNT,
-    INPUT_REQUIREMENTS_HELPER_MOUNT,
     MINI_SWE_AGENT_HELPER_MOUNT,
     PROMPT_MOUNT,
     REGENERATE_ANALYSIS_HELPER_MOUNT,
@@ -173,9 +172,6 @@ def invocation(
         f"{prompt_path}:{PROMPT_MOUNT}:ro",
         "--bind",
         f"{DOCUMENTATION_SOURCE}:{DOCUMENTATION_MOUNT}:ro",
-        # Dataset guidance retains the original generator name; the generic prompt uses the second name for the opaque final…
-        "--bind",
-        f"{SUBMISSION_CHECK_HELPER_SOURCE}:{INPUT_REQUIREMENTS_HELPER_MOUNT}:ro",
         "--bind",
         f"{SUBMISSION_CHECK_HELPER_SOURCE}:{SUBMISSION_CHECK_HELPER_MOUNT}:ro",
         "--bind",
@@ -185,6 +181,25 @@ def invocation(
         "--bind",
         f"{agent_home}:/agent-home:rw",
     ]
+    if config.get("dataset", {}).get("name") in {"airline", "sara"}:
+        workspace = run_directory / "workspace"
+        definitions = sorted(
+            path
+            for pattern in ("Definition.catala_*", "Definitions.catala_*")
+            for path in workspace.glob(pattern)
+            if path.is_file() and not path.is_symlink()
+        )
+        if not definitions:
+            raise AgentConfigurationError(
+                "workspace has no Definitions.catala_* file to mount read-only"
+            )
+        for path in definitions:
+            baseline = run_directory / "input" / path.name
+            if not baseline.is_file() or path.read_bytes() != baseline.read_bytes():
+                raise AgentConfigurationError(
+                    f"fixed shared input differs from the staged original: {path.name}"
+                )
+            command.extend(["--bind", f"{path}:{WORKSPACE_MOUNT}/{path.name}:ro"])
     if submission_check_directory is not None:
         command.extend(
             [
@@ -364,7 +379,7 @@ def execute(
             try:
                 progress(time.monotonic() - started)
             except Exception:
-                # Reporting must never terminate or alter the agent attempt.
+                # Reporting must never terminate or alter the agent session.
                 pass
 
     try:

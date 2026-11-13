@@ -8,8 +8,6 @@ from pathlib import Path
 from unittest import mock
 
 from rtdf_formalizer.stages import utils as exp
-from rtdf_formalizer.stages import reasoning_trace_diff_fuzzing as pipeline
-from rtdf_formalizer.bobcat import comparison as comparison_stage
 from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing import repair
 from rtdf_formalizer.bobcat import compiled_json
 from rtdf_formalizer.main import argument_parser
@@ -40,36 +38,107 @@ class RepairTest(unittest.TestCase):
         self.run = Path(self.temporary.name)
         (self.run / "workspace").mkdir()
 
-    def state(self, iteration=0, stage="agent"):
+    def state(self, stage="agent"):
         return {
-            "iteration": iteration,
+            "recursive_phase": "initial",
             "next_stage": stage,
             "status": "running",
             "completed_stages": [],
-            "active_attempt": None,
         }
 
-    def test_cli_exposes_recursive_mode(self):
+    def test_cli_exposes_only_recursive_workflow(self):
         parser = argument_parser()
         start = parser._subparsers._group_actions[0].choices["start"]
-        action = next(item for item in start._actions if item.dest == "repair_mode")
-        self.assertEqual(
-            set(action.choices), {"no-testing", "answer-only", "recursive"}
-        )
-        self.assertEqual(start.get_default("max_iteration"), 2)
+        self.assertFalse(any(item.dest == "repair_mode" for item in start._actions))
+        self.assertEqual(start.get_default("max_scope_revisions"), 2)
+        self.assertEqual(start.get_default("repair_scope_selection"), "all")
         self.assertEqual(start.get_default("reasoning_jobs"), 8)
         with self.assertRaisesRegex(exp.RunnerError, "must be"):
-            repair.mode({"repair": {"mode": "rsa"}})
+            repair.max_revisions_per_scope(
+                {"repair": {"max_revisions_per_scope": -1}}
+            )
+
+    def test_entry_scope_selection_keeps_only_graph_roots(self):
+        leaf = {"id": "law::Leaf", "dependencies": []}
+        top = {"id": "Api::Top", "dependencies": ["law::Leaf"]}
+        other = {"id": "Api::Other", "dependencies": []}
+
+        selected = repair.selected_repair_plan(
+            [leaf, top, other], {"repair": {"scope_selection": "entry"}}
+        )
+
+        self.assertEqual(
+            [record["id"] for record in selected], [top["id"], other["id"]]
+        )
+        self.assertEqual(selected[0]["dependencies"], ["law::Leaf"])
+
+        selected = repair.selected_repair_plan(
+            [leaf, top, other],
+            {"repair": {"scope_selection": "entry"}},
+            {top["id"]},
+        )
+        self.assertEqual([record["id"] for record in selected], [top["id"]])
+
+    def test_scope_discovery_resolves_compiler_filename_case(self):
+        project = self.run / "project"
+        project.mkdir()
+        (project / "airlinepolicy.catala_en").write_text("", encoding="utf-8")
+        scopes = [
+            {
+                "file": "AirlinePolicy.catala_en",
+                "compiler_file": "AirlinePolicy.catala_en",
+                "scope": "Policy",
+            }
+        ]
+        completed = mock.Mock(stdout="{}")
+        with mock.patch.object(shutil, "which", return_value="catala"), mock.patch.object(
+            exp, "run_checked", return_value=completed
+        ) as run_checked:
+            plan = repair.discover_scope_order(project, scopes, {})
+
+        self.assertEqual(run_checked.call_args.args[0][2], "airlinepolicy.catala_en")
+        self.assertEqual(plan[0]["source"], "airlinepolicy.catala_en")
+
+    def test_full_plan_can_back_entry_only_queue(self):
+        leaf = {"id": "law::Leaf", "dependencies": []}
+        top = {"id": "Api::Top", "dependencies": [leaf["id"]]}
+        state = {}
+        repair.install_plan(state, [leaf, top])
+        selected = repair.selected_repair_plan(
+            [leaf, top], {"repair": {"scope_selection": "entry"}}, {top["id"]}
+        )
+        state["recursive_selected_scope_ids"] = [row["id"] for row in selected]
+        state["recursive_repair_queue"] = list(state["recursive_selected_scope_ids"])
+
+        self.assertEqual([row["id"] for row in state["recursive_repair_plan"]], [leaf["id"], top["id"]])
+        self.assertEqual(state["recursive_repair_queue"], [top["id"]])
 
     def test_recursive_prompt_localizes_changes(self):
         prompt = repair.prompt(
             "initial",
-            repair.RepairMode.RECURSIVE,
-            1,
             {"scope": "Leaf", "source": "law.catala_en"},
         )
         self.assertIn("Keep changes minimal and localized to the target scope", prompt)
         self.assertIn("smallest necessary external change", prompt)
+        self.assertIn("at most twice in this revision", prompt)
+        self.assertIn("do not make another semantic or interface edit", prompt)
+        self.assertIn("llm_oracle_complete true", prompt)
+        self.assertIn("must not improve its evidence score", prompt)
+
+    def test_agent_regeneration_is_limited_to_two_calls_per_revision(self):
+        record = {"id": "law::Top", "source": "law.catala_en", "scope": "Top"}
+        state = {
+            "recursive_step": "session",
+            "recursive_active_scope": record["id"],
+            "recursive_revision": 0,
+            "recursive_repair_plan": [record],
+        }
+        parent = repair.scope_revision_root(self.run, state) / "agent_regeneration"
+        (parent / "000").mkdir(parents=True)
+        (parent / "001").mkdir()
+
+        with self.assertRaisesRegex(exp.RunnerError, "limited to two"):
+            repair.regenerate_active_scope(self.run, {}, state)
 
     def test_copy_cache_excludes_build_directories(self):
         source = self.run / "source"
@@ -148,7 +217,7 @@ class RepairTest(unittest.TestCase):
         self.assertEqual(cached, regenerated)
         self.assertEqual(schema, "schema")
 
-    def test_result_regenerates_after_post_regeneration_edit(self):
+    def test_result_reuses_latest_evidence_after_semantic_edit(self):
         identifier = "law::Leaf"
         record = {"id": identifier, "source": "law", "scope": "Leaf"}
         state = {
@@ -182,6 +251,28 @@ class RepairTest(unittest.TestCase):
 
         cached, schema = repair._analysis_cache(
             self.run, state, root, "schema"
+        )
+
+        self.assertEqual(cached, regenerated)
+        self.assertEqual(schema, "schema")
+
+    def test_result_regenerates_after_interface_change(self):
+        identifier = "law::Leaf"
+        record = {"id": identifier, "source": "law", "scope": "Leaf"}
+        state = {
+            "recursive_step": "result",
+            "recursive_active_scope": identifier,
+            "recursive_revision": 0,
+            "recursive_repair_plan": [record],
+            "recursive_before_schema_fingerprint": "old-schema",
+        }
+        analysis = recursive_repair.scope_revision_root(self.run, state) / "analysis"
+        (analysis / "snapshot").mkdir(parents=True)
+        root = self.run / "result"
+        (root / "snapshot").mkdir(parents=True)
+
+        cached, schema = repair._analysis_cache(
+            self.run, state, root, "new-schema"
         )
 
         self.assertIsNone(cached)
@@ -407,22 +498,23 @@ declaration scope Top:
             ],
             "recursive_repair_queue": [],
             "recursive_processed": {},
-            "active_attempt": "attempt-000",
         }
         root = recursive_repair.scope_revision_root(self.run, state)
         snapshot = root / "analysis/snapshot"
         snapshot.mkdir(parents=True)
         (snapshot / "law.catala_en").write_text("before", encoding="utf-8")
-        attempt = root / "session/agent/attempt-000"
-        attempt.mkdir(parents=True)
+        agent = root / "session/agent"
+        agent.mkdir(parents=True)
+        (agent / "invocation.json").write_text("{}", encoding="utf-8")
         (self.run / "workspace/law.catala_en").write_text("partial", encoding="utf-8")
         self.assertTrue(recursive_repair.recover_recursive_resume(self.run, state))
         self.assertEqual(
             (self.run / "workspace/law.catala_en").read_text(encoding="utf-8"),
             "before",
         )
-        self.assertTrue((attempt / "interrupted_workspace/law.catala_en").is_file())
-        self.assertIsNone(state["active_attempt"])
+        self.assertTrue(
+            (root / "session/recovery/interrupted_workspace/law.catala_en").is_file()
+        )
         self.assertEqual(state["next_stage"], "agent")
 
     def test_restart_from_scope_restores_checkpoint_and_order(self):
@@ -441,7 +533,6 @@ declaration scope Top:
             "recursive_revisions": {low: 1, target: 1},
             "recursive_active_scope": top,
             "recursive_repair_queue": [],
-            "active_attempt": "attempt-000",
         }
         record = plan[1]
         snapshot = (
@@ -487,11 +578,10 @@ declaration scope Top:
         self.assertNotIn("inputs", collapsed)
         self.assertNotIn("children", collapsed)
 
-    def test_recursive_artifacts_do_not_use_iteration_directory(self):
-        initial = {"iteration": 0, "recursive_phase": "initial"}
+    def test_recursive_artifact_directories(self):
+        initial = {"recursive_phase": "initial"}
         self.assertEqual(exp.stage_directory(self.run, initial), self.run / "initial")
         state = {
-            "iteration": 0,
             "recursive_phase": "scope",
             "recursive_step": "analysis",
             "recursive_active_scope": "law::Leaf",
@@ -530,6 +620,7 @@ declaration scope Top:
         )
         record = json.loads((bundle / "cases/case_1/case.json").read_text())
         self.assertEqual(record["llm_answer"], {"tax": 1})
+        self.assertTrue(record["llm_oracle_complete"])
         self.assertEqual(
             set(record),
             {
@@ -538,6 +629,7 @@ declaration scope Top:
                 "catala_output",
                 "catala_error",
                 "llm_answer",
+                "llm_oracle_complete",
                 "llm_error",
             },
         )
@@ -555,55 +647,6 @@ declaration scope Top:
         self.assertIs(recursive_repair.validate_summary(value, "Leaf", {"a"}), value)
         with self.assertRaisesRegex(ValueError, "case IDs"):
             recursive_repair.validate_summary(value, "Leaf", {"a", "b"})
-
-    def test_answer_only_pauses_before_reasoning(self):
-        state = self.state(stage="reasoning_trace_diff_fuzzing")
-        config = {"repair": {"mode": "answer-only"}}
-        with (
-            mock.patch.object(pipeline, "backfill_options", return_value={}),
-            mock.patch.object(pipeline, "generate_tests", return_value=[]),
-            mock.patch.object(pipeline, "replay_compiled", return_value=[]),
-            mock.patch.object(pipeline, "reason") as reasoning,
-        ):
-            pipeline.run(self.run, config, state)
-        reasoning.assert_not_called()
-        self.assertEqual(state["status"], "awaiting_reasoning")
-
-    def test_report_and_replay_support_requirement_contract(self):
-        formats = {
-            "scopes": [
-                {
-                    "file": "tax.catala_en",
-                    "compiler_file": "tax.catala_en",
-                    "scope": "Tax",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {"income": {"type": "number"}},
-                    },
-                    "output_schema": SCHEMA,
-                }
-            ]
-        }
-        root = self.run / "iterations/000/tests_bobcat_symbolic_results"
-        exp.atomic_json(root / "input_formats.json", formats)
-        symbolic = [
-            {
-                "id": "0",
-                "source": "tax.catala_en",
-                "target": "Tax",
-                "requirement_id": "TAX",
-                "output_name": "tax",
-                "inputs": {"income": 1},
-                "output": {"tax": 10, "unrelated": 1},
-                "error": None,
-            }
-        ]
-        natural = [{"id": "0", "output_text": '<answer>{"tax": 10}</answer>'}]
-        summary = comparison_stage.compare(self.run, self.state(), symbolic, natural)
-        report = repair.publish_report(self.run, self.state(), summary)
-        row = json.loads(report.read_text())[0]
-        self.assertEqual(row["source"], "tax.catala_en")
-        self.assertEqual(row["scope"], "Tax")
 
     def test_replay_rebuilds_current_workspace(self):
         report = self.run / "report.json"

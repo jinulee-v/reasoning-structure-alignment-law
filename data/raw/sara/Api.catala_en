@@ -1,8 +1,9 @@
 # SARA evaluator API
 
 This file is the evaluator-facing contract. The required scope and output below
-are fixed; add factual inputs, internal variables, and section subscopes without
-renaming or removing them.
+are fixed. The factual input contract is also fixed for the Prolog-derived
+Catala tests; add internal variables and section subscopes without renaming or
+removing these declarations.
 
 - Requirement ID `SARA-TOTAL-TAX`: scope `TotalTax`, output `total_tax`.
 
@@ -20,7 +21,10 @@ renaming or removing them.
 
 ```catala-metadata
 declaration scope TotalTax:
-  # Add factual inputs, internal variables, and section subscopes here.
+  input world content W.World
+  input taxpayer content W.Entity
+  input period content W.TaxPeriod
+  # Add internal variables and section subscopes here.
   # Keep the predeclared output below unchanged.
   output total_tax content money
 ```

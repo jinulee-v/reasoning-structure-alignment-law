@@ -3,23 +3,7 @@
 Formalize the supplied Internal Revenue Code provisions as needed to calculate
 a taxpayer's final tax liability.
 
-The code may be given these input facts: gross-income amounts explicitly stated
-by a case, deduction-related factual amounts and circumstances, tax year, filing
-election, marital and household circumstances, family relationships, ages,
-residency, support, employment, remuneration, payroll, and any other relevant
-facts explicitly stated by the case.
-
-Some facts may be absent. Preserve that absence using Catala `optional` values:
-JSON `null` corresponds to Catala `Absent`. Do not substitute fabricated values
-such as zero, false, an arbitrary date, or an arbitrary enumeration case.
-Explicitly handle both `Absent` and `Present` before using every optional value
-so omitted or inapplicable facts cannot cause evaluation errors. In the
-`Absent` branch, proceed through the baseline, default, or inapplicable branch
-that does not require that value; do not automatically propagate `Absent` to
-the enclosing calculation. Check whether a rule applies before inspecting
-optional facts used only by that rule.
-
-Use the supplied source layout. `Definitions.catala_en` is the unannotated
+Use the supplied source layout. `Definitions.catala_en` is the pre-completed
 home for factual records, shared enumerations and structures, and genuinely
 provision-neutral helpers used by multiple sections. It must not own statutory
 rules, required outputs, or cross-section orchestration. Each
@@ -30,10 +14,12 @@ block annotations. `Api.catala_en` is also unannotated and is the sole
 evaluator-facing integration layer. Its protected prose records the requirement
 ID, scope, and output contract, and its metadata fence already declares the
 required `TotalTax.total_tax` output. Keep that scope and output unchanged. Add
-factual inputs, internal variables, and section subscopes to the declaration,
-then implement cross-section composition in its Catala fence. Do not duplicate
+internal variables and section subscopes to the declaration; keep the
+predeclared `world`, `taxpayer`, and `period` inputs as the complete public
+input contract. Implement cross-section composition in its Catala fence. Do not duplicate
 statutory rules in `Api`, and do not add XML block annotations to
 `Definitions` or `Api`.
+Do not edit `Definitions.catala_en`; it is the fixed shared input contract.
 
 `Api.catala_en` contains the following requirement:
 
@@ -57,18 +43,4 @@ shares to 0% through 100%, and ages, durations, counts, or amounts to be
 nonnegative when negative values are meaningless. Also assert structural or
 chronological invariants inherent in a fact's definition. Do not add constraints
 merely to suppress difficult tests, and describe every asserted domain in
-`INPUT_VARIABLE_DESCRIPTION.json`.
-
-## Input variable descriptions
-
-After the Catala scopes typecheck, run `/rtdf/extract_input_requirements.sh`.
-The helper reads the protected contract in `Api.catala_en`, calls
-`clerk json-schema` for its declared scope, then writes one global `fields`, `enums`, or
-`structs` description for each unique entry to `INPUT_VARIABLE_DESCRIPTION.json`.
-Each field records the `FILE::SCOPE` identifier that requests it. The evaluator
-derives relevant keys from the selected scope. Fill each entry with a precise
-natural-language description. State the person or entity, time period, units,
-relationship direction, aggregation semantics, inclusions and exclusions, and
-the meaning of `null`/`Absent` or of any legally justified default. Rerun the
-helper after changing an input declaration. The run is incomplete while any
-description is blank.
+the corresponding Catala declarations.

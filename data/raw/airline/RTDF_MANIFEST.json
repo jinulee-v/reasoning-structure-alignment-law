@@ -4,7 +4,7 @@
   "documents": [
     {
       "document_id": "airline/section1_non_textual",
-      "path": "section1_non_textual.catala_en",
+      "path": "airlinepolicy.catala_en",
       "method": "markdown-policy-units",
       "original_sha256": "24d38221ec6d4eff4b8d81312e4e9e1542bc141891cab128d9d7b13c19311c71",
       "provisions": [
@@ -55,13 +55,6 @@
           "original_source_lines": [
             23,
             23
-          ]
-        },
-        {
-          "provision_id": "airline/section1_non_textual:p0008",
-          "original_source_lines": [
-            26,
-            26
           ]
         },
         {
@@ -325,17 +318,6 @@
           "original_source_lines": [
             23,
             23
-          ]
-        },
-        {
-          "block_id": "airline/section1_non_textual:b0010",
-          "kind": "catala",
-          "role": "provision",
-          "relation": "formalizes-preceding",
-          "provision_id": "airline/section1_non_textual:p0008",
-          "original_source_lines": [
-            26,
-            26
           ]
         },
         {

@@ -10,7 +10,6 @@ from typing import Any
 
 from bobcat_scripts.bobcatlib import parse, paths as bobcat_paths, run as bobcat_run
 from rtdf_formalizer.stages import utils as exp
-from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing import repair
 from rtdf_formalizer.bobcat.trace import (
     _root_object_properties,
     provision_path,
@@ -23,18 +22,18 @@ from rtdf_formalizer.bobcat.trace import (
 def _all_scopes(
     run_directory: Path,
     snapshot: Path,
-    iteration: Path,
+    stage_root: Path,
     config: dict[str, Any],
     *,
     include_unusable: bool = False,
 ) -> list[dict[str, Any]]:
-    cached = iteration / "validation/input_formats.json"
-    if not cached.is_file() and repair.mode(config) is repair.RepairMode.RECURSIVE:
+    cached = stage_root / "validation/input_formats.json"
+    if not cached.is_file():
         cached = run_directory / "initial/validation/input_formats.json"
     if cached.is_file():
         formats = exp.load_json(cached)["candidate"]
         return scope_records(formats) if include_unusable else schema_scopes(formats)
-    project = iteration / "tests_bobcat_symbolic_results/project"
+    project = stage_root / "tests_bobcat_symbolic_results/project"
     if not project.is_dir():
         exp.copy_project(snapshot, project)
         gold = exp.resolve_gold_dataset(config["dataset"]["name"])
@@ -46,7 +45,7 @@ def _all_scopes(
         timeout=int(config["runtime"].get("timeout_seconds", 7200)),
     )
     exp.atomic_json(
-        iteration / "tests_bobcat_symbolic_results/input_formats.json", formats
+        stage_root / "tests_bobcat_symbolic_results/input_formats.json", formats
     )
     return scope_records(formats) if include_unusable else schema_scopes(formats)
 
@@ -57,19 +56,15 @@ def generate_tests(
     state: dict[str, Any],
     options: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    iteration = exp.stage_directory(run_directory, state)
-    snapshot = (
-        exp.publish_stage_snapshot(run_directory, state)
-        if state.get("recursive_phase")
-        else exp.publish_iteration_snapshot(run_directory, int(state["iteration"]))
-    )
-    root = iteration / "tests_bobcat"
+    stage_root = exp.stage_directory(run_directory, state)
+    snapshot = exp.publish_stage_snapshot(run_directory, state)
+    root = stage_root / "tests_bobcat"
     root.mkdir(parents=True, exist_ok=True)
     requested = options.get("_scope_record")
     scopes = _all_scopes(
         run_directory,
         snapshot,
-        iteration,
+        stage_root,
         config,
         include_unusable=requested is not None,
     )
@@ -194,6 +189,7 @@ def generate_tests(
                         "branches": path.branches,
                         "statute_ids": provision_path(snapshot, path.branches),
                         "exact": path.exact,
+                        "case_origin": "bobcat",
                         **({"kind": path.kind} if path.kind else {}),
                         **({"bobcat_error": path.error} if path.error else {}),
                     }

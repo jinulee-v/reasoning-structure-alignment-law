@@ -8,6 +8,7 @@ import shutil
 import sys
 import tempfile
 import time
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +31,6 @@ from .utils import (
     integrity_manifest_matches,
     load_json,
     load_requirement_outputs,
-    next_attempt_directory,
     publish_copy,
     publish_stage_snapshot,
     sha256_file,
@@ -63,7 +63,6 @@ def commit_agent_result_if_complete(run_directory: Path, state: dict[str, Any]) 
     state.update(
         next_stage="validation",
         status="agent_completed",
-        active_attempt=None,
         updated_at=utc_now(),
     )
     atomic_json(run_directory / "state.json", state)
@@ -73,14 +72,13 @@ def commit_agent_result_if_complete(run_directory: Path, state: dict[str, Any]) 
 def record_agent_usage(
     run_directory: Path,
     config: dict[str, Any],
-    iteration: int,
-    attempt: Path,
+    artifacts: Path,
     *,
     elapsed: float | None = None,
     status: str = "interrupted-or-recovered",
 ) -> dict[str, Any]:
-    stdout = attempt / "stdout.jsonl"
-    prompt_path = attempt / "prompt.txt"
+    stdout = artifacts / "stdout.jsonl"
+    prompt_path = artifacts / "prompt.txt"
     prompt = prompt_path.read_text(encoding="utf-8") if prompt_path.is_file() else ""
     usage = (
         extract_usage(stdout, prompt)
@@ -88,11 +86,13 @@ def record_agent_usage(
         else usage_tracking.api_counts({})
     )
     metadata = extract_request_metadata(stdout) if stdout.is_file() else {}
+    invocation_path = artifacts / "invocation.json"
+    invocation = load_json(invocation_path) if invocation_path.is_file() else {}
+    session_id = invocation.get("session_id") or artifacts.name
     result = {
         "run_id": config["run_id"],
-        "iteration": iteration,
         "stage": "agent",
-        "attempt": attempt.name,
+        "session_id": session_id,
         "framework": config["agent"]["framework"],
         "provider": config["agent"]["provider"],
         "model": config["agent"]["model"],
@@ -108,9 +108,7 @@ def record_agent_usage(
         **usage,
         "recorded_at": utc_now(),
     }
-    usage_tracking.record(
-        run_directory, f"agent:{attempt.relative_to(run_directory).as_posix()}", result
-    )
+    usage_tracking.record(run_directory, f"agent:{session_id}", result)
     return result
 
 
@@ -126,39 +124,52 @@ def recover_agent_usage(run_directory: Path, config: dict[str, Any]) -> None:
         if ledger.is_file()
         else []
     )
-    attempts = list((run_directory / "iterations").glob("*/agent/attempt-*"))
-    attempts += list((run_directory / "initial/agent").glob("attempt-*"))
-    attempts += list(
-        (run_directory / "refinement").glob("*/revisions/*/session/agent/attempt-*")
+    agents = [run_directory / "initial/agent"]
+    agents += list(
+        (run_directory / "refinement").glob("*/revisions/*/session/agent")
     )
-    for attempt in sorted(attempts):
-        if not (attempt / "invocation.json").is_file():
+    sessions = []
+    for agent in agents:
+        sessions.append(agent)
+        sessions.extend(sorted((agent / "recovery").glob("*")))
+    for artifacts in sessions:
+        if not (artifacts / "invocation.json").is_file():
             continue
-        result_path = attempt / "result.json"
+        result_path = artifacts / "result.json"
         result = load_json(result_path) if result_path.is_file() else {}
         if result.get("usage") in legacy:
-            # Older attempts without request IDs cannot be safely deduplicated by provider ID.
+            # Older sessions without request IDs cannot be safely deduplicated by provider ID.
             legacy.remove(result["usage"])
             continue
-        iteration = (
-            int(attempt.parent.parent.name)
-            if attempt.parent.parent.name.isdigit()
-            else 0
-        )
         record_agent_usage(
             run_directory,
             config,
-            iteration,
-            attempt,
+            artifacts,
             elapsed=result.get("elapsed_seconds"),
             status=result.get("status", "interrupted-or-recovered"),
         )
 
 
+def archive_interrupted_session(agent_directory: Path) -> None:
+    names = ("prompt.txt", "invocation.json", "stdout.jsonl", "stderr.log", "result.json")
+    existing = [agent_directory / name for name in names if (agent_directory / name).exists()]
+    if not existing:
+        return
+    invocation = (
+        load_json(agent_directory / "invocation.json")
+        if (agent_directory / "invocation.json").is_file()
+        else {}
+    )
+    session_id = invocation.get("session_id") or uuid.uuid4().hex
+    recovery = agent_directory / "recovery" / session_id
+    recovery.mkdir(parents=True, exist_ok=False)
+    for path in existing:
+        shutil.move(path, recovery / path.name)
+
+
 def run_agent_stage(
     run_directory: Path, config: dict[str, Any], state: dict[str, Any]
 ) -> None:
-    repair.prepare_agent(run_directory, config, state)
     if commit_agent_result_if_complete(run_directory, state):
         return
 
@@ -178,36 +189,24 @@ def run_agent_stage(
     except AgentConfigurationError as error:
         raise RunnerError(str(error)) from error
 
-    iteration_directory = stage_directory(run_directory, state)
-    agent_directory = iteration_directory / "agent"
+    stage_root = stage_directory(run_directory, state)
+    agent_directory = stage_root / "agent"
     agent_directory.mkdir(parents=True, exist_ok=True)
-    attempt = next_attempt_directory(agent_directory)
-    attempt.mkdir()
+    archive_interrupted_session(agent_directory)
+    session_id = uuid.uuid4().hex
 
-    selected_mode = repair.mode(config)
-    feedback_available = (
-        selected_mode is None
-        and state["iteration"] > 0
-        and (
-            run_directory / "iterations" / f"{state['iteration'] - 1:03d}" / "feedback"
-        ).is_dir()
-    )
     prompt = agents.get(config["agent"]["framework"]).prompt_builder(
-        config["dataset"]["name"], feedback_available
+        config["dataset"]["name"], False
     )
-    if selected_mode is not None:
-        focus = None
-        if (
-            selected_mode is repair.RepairMode.RECURSIVE
-            and state.get("recursive_phase") == "scope"
-        ):
-            from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing.repair import (
-                recursive as recursive_repair,
-            )
+    focus = None
+    if state.get("recursive_phase") == "scope":
+        from rtdf_formalizer.stages.reasoning_trace_diff_fuzzing.repair import (
+            recursive as recursive_repair,
+        )
 
-            focus = recursive_repair.current_scope(state)
-        prompt = repair.prompt(prompt, selected_mode, int(state["iteration"]), focus)
-    prompt_path = attempt / "prompt.txt"
+        focus = recursive_repair.current_scope(state)
+    prompt = repair.prompt(prompt, focus)
+    prompt_path = agent_directory / "prompt.txt"
     prompt_path.write_text(prompt, encoding="utf-8")
     with tempfile.TemporaryDirectory(prefix="rtdf-apptainer-") as runtime_workdir_name:
         runtime_workdir = Path(runtime_workdir_name)
@@ -222,14 +221,10 @@ def run_agent_stage(
         except AgentConfigurationError as error:
             raise RunnerError(str(error)) from error
         feedback = (
-            run_directory / "iterations" / f"{state['iteration'] - 1:03d}" / "feedback"
-            if feedback_available
+            run_directory / state["recursive_scope_task"]
+            if state.get("recursive_scope_task")
             else None
         )
-        if selected_mode is repair.RepairMode.RECURSIVE and state.get(
-            "recursive_scope_task"
-        ):
-            feedback = run_directory / state["recursive_scope_task"]
         submission_check_directory = runtime_workdir / "submission-check"
         submission_check_directory.mkdir()
         submission_check_socket = submission_check_directory / "validator.sock"
@@ -271,6 +266,7 @@ def run_agent_stage(
             submission_check_directory,
         )
         invocation = {
+            "session_id": session_id,
             "started_at": utc_now(),
             "runtime": "apptainer",
             "image": config["agent"]["image"],
@@ -278,13 +274,13 @@ def run_agent_stage(
             "forwarded_environment_names": config["agent"]["environment"],
             "prompt_sha256": sha256_file(prompt_path),
         }
-        atomic_json(attempt / "invocation.json", invocation)
-        state.update(active_attempt=attempt.name, updated_at=utc_now())
+        atomic_json(agent_directory / "invocation.json", invocation)
+        state.update(updated_at=utc_now())
         atomic_json(run_directory / "state.json", state)
 
         started = time.monotonic()
         record_agent_usage(
-            run_directory, config, int(state["iteration"]), attempt, status="started"
+            run_directory, config, agent_directory, status="started"
         )
         try:
             try:
@@ -292,13 +288,13 @@ def run_agent_stage(
                     config["runtime"].get("progress_interval_seconds", 30.0)
                 )
                 progress = AgentProgress(
-                    attempt / "stdout.jsonl",
+                    agent_directory / "stdout.jsonl",
                     run_directory / "input",
                     run_directory / "workspace",
                 )
                 if progress_interval > 0:
                     print(
-                        f"agent attempt started: {attempt}",
+                        f"agent session started: {agent_directory}",
                         file=sys.stderr,
                         flush=True,
                     )
@@ -310,8 +306,8 @@ def run_agent_stage(
                     exit_code, timed_out, elapsed = apptainer.execute(
                         command,
                         prompt,
-                        attempt / "stdout.jsonl",
-                        attempt / "stderr.log",
+                        agent_directory / "stdout.jsonl",
+                        agent_directory / "stderr.log",
                         int(config["runtime"]["timeout_seconds"]),
                         apptainer.environment(config, submission_check=True),
                         progress.report,
@@ -323,8 +319,7 @@ def run_agent_stage(
             record_agent_usage(
                 run_directory,
                 config,
-                int(state["iteration"]),
-                attempt,
+                agent_directory,
                 elapsed=round(time.monotonic() - started, 3),
             )
             try:
@@ -337,18 +332,14 @@ def run_agent_stage(
     usage_record = record_agent_usage(
         run_directory,
         config,
-        int(state["iteration"]),
-        attempt,
+        agent_directory,
         elapsed=round(elapsed, 3),
         status="completed" if exit_code == 0 and not timed_out else "failed",
     )
 
     integrity: dict[str, Any] | None = None
     error: str | None = None
-    recursive_session = (
-        repair.mode(config) is repair.RepairMode.RECURSIVE
-        and state.get("recursive_phase") == "scope"
-    )
+    recursive_session = state.get("recursive_phase") == "scope"
     if (exit_code == 0 and not timed_out) or recursive_session:
         try:
             integrity = validate_workspace(
@@ -384,7 +375,7 @@ def run_agent_stage(
             run_directory / "input", run_directory / "workspace"
         )
         error = None
-    attempt_result = {
+    session_result = {
         "status": "completed" if error is None else "failed",
         "exit_code": exit_code,
         "timed_out": timed_out,
@@ -395,14 +386,12 @@ def run_agent_stage(
         "usage": usage_record,
         "finished_at": utc_now(),
     }
-    atomic_json(attempt / "result.json", attempt_result)
-    state.update(active_attempt=None, updated_at=utc_now())
+    atomic_json(agent_directory / "result.json", session_result)
+    state.update(updated_at=utc_now())
     atomic_json(run_directory / "state.json", state)
     if error is not None:
-        raise RunnerError(f"agent attempt failed: {error}; artifacts: {attempt}")
+        raise RunnerError(f"agent session failed: {error}; artifacts: {agent_directory}")
 
-    summary = {**attempt_result, "attempt": attempt.name}
-    atomic_json(agent_directory / "result.json", summary)
     if not commit_agent_result_if_complete(run_directory, state):
         raise RunnerError("failed to commit the completed agent stage")
 

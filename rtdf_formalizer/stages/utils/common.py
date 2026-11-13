@@ -17,9 +17,9 @@ from typing import Any, Iterator
 
 ROOT = Path(__file__).resolve().parents[3]
 RUNS = ROOT / "runs"
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 VERIFICATION_SCHEMA_VERSION = 1
-SNAPSHOT_SCHEMA_VERSION = 1
+SNAPSHOT_SCHEMA_VERSION = 2
 TRANSLATOR_MODEL = "gpt-5.6-sol"
 FENCE_START = re.compile(r"^```(catala(?:-metadata)?)(?:[ \t].*)?\r?\n?$")
 FENCE_END = re.compile(r"^```[ \t]*\r?\n?$")

@@ -277,46 +277,11 @@ def _catala_code(project: Path, relative: str) -> str:
     return "\n\n".join(blocks)
 
 
-def _relevant_input_descriptions(
-    schema: dict[str, Any], registry: dict[str, Any]
-) -> dict[str, dict[str, str]]:
-    # Select global descriptions referenced by one chosen input schema.
-    inventory = exp._input_description_inventory(schema)
-    return {
-        category: {
-            name: (
-                registry[category][name]["description"]
-                if category == "fields"
-                else registry[category][name]
-            )
-            for name in names
-        }
-        for category, names in zip(("fields", "enums", "structs"), inventory)
-    }
-
-
 def _input_prompt(
     natural: dict[str, str],
     scope: dict[str, Any],
     project: Path,
-    input_descriptions: dict[str, Any] | None = None,
 ) -> str:
-    description_section = (
-        "Natural-language definitions for this scope's input fields, enums, and structs:\n"
-        + json.dumps(
-            {
-                "fields": input_descriptions["fields"],
-                "enums": input_descriptions["enums"],
-                "structs": input_descriptions["structs"],
-            },
-            ensure_ascii=False,
-            indent=2,
-            sort_keys=True,
-        )
-        + "\n\n"
-        if input_descriptions is not None
-        else ""
-    )
     return f"""Extract only the factual information stated in this case into the exact
 JSON input schema of the selected Catala scope. Return one JSON object and nothing else.
 
@@ -337,7 +302,7 @@ Selected scope: {scope["file"]}::{scope["scope"]}
 Candidate Catala declarations and definitions:
 {_catala_code(project, scope["compiler_file"])}
 
-{description_section}Exact extraction JSON schema (null means to omit an optional defaulted input):
+Exact extraction JSON schema (null means to omit an optional defaulted input):
 {json.dumps(_strict_extraction_schema(scope["input_schema"]), ensure_ascii=False, indent=2, sort_keys=True)}
 """
 
@@ -347,7 +312,6 @@ def _usage_context(
 ) -> dict[str, Any]:
     return {
         "run_id": config["run_id"],
-        "iteration": state["iteration"],
         "stage": f"information-extraction-{phase}",
         "framework": "api",
         "provider": config["information_extraction"]["provider"],
@@ -364,8 +328,9 @@ def extract(
     human_tests: Path,
     artifact_directory: Path,
     requirement_outputs: dict[str, Any] | None = None,
-    input_variable_descriptions: dict[str, Any] | None = None,
+    items: Iterable[tuple[str, int, dict[str, Any]]] | None = None,
 ) -> list[dict[str, Any]]:
+    case_items = list(items) if items is not None else list(_rows(human_tests))
     scopes = [
         scope
         for scope in candidate_format.get("scopes", [])
@@ -382,10 +347,9 @@ def extract(
                 "status": "error",
                 "detail": "candidate has no JSON-callable scope",
             }
-            for relative, line, row in _rows(human_tests)
+            for relative, line, row in case_items
         ]
     by_id = {f"{scope['file']}::{scope['scope']}": scope for scope in scopes}
-    description_registry = input_variable_descriptions or {}
     mapped_by_requirement: dict[str, dict[str, Any]] = {}
     if requirement_outputs is not None:
         mapped_by_requirement = {
@@ -406,7 +370,7 @@ def extract(
                     "detail": "mapped requirements have no JSON-callable input scope: "
                     + ", ".join(unavailable),
                 }
-                for relative, line, row in _rows(human_tests)
+                for relative, line, row in case_items
             ]
     if len(mapped_by_requirement) != 1:
         detail = (
@@ -420,7 +384,7 @@ def extract(
                 "status": "error",
                 "detail": detail,
             }
-            for relative, line, row in _rows(human_tests)
+            for relative, line, row in case_items
         ]
     requirement = next(iter(mapped_by_requirement.values()))
     settings = config["information_extraction"]
@@ -446,7 +410,6 @@ def extract(
                     "provider": settings["provider"],
                     "candidate_format": candidate_format,
                     "requirement_outputs": requirement_outputs,
-                    "input_variable_descriptions": input_variable_descriptions,
                     "natural": prompt_natural,
                 },
                 sort_keys=True,
@@ -484,14 +447,7 @@ def extract(
             plan = _deterministic_plan(config["dataset"]["name"], row, requirement)
             record["plan"] = plan
             scope = by_id[plan["scope_id"]]
-            relevant_descriptions = (
-                _relevant_input_descriptions(
-                    scope["input_schema"], description_registry
-                )
-                if input_variable_descriptions is not None
-                else None
-            )
-            prompt = _input_prompt(natural, scope, candidate, relevant_descriptions)
+            prompt = _input_prompt(natural, scope, candidate)
             (extraction_root / f"{stem}.input.prompt.txt").write_text(
                 prompt, encoding="utf-8"
             )
@@ -527,7 +483,7 @@ def extract(
 
     jobs = max(1, int(settings.get("jobs", 8)))
     with ThreadPoolExecutor(max_workers=jobs) as pool:
-        records = list(pool.map(one, list(_rows(human_tests))))
+        records = list(pool.map(one, case_items))
     return records
 
 
