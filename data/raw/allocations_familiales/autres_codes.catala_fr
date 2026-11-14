@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/autres_codes -->
+<!-- rsa-document-id: allocations_familiales/autres_codes -->
 
-<!-- rtdf-block-id: allocations_familiales/autres_codes:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/autres_codes:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/autres_codes:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/autres_codes:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -30,7 +30,7 @@ personnelle au logement, il n'est pas pris en compte, comme enfant
 à charge, pour le bénéfice des prestations familiales.
 
 
-<!-- rtdf-block-id: allocations_familiales/autres_codes:b0003; role: provision; provision-id: allocations_familiales/autres_codes:p0001; source-lines: 1-19; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/autres_codes:b0003; role: provision; provision-id: allocations_familiales/autres_codes:p0001; source-lines: 1-19; relation: formalizes-preceding -->
 ```catala
 ```
 

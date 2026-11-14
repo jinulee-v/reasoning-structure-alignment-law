@@ -27,7 +27,7 @@
 #   bash install_toolchain.sh cutecat      # just CUTECat
 #   bash install_toolchain.sh swipl,ocaml  # just those two
 #
-# Stages: swipl, ocaml, catala, cutecat.  Everything outside a stage (the
+# Stages: swipl, ocaml, catala, cutecat, bobcat-deps. Everything outside a stage (the
 # micromamba download, `opam init`, the variables, the final checks) is cheap
 # and idempotent, and always runs.
 set -u
@@ -162,6 +162,28 @@ else
     skip "Catala"
 fi
 
+# ---- BOBCat dependencies only --------------------------------------------
+# RSA uses the BOBCat compiler, not CUTECat. Keep its dependency switch at the
+# established path without requiring the separate concolic compiler to build.
+if want bobcat-deps && ! want cutecat; then
+    log "BOBCat dependency switch"
+    PYENV="$T/envs/cutecat"
+    if [ -d "$PYENV/conda-meta" ]; then
+        "$MM" install -y -p "$PYENV" -c conda-forge python || die "bobcat python env"
+    else
+        "$MM" create -y -p "$PYENV" -c conda-forge python || die "bobcat python env"
+    fi
+    git -C "$R" submodule update --init --recursive -- .toolchain/src/catala-bobcat \
+        || die "bobcat submodule"
+    make_switch cutecat
+    eval "$(opam env --switch=cutecat --set-switch)"
+    env -u CPATH -u LIBRARY_PATH -u LD_LIBRARY_PATH \
+        PATH="$OPAMROOT/cutecat/bin:$PYENV/bin:$SYSTEM_PATH:$ENV/bin" \
+        "$ENV/bin/opam" install -y "z3.$Z3_VERSION" || die "bobcat z3 dependencies"
+    opam install -y --deps-only "$T/src/catala-bobcat/catala.opam" \
+        || die "bobcat compiler dependencies"
+fi
+
 # ---- CUTECat -------------------------------------------------------------
 # CUTECat (see `doc/concolic/README.md` in the branch) is a second Catala
 # compiler: same 1.2 series plus `compiler/concolic/`, which walks a scope's
@@ -189,6 +211,10 @@ if want cutecat; then
             || die "cutecat clone"
     fi
     git -C "$SRC" fetch origin "$CUTECAT_BRANCH" || die "cutecat fetch"
+    # The branch is rebased; its current history may no longer contain our pin.
+    if ! git -C "$SRC" cat-file -e "$CUTECAT_COMMIT^{commit}" 2>/dev/null; then
+        git -C "$SRC" fetch origin "$CUTECAT_COMMIT" || die "cutecat pinned commit fetch"
+    fi
     git -C "$SRC" checkout --detach "$CUTECAT_COMMIT" || die "cutecat checkout"
     # A checkout of the already-selected detached commit leaves modifications
     # in place. This stage is a reproducible rebuild from the pinned source;

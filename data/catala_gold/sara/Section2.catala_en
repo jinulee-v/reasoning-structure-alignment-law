@@ -1,4 +1,4 @@
-<!-- rtdf-document-id: sara/section2 -->
+<!-- rsa-document-id: sara/section2 -->
 
 > Module Section2
 > Using Definitions as W
@@ -118,7 +118,7 @@ scope SurvivingSpouse:
         (A) whose spouse died during either of the two years immediately preceding the taxable year, and
 
 
-<!-- rtdf-block-id: sara/section2:b0004; role: provision; provision-id: sara/section2(a)(1)(A); source-lines: 9-9; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0004; role: provision; provision-id: sara/section2(a)(1)(A); source-lines: 9-9; relation: formalizes-preceding -->
 ```catala
 declaration spouse_died_in_prior_two_years content boolean
   depends on world content W.World,
@@ -134,7 +134,7 @@ declaration spouse_died_in_prior_two_years content boolean
         (B) who maintains as his home a household which constitutes for the taxable year the principal place of abode (as a member of such household) of a dependent (i) who (within the meaning of section 152) is a son, stepson, daughter, or stepdaughter of the taxpayer, and (ii) with respect to whom the taxpayer is entitled to a deduction for the taxable year under section 151.
 
 
-<!-- rtdf-block-id: sara/section2:b0005; role: provision; provision-id: sara/section2(a)(1)(B); source-lines: 11-11; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0005; role: provision; provision-id: sara/section2(a)(1)(B); source-lines: 11-11; relation: formalizes-preceding -->
 ```catala
 declaration surviving_spouse_child_household content boolean
   depends on world content W.World,
@@ -180,7 +180,7 @@ declaration surviving_spouse_limitations_clear content boolean
         (A) if the taxpayer has remarried at any time before the close of the taxable year, or
 
 
-<!-- rtdf-block-id: sara/section2:b0008; role: provision; provision-id: sara/section2(a)(2)(A); source-lines: 19-19; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0008; role: provision; provision-id: sara/section2(a)(2)(A); source-lines: 19-19; relation: formalizes-preceding -->
 ```catala
 declaration remarried_before_year_end content boolean
   depends on world content W.World,
@@ -200,7 +200,7 @@ declaration remarried_before_year_end content boolean
         (B) unless, for the taxpayer's taxable year during which his spouse died, a joint return could have been made. A husband and wife may make a single return jointly of income taxes, even though one of the spouses has neither gross income nor deductions, except that no joint return shall be made if either the husband or wife at any time during the taxable year is a nonresident alien.
 
 
-<!-- rtdf-block-id: sara/section2:b0009; role: provision; provision-id: sara/section2(a)(2)(B); source-lines: 21-21; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0009; role: provision; provision-id: sara/section2(a)(2)(B); source-lines: 21-21; relation: formalizes-preceding -->
 ```catala
 declaration joint_return_permitted content boolean
   depends on world content W.World,
@@ -272,7 +272,7 @@ declaration qualifying_child_household_member content boolean
                 (I) is married at the close of the taxpayer's taxable year, and
 
 
-<!-- rtdf-block-id: sara/section2:b0013; role: provision; provision-id: sara/section2(b)(1)(A)(i)(I); source-lines: 33-33; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0013; role: provision; provision-id: sara/section2(b)(1)(A)(i)(I); source-lines: 33-33; relation: formalizes-preceding -->
 ```catala
 declaration married_child_excluded content boolean
   depends on married_at_year_end content boolean
@@ -282,7 +282,7 @@ declaration married_child_excluded content boolean
                 (II) is not a dependent of such individual by reason of section 152(b)(2) or
 
 
-<!-- rtdf-block-id: sara/section2:b0014; role: provision; provision-id: sara/section2(b)(1)(A)(i)(II); source-lines: 35-35; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0014; role: provision; provision-id: sara/section2(b)(1)(A)(i)(II); source-lines: 35-35; relation: formalizes-preceding -->
 ```catala
 declaration child_dependency_exception_excluded content boolean
   depends on excluded_by_section_152_b_2 content boolean
@@ -292,7 +292,7 @@ declaration child_dependency_exception_excluded content boolean
             (ii) any other person who is a dependent of the taxpayer, if the taxpayer is entitled to a deduction for the taxable year for such person under section 151, or
 
 
-<!-- rtdf-block-id: sara/section2:b0015; role: provision; provision-id: sara/section2(b)(1)(A)(ii); source-lines: 37-37; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0015; role: provision; provision-id: sara/section2(b)(1)(A)(ii); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
 declaration other_dependent_household_member content boolean
   depends on is_dependent content boolean,
@@ -304,7 +304,7 @@ declaration other_dependent_household_member content boolean
         (B) maintains a household which constitutes for such taxable year the principal place of abode of the father or mother of the taxpayer, if the taxpayer is entitled to a deduction for the taxable year for such father or mother under section 151.
 
 
-<!-- rtdf-block-id: sara/section2:b0016; role: provision; provision-id: sara/section2(b)(1)(B); source-lines: 39-39; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0016; role: provision; provision-id: sara/section2(b)(1)(B); source-lines: 39-39; relation: formalizes-preceding -->
 ```catala
 declaration parent_household_qualifier content boolean
   depends on world content W.World,
@@ -340,7 +340,7 @@ declaration subsection_b_status_after_special_rules content boolean
         (A) an individual who is legally separated from his spouse under a decree of divorce or of separate maintenance shall not be considered as married;
 
 
-<!-- rtdf-block-id: sara/section2:b0019; role: provision; provision-id: sara/section2(b)(2)(A); source-lines: 47-47; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0019; role: provision; provision-id: sara/section2(b)(2)(A); source-lines: 47-47; relation: formalizes-preceding -->
 ```catala
 declaration separated_individual_not_married content boolean
   depends on world content W.World,
@@ -356,7 +356,7 @@ declaration separated_individual_not_married content boolean
         (B) a taxpayer shall be considered as not married at the close of his taxable year if at any time during the taxable year his spouse is a nonresident alien; and
 
 
-<!-- rtdf-block-id: sara/section2:b0020; role: provision; provision-id: sara/section2(b)(2)(B); source-lines: 49-49; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0020; role: provision; provision-id: sara/section2(b)(2)(B); source-lines: 49-49; relation: formalizes-preceding -->
 ```catala
 declaration spouse_nonresident_treated_not_married content boolean
   depends on world content W.World,
@@ -369,7 +369,7 @@ declaration spouse_nonresident_treated_not_married content boolean
         (C) a taxpayer shall be considered as married at the close of his taxable year if his spouse (other than a spouse described in subparagraph (B)) died during the taxable year.
 
 
-<!-- rtdf-block-id: sara/section2:b0021; role: provision; provision-id: sara/section2(b)(2)(C); source-lines: 51-51; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0021; role: provision; provision-id: sara/section2(b)(2)(C); source-lines: 51-51; relation: formalizes-preceding -->
 ```catala
 declaration spouse_death_preserves_married_status content boolean
   depends on world content W.World,
@@ -399,7 +399,7 @@ declaration head_of_household_limitations_clear content boolean
         (A) if at any time during the taxable year he is a nonresident alien; or
 
 
-<!-- rtdf-block-id: sara/section2:b0023; role: provision; provision-id: sara/section2(b)(3)(A); source-lines: 57-57; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0023; role: provision; provision-id: sara/section2(b)(3)(A); source-lines: 57-57; relation: formalizes-preceding -->
 ```catala
 declaration nonresident_alien_during_year content boolean
   depends on world content W.World,
@@ -413,7 +413,7 @@ declaration nonresident_alien_during_year content boolean
 
         (B) by reason of an individual who would not be a dependent for the taxable year but for subparagraph (H) of section 152(d)(2).
 
-<!-- rtdf-block-id: sara/section2:b0024; role: provision; provision-id: sara/section2(b)(3)(B); source-lines: 59-59; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section2:b0024; role: provision; provision-id: sara/section2(b)(3)(B); source-lines: 59-59; relation: formalizes-preceding -->
 ```catala
 scope FilingStatusFor:
   definition marital.world equals world

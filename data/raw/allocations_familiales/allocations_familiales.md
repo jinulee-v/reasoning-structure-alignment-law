@@ -24,7 +24,7 @@ default values in the code.
 ## Description des variables d'entrée
 
 Après validation des champs d'application Catala, exécutez
-`/rtdf/extract_input_requirements.sh`. Cet outil appelle `clerk json-schema` pour
+`/rsa/extract_input_requirements.sh`. Cet outil appelle `clerk json-schema` pour
 chaque paire fichier-champ d'application distincte choisie dans
 `REQUIREMENT_OUTPUTS.json`, puis écrit une seule description globale pour chaque
 entrée unique des catégories `fields`, `enums` et `structs` dans

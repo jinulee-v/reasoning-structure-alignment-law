@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/code_construction_reglementaire -->
+<!-- rsa-document-id: aides_logement/code_construction_reglementaire -->
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -26,7 +26,7 @@ logement ne peut être attribuée, au profit d'une même personne ou d'un même
 ménage, au titre de plusieurs logements.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0003; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0001; source-lines: 1-15; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0003; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0001; source-lines: 1-15; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -39,7 +39,7 @@ par le bénéficiaire et situé dans le même bâtiment, ces deux locaux sont
 assimilés au logement défini à l'article R. 822-23 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0004; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0002; source-lines: 18-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0004; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0002; source-lines: 18-23; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -53,7 +53,7 @@ droit ou au début de la période de paiement, une aide personnelle au
 logement peut être accordée à chacun des conjoints.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0005; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0003; source-lines: 26-32; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0005; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0003; source-lines: 26-32; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -68,7 +68,7 @@ une aide personnelle au logement peut être accordée à chacune de ces
 personnes ou chacun de ces ménages.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0006; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0004; source-lines: 35-42; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0006; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0004; source-lines: 35-42; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -81,7 +81,7 @@ Lorsque les conditions d'ouverture du droit à l'aide personnalisée au logement
 sont remplies au titre d'un logement, seule cette aide est attribuée pour ce logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0007; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0005; source-lines: 45-50; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0007; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0005; source-lines: 45-50; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -98,7 +98,7 @@ applicables à ces catégories de prêts et le droit à l'allocation de logement
 est éteint à compter de l'ouverture du droit à l'aide personnalisée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0008; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0006; source-lines: 53-62; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0008; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0006; source-lines: 53-62; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -115,7 +115,7 @@ d'usufruit, sans que l'ensemble de ces parts puisse égaler ou dépasser
 10 % de la propriété ou de l'usufruit du logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0009; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0007; source-lines: 65-74; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0009; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0007; source-lines: 65-74; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -131,7 +131,7 @@ sont celles dont bénéficient le demandeur ou l'allocataire, son conjoint et
 les personnes vivant habituellement au foyer.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0010; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0008; source-lines: 77-85; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0010; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0008; source-lines: 77-85; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -143,7 +143,7 @@ qui y résident encore au moment de la demande de l'aide ou du réexamen du
 droit à celle-ci.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0011; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0009; source-lines: 88-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0011; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0009; source-lines: 88-92; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -168,7 +168,7 @@ logement prévue pour les accédants à la propriété par l’article L. 831-1 
 de la construction et de l’habitation, à compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0012; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0010; source-lines: 95-112; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0012; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0010; source-lines: 95-112; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -237,7 +237,7 @@ par l’article L. 831-1 du code de la construction et de l’habitation, à com
 du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0013; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0011; source-lines: 115-176; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0013; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0011; source-lines: 115-176; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -307,7 +307,7 @@ l’article L. 831-1 du code de la construction et de l’habitation, à compter
 mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0014; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0012; source-lines: 179-241; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0014; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0012; source-lines: 179-241; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -350,7 +350,7 @@ logement prévue pour les accédants à la propriété par l’article L. 831-1 
 de la construction et de l’habitation, à compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0015; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0013; source-lines: 244-279; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0015; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0013; source-lines: 244-279; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -384,7 +384,7 @@ Conformément au I de l’article 7 du décret n° 2023-799 du 21 août 2023, ce
 dispositions sont applicables aux prestations dues à compter du 1er septembre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0016; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0014; source-lines: 282-308; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0016; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0014; source-lines: 282-308; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -403,7 +403,7 @@ des allocations familiales en vigueur à la date de la demande ou du réexamen
 du droit.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0017; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0015; source-lines: 311-322; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0017; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0015; source-lines: 311-322; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -431,7 +431,7 @@ logement prévue pour les accédants à la propriété par l’article L. 831-1 
 de la construction et de l’habitation, à compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0018; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0016; source-lines: 325-345; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0018; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0016; source-lines: 325-345; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -445,7 +445,7 @@ charges de loyer supplémentaires correspondant à ce logement, il est procédé
 à un abattement forfaitaire sur ses ressources ou sur celles du ménage.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0019; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0017; source-lines: 348-354; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0019; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0017; source-lines: 348-354; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -488,7 +488,7 @@ lorsqu'elles apportent la preuve qu'elles assument ou contribuent à
 assumer financièrement des charges familiales.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0020; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0018; source-lines: 357-392; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0020; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0018; source-lines: 357-392; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -504,7 +504,7 @@ il est opéré sur ses ressources un abattement de :
 2° 1 350 euros dès trois personnes à charge.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0021; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0019; source-lines: 395-403; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0021; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0019; source-lines: 395-403; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -539,7 +539,7 @@ b) Soit cessant toute activité professionnelle pour se consacrer à un enfant
 de moins de trois ans ou à plusieurs enfants.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0022; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0020; source-lines: 406-433; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0022; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0020; source-lines: 406-433; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -562,7 +562,7 @@ l'intéressé se consacre ne sont plus remplies ;
 c) Soit l'intéressé reprend une activité professionnelle.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0023; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0021; source-lines: 436-451; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0023; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0021; source-lines: 436-451; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -604,7 +604,7 @@ par l’article L. 831-1 du code de la construction et de l’habitation, à
 compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0024; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0022; source-lines: 454-488; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0024; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0022; source-lines: 454-488; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -659,7 +659,7 @@ par l’article L. 831-1 du code de la construction et de l’habitation, à com
 du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0025; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0023; source-lines: 491-538; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0025; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0023; source-lines: 491-538; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -711,7 +711,7 @@ logement prévue pour les accédants à la propriété par l’article L. 831-1 
 de la construction et de l’habitation, à compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0026; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0024; source-lines: 541-585; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0026; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0024; source-lines: 541-585; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -749,7 +749,7 @@ l’article L. 831-1 du code de la construction et de l’habitation, à compter
 mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0027; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0025; source-lines: 588-618; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0027; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0025; source-lines: 588-618; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -798,7 +798,7 @@ Se reporter aux conditions d'application prévues à l'article 3 du décret
 n° 2021-720 du 4 juin 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0028; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0026; source-lines: 621-662; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0028; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0026; source-lines: 621-662; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -819,7 +819,7 @@ d'une bourse de l'enseignement supérieur qui n'est pas assujettie à l'impôt
 sur le revenu.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0029; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0027; source-lines: 665-678; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0029; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0027; source-lines: 665-678; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -874,7 +874,7 @@ logement prévue pour les accédants à la propriété par l’article L. 831-1 
 de la construction et de l’habitation, à compter du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0030; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0028; source-lines: 681-728; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0030; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0028; source-lines: 681-728; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -886,7 +886,7 @@ de la construction et de l’habitation, à compter du mois de mai 2021.
 Le montant prévu au premier alinéa de l'article L. 822-5 est fixé à 30 000 euros.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0031; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0029; source-lines: 731-735; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0031; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0029; source-lines: 731-735; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -902,7 +902,7 @@ le revenu au titre des revenus nets catégoriels mentionnés à l'article
 R. 822-4 est pris en compte pour le calcul de l'aide.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0032; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0030; source-lines: 738-746; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0032; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0030; source-lines: 738-746; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -925,7 +925,7 @@ avis d'imposition à la taxe d'habitation ou à la taxe foncière reçu par le
 bénéficiaire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0033; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0031; source-lines: 749-764; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0033; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0031; source-lines: 749-764; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -961,7 +961,7 @@ mois par an, sauf obligation professionnelle, raison de santé ou cas de force
 majeure.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0034; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0032; source-lines: 767-795; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0034; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0032; source-lines: 767-795; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -974,7 +974,7 @@ doit répondre aux caractéristiques de décence définies par le décret n° 20
 du 30 janvier 2002 relatif aux caractéristiques du logement décent.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0035; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0033; source-lines: 798-803; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0035; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0033; source-lines: 798-803; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -989,7 +989,7 @@ en plus, dans la limite de soixante-dix mètres carrés pour huit personnes et
 plus.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0036; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0034; source-lines: 806-813; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0036; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0034; source-lines: 806-813; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1007,7 +1007,7 @@ de protection sociale des professions agricoles, par la caisse de la mutualité
 sociale agricole compétente.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0037; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0035; source-lines: 816-826; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0037; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0035; source-lines: 816-826; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1045,7 +1045,7 @@ Conformément à l'article 6 du décret n° 2021-1750 du 21 décembre 2021, ces
 dispositions entrent en vigueur le 1er janvier 2023.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0038; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0036; source-lines: 829-859; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0038; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0036; source-lines: 829-859; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1057,7 +1057,7 @@ la situation du bénéficiaire ou du ménage font l'objet de justifications
 fournies avec la demande de révision du montant de l'aide.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0039; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0037; source-lines: 862-866; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0039; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0037; source-lines: 862-866; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1068,7 +1068,7 @@ Sont considérés comme personnes à charge, sous réserve qu'ils vivent
 habituellement au foyer :
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0040; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0038; source-lines: 869-872; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0040; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0038; source-lines: 869-872; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1078,7 +1078,7 @@ sens des 1° et 2° de l'article L. 512-3 du code de la sécurité sociale et de
 l'article L. 823-2 du présent code ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0041; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0039; source-lines: 875-877; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0041; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0039; source-lines: 875-877; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1098,7 +1098,7 @@ sociale et bénéficiaires des articles L. 161-19 , L. 351-8 ou L. 643-3 du mêm
 code ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0042; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0040; source-lines: 880-892; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0042; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0040; source-lines: 880-892; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1115,7 +1115,7 @@ individuel prévu à l'article L. 815-9 du code de la sécurité sociale en vigu
 au 31 décembre de l'année de référence multiplié par 1,25.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0043; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0041; source-lines: 895-904; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0043; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0041; source-lines: 895-904; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1133,7 +1133,7 @@ ne peuvent être remises en cause par les parents qu'au bout d'un an, sauf
 modification, avant cette échéance, des modalités de résidence de l'enfant.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0044; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0042; source-lines: 907-917; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0044; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0042; source-lines: 907-917; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1162,7 +1162,7 @@ déposée pour qu'il soit procédé à un nouvel examen du droit et que l'aide
 puisse être à nouveau versée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0045; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0043; source-lines: 920-941; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0045; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0043; source-lines: 920-941; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1208,7 +1208,7 @@ sur le revenu de solidarité active, la prime d'activité et l'allocation aux
 adultes handicapés.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0046; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0044; source-lines: 944-982; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0046; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0044; source-lines: 944-982; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1244,7 +1244,7 @@ au logement est révisé en cours de période de paiement, lorsqu'en application
 d'un avenant à la convention, un nouveau loyer est notifié au bénéficiaire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0047; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0045; source-lines: 985-1013; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0047; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0045; source-lines: 985-1013; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1255,7 +1255,7 @@ Les aides personnelles au logement sont versées mensuellement à terme échu,
 dans les conditions définies par les conventions mentionnées à l'article L. 812-2 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0048; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0046; source-lines: 1016-1019; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0048; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0046; source-lines: 1016-1019; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1296,7 +1296,7 @@ location-accession, par les règles figurant aux articles R. 842-5
 et D. 842-6 à D. 842-13 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0049; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0047; source-lines: 1022-1055; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0049; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0047; source-lines: 1022-1055; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1315,7 +1315,7 @@ mois de la demande, l'aide est due à compter du premier jour du
 mois au cours duquel la demande est déposée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0050; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0048; source-lines: 1059-1069; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0050; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0048; source-lines: 1059-1069; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1338,7 +1338,7 @@ du présent code, elles reprennent le paiement du loyer ou de toute autre somme
 versée en contrepartie de l'occupation de ce logement ou lorsqu'elles sont relogées.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0051; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0049; source-lines: 1072-1087; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0051; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0049; source-lines: 1072-1087; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1354,7 +1354,7 @@ logement est éteint à partir du premier jour du mois civil suivant celui
 au cours duquel survient le décès du bénéficiaire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0052; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0050; source-lines: 1090-1098; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0052; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0050; source-lines: 1090-1098; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1377,7 +1377,7 @@ effet le premier jour du mois civil suivant celui au cours duquel la séparation
 a eu lieu.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0053; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0051; source-lines: 1101-1116; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0053; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0051; source-lines: 1101-1116; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1398,7 +1398,7 @@ d'ouverture du droit sont réunies ;
 d'être réunies.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0054; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0052; source-lines: 1119-1132; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0054; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0052; source-lines: 1119-1132; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1417,7 +1417,7 @@ Le signalement par le prêteur du remboursement anticipé du prêt a lieu dans u
 d'un mois à compter de la date de remboursement du solde du prêt.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0055; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0053; source-lines: 1135-1146; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0055; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0053; source-lines: 1135-1146; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1432,7 +1432,7 @@ est calculé selon la formule suivante :
 $$\textrm{Af} = \textrm{L} + \textrm{C}-\textrm{Pp}$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0056; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0054; source-lines: 1149-1156; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0056; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0054; source-lines: 1149-1156; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1446,7 +1446,7 @@ la limite d'un plafond fixé par arrêté en fonction de la zone géographique e
 dans le cas où le logement occupé est une chambre, de la composition familiale ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0057; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0055; source-lines: 1159-1165; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0057; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0055; source-lines: 1159-1165; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1455,7 +1455,7 @@ dans le cas où le logement occupé est une chambre, de la composition familiale
 de la composition familiale ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0058; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0056; source-lines: 1168-1169; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0058; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0056; source-lines: 1168-1169; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1464,7 +1464,7 @@ de la composition familiale ;
 de l'article D. 823-17 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0059; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0057; source-lines: 1172-1173; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0059; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0057; source-lines: 1172-1173; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1481,7 +1481,7 @@ l' article L. 821-1 du code de la sécurité sociale ou de l'allocation d'éduca
 l'enfant handicapé prévue à l'article L. 541-1 du même code.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0060; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0058; source-lines: 1176-1185; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0060; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0058; source-lines: 1176-1185; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1489,7 +1489,7 @@ l'enfant handicapé prévue à l'article L. 541-1 du même code.
 Le résultat ainsi obtenu est minoré d'un montant fixé forfaitairement par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0061; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0059; source-lines: 1188-1188; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0061; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0059; source-lines: 1188-1188; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1499,7 +1499,7 @@ sociales qui s'y appliquent, arrondi à l'euro inférieur, puis majoré de ce mo
 représentatif.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0062; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0060; source-lines: 1191-1193; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0062; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0060; source-lines: 1191-1193; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1509,7 +1509,7 @@ de l'article L. 442-2-1 , ce résultat est réduit d'un montant égal à 98 % de
 de loyer de solidarité.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0063; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0061; source-lines: 1196-1198; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0063; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0061; source-lines: 1196-1198; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1519,7 +1519,7 @@ un montant fixé par arrêté, selon celle des trois aides dont le ménage bén�
 n'est pas procédé à son versement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0064; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0062; source-lines: 1201-1203; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0064; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0062; source-lines: 1201-1203; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1533,7 +1533,7 @@ du ménage, calculée selon la formule suivante :
 $$\textrm{Pp} = \textrm{P0} + \textrm{Tp}\times (\textrm{R}-\textrm{R0})$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0065; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0063; source-lines: 1206-1212; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0065; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0063; source-lines: 1206-1212; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1546,7 +1546,7 @@ où :
 arrêté et qui ne peut être inférieure à un montant minimum défini par arrêté ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0066; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0064; source-lines: 1215-1220; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0066; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0064; source-lines: 1215-1220; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1560,7 +1560,7 @@ Les valeurs du premier taux, les modalités de calcul du second taux et les vale
 loyers de référence sont fixées par arrêté ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0067; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0065; source-lines: 1223-1229; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0067; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0065; source-lines: 1223-1229; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1569,7 +1569,7 @@ loyers de référence sont fixées par arrêté ;
 à la section 2 du chapitre II du présent titre et arrondies à la centaine d'euros supérieure ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0068; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0066; source-lines: 1232-1233; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0068; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0066; source-lines: 1232-1233; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1620,7 +1620,7 @@ Lorsque le logement est loué ou sous-loué en meublé, les dispositions de l'ar
 D. 842-2 s'appliquent le cas échéant pour la détermination des loyers pris en compte.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0069; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0067; source-lines: 1236-1279; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0069; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0067; source-lines: 1236-1279; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1633,7 +1633,7 @@ ministres chargés du logement, du budget, de la sécurité sociale et de l'agri
 Le zonage géographique est fixé par arrêté des ministres chargés du logement et du budget.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0070; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0068; source-lines: 1282-1287; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0070; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0068; source-lines: 1282-1287; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1653,7 +1653,7 @@ Cette prime est due si le droit à l'aide est ouvert dans un délai de six mois 
 de la date d'emménagement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0071; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0069; source-lines: 1290-1302; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0071; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0069; source-lines: 1290-1302; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1669,7 +1669,7 @@ fixés par arrêté des ministres chargés du logement, du budget, de la sécuri
 et de l'agriculture.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0072; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0070; source-lines: 1305-1313; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0072; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0070; source-lines: 1305-1313; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1682,7 +1682,7 @@ composition de la famille, par arrêté des ministres chargés du logement, du b
 de la sécurité sociale et de l'agriculture.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0073; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0071; source-lines: 1316-1321; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0073; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0071; source-lines: 1316-1321; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1700,7 +1700,7 @@ sont recouvrées, suivant le cas, auprès du locataire ou de l'emprunteur,
 dans les conditions fixées à l' article L. 553-2 du code de la sécurité sociale .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0074; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0072; source-lines: 1324-1334; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0074; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0072; source-lines: 1324-1334; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1711,7 +1711,7 @@ Les dispositions des articles R. 133-9-2 , D. 553-1 , D. 553-2 , D. 553-4 et
 D. 553-5 du code de la sécurité sociale sont applicables au recouvrement des indus.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0075; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0073; source-lines: 1337-1340; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0075; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0073; source-lines: 1337-1340; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1723,7 +1723,7 @@ sommes indûment payées, dans les conditions définies à l' article D. 133-2 d
 de la sécurité sociale .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0076; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0074; source-lines: 1343-1347; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0076; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0074; source-lines: 1343-1347; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1741,7 +1741,7 @@ Conformément au II de l'article 3 du décret n° 2020-1202 du 30 septembre 2020
 ces dispositions s'appliquent à compter du 1er juin 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0077; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0075; source-lines: 1350-1360; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0077; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0075; source-lines: 1350-1360; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1759,7 +1759,7 @@ bénéficiaire, l'impayé de dépense de logement, comprenant le loyer et, le ca
 brut du loyer et des charges.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0078; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0076; source-lines: 1363-1373; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0078; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0076; source-lines: 1363-1373; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1769,7 +1769,7 @@ l'impayé est constitué quand le locataire est débiteur à l'égard du bailleu
 d'une somme au moins égale à deux fois le montant mensuel net du loyer et des charges.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0079; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0077; source-lines: 1376-1378; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0079; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0077; source-lines: 1376-1378; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1777,7 +1777,7 @@ d'une somme au moins égale à deux fois le montant mensuel net du loyer et des 
 Le montant mensuel brut du loyer correspond au loyer figurant dans le bail.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0080; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0078; source-lines: 1381-1381; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0080; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0078; source-lines: 1381-1381; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1786,7 +1786,7 @@ Le montant mensuel net du loyer correspond à ce même loyer, déduction faite d
 montant de l'aide personnelle au logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0081; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0079; source-lines: 1384-1385; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0081; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0079; source-lines: 1384-1385; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1794,7 +1794,7 @@ montant de l'aide personnelle au logement.
 ####### Article R824-2 | LEGIARTI000038878875
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0082; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0080; source-lines: 1388-1388; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0082; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0080; source-lines: 1388-1388; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1813,7 +1813,7 @@ débiteur à l'égard de l'établissement habilité d'une somme au moins égale 
 sixième du total annuel des échéances de prêt brutes ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0083; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0081; source-lines: 1391-1402; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0083; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0081; source-lines: 1391-1402; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1830,7 +1830,7 @@ b) En cas de périodicité autre que mensuelle, lorsque l'emprunteur est débite
 total annuel des échéances de prêt nettes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0084; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0082; source-lines: 1405-1414; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0084; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0082; source-lines: 1405-1414; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1838,7 +1838,7 @@ total annuel des échéances de prêt nettes.
 L'échéance de prêt brute correspond à celle figurant dans le contrat de prêt.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0085; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0083; source-lines: 1417-1417; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0085; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0083; source-lines: 1417-1417; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1847,7 +1847,7 @@ L'échéance de prêt nette correspond à cette même échéance, déduction fai
 personnelle au logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0086; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0084; source-lines: 1420-1421; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0086; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0084; source-lines: 1420-1421; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1860,7 +1860,7 @@ de location-accession ou par le contrat d'occupation en logement-foyer mentionn�
 charges ou à une échéance.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0087; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0085; source-lines: 1424-1429; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0087; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0085; source-lines: 1424-1429; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1881,7 +1881,7 @@ Le bailleur doit justifier qu'il poursuit par tous les moyens possibles le
 recouvrement de sa créance.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0088; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0086; source-lines: 1432-1445; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0088; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0086; source-lines: 1432-1445; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1892,7 +1892,7 @@ L'organisme payeur se saisit de toute situation d'impayé définie à l'article 
 dont il a connaissance.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0089; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0087; source-lines: 1448-1451; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0089; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0087; source-lines: 1448-1451; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1905,7 +1905,7 @@ prévues au même article, il est fait application des dispositions de l'article
 du code de la sécurité sociale .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0090; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0088; source-lines: 1454-1459; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0090; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0088; source-lines: 1454-1459; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1955,7 +1955,7 @@ de la dépense courante de logement, l'organisme payeur suspend le versement de 
 au logement, sous réserve des dispositions de l'article R. 824-28.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0091; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0089; source-lines: 1462-1504; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0091; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0089; source-lines: 1462-1504; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1974,7 +1974,7 @@ courante de logement, l'organisme payeur suspend le versement de l'aide personne
 sous réserve des dispositions de l'article R. 824-28 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0092; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0090; source-lines: 1507-1518; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0092; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0090; source-lines: 1507-1518; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1985,7 +1985,7 @@ La bonne exécution du plan ou du dispositif d'apurement est vérifiée, au moin
 mois, par l'organisme payeur.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0093; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0091; source-lines: 1521-1524; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0093; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0091; source-lines: 1521-1524; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1999,7 +1999,7 @@ et de l'agriculture. Cet arrêté précise le cadre dans lequel l'organisme paye
 d'apurement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0094; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0092; source-lines: 1527-1533; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0094; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0092; source-lines: 1527-1533; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2011,7 +2011,7 @@ définie à l'article R. 824-7 , les délais fixés aux 1° et 2° de cet articl
 de l'article R. 824-20 étant alors divisés par deux.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0095; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0093; source-lines: 1536-1540; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0095; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0093; source-lines: 1536-1540; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2032,7 +2032,7 @@ d'apurement dans un délai de trois mois à compter de cette saisine. Il en info
 la commission de coordination des actions de prévention des expulsions locatives.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0096; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0094; source-lines: 1543-1556; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0096; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0094; source-lines: 1543-1556; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2045,7 +2045,7 @@ et d'apurer l'intégralité de sa dette en remboursant chaque mois au bailleur 1
 pendant trente-six mois à compter du mois suivant la mise en demeure.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0097; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0095; source-lines: 1559-1564; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0097; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0095; source-lines: 1559-1564; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2058,7 +2058,7 @@ courante de logement, l'organisme payeur suspend le versement de l'aide personne
 sous réserve des dispositions de l'article R. 824-28 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0098; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0096; source-lines: 1567-1572; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0098; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0096; source-lines: 1567-1572; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2072,7 +2072,7 @@ et des charges fixées par le juge, le versement de l'aide est maintenu durant l
 s'acquitte de l'indemnité et des charges fixées, et jusqu'au départ effectif de l'occupant.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0099; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0097; source-lines: 1575-1581; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0099; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0097; source-lines: 1575-1581; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2099,7 +2099,7 @@ de sa bonne exécution. Dans ce cas, le premier versement est réalisé trois mo
 du paiement par l'occupant des échéances prévues par le protocole.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0100; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0098; source-lines: 1584-1603; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0100; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0098; source-lines: 1584-1603; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2117,7 +2117,7 @@ pour permettre la négociation d'un nouveau plan d'apurement entre le bailleur e
 Ce nouveau plan fait l'objet d'un avenant au protocole.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0101; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0099; source-lines: 1606-1616; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0101; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0099; source-lines: 1606-1616; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2131,7 +2131,7 @@ l'intégralité de sa dette en remboursant chaque mois au bailleur 1/ 36e de sa 
 pendant trente-six mois.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0102; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0100; source-lines: 1619-1625; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0102; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0100; source-lines: 1619-1625; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2144,7 +2144,7 @@ de l'aide personnelle au logement est suspendu, sous réserve des dispositions d
 l'article R. 824-28 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0103; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0101; source-lines: 1628-1633; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0103; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0101; source-lines: 1628-1633; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2155,7 +2155,7 @@ L'exécution régulière du plan ou du dispositif d'apurement est vérifiée tou
 par l'organisme payeur.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0104; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0102; source-lines: 1636-1639; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0104; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0102; source-lines: 1636-1639; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2177,7 +2177,7 @@ Les dispositions du présent article sont applicables aux allocations de logemen
 le cas prévu au troisième alinéa de l'article L. 842-1 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0105; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0103; source-lines: 1642-1656; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0105; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0103; source-lines: 1642-1656; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2189,7 +2189,7 @@ Sans préjudice de l'application des articles R. 824-7 à R. 824-13 et R. 824-27
 bénéficiaire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0106; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0104; source-lines: 1659-1663; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0106; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0104; source-lines: 1659-1663; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2209,7 +2209,7 @@ le délai de six mois accordé au bailleur pour mettre en place un plan d'apurem
 R. 824-20 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0107; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0105; source-lines: 1666-1678; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0107; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0105; source-lines: 1666-1678; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2225,7 +2225,7 @@ le versement de l'aide personnelle au logement est maintenu pendant le délai pr
 R. 721-4 du code de la consommation pour décider de l'orientation du dossier de surendettement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0108; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0106; source-lines: 1681-1689; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0108; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0106; source-lines: 1681-1689; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2241,7 +2241,7 @@ entre les mains du bailleur :
 L. 842-1 pour les allocations de logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0109; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0107; source-lines: 1692-1700; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0109; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0107; source-lines: 1692-1700; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2252,7 +2252,7 @@ Lorsque l'aide était versée à l'allocataire avant l'engagement de la procédu
 l'article R. 824-23 , il est fait application de l'article R. 824-20 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0110; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0108; source-lines: 1703-1706; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0110; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0108; source-lines: 1703-1706; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2271,7 +2271,7 @@ l'organisme payeur décide des modalités de versement du rappel de l'aide corre
 période de suspension, dès lors que la dette n'a pas été annulée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0111; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0109; source-lines: 1709-1720; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0111; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0109; source-lines: 1709-1720; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2284,7 +2284,7 @@ La suspension du versement de l'aide personnelle au logement, en cas d'impayé, 
 obstacle à la récupération d'un indu.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0112; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0110; source-lines: 1723-1728; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0112; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0110; source-lines: 1723-1728; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2374,7 +2374,7 @@ d'impayé, l'échéance d'emprunt étant assimilée au loyer.
 ###### Article R831-1 | LEGIARTI000038878776
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0113; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0111; source-lines: 1731-1813; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0113; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0111; source-lines: 1731-1813; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2405,7 +2405,7 @@ d'actions de sociétés donnant vocation à l'attribution en propriété du
 logement qu'ils occupent.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0114; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0112; source-lines: 1816-1839; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0114; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0112; source-lines: 1816-1839; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2444,7 +2444,7 @@ des ministres chargés du logement, du budget, de la sécurité sociale et de
 l'agriculture.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0115; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0113; source-lines: 1842-1873; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0115; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0113; source-lines: 1842-1873; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2473,7 +2473,7 @@ L. 822-4 . Dans ce cas, le locataire titulaire du bail principal et sous-louant
 une partie de son logement est assimilé au bailleur.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0116; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0114; source-lines: 1876-1897; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0116; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0114; source-lines: 1876-1897; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2489,7 +2489,7 @@ habilité :
 L. 213-1 à L. 213-15 , lorsqu'elles ont été bénéficiaires du prêt principal.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0117; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0115; source-lines: 1900-1908; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0117; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0115; source-lines: 1900-1908; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2504,7 +2504,7 @@ d'un contrat de location-accession, l'aide personnalisée est versée :
 2° A l'établissement habilité ou au bénéficiaire, lorsqu'il y a différents contrats de prêts.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0118; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0116; source-lines: 1911-1918; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0118; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0116; source-lines: 1911-1918; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2514,7 +2514,7 @@ d'un contrat de location-accession, l'aide personnalisée est versée :
 ####### Article R832-5 | LEGIARTI000039048901
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0119; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0117; source-lines: 1921-1923; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0119; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0117; source-lines: 1921-1923; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2529,7 +2529,7 @@ en accession à la propriété défini à l'article D. 331-32 ;
 par l'article D. 331-64.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0120; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0118; source-lines: 1926-1933; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0120; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0118; source-lines: 1926-1933; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2550,7 +2550,7 @@ ou si l'entrée dans les lieux intervient au cours de la période couverte par c
 premier jour du mois civil suivant celui au cours duquel se situe l'entrée dans les lieux.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0121; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0119; source-lines: 1936-1949; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0121; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0119; source-lines: 1936-1949; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2562,7 +2562,7 @@ lorsque le vendeur est titulaire d'un prêt défini par les articles D. 331-59-8
 défini par les articles D. 331-76-1 et suivants et que ce dernier supporte les charges correspondantes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0122; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0120; source-lines: 1952-1956; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0122; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0120; source-lines: 1952-1956; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2589,7 +2589,7 @@ Est pris en considération, pour le calcul de l'aide personnalisée, le montant 
 au premier alinéa de l'article D. 331-59-16 et au II de l'article D. 331-76-5-1 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0123; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0121; source-lines: 1959-1978; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0123; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0121; source-lines: 1959-1978; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2610,7 +2610,7 @@ d'un prêt aidé par l'Etat à taux révisable défini à l'article D. 331-54-1 
 conventionné à taux révisable défini à l'article D. 331-75 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0124; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0122; source-lines: 1981-1994; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0124; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0122; source-lines: 1981-1994; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2625,7 +2625,7 @@ les modalités suivantes :
 $$\textrm{Af} = \textrm{K} \times (\textrm{L} + \textrm{C}-\textrm{L0})$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0125; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0123; source-lines: 1997-2004; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0125; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0123; source-lines: 1997-2004; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2641,7 +2641,7 @@ prise en compte dans la limite d'un plafond fixé par arrêté en fonction de la
 de la composition familiale et de la finalité de l'opération ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0126; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0124; source-lines: 2007-2015; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0126; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0124; source-lines: 2007-2015; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2650,7 +2650,7 @@ de la composition familiale et de la finalité de l'opération ;
 la composition familiale ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0127; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0125; source-lines: 2018-2019; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0127; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0125; source-lines: 2018-2019; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2658,7 +2658,7 @@ la composition familiale ;
 5° " L0 " est la mensualité minimale, calculée selon les dispositions de l'article D. 832-15 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0128; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0126; source-lines: 2022-2022; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0128; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0126; source-lines: 2022-2022; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2666,7 +2666,7 @@ la composition familiale ;
 Le montant ainsi calculé est minoré d'un montant fixé forfaitairement par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0129; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0127; source-lines: 2025-2025; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0129; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0127; source-lines: 2025-2025; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2675,7 +2675,7 @@ Ce résultat est minoré d'un abattement au titre de la dépense nette minimale,
 de calcul sont fixées par l'article D. 832-17 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0130; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0128; source-lines: 2028-2029; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0130; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0128; source-lines: 2028-2029; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2685,7 +2685,7 @@ représentatif des contributions sociales qui s'y appliquent, arrondi à l'euro 
 puis majoré de ce montant représentatif.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0131; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0129; source-lines: 2032-2034; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0131; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0129; source-lines: 2032-2034; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2694,7 +2694,7 @@ Lorsque le montant mensuel de l'aide, ainsi calculé, est inférieur à un monta
 il n'est pas procédé à son versement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0132; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0130; source-lines: 2037-2038; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0132; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0130; source-lines: 2037-2038; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2707,7 +2707,7 @@ et les modalités suivantes :
 $$\textrm{K} =  0,95 - \frac{\textrm{R}}{\textrm{cm} \times \textrm{N}}$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0133; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0131; source-lines: 2041-2046; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0133; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0131; source-lines: 2041-2046; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2718,7 +2718,7 @@ où :
 Lorsque le calcul le porte à une valeur supérieure à 0,95, il est considéré comme égal à 0,95 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0134; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0132; source-lines: 2049-2052; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0134; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0132; source-lines: 2049-2052; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2742,7 +2742,7 @@ majoration par personne à charge supplémentaire              0,5
 ------------------------------------------------------------ ---
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0135; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0133; source-lines: 2055-2071; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0135; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0133; source-lines: 2055-2071; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2777,7 +2777,7 @@ premier alinéa de l'article D. 331-59-16 et au II de l'article D. 331-76-5-1 , 
 assimilée à la mensualité.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0136; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0134; source-lines: 2074-2101; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0136; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0134; source-lines: 2074-2101; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2791,7 +2791,7 @@ prévues au 1° du I de l'article D. 832-12 , la mensualité de référence est 
 pour les logements acquis et améliorés à l'aide d'un prêt conventionné.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0137; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0135; source-lines: 2104-2110; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0137; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0135; source-lines: 2104-2110; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2803,7 +2803,7 @@ D. 832-10 est applicable pour la période au titre de laquelle le certificat pr�
 l'article D. 832-12 a été établi.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0138; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0136; source-lines: 2113-2117; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0138; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0136; source-lines: 2113-2117; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2813,7 +2813,7 @@ moment de l'entrée dans les lieux, sous la réserve qu'il s'agisse d'un local h
 pour la première fois par le bénéficiaire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0139; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0137; source-lines: 2120-2122; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0139; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0137; source-lines: 2120-2122; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2833,7 +2833,7 @@ Les pourcentages et les limites initiales des tranches sont fixés par arrêté
 selon la date de signature du contrat de prêt ou de location-accession ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0140; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0138; source-lines: 2125-2137; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0140; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0138; source-lines: 2125-2137; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2844,7 +2844,7 @@ mensualité minimale " L0 " se substitue à l'équivalence minimale de loyer et 
 charges " E0 ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0141; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0139; source-lines: 2140-2143; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0141; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0139; source-lines: 2140-2143; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2867,7 +2867,7 @@ et les montants forfaitaires au titre des charges mentionnées au 4° du même a
 peuvent fixer des montants spécifiques pour les ménages copropriétaires.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0142; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0140; source-lines: 2146-2161; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0142; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0140; source-lines: 2146-2161; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2881,7 +2881,7 @@ le montant mensuel de l'aide calculé selon les dispositions des deuxième à ne
 alinéas du même article.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0143; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0141; source-lines: 2164-2170; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0143; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0141; source-lines: 2164-2170; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2890,7 +2890,7 @@ Dans les autres cas, cette dépense nette est obtenue en déduisant de la seule 
 déclarée le montant mensuel de l'aide calculé de la même façon.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0144; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0142; source-lines: 2173-2174; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0144; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0142; source-lines: 2173-2174; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2901,7 +2901,7 @@ l'opération, il est appliqué un abattement sur le montant mensuel de l'aide é
 différence constatée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0145; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0143; source-lines: 2177-2180; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0145; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0143; source-lines: 2177-2180; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2920,7 +2920,7 @@ les intéressés se trouvent dans l'une des situations mentionnées aux articles
 et R. 822-13 à R. 822-17 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0146; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0144; source-lines: 2183-2194; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0146; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0144; source-lines: 2183-2194; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2933,7 +2933,7 @@ logement, du budget, de la sécurité sociale et de l'agriculture.
 Le zonage géographique est fixé par arrêté des ministres chargés du logement et du budget.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0147; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0145; source-lines: 2197-2202; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0147; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0145; source-lines: 2197-2202; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2960,7 +2960,7 @@ travailleurs migrants et ayant fait l'objet d'une convention, prévue à l'artic
 signée avant le 1er janvier 1995.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0148; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0146; source-lines: 2205-2224; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0148; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0146; source-lines: 2205-2224; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -3014,7 +3014,7 @@ mentionné à l'article D. 331-8 et que la convention prévue au II de l'article
 remplacée par la convention prévue au III de l'article R. 353-159 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0149; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0147; source-lines: 2227-2273; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0149; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0147; source-lines: 2227-2273; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3027,7 +3027,7 @@ et R. 832-21 et font l'objet d'une convention passée dans les conditions prévu
 la section 7 du chapitre III du titre V du livre III.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0150; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0148; source-lines: 2276-2281; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0150; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0148; source-lines: 2276-2281; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3042,7 +3042,7 @@ cet occupant acquitte l'intégralité de la redevance mensuelle prévue par le t
 sous réserve que les autres conditions d'ouverture du droit soient réunies à cette date.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0151; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0149; source-lines: 2284-2291; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0151; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0149; source-lines: 2284-2291; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3055,7 +3055,7 @@ mensuel de l'aide est calculé selon la formule et les modalités suivantes :
 $$\textrm{Af} = \textrm{K} \times (\textrm{E}-\textrm{E0})$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0152; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0150; source-lines: 2294-2299; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0152; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0150; source-lines: 2294-2299; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3072,7 +3072,7 @@ R. 353-156 à R. 353-160 , et prise en compte dans la limite d'un plafond fixé 
 de la zone géographique et de la composition familiale ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0153; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0151; source-lines: 2302-2311; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0153; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0151; source-lines: 2302-2311; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3081,7 +3081,7 @@ de la zone géographique et de la composition familiale ;
 les dispositions de l'article D. 832-26.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0154; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0152; source-lines: 2314-2315; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0154; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0152; source-lines: 2314-2315; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3089,7 +3089,7 @@ les dispositions de l'article D. 832-26.
 Le montant ainsi calculé est minoré d'un montant fixé forfaitairement par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0155; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0153; source-lines: 2318-2318; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0155; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0153; source-lines: 2318-2318; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3098,7 +3098,7 @@ Ce résultat est minoré d'un abattement au titre de la dépense nette minimale,
 de calcul sont fixées à l'article D. 832-27.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0156; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0154; source-lines: 2321-2322; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0156; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0154; source-lines: 2321-2322; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3107,7 +3107,7 @@ Ce dernier résultat est diminué d'un montant représentatif des contributions 
 s'y appliquent, arrondi à l'euro inférieur, puis majoré de ce montant représentatif.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0157; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0155; source-lines: 2325-2326; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0157; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0155; source-lines: 2325-2326; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3116,7 +3116,7 @@ Lorsque le montant mensuel de l'aide, calculé selon les modalités précédente
 à un montant fixé par arrêté, il n'est pas procédé à son versement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0158; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0156; source-lines: 2329-2330; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0158; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0156; source-lines: 2329-2330; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3132,7 +3132,7 @@ de l'article L. 831-1 , et mentionnés au 1° de l'article R. 832-21 , le coeffi
 selon la formule et les modalités précisées au 2° du présent article.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0159; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0157; source-lines: 2333-2341; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0159; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0157; source-lines: 2333-2341; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3142,7 +3142,7 @@ selon la formule et les modalités précisées au 2° du présent article.
 $$\textrm{K} = 0,95 - \frac{\textrm{R} - \textrm{r} \times \textrm{N}}{\textrm{cm} \times \textrm{N}}$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0160; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0158; source-lines: 2344-2346; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0160; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0158; source-lines: 2344-2346; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3153,7 +3153,7 @@ a) " K " est le coefficient de prise en charge, arrondi à deux décimales par d
 calcul le porte à une valeur supérieure à 0,95, il est considéré égal à 0,95 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0161; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0159; source-lines: 2349-2352; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0161; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0159; source-lines: 2349-2352; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3179,7 +3179,7 @@ majoration par personne à charge supplémentaire	              0,5
 ------------------------------------------------------------- ---
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0162; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0160; source-lines: 2355-2373; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0162; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0160; source-lines: 2355-2373; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3189,7 +3189,7 @@ majoration par personne à charge supplémentaire	              0,5
 $$\textrm{K} = 0,90 - \frac{\textrm{R}}{\textrm{cm} \times \textrm{N}}$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0163; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0161; source-lines: 2376-2378; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0163; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0161; source-lines: 2376-2378; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3199,7 +3199,7 @@ a) " K " est le coefficient de prise en charge, arrondi à deux décimales par d
 lorsque le calcul le porte à une valeur supérieure à 0,90, il est considéré égal à 0,90 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0164; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0162; source-lines: 2380-2383; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0164; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0162; source-lines: 2380-2383; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3223,7 +3223,7 @@ majoration par personne à charge supplémentaire	             0,5
 ------------------------------------------------------------ ---
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0165; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0163; source-lines: 2386-2402; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0165; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0163; source-lines: 2386-2402; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3240,7 +3240,7 @@ forfaitaire par le nombre de parts “ N ”, le total étant ensuite divisé
 par douze.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0166; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0164; source-lines: 2405-2414; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0166; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0164; source-lines: 2405-2414; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3255,7 +3255,7 @@ résultat est majoré d'un montant forfaitaire, le total étant ensuite divisé 
 douze.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0167; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0165; source-lines: 2417-2424; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0167; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0165; source-lines: 2417-2424; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3273,7 +3273,7 @@ arrêté selon le type de logements-foyer, l'abattement à effectuer sur le mont
 l'aide est égal à la différence constatée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0168; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0166; source-lines: 2427-2437; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0168; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0166; source-lines: 2427-2437; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3295,7 +3295,7 @@ Pour l'application du 3° de l'article L. 841-1 , la durée pendant laquelle l'a
 due est fixée à cinq ans.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0169; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0167; source-lines: 2439-2454; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0169; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0167; source-lines: 2439-2454; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3306,7 +3306,7 @@ Les allocataires sans personne à charge mentionnés au 6° de l'article L. 841-
 aux ménages sans enfant, pour le calcul de leur allocation de logement familiale.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0170; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0168; source-lines: 2457-2460; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0170; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0168; source-lines: 2457-2460; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3322,7 +3322,7 @@ au calcul de l'allocation de logement versée en secteur locatif, sous réserve 
 des articles D. 842-2 et D. 842-4.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0171; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0169; source-lines: 2463-2471; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0171; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0169; source-lines: 2463-2471; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3334,7 +3334,7 @@ un logement loué en meublé, le prix du loyer est remplacé par les deux tiers 
 payé dans la limite du loyer-plafond.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0172; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0170; source-lines: 2474-2478; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0172; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0170; source-lines: 2474-2478; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3344,7 +3344,7 @@ des majorations de loyers résultant de l'affectation d'une partie des lieux à 
 profession.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0173; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0171; source-lines: 2481-2483; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0173; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0171; source-lines: 2481-2483; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3355,7 +3355,7 @@ du contrat de travail, l'évaluation du loyer est faite, en tant que de besoin, 
 à celui de logements similaires dans la même commune ou dans des communes avoisinantes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0174; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0172; source-lines: 2486-2489; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0174; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0172; source-lines: 2486-2489; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3367,7 +3367,7 @@ résultat du quotient du loyer effectivement payé par le nombre de cotitulaires
 l'engagement de location.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0175; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0173; source-lines: 2492-2496; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0175; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0173; source-lines: 2492-2496; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3390,7 +3390,7 @@ nouveau loyer principal qui leur est réclamé, dans la limite du plafond fixé 
 du 3° de l'article L. 823-1 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0176; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0174; source-lines: 2499-2514; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0176; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0174; source-lines: 2499-2514; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3402,7 +3402,7 @@ du 3° de l'article L. 823-1 .
 L'allocation de logement est accordée au titre de la résidence principale :
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0177; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0175; source-lines: 2517-2521; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0177; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0175; source-lines: 2517-2521; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3413,7 +3413,7 @@ de celle contractée en même temps pour réaliser des travaux permettant de rem
 conditions de décence ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0178; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0176; source-lines: 2524-2527; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0178; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0176; source-lines: 2524-2527; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3422,7 +3422,7 @@ conditions de décence ;
 figurant sur la liste mentionnée à l'article R. 321-15 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0179; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0177; source-lines: 2530-2531; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0179; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0177; source-lines: 2530-2531; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3433,7 +3433,7 @@ travaux répondent aux normes techniques imposées pour le bénéfice des prêts
 mentionnés à l'article D. 331-63 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0180; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0178; source-lines: 2534-2537; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0180; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0178; source-lines: 2534-2537; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3446,7 +3446,7 @@ calculé selon la formule et les modalités suivantes :
 $$\textrm{Af} = \textrm{K} \times (\textrm{L} + \textrm{C}-\textrm{L0})$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0181; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0179; source-lines: 2540-2545; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0181; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0179; source-lines: 2540-2545; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3459,7 +3459,7 @@ où :
 l'article D. 832-25 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0182; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0180; source-lines: 2548-2553; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0182; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0180; source-lines: 2548-2553; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3470,7 +3470,7 @@ limite d'un plafond fixé par arrêté en fonction de la zone géographique et d
 composition familiale ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0183; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0181; source-lines: 2556-2559; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0183; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0181; source-lines: 2556-2559; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3482,7 +3482,7 @@ composition familiale ;
 l'article D. 832-26, dans lesquelles elle se substitue à " E0 ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0184; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0182; source-lines: 2562-2566; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0184; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0182; source-lines: 2562-2566; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3490,7 +3490,7 @@ l'article D. 832-26, dans lesquelles elle se substitue à " E0 ".
 Ce résultat, ainsi calculé, est minoré d'un montant fixé forfaitairement par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0185; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0183; source-lines: 2569-2569; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0185; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0183; source-lines: 2569-2569; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3499,7 +3499,7 @@ Le montant ainsi obtenu est minoré d'un abattement au titre de la dépense nett
 dont les modalités de calcul sont précisées par l'article D. 842-11 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0186; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0184; source-lines: 2572-2573; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0186; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0184; source-lines: 2572-2573; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3508,7 +3508,7 @@ Ce dernier résultat est diminué d'un montant représentatif des contributions 
 s'y appliquent, arrondi à l'euro inférieur, puis majoré de ce montant représentatif.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0187; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0185; source-lines: 2576-2577; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0187; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0185; source-lines: 2576-2577; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3517,7 +3517,7 @@ Lorsque le montant mensuel de l'allocation, ainsi calculé, est inférieur à un
 par arrêté, il n'est pas procédé à son versement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0188; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0186; source-lines: 2580-2581; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0188; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0186; source-lines: 2580-2581; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3547,7 +3547,7 @@ garantie de l'exécution des engagements souscrits ;
 5° Les loyers payés en vertu d'un contrat de location-accession ou d'un bail à construction.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0189; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0187; source-lines: 2584-2606; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0189; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0187; source-lines: 2584-2606; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3567,7 +3567,7 @@ contrat de prêt, le créancier et le débiteur sont expressément désignés et
 sont effectifs.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0190; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0188; source-lines: 2609-2621; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0190; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0188; source-lines: 2609-2621; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3579,7 +3579,7 @@ D. 842-6 est applicable pour la période au titre de laquelle le certificat pré
 l'article D. 842-7 a été établi.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0191; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0189; source-lines: 2624-2628; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0191; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0189; source-lines: 2624-2628; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3589,7 +3589,7 @@ moment de l'entrée dans les lieux, sous la réserve qu'il s'agisse d'un local h
 pour la première fois par l'allocataire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0192; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0190; source-lines: 2631-2633; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0192; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0190; source-lines: 2631-2633; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3617,7 +3617,7 @@ du même article peuvent fixer des montants spécifiques pour les ménages
 copropriétaires.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0193; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0191; source-lines: 2636-2656; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0193; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0191; source-lines: 2636-2656; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3630,7 +3630,7 @@ des charges, le montant mensuel de l'allocation calculé selon les dispositions 
 à neuvième alinéas du même article.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0194; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0192; source-lines: 2659-2664; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0194; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0192; source-lines: 2659-2664; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3640,7 +3640,7 @@ procédé à un abattement sur le montant mensuel de l'allocation égal à la di
 constatée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0195; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0193; source-lines: 2667-2669; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0195; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0193; source-lines: 2667-2669; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3651,7 +3651,7 @@ l'abattement doit être inférieure au produit des ressources par un coefficient
 par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0196; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0194; source-lines: 2672-2675; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0196; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0194; source-lines: 2672-2675; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3671,7 +3671,7 @@ ou après le 30 septembre 1994, si l'allocation est accordée en application du 
 de l'article R. 842-5 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0197; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0195; source-lines: 2678-2690; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0197; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0195; source-lines: 2678-2690; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3681,7 +3681,7 @@ de l'article R. 842-5 ;
 l'article R. 842-5 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0198; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0196; source-lines: 2693-2695; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0198; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0196; source-lines: 2693-2695; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3690,7 +3690,7 @@ Ces ressources sont portées à ce montant sauf lorsque les intéressés se trou
 dans l'une des situations mentionnées aux articles R. 822-11 et R. 822-13 à R. 822-17 .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0199; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0197; source-lines: 2698-2699; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0199; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0197; source-lines: 2698-2699; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3703,7 +3703,7 @@ du logement, du budget, de la sécurité sociale et de l'agriculture.
 Le zonage géographique est fixé par arrêté des ministres chargés du logement et du budget.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0200; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0198; source-lines: 2702-2707; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0200; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0198; source-lines: 2702-2707; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3719,7 +3719,7 @@ application du III de l'article 12 de la loi n° 57-908 du 7 août 1957 tendant
 à favoriser la construction de logements et les équipements collectifs.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0201; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0199; source-lines: 2710-2718; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0201; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0199; source-lines: 2710-2718; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3735,7 +3735,7 @@ le montant mensuel de l'aide est calculé selon la formule et les modalités sui
 $$\textrm{Af} = \textrm{K} \times (\textrm{L} + \textrm{C}-\textrm{L0})$$
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0202; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0200; source-lines: 2721-2729; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0202; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0200; source-lines: 2721-2729; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3748,7 +3748,7 @@ où :
 du 2° de l'article D. 832-25 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0203; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0201; source-lines: 2732-2737; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0203; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0201; source-lines: 2732-2737; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3763,7 +3763,7 @@ de la composition familiale ;
 alinéa de l'article D. 832-26, dans lequel il se substitue à " E0 ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0204; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0202; source-lines: 2740-2747; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0204; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0202; source-lines: 2740-2747; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3771,7 +3771,7 @@ alinéa de l'article D. 832-26, dans lequel il se substitue à " E0 ".
 Le montant ainsi calculé est minoré d'un montant fixé forfaitairement par arrêté.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0205; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0203; source-lines: 2750-2750; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0205; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0203; source-lines: 2750-2750; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3781,7 +3781,7 @@ modalités de calcul de la dépense nette, de sa valeur minimale et de l'abattem
 sont fixées à l'article D. 842-17.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0206; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0204; source-lines: 2753-2755; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0206; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0204; source-lines: 2753-2755; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3791,7 +3791,7 @@ supérieur au montant de la redevance supportée par le résident, il est rappor
 au montant de cette redevance.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0207; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0205; source-lines: 2758-2760; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0207; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0205; source-lines: 2758-2760; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3801,7 +3801,7 @@ sociales qui s'y appliquent, arrondi à l'euro inférieur, puis majoré de ce
 montant représentatif.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0208; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0206; source-lines: 2763-2765; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0208; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0206; source-lines: 2763-2765; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3811,7 +3811,7 @@ précédents est inférieur à un montant fixé par arrêté, il n'est pas proc�
 son versement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0209; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0207; source-lines: 2768-2770; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0209; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0207; source-lines: 2768-2770; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3838,7 +3838,7 @@ handicapées ;
 4° Les autres personnes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0210; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0208; source-lines: 2773-2792; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0210; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0208; source-lines: 2773-2792; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -3856,7 +3856,7 @@ montant forfaitaire au titre des charges " C ", et le montant mensuel de l'aide
 calculé selon les modalités précisées aux deuxième à neuvième alinéas du même article.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0211; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0209; source-lines: 2795-2805; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0211; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0209; source-lines: 2795-2805; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3865,7 +3865,7 @@ Lorsque sa valeur est inférieure à un montant fixé par arrêté, l'abattement
 le montant mensuel de l'aide est égal à la différence constatée.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0212; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0210; source-lines: 2808-2809; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0212; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0210; source-lines: 2808-2809; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3878,7 +3878,7 @@ du logement, du budget, de la sécurité sociale, et de l'agriculture.
 ##### Chapitre III : Procédure de conservation et de versement des allocations de logement en cas de non-décence constatée des logements
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0213; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0211; source-lines: 2812-2817; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0213; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0211; source-lines: 2812-2817; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3918,7 +3918,7 @@ avec l'allocataire une solution adaptée d'amélioration du logement ou une solu
 de relogement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0214; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0212; source-lines: 2820-2852; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0214; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0212; source-lines: 2820-2852; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3931,7 +3931,7 @@ Les délais mentionnés aux premiers alinéas des articles L. 843-3 et L. 843-4 
 fixés à six mois.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0215; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0213; source-lines: 2855-2860; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0215; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0213; source-lines: 2855-2860; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3949,7 +3949,7 @@ L'information du locataire reproduit les dispositions de ce même article et pr�
 l'adresse de la commission départementale de conciliation.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0216; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0214; source-lines: 2863-2873; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0216; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0214; source-lines: 2863-2873; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3972,7 +3972,7 @@ NOTA : Conformément à l'article 6 du décret n° 2021-1750 du 21 décembre 202
 dispositions entrent en vigueur le 1er janvier 2023.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0217; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0215; source-lines: 2876-2891; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0217; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0215; source-lines: 2876-2891; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3991,7 +3991,7 @@ L'habilitation ne porte que sur les logements pour lesquels l'organisme payeur v
 une allocation de logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0218; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0216; source-lines: 2894-2905; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0218; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0216; source-lines: 2894-2905; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4030,7 +4030,7 @@ preuve qu'il n'était manifestement pas en mesure de trouver un logement au cour
 délai précédent.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0219; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0217; source-lines: 2908-2939; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0219; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0217; source-lines: 2908-2939; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4060,7 +4060,7 @@ Dans tous les cas, l'organisme payeur informe le bailleur de la suspension de
 l'allocation de logement.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0220; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0218; source-lines: 2942-2964; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0220; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0218; source-lines: 2942-2964; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4082,7 +4082,7 @@ prévue aux articles L. 843-1 à L. 843-3 ou de celle prévue aux articles R. 84
 R. 844-2 sont expirés, le versement de l'allocation de logement est suspendu.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0221; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0219; source-lines: 2967-2981; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0221; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0219; source-lines: 2967-2981; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4111,7 +4111,7 @@ l'allocataire ne peut être logé conformément aux conditions fixées à l'arti
 R. 822-25.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0222; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0220; source-lines: 2984-3005; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0222; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0220; source-lines: 2984-3005; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4131,7 +4131,7 @@ l'article R. 822-25 .
 En cas de refus de dérogation, le deuxième alinéa de l'article R. 844-1 est applicable.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0223; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0221; source-lines: 3008-3020; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0223; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0221; source-lines: 3008-3020; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4142,7 +4142,7 @@ Les changements dans les conditions de peuplement des locaux doivent être décl
 dans le délai d'un mois par l'allocataire.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0224; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0222; source-lines: 3023-3026; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0224; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0222; source-lines: 3023-3026; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4163,7 +4163,7 @@ Le droit à l'allocation de logement n'est pas ouvert si la chambre est occupée
 plus de deux personnes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0225; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0223; source-lines: 3029-3042; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0225; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0223; source-lines: 3029-3042; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4176,7 +4176,7 @@ fixées par les articles R. 822-24 et R. 822-25 qui sont compatibles avec les
 contraintes liées à l'âge ou au handicap de ces personnes.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0226; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0224; source-lines: 3045-3050; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0226; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0224; source-lines: 3045-3050; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4184,7 +4184,7 @@ contraintes liées à l'âge ou au handicap de ces personnes.
 #### Titre V : Contrôles, lutte contre la fraude et sanctions
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0227; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0225; source-lines: 3053-3053; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0227; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0225; source-lines: 3053-3053; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4199,7 +4199,7 @@ Les arrêtés relatifs aux allocations de logement prévus à l'article D. 823-1
 pris par le ministre chargé de l'outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0228; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0226; source-lines: 3056-3063; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0228; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0226; source-lines: 3056-3063; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4225,7 +4225,7 @@ mots : " l'allocation spéciale pour les personnes âgées prévue par l'article
 28 de la même ordonnance " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0229; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0227; source-lines: 3066-3084; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0229; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0227; source-lines: 3066-3084; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4240,7 +4240,7 @@ personne en plus, dans la limite de cinquante-quatre mètres carrés pour neuf
 personnes et plus.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0230; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0228; source-lines: 3087-3094; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0230; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0228; source-lines: 3087-3094; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4256,7 +4256,7 @@ conditions de l'alinéa précédent.
 En cas de refus de dérogation, le deuxième alinéa de l'article R. 844-1 est applicable. "
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0231; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0229; source-lines: 3097-3105; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0231; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0229; source-lines: 3097-3105; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4266,7 +4266,7 @@ de la sécurité sociale " sont remplacés par les mots : " prévus à l'article
 n° 2002-423 du 29 mars 2002 relatif aux prestations familiales à Mayotte " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0232; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0230; source-lines: 3108-3110; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0232; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0230; source-lines: 3108-3110; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4292,7 +4292,7 @@ sociale " sont remplacés par les mots : " prévu à l'article 28 de l'ordonnanc
 27 mars 2002 relative à la protection sanitaire et sociale à Mayotte " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0233; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0231; source-lines: 3113-3131; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0233; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0231; source-lines: 3113-3131; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4306,7 +4306,7 @@ l'article 35 de l'ordonnance n° 2002-411 du 27 mars 2002 relative à la protect
 sociale à Mayotte. ”
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0234; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0232; source-lines: 3134-3140; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0234; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0232; source-lines: 3134-3140; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4317,7 +4317,7 @@ relative à l'extension et la généralisation des prestations familiales et à 
 sociale dans la collectivité territoriale de Mayotte. " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0235; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0233; source-lines: 3143-3146; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0235; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0233; source-lines: 3143-3146; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4331,7 +4331,7 @@ l'article 5 du décret n° 2011-2100 du 30 décembre 2011 relatif aux prestation
 le Département de Mayotte. "
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0236; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0234; source-lines: 3149-3155; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0236; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0234; source-lines: 3149-3155; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4355,7 +4355,7 @@ protection sanitaire et sociale à Mayotte et à l'article 10-1 de l'ordonnance 
 sociale dans la collectivité départementale de Mayotte ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0237; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0235; source-lines: 3158-3174; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0237; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0235; source-lines: 3158-3174; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4368,7 +4368,7 @@ NOTA : Conformément à l'article 6 du décret n° 2021-1750 du 21 décembre 202
 s'appliquent aux contributions et aux prestations dues à compter du 1er janvier 2022.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0238; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0236; source-lines: 3177-3182; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0238; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0236; source-lines: 3177-3182; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4384,7 +4384,7 @@ D. 842-12 ne sont pas applicables aux opérations de logements évolutifs sociau
 logements très sociaux, en accession à la propriété aidée par l'Etat ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0239; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0237; source-lines: 3185-3193; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0239; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0237; source-lines: 3185-3193; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4393,7 +4393,7 @@ logements très sociaux, en accession à la propriété aidée par l'Etat ;
 D. 842-18 sont également pris par le ministre chargé de l'outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0240; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0238; source-lines: 3196-3197; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0240; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0238; source-lines: 3196-3197; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4407,7 +4407,7 @@ coefficient de prise en charge " K ", la majoration pour personne à charge ment
 du 2° de l'article D. 832-25 est limitée à six enfants ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0241; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0239; source-lines: 3200-3206; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0241; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0239; source-lines: 3200-3206; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4417,7 +4417,7 @@ D. 842-12 ne sont pas applicables aux opérations de logements évolutifs sociau
 logements très sociaux, en accession à la propriété aidée par l'Etat ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0242; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0240; source-lines: 3209-3211; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0242; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0240; source-lines: 3209-3211; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4426,7 +4426,7 @@ logements très sociaux, en accession à la propriété aidée par l'Etat ;
 D. 842-18 sont également pris par le ministre chargé de l'outre-mer ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0243; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0241; source-lines: 3214-3215; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0243; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0241; source-lines: 3214-3215; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4436,7 +4436,7 @@ coefficient de prise en charge " K ", la majoration pour personne à charge ment
 du 2° de l'article D. 832-25 est limitée à six enfants.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0244; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0242; source-lines: 3218-3220; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0244; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0242; source-lines: 3218-3220; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4448,7 +4448,7 @@ prévu par les dispositions du dernier alinéa du 1° de l'article L. 861-6 est
 fixé à vingt-deux ans.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0245; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0243; source-lines: 3223-3227; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0245; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0243; source-lines: 3223-3227; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4462,7 +4462,7 @@ sont remplacés par les mots : " soixante-sept ans " et les mots : " celui menti
 à l'article L. 351-1-5 du même code " sont remplacés par les mots : " soixante-deux ans " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0246; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0244; source-lines: 3230-3236; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0246; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0244; source-lines: 3230-3236; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4472,7 +4472,7 @@ sont remplacés par les mots : " l'allocation spéciale pour les personnes âgé
 l'article 28 de la même ordonnance ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0247; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0245; source-lines: 3239-3241; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0247; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0245; source-lines: 3239-3241; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4488,7 +4488,7 @@ Les dispositions du chapitre III du titre IV du présent livre et de l'article R
 sont pas applicables à Mayotte.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0248; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0246; source-lines: 3244-3252; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0248; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0246; source-lines: 3244-3252; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4503,7 +4503,7 @@ Pour leur application en Guadeloupe, en Guyane, en Martinique, à La Réunion et
 1° A l'article R. 832-20, le 3° n'est pas applicable ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0249; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0247; source-lines: 3255-3262; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0249; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0247; source-lines: 3255-3262; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4531,7 +4531,7 @@ l'objet d'une subvention ou du coût de l'opération d'acquisition-amélioration
 ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0250; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0248; source-lines: 3265-3285; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0250; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0248; source-lines: 3265-3285; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4541,7 +4541,7 @@ l'objet d'une subvention ou du coût de l'opération d'acquisition-amélioration
 832-20. ”
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0251; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0249; source-lines: 3288-3290; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0251; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0249; source-lines: 3288-3290; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4554,7 +4554,7 @@ Pour leur application en Guadeloupe, en Guyane, en Martinique, à La Réunion et
 1° A l'article D. 832-25 , le deuxième alinéa et le 2° ne sont pas applicables ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0252; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0250; source-lines: 3293-3298; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0252; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0250; source-lines: 3293-3298; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4562,7 +4562,7 @@ Pour leur application en Guadeloupe, en Guyane, en Martinique, à La Réunion et
 2° A l'article D. 832-26 , le deuxième alinéa n'est pas applicable ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0253; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0251; source-lines: 3301-3301; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0253; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0251; source-lines: 3301-3301; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4571,7 +4571,7 @@ Pour leur application en Guadeloupe, en Guyane, en Martinique, à La Réunion et
 sont supprimés ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0254; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0252; source-lines: 3304-3305; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0254; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0252; source-lines: 3304-3305; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4602,7 +4602,7 @@ immeubles comportant à la fois des locaux privatifs, meublés ou non, et des lo
  affectés à la vie collective.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0255; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0253; source-lines: 3308-3331; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0255; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0253; source-lines: 3308-3331; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4619,7 +4619,7 @@ de décence que doit remplir le logement sont celles prévues par le décret n°
 janvier 2002 relatif aux caractéristiques du logement décent. " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0256; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0254; source-lines: 3334-3343; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0256; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0254; source-lines: 3334-3343; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4630,7 +4630,7 @@ janvier 2002 relatif aux caractéristiques du logement décent. " ;
 présent code " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0257; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0255; source-lines: 3346-3349; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0257; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0255; source-lines: 3346-3349; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4640,7 +4640,7 @@ présent code " sont remplacés par les mots : " prévues par la réglementation
 localement " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0258; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0256; source-lines: 3352-3354; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0258; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0256; source-lines: 3352-3354; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4655,7 +4655,7 @@ les mots : " mentionné à l'article 3 de la loi n° 90-449 du 31 mai 1990 visan
 œuvre du droit au logement, " sont remplacés par les mots : ", s'il existe localement,  "   .
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0259; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0257; source-lines: 3357-3364; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0259; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0257; source-lines: 3357-3364; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4679,7 +4679,7 @@ propriété par l’article L. 831-1 du code de la construction et de l’habita
 mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0260; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0258; source-lines: 3367-3383; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0260; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0258; source-lines: 3367-3383; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4689,7 +4689,7 @@ mois de mai 2021.
 L'article R. 824-30 n'est pas applicable à Saint-Barthélemy et à Saint-Martin.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0261; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0259; source-lines: 3386-3388; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0261; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0259; source-lines: 3386-3388; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4703,7 +4703,7 @@ améliorer les rapports locatifs et portant modification de la loi n° 86-1290 d
 1986 ” sont remplacés par les mots : “ applicable localement ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0262; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0260; source-lines: 3391-3397; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0262; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0260; source-lines: 3391-3397; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4712,7 +4712,7 @@ améliorer les rapports locatifs et portant modification de la loi n° 86-1290 d
 est fait application de celui en vigueur en métropole.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0263; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0261; source-lines: 3400-3401; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0263; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0261; source-lines: 3400-3401; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4737,7 +4737,7 @@ propriété par l’article L. 831-1 du code de la construction et de l’habita
 du mois de mai 2021.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0264; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0262; source-lines: 3404-3421; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0264; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0262; source-lines: 3404-3421; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4754,7 +4754,7 @@ mots : " prévues par la réglementation applicable localement en matière de lo
 à la propriété immobilière " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0265; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0263; source-lines: 3424-3433; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0265; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0263; source-lines: 3424-3433; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4764,7 +4764,7 @@ chapitre III du titre V du livre III " sont remplacés par les mots : " dans les
 prévues par la règlementation locale ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0266; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0264; source-lines: 3436-3438; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0266; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0264; source-lines: 3436-3438; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4779,7 +4779,7 @@ a) Au deuxième alinéa, les mots : " prévus aux articles L. 353-20 et L. 442-8
 remplacés par les mots : " prévus par la réglementation applicable localement " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0267; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0265; source-lines: 3441-3448; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0267; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0265; source-lines: 3441-3448; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4793,7 +4793,7 @@ en vue de l'attribution d'immeubles aux associés par fractions divises et les s
 coopératives de construction " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0268; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0266; source-lines: 3451-3457; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0268; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0266; source-lines: 3451-3457; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4803,7 +4803,7 @@ l'article D. 832-24 , les articles R. 353-156 à R. 353-160 du présent code son
 Saint-Barthélemy et à Saint-Martin.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0269; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0267; source-lines: 3460-3462; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0269; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0267; source-lines: 3460-3462; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4818,7 +4818,7 @@ Pour leur application à Saint-Barthélemy et à Saint-Martin :
 par les mots : " en application de la réglementation applicable localement " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0270; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0268; source-lines: 3465-3472; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0270; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0268; source-lines: 3465-3472; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4828,7 +4828,7 @@ D. 842-12 ne sont pas applicables aux opérations de logements évolutifs sociau
 logements très sociaux, en accession à la propriété aidée par l'Etat ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0271; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0269; source-lines: 3475-3477; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0271; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0269; source-lines: 3475-3477; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4844,7 +4844,7 @@ Pour leur application à Saint-Barthélemy et à Saint-Martin :
 par les mots : " en application de la réglementation applicable localement " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0272; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0270; source-lines: 3480-3488; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0272; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0270; source-lines: 3480-3488; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4854,7 +4854,7 @@ dans le coefficient de prise en charge " K ", la majoration pour personne à cha
 au d du 2° de l'article D. 832-25 est limitée à six enfants ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0273; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0271; source-lines: 3491-3493; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0273; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0271; source-lines: 3491-3493; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4864,7 +4864,7 @@ D. 842-12 ne sont pas applicables aux opérations de logements évolutifs sociau
 logements très sociaux, en accession à la propriété aidée par l'Etat ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0274; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0272; source-lines: 3496-3498; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0274; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0272; source-lines: 3496-3498; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4889,7 +4889,7 @@ logement et l'hébergement des personnes défavorisées " sont insérés les mot
 ", s'il existe, " ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0275; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0273; source-lines: 3501-3518; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0275; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0273; source-lines: 3501-3518; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4905,7 +4905,7 @@ L. 441-2-3 " sont remplacés par les mots : " ou qu'il a saisi une commission de
 prévue par la réglementation applicable localement ".
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0276; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0274; source-lines: 3521-3529; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0276; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0274; source-lines: 3521-3529; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4916,7 +4916,7 @@ L'article R. 843-3 et le deuxième alinéa de l'article R. 844-1 ne sont pas app
 Saint-Barthélemy et à Saint-Martin.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0277; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0275; source-lines: 3532-3535; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0277; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0275; source-lines: 3532-3535; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4931,7 +4931,7 @@ Pour l'application du présent livre à Saint-Pierre-et-Miquelon :
 sociale de Saint-Pierre-et-Miquelon ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0278; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0276; source-lines: 3538-3545; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0278; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0276; source-lines: 3538-3545; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4941,7 +4941,7 @@ titre de résidence principale, de personnes dans des immeubles comportant à la
 locaux privatifs meublés ou non, et des locaux communs affectés à la vie collective.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0279; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0277; source-lines: 3548-3550; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0279; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0277; source-lines: 3548-3550; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4953,7 +4953,7 @@ janvier 2022.
 ##### Section I : Fonds national d'aide au logement
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0280; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0278; source-lines: 3553-3557; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0280; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0278; source-lines: 3553-3557; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4973,7 +4973,7 @@ dispositions s'appliquent aux contributions et aux prestations dues à compter d
 janvier 2022.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0281; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0279; source-lines: 3560-3572; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0281; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0279; source-lines: 3560-3572; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4988,7 +4988,7 @@ Pour leur application à Saint-Pierre-et-Miquelon :
 sont remplacés par les mots : “ l'année civile ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0282; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0280; source-lines: 3575-3582; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0282; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0280; source-lines: 3575-3582; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5001,7 +5001,7 @@ personnelles au logement sont celles perçues pendant l'année civile de référ
 paiement. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0283; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0281; source-lines: 3585-3590; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0283; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0281; source-lines: 3585-3590; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5043,7 +5043,7 @@ faveur d'une personne handicapée, mentionnés au g du 2 de l'article 75 du code
 impôts. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0284; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0282; source-lines: 3593-3627; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0284; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0282; source-lines: 3593-3627; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5051,7 +5051,7 @@ impôts. ” ;
 4° L'article R. 822-5 n'est pas applicable à Saint-Pierre-et-Miquelon ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0285; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0283; source-lines: 3630-3630; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0285; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0283; source-lines: 3630-3630; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5061,7 +5061,7 @@ impôts. ” ;
 6° A l'article R. 822-7, les mots : “ au 1° de ” sont remplacés par le mot : “ à ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0286; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0284; source-lines: 3633-3635; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0286; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0284; source-lines: 3633-3635; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5069,7 +5069,7 @@ impôts. ” ;
 7° L'article R. 822-18 n'est pas applicable à Saint-Pierre-et-Miquelon ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0287; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0285; source-lines: 3638-3638; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0287; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0285; source-lines: 3638-3638; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5084,7 +5084,7 @@ b) Le 2° est remplacé par les dispositions suivantes :
 bien. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0288; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0286; source-lines: 3641-3648; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0288; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0286; source-lines: 3641-3648; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5098,7 +5098,7 @@ logement décent pris pour l'application de l'article 187 de la loi n° 2000-120
 décembre 2000 relative à la solidarité et au renouvellement urbain.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0289; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0287; source-lines: 3651-3657; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0289; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0287; source-lines: 3651-3657; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5122,7 +5122,7 @@ applicable localement. Ils sont arrondis à la centaine d'euro la plus proche.
 vigueur en métropole.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0290; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0288; source-lines: 3660-3676; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0290; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0288; source-lines: 3660-3676; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5144,7 +5144,7 @@ Caisse de prévoyance sociale de Saint-Pierre-et-Miquelon pour les bénéficiair
 à Saint-Pierre-et-Miquelon. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0291; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0289; source-lines: 3679-3693; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0291; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0289; source-lines: 3679-3693; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5153,7 +5153,7 @@ Caisse de prévoyance sociale de Saint-Pierre-et-Miquelon pour les bénéficiair
 “ outre-mer ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0292; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0290; source-lines: 3696-3697; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0292; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0290; source-lines: 3696-3697; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5167,7 +5167,7 @@ extension et adaptation au département de Saint-Pierre-et-Miquelon de diverses
 dispositions relatives aux affaires sociales et de l'article L. 823-2 du présent code ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0293; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0291; source-lines: 3700-3706; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0293; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0291; source-lines: 3700-3706; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5189,7 +5189,7 @@ sécurité sociale et bénéficiaires de l'article L. 161-19 et de l'article L.
 juillet 1987 mentionnée précédemment ; ”
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0294; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0292; source-lines: 3709-3723; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0294; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0292; source-lines: 3709-3723; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5210,7 +5210,7 @@ elles sont calculées et servies proportionnellement au nombre de mois pendant l
 le droit est ouvert. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0295; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0293; source-lines: 3726-3739; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0295; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0293; source-lines: 3726-3739; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5218,7 +5218,7 @@ le droit est ouvert. ” ;
 5° L'article R. 823-6-1 n'est pas applicable à Saint-Pierre-et-Miquelon ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0296; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0294; source-lines: 3742-3742; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0296; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0294; source-lines: 3742-3742; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5227,7 +5227,7 @@ le droit est ouvert. ” ;
 particuliers prévus à l'article L. 812-3 ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0297; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0295; source-lines: 3745-3746; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0297; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0295; source-lines: 3745-3746; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5241,7 +5241,7 @@ péril lorsqu'elles reprennent le paiement du loyer ou de toute autre somme vers
 contrepartie de l'occupation de ce logement ou lorsqu'elles sont relogées. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0298; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0296; source-lines: 3749-3755; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0298; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0296; source-lines: 3749-3755; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5253,7 +5253,7 @@ adaptation au département de Saint-Pierre-et-Miquelon de diverses dispositions 
 aux affaires sociales. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0299; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0297; source-lines: 3758-3762; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0299; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0297; source-lines: 3758-3762; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5264,7 +5264,7 @@ aux affaires sociales. ” ;
 sécurité sociale sont applicables au recouvrement des indus.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0300; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0298; source-lines: 3765-3768; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0300; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0298; source-lines: 3765-3768; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5291,7 +5291,7 @@ articles R. 842-5 et D. 842-6 à D. 842-13 ;
 D. 823-19 et par les règles particulières figurant aux articles D. 842-1 à D. 842-4. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0301; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0299; source-lines: 3771-3790; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0301; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0299; source-lines: 3771-3790; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5304,7 +5304,7 @@ annuelle du dernier indice des prix à la consommation des ménages hors tabac e
 localement et connu à la date du 1er novembre. ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0302; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0300; source-lines: 3793-3798; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0302; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0300; source-lines: 3793-3798; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5313,7 +5313,7 @@ localement et connu à la date du 1er novembre. ” ;
 “ outre-mer ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0303; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0301; source-lines: 3801-3802; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0303; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0301; source-lines: 3801-3802; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5325,7 +5325,7 @@ recouvrement des sommes indûment payées, pour un montant en deçà de 0,68 % d
 mensuel de sécurité sociale en vigueur, arrondi à l'euro supérieur. ”
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0304; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0302; source-lines: 3805-3809; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0304; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0302; source-lines: 3805-3809; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5340,7 +5340,7 @@ La section 2 du chapitre III du titre II du présent livre n'est pas applicable 
 Saint-Pierre-et-Miquelon.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0305; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0303; source-lines: 3812-3819; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0305; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0303; source-lines: 3812-3819; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5389,7 +5389,7 @@ dispositions s'appliquent aux contributions et aux prestations dues à compter d
 janvier 2022.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0306; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0304; source-lines: 3822-3863; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0306; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0304; source-lines: 3822-3863; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5401,7 +5401,7 @@ Pour son application à Saint-Pierre-et-Miquelon, à l'article D. 824-15, après
 équivalentes ”.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0307; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0305; source-lines: 3866-3870; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0307; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0305; source-lines: 3866-3870; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5413,7 +5413,7 @@ janvier 2022.
 ###### Sous-section V : Contentieux
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0308; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0306; source-lines: 3873-3877; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0308; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0306; source-lines: 3873-3877; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5430,7 +5430,7 @@ dispositions s'appliquent aux contributions et aux prestations dues à compter d
 janvier 2022.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0309; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0307; source-lines: 3880-3889; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0309; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0307; source-lines: 3880-3889; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5448,7 +5448,7 @@ de logement de locaux non destinés à l'habitation ou à l'agrandissement de lo
 existants ” ;
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0310; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0308; source-lines: 3892-3902; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0310; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0308; source-lines: 3892-3902; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5487,7 +5487,7 @@ président du conseil territorial.
 logement ou une solution de relogement. ”
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0311; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0309; source-lines: 3905-3936; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0311; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0309; source-lines: 3905-3936; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5507,7 +5507,7 @@ remplacés par les mots : “en application de la règlementation applicable loc
 “et de l'outre-mer”.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0312; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0310; source-lines: 3939-3951; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0312; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0310; source-lines: 3939-3951; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5521,7 +5521,7 @@ janvier 2022.
 Les articles D. 842-15 à D. 842-18 ne sont pas applicables à Saint-Pierre-et-Miquelon.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0313; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0311; source-lines: 3954-3960; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0313; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0311; source-lines: 3954-3960; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -5536,7 +5536,7 @@ Les articles R. 842-14, R. 843-2 à R. 843-8 ne sont pas applicables à
 Saint-Pierre-et-Miquelon.
 
 
-<!-- rtdf-block-id: aides_logement/code_construction_reglementaire:b0314; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0312; source-lines: 3963-3970; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_construction_reglementaire:b0314; role: provision; provision-id: aides_logement/code_construction_reglementaire:p0312; source-lines: 3963-3970; relation: formalizes-preceding -->
 ```catala
 ```
 

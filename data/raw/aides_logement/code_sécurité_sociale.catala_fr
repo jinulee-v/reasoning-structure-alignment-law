@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/code_sécurité_sociale -->
+<!-- rsa-document-id: aides_logement/code_sécurité_sociale -->
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -42,7 +42,7 @@ les allocations mentionnées à l' article 2 de l'ordonnance n° 2004-605 du 24 
 la construction et de l'habitation ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0003; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0001; source-lines: 1-31; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0003; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0001; source-lines: 1-31; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -124,7 +124,7 @@ retraite est fixé à soixante-quatre ans pour les assurés nés à compter du 1
 janvier 1968.
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0004; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0002; source-lines: 34-108; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0004; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0002; source-lines: 34-108; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -158,7 +158,7 @@ travail dans les conditions prévues à l'article L. 351-7 et pour ceux justifia
 d'une incapacité permanente au moins égale à un taux fixé par décret.
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0005; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0003; source-lines: 111-137; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0005; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0003; source-lines: 111-137; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -181,7 +181,7 @@ dont l'incapacité permanente est supérieure ou égale au pourcentage prévu po
 l'application de l'article L. 821-2.
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0006; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0004; source-lines: 140-155; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0006; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0004; source-lines: 140-155; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -203,7 +203,7 @@ plusieurs autres régimes obligatoires :
 de trois années ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0007; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0005; source-lines: 158-172; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0007; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0005; source-lines: 158-172; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -282,7 +282,7 @@ concubins ou partenaires liés par un pacte civil de solidarité dépasse ces
 plafonds, la ou les allocations sont réduites à due concurrence.
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0008; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0006; source-lines: 175-246; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0008; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0006; source-lines: 175-246; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -308,7 +308,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 1° Soixante ans pour les assurés nés avant le 1er juillet 1951 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0009; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0007; source-lines: 249-267; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0009; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0007; source-lines: 249-267; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -317,7 +317,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 1951 et le 31 décembre 1951 inclus ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0010; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0008; source-lines: 270-271; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0010; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0008; source-lines: 270-271; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -325,7 +325,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 3° Soixante ans et neuf mois pour les assurés nés en 1952 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0011; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0009; source-lines: 274-274; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0011; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0009; source-lines: 274-274; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -333,7 +333,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 4° Soixante et un ans et deux mois pour les assurés nés en 1953 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0012; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0010; source-lines: 277-277; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0012; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0010; source-lines: 277-277; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -341,7 +341,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 5° Soixante et un ans et sept mois pour les assurés nés en 1954 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0013; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0011; source-lines: 280-280; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0013; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0011; source-lines: 280-280; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -349,7 +349,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 6° Soixante-deux ans pour les assurés nés entre le 1er janvier 1955 et le 31 août 1961 inclus ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0014; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0012; source-lines: 283-283; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0014; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0012; source-lines: 283-283; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -357,7 +357,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 7° Soixante-deux ans et trois mois pour les assurés nés entre le 1er septembre 1961 et le 31 décembre 1961 inclus ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0015; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0013; source-lines: 286-286; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0015; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0013; source-lines: 286-286; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -365,7 +365,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 8° Soixante-deux ans et six mois pour les assurés nés en 1962 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0016; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0014; source-lines: 289-289; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0016; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0014; source-lines: 289-289; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -373,7 +373,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 9° Soixante-deux ans et neuf mois pour les assurés nés en 1963 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0017; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0015; source-lines: 292-292; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0017; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0015; source-lines: 292-292; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -381,7 +381,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 10° Soixante-trois ans pour les assurés nés en 1964 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0018; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0016; source-lines: 295-295; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0018; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0016; source-lines: 295-295; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -389,7 +389,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 11° Soixante-trois ans et trois mois pour les assurés nés en 1965 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0019; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0017; source-lines: 298-298; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0019; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0017; source-lines: 298-298; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -397,7 +397,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 12° Soixante-trois ans et six mois pour les assurés nés en 1966 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0020; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0018; source-lines: 301-301; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0020; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0018; source-lines: 301-301; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -405,7 +405,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 13° Soixante-trois ans et neuf mois pour les assurés nés en 1967 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0021; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0019; source-lines: 304-304; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0021; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0019; source-lines: 304-304; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -413,7 +413,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 14° Soixante-quatre ans pour les assurés nés à compter du 1er janvier 1968.
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0022; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0020; source-lines: 307-307; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0022; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0020; source-lines: 307-307; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -442,7 +442,7 @@ par an à compter du 1er avril 2018, à 10 418,40 euros par an à compter du 1er
 janvier 2019 et à 10 838,40 euros par an à compter du 1er janvier 2020 ;
 
 
-<!-- rtdf-block-id: aides_logement/code_sécurité_sociale:b0023; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0021; source-lines: 310-331; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/code_sécurité_sociale:b0023; role: provision; provision-id: aides_logement/code_sécurité_sociale:p0021; source-lines: 310-331; relation: formalizes-preceding -->
 ```catala
 ```
 

@@ -7,12 +7,12 @@ intentionally independent of every earlier SARA-to-Catala implementation.
 ## Source discipline
 
 The nine `Section*.catala_en` files preserve the nine statutory texts. Every
-independently operative statutory span carries an RTDF block ID, including
+independently operative statutory span carries an RSA block ID, including
 parent aggregation and substantive trailing text. Trailing anchors use the
 explicit `:closing` suffix rather than the former `:flush` name. Bare headings
 have no blocks. `Definitions.catala_en` owns the shared factual world and generic
 queries, while `Api.catala_en` owns the single evaluator-facing composition.
-Neither infrastructure file has RTDF/XML block annotations.
+Neither infrastructure file has RSA/XML block annotations.
 
 ## Input boundary
 

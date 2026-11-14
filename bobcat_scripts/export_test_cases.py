@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Publish already-generated BOBCat cases for RTDF verification.
+"""Publish already-generated BOBCat cases for RSA verification.
 
-This is intentionally separate from ``rtdf_formalizer.experiment``: validation
+This is intentionally separate from ``rsa_formalizer.experiment``: validation
 consumes a frozen corpus and never invokes BOBCat or changes that corpus.
 """
 from __future__ import annotations

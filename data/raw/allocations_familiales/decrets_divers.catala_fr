@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/decrets_divers -->
+<!-- rsa-document-id: allocations_familiales/decrets_divers -->
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -28,7 +28,7 @@ sont supérieurs au plafond de base de 78 770 euros majoré de
 5 628 euros par enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0003; role: provision; provision-id: allocations_familiales/decrets_divers:p0001; source-lines: 1-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0003; role: provision; provision-id: allocations_familiales/decrets_divers:p0001; source-lines: 1-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -50,7 +50,7 @@ tranche est celle dont les revenus sont supérieurs au plafond de
 base de 79 558 euros majoré de 5 684 euros par enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0004; role: provision; provision-id: allocations_familiales/decrets_divers:p0002; source-lines: 20-34; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0004; role: provision; provision-id: allocations_familiales/decrets_divers:p0002; source-lines: 20-34; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -72,7 +72,7 @@ tranche est celle dont les revenus sont supérieurs au plafond de base de
 80 831 € majoré de 5 775 € par enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0005; role: provision; provision-id: allocations_familiales/decrets_divers:p0003; source-lines: 37-51; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0005; role: provision; provision-id: allocations_familiales/decrets_divers:p0003; source-lines: 37-51; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -88,7 +88,7 @@ L. 521-1 est fixé à 58 279 euros pour la période du 1er janvier 2021 au 31
 décembre 2021. Il est majoré de 5 827 euros par enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0006; role: provision; provision-id: allocations_familiales/decrets_divers:p0004; source-lines: 54-62; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0006; role: provision; provision-id: allocations_familiales/decrets_divers:p0004; source-lines: 54-62; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -100,7 +100,7 @@ L. 521-1 est fixé à 81 558 euros pour la période du 1er janvier 2021 au 31
 décembre 2021. Il est majoré de 5 827 euros par enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0007; role: provision; provision-id: allocations_familiales/decrets_divers:p0005; source-lines: 65-69; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0007; role: provision; provision-id: allocations_familiales/decrets_divers:p0005; source-lines: 65-69; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -116,35 +116,35 @@ pourcentage de la base mensuelle de calcul des allocations familiales
 prévue à l'article L. 551-1 du code de la sécurité sociale, ainsi qu'il suit :
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0008; role: provision; provision-id: allocations_familiales/decrets_divers:p0006; source-lines: 72-80; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0008; role: provision; provision-id: allocations_familiales/decrets_divers:p0006; source-lines: 72-80; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 1° 5,88 % pour un seul enfant à charge ;
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0009; role: provision; provision-id: allocations_familiales/decrets_divers:p0007; source-lines: 83-83; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0009; role: provision; provision-id: allocations_familiales/decrets_divers:p0007; source-lines: 83-83; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 2° 32 % pour deux enfants à charge ;
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0010; role: provision; provision-id: allocations_familiales/decrets_divers:p0008; source-lines: 85-85; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0010; role: provision; provision-id: allocations_familiales/decrets_divers:p0008; source-lines: 85-85; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 3° 16 % pour le troisième enfant à charge ;
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0011; role: provision; provision-id: allocations_familiales/decrets_divers:p0009; source-lines: 87-87; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0011; role: provision; provision-id: allocations_familiales/decrets_divers:p0009; source-lines: 87-87; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 4° 4,63 % pour le quatrième enfant à charge et chacun des suivants.
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0012; role: provision; provision-id: allocations_familiales/decrets_divers:p0010; source-lines: 89-89; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0012; role: provision; provision-id: allocations_familiales/decrets_divers:p0010; source-lines: 89-89; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -194,7 +194,7 @@ A compter de 2021 57,28 €                  5,88 %                    32 %     
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-<!-- rtdf-block-id: allocations_familiales/decrets_divers:b0013; role: provision; provision-id: allocations_familiales/decrets_divers:p0011; source-lines: 91-133; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/decrets_divers:b0013; role: provision; provision-id: allocations_familiales/decrets_divers:p0011; source-lines: 91-133; relation: formalizes-preceding -->
 ```catala
 ```
 

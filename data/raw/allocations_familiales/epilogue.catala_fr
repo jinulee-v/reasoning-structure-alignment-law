@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/epilogue -->
+<!-- rsa-document-id: allocations_familiales/epilogue -->
 
-<!-- rtdf-block-id: allocations_familiales/epilogue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/epilogue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/epilogue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/epilogue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -19,7 +19,7 @@ dans ces textes et doivent être explicitées pour le calcul informatique. C'est
 la fonction du bloc de code ci-dessous.
 
 
-<!-- rtdf-block-id: allocations_familiales/epilogue:b0003; role: provision; provision-id: allocations_familiales/epilogue:p0001; source-lines: 1-8; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/epilogue:b0003; role: provision; provision-id: allocations_familiales/epilogue:p0001; source-lines: 1-8; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -34,7 +34,7 @@ sorte que l'utilisateur puisse ne doive saisir que le nombre minimal
 d'informations sur les enfants à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/epilogue:b0004; role: provision; provision-id: allocations_familiales/epilogue:p0002; source-lines: 11-18; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/epilogue:b0004; role: provision; provision-id: allocations_familiales/epilogue:p0002; source-lines: 11-18; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -50,7 +50,7 @@ La présente disposition ne fait pas obstacle à l'application des prescriptions
 particulières imposant une scolarité plus longue.
 
 
-<!-- rtdf-block-id: allocations_familiales/epilogue:b0005; role: provision; provision-id: allocations_familiales/epilogue:p0003; source-lines: 21-29; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/epilogue:b0005; role: provision; provision-id: allocations_familiales/epilogue:p0003; source-lines: 21-29; relation: formalizes-preceding -->
 ```catala
 ```
 

@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/arrete_2019-09-27 -->
+<!-- rsa-document-id: aides_logement/arrete_2019-09-27 -->
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -18,7 +18,7 @@
 L'abattement forfaitaire prévu par l'article R. 822-7 du même code est fixé à 95 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0003; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0001; source-lines: 1-7; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0003; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0001; source-lines: 1-7; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -28,7 +28,7 @@ L'abattement forfaitaire prévu par l'article R. 822-7 du même code est fixé �
 L'abattement forfaitaire prévu par l'article R. 822-8 du même code est fixé à 2 589 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0004; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0002; source-lines: 10-12; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0004; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0002; source-lines: 10-12; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -44,7 +44,7 @@ pas assujettie à l'impôt sur le revenu, le montant forfaitaire de ressources e
 pour la location et à 5 400 euros pour la résidence en logement-foyer.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0005; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0003; source-lines: 15-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0005; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0003; source-lines: 15-23; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -80,7 +80,7 @@ ATDL2523110A), ces dispositions, dans leur rédaction issue de l'arrêté préci
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0006; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0004; source-lines: 26-54; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0006; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0004; source-lines: 26-54; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -130,7 +130,7 @@ ATDL2523110A), ces dispositions, dans leur rédaction issue de l'arrêté préci
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0007; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0005; source-lines: 58-99; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0007; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0005; source-lines: 58-99; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -159,7 +159,7 @@ ATDL2523110A), ces dispositions, dans leur rédaction issue de l'arrêté préci
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0008; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0006; source-lines: 102-123; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0008; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0006; source-lines: 102-123; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -182,7 +182,7 @@ III	 2,5                      3,1
 -----------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0009; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0007; source-lines: 126-141; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0009; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0007; source-lines: 126-141; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -193,7 +193,7 @@ Le montant de minoration forfaitaire prévu au 9e alinéa de l'article D. 823-16
 du même code est fixé à 5 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0010; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0008; source-lines: 144-147; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0010; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0008; source-lines: 144-147; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -206,7 +206,7 @@ est fixé à 10 euros pour les allocations de logement et à 0 euro pour l'aide
 personnalisée au logement.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0011; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0009; source-lines: 150-155; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0011; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0009; source-lines: 150-155; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -218,7 +218,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 39,56 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0012; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0010; source-lines: 158-162; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0012; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0010; source-lines: 158-162; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -257,7 +257,7 @@ une personne à charge                                2,70 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0013; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0011; source-lines: 165-196; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0013; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0011; source-lines: 165-196; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -268,7 +268,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0014; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0012; source-lines: 199-202; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0014; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0012; source-lines: 199-202; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -290,7 +290,7 @@ Si $\textrm{RL}<45\%$ Si $45\% < \textrm{RL} < 75\%$                 Si $\textrm
 $\textrm{TL}=0 \%$    $\textrm{TL}=0,45 \%\times (\textrm{RL}-45\%)$ $\textrm{TL}=0,45\%\times30 \%+0,68 \%\times(\textrm{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0015; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0013; source-lines: 205-219; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0015; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0013; source-lines: 205-219; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -305,7 +305,7 @@ Personne seule ou couple ayant une personne à charge  399,89
 Majoration par personne à charge	                    58,21
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0016; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0014; source-lines: 222-229; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0016; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0014; source-lines: 222-229; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -335,7 +335,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  346
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0017; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0015; source-lines: 232-254; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0017; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0015; source-lines: 232-254; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -371,7 +371,7 @@ charge supplémentaire              49,42  43,66  39,76
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0018; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0016; source-lines: 257-285; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0018; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0016; source-lines: 257-285; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -385,7 +385,7 @@ Couple sans personne à charge	   60,59
 Majoration par personne à charge 13,74
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0019; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0017; source-lines: 288-294; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0019; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0017; source-lines: 288-294; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -406,7 +406,7 @@ l'article R. 832-5 du même code sont fixées, comme suit compte tenu de la date
 du contrat de prêt figurant sur le certificat daté prévu au 1° du I de l'article D. 832-12 du même code :
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0020; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0018; source-lines: 297-310; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0020; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0018; source-lines: 297-310; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -423,7 +423,7 @@ Bénéficiaire isolé ou couple ayant une personne à charge 2 945	2 618   2 428
 Par personne supplémentaire à charge	                   430	  379     346
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0021; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0019; source-lines: 313-322; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0021; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0019; source-lines: 313-322; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -438,7 +438,7 @@ Bénéficiaire isolé ou couple ayant une personne à charge 2 372	2 106   1 955
 Par personne supplémentaire à charge	                   347	  305     279
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0022; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0020; source-lines: 325-332; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0022; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0020; source-lines: 325-332; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -455,7 +455,7 @@ Bénéficiaire isolé ou couple ayant une personne à charge 2 600	2 312   2 142
 Par personne supplémentaire à charge	                   380	  335     305
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0023; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0021; source-lines: 335-344; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0023; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0021; source-lines: 335-344; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -471,7 +471,7 @@ Bénéficiaire isolé ou couple ayant une personne à charge 2 093	1 858   1 725
 Par personne supplémentaire à charge	                   306	  269     246
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0024; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0022; source-lines: 347-355; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0024; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0022; source-lines: 347-355; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -498,7 +498,7 @@ Bénéficiaire isolé ou couple ayant une personne à charge 1 073
 Par personne supplémentaire à charge                     102
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0025; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0023; source-lines: 358-377; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0025; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0023; source-lines: 358-377; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -720,7 +720,7 @@ Conformément à l’article 3 de l’arrêté du 26 décembre 2022 (NOR : TREL2
 ces dispositions sont applicables pour les prestations dues à compter du 1er janvier 2023.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0026; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0024; source-lines: 380-594; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0026; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0024; source-lines: 380-594; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -744,7 +744,7 @@ ces dispositions, dans leur rédaction issue de l'arrêté précité, sont
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0027; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0025; source-lines: 598-613; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0027; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0025; source-lines: 598-613; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -755,7 +755,7 @@ Le montant de minoration forfaitaire prévu au 9e alinéa de l'article D. 832-10
 du même code est fixé à 5 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0028; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0026; source-lines: 616-619; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0028; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0026; source-lines: 616-619; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -767,7 +767,7 @@ avant application de la contribution pour le remboursement de la dette sociale,
 est fixé à 10 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0029; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0027; source-lines: 622-626; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0029; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0027; source-lines: 622-626; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -777,7 +777,7 @@ est fixé à 10 euros.
 Le coefficient « cm » défini au 3° de l'article D. 832-11 du même code est fixé à 22 111,33 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0030; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0028; source-lines: 629-631; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0030; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0028; source-lines: 629-631; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -793,7 +793,7 @@ du contrat de prêt ou de location-accession est postérieure au 30 juin 1992 :
 2° 41,60 % pour la tranche de ressources supérieures à 5 600,85 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0031; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0029; source-lines: 634-642; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0031; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0029; source-lines: 634-642; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -805,7 +805,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0032; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0030; source-lines: 645-649; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0032; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0030; source-lines: 645-649; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -819,7 +819,7 @@ Couple sans personne à charge	   60,59
 Majoration par personne à charge 13,74
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0033; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0031; source-lines: 652-658; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0033; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0031; source-lines: 652-658; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -843,7 +843,7 @@ a) 0,0226 pour les prêts souscrits avant le 1er octobre 1998 ;
 b) 0,0234 pour les prêts souscrits à compter de cette dernière date.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0034; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0032; source-lines: 661-677; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0034; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0032; source-lines: 661-677; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -854,7 +854,7 @@ Pour déterminer le plancher de ressources, le coefficient prévu à l'article
 D. 832-18 du même code est fixé à 16,25.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0035; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0033; source-lines: 680-683; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0035; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0033; source-lines: 680-683; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -883,7 +883,7 @@ ces dispositions, dans leur rédaction issue de l'arrêté précité, sont
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0036; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0034; source-lines: 686-707; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0036; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0034; source-lines: 686-707; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -894,7 +894,7 @@ Le montant de minoration forfaitaire prévu au 8e alinéa de l'article D. 832-24
 du même code est fixé à 5 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0037; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0035; source-lines: 710-713; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0037; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0035; source-lines: 710-713; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -906,7 +906,7 @@ avant application de la contribution pour le remboursement de la dette sociale,
 est fixé à 10 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0038; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0036; source-lines: 716-720; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0038; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0036; source-lines: 716-720; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -919,7 +919,7 @@ dans la formule de calcul du coefficient de prise en charge « K » sont fixées
 1° 1 217,26 pour le coefficient « r » défini au c du 1° ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0039; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0037; source-lines: 723-728; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0039; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0037; source-lines: 723-728; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -928,7 +928,7 @@ dans la formule de calcul du coefficient de prise en charge « K » sont fixées
 respectivement au d du 1° et au c du 2°.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0040; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0038; source-lines: 731-732; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0040; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0038; source-lines: 731-732; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -954,7 +954,7 @@ a) Au premier alinéa :
 6° 48,00 % pour la tranche de ressources supérieure à 6 331,29 euros ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0041; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0039; source-lines: 735-753; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0041; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0039; source-lines: 735-753; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -972,7 +972,7 @@ b) Au deuxième alinéa :
 5° 32,80 % pour la tranche de ressources supérieure à 4 095,05 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0042; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0040; source-lines: 756-766; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0042; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0040; source-lines: 756-766; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -981,7 +981,7 @@ II.-Les montants forfaitaires mentionnés aux premier et deuxième alinéas sont
 fixés respectivement à 45,57 et 76,32.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0043; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0041; source-lines: 769-770; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0043; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0041; source-lines: 769-770; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -991,7 +991,7 @@ NOTA : Conformément à l’article 3 de l’arrêté du 29 juillet 2022
 dues à compter du 1 er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0044; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0042; source-lines: 773-775; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0044; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0042; source-lines: 773-775; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1003,7 +1003,7 @@ pour les logements-foyers de jeunes travailleurs et les résidences sociales vis
 D. 832-25 du même code pour lesquels ce montant est fixé à 15 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0045; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0043; source-lines: 778-782; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0045; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0043; source-lines: 778-782; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1198,7 +1198,7 @@ Certificats datés          I       314,76    379,33    407,87   419,27   431,06
 -------------------------------------------------------------------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0046; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0044; source-lines: 785-972; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0046; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0044; source-lines: 785-972; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1210,7 +1210,7 @@ ces dispositions sont applicables pour les prestations dues à compter du 1 er
 juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0047; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0045; source-lines: 975-979; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0047; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0045; source-lines: 975-979; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1232,7 +1232,7 @@ ces dispositions, dans leur rédaction issue de l'arrêté précité, sont
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0048; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0046; source-lines: 982-996; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0048; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0046; source-lines: 982-996; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1242,7 +1242,7 @@ applicables aux prestations dues à compter du 1er octobre 2025.
 Le montant de minoration forfaitaire prévu au 9e alinéa de l'article D. 842-6 du même code est fixé à 5 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0049; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0047; source-lines: 999-1001; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0049; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0047; source-lines: 999-1001; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1253,7 +1253,7 @@ Le seuil de versement prévu au dernier alinéa de l'article D. 842-6 du même c
 contribution pour le remboursement de la dette sociale, est fixé à 10 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0050; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0048; source-lines: 1004-1007; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0050; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0048; source-lines: 1004-1007; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1265,7 +1265,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0051; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0049; source-lines: 1010-1014; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0051; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0049; source-lines: 1010-1014; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1279,7 +1279,7 @@ Couple sans personne à charge                            60,59
 Majoration par personne à charge                         13,74
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0052; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0050; source-lines: 1017-1023; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0052; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0050; source-lines: 1017-1023; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1297,7 +1297,7 @@ Pour le calcul de la dépense nette minimale de logement définie à l'article D
 1° Le montant minimum mentionné au deuxième alinéa est fixé à 15 euros ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0053; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0051; source-lines: 1026-1036; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0053; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0051; source-lines: 1026-1036; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1305,7 +1305,7 @@ Pour le calcul de la dépense nette minimale de logement définie à l'article D
 2° Le coefficient mentionné au troisième alinéa est fixé à 0,0234.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0054; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0052; source-lines: 1039-1039; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0054; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0052; source-lines: 1039-1039; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1317,7 +1317,7 @@ Pour déterminer le plancher de ressources défini à l'article D. 842-12 du mê
 1° Le coefficient prévu au 1° est fixé à 16,25 ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0055; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0053; source-lines: 1042-1046; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0055; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0053; source-lines: 1042-1046; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1325,7 +1325,7 @@ Pour déterminer le plancher de ressources défini à l'article D. 842-12 du mê
 2° Le montant forfaitaire prévu au 2° est fixé à 3 900 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0056; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0054; source-lines: 1049-1049; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0056; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0054; source-lines: 1049-1049; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1349,7 +1349,7 @@ ces dispositions, dans leur rédaction issue de l'arrêté précité, sont
 applicables aux prestations dues à compter du 1er octobre 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0057; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0055; source-lines: 1052-1068; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0057; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0055; source-lines: 1052-1068; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1360,7 +1360,7 @@ Le montant de minoration forfaitaire prévu au 9e alinéa de l'article D. 842-15
 fixé à 5 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0058; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0056; source-lines: 1071-1074; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0058; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0056; source-lines: 1071-1074; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1372,7 +1372,7 @@ avant application de la contribution pour le remboursement de la dette sociale,
 est fixé à 10 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0059; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0057; source-lines: 1077-1081; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0059; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0057; source-lines: 1077-1081; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1389,7 +1389,7 @@ a) 94,04 euros lorsqu'il s'agit d'une personne seule ;
 b) 146,43 euros euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0060; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0058; source-lines: 1084-1093; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0060; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0058; source-lines: 1084-1093; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1401,7 +1401,7 @@ a) 190,13 euros lorsqu'il s'agit d'une personne seule ;
 b) 295,50 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0061; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0059; source-lines: 1096-1100; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0061; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0059; source-lines: 1096-1100; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1413,7 +1413,7 @@ a) 230,68 euros lorsqu'il s'agit d'une personne seule ;
 b) 358,47 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0062; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0060; source-lines: 1103-1107; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0062; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0060; source-lines: 1103-1107; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1425,7 +1425,7 @@ a) 190,13 euros lorsqu'il s'agit d'une personne seule ;
 b) 295,50 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0063; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0061; source-lines: 1110-1114; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0063; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0061; source-lines: 1110-1114; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1442,7 +1442,7 @@ Le montant minimum de dépense nette de logement défini à l'article D. 842-17 
 est fixé à 15 euros.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0064; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0062; source-lines: 1117-1126; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0064; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0062; source-lines: 1117-1126; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1458,7 +1458,7 @@ les bénéficiaires isolés ou couples ayant trois enfants à charge et est
 majoré de 20 % par enfant supplémentaire à charge.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0065; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0063; source-lines: 1129-1137; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0065; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0063; source-lines: 1129-1137; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1476,7 +1476,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 656 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0066; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0064; source-lines: 1140-1150; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0066; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0064; source-lines: 1140-1150; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1494,7 +1494,7 @@ Bénéficiaire isolé ou couple sans personne à charge 40,68
 Par personne supplémentaire à charge                10,47
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0067; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0065; source-lines: 1153-1163; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0067; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0065; source-lines: 1153-1163; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1510,7 +1510,7 @@ Couple sans personne à charge    40,68
 Majoration par personne à charge 10,47
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0068; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0066; source-lines: 1166-1174; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0068; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0066; source-lines: 1166-1174; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1535,7 +1535,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0069; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0067; source-lines: 1177-1194; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0069; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0067; source-lines: 1177-1194; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1545,7 +1545,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0070; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0068; source-lines: 1197-1199; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0070; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0068; source-lines: 1197-1199; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1564,7 +1564,7 @@ valeurs fixées au chapitre III relatif au calcul des aides personnelles au
 logement en secteur locatif.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0071; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0069; source-lines: 1202-1213; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0071; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0069; source-lines: 1202-1213; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1593,7 +1593,7 @@ ATDL2429209A), ces dispositions sont applicables aux prestations dues à
 compter du 1er janvier 2025.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0072; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0070; source-lines: 1216-1237; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0072; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0070; source-lines: 1216-1237; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1612,7 +1612,7 @@ NOTA : Conformément à l’article 3 de l’arrêté du 26 décembre 2022
 dues à compter du 1er janvier 2023.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0073; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0071; source-lines: 1240-1251; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0073; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0071; source-lines: 1240-1251; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1627,7 +1627,7 @@ de l'article L. 831-2 du même code, les communes auxquelles s'applique la
 dérogation sont celles appartenant à la zone III.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0074; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0072; source-lines: 1254-1261; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0074; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0072; source-lines: 1254-1261; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1647,7 +1647,7 @@ sont chargés, chacun en ce qui le concerne, de l'exécution du présent arrêt�
 qui sera publié au Journal officiel de la République française.
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0075; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0073; source-lines: 1264-1276; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0075; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0073; source-lines: 1264-1276; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1733,7 +1733,7 @@ A abrogé les dispositions suivantes :
 Art. 2
 
 
-<!-- rtdf-block-id: aides_logement/arrete_2019-09-27:b0076; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0074; source-lines: 1279-1357; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/arrete_2019-09-27:b0076; role: provision; provision-id: aides_logement/arrete_2019-09-27:p0074; source-lines: 1279-1357; relation: formalizes-preceding -->
 ```catala
 ```
 

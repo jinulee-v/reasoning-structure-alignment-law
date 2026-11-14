@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/autres_sources -->
+<!-- rsa-document-id: aides_logement/autres_sources -->
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -51,7 +51,7 @@ Personne seule 11 533,02 €    961,08 €
 Couple marié   17 905,06 €    1 492,08 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0003; role: provision; provision-id: aides_logement/autres_sources:p0001; source-lines: 1-40; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0003; role: provision; provision-id: aides_logement/autres_sources:p0001; source-lines: 1-40; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -64,7 +64,7 @@ Personne seule 11 533,02 €    961,08 €
 Couple marié   17 905,06 €    1 492,08 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0004; role: provision; provision-id: aides_logement/autres_sources:p0002; source-lines: 43-48; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0004; role: provision; provision-id: aides_logement/autres_sources:p0002; source-lines: 43-48; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -81,7 +81,7 @@ Personne seule 11 001,44 €    916,78 €
 Couple marié   17 079,77 €    1 423,31 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0005; role: provision; provision-id: aides_logement/autres_sources:p0003; source-lines: 51-60; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0005; role: provision; provision-id: aides_logement/autres_sources:p0003; source-lines: 51-60; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -94,7 +94,7 @@ Personne seule 11 001,44€     916,78 €
 Couple marié   17 079,77 €    1 423,31 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0006; role: provision; provision-id: aides_logement/autres_sources:p0004; source-lines: 63-68; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0006; role: provision; provision-id: aides_logement/autres_sources:p0004; source-lines: 63-68; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -111,7 +111,7 @@ Personne seule 10 881,75 €    906,81 €
 Couple marié   16 893,94 €    1 407,82 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0007; role: provision; provision-id: aides_logement/autres_sources:p0005; source-lines: 71-80; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0007; role: provision; provision-id: aides_logement/autres_sources:p0005; source-lines: 71-80; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -124,7 +124,7 @@ Personne seule 10 881,75 €    906,81 €
 Couple marié   16 893,94 €    1 407,82 €
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0008; role: provision; provision-id: aides_logement/autres_sources:p0006; source-lines: 83-88; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0008; role: provision; provision-id: aides_logement/autres_sources:p0006; source-lines: 83-88; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -152,7 +152,7 @@ modalités :
 code de la construction et de l'habitation ;
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0009; role: provision; provision-id: aides_logement/autres_sources:p0007; source-lines: 91-111; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0009; role: provision; provision-id: aides_logement/autres_sources:p0007; source-lines: 91-111; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -187,7 +187,7 @@ cotisations et contributions dues pour les périodes courant à compter du
 Le taux des contributions instituées par les articles 14 à 17 est fixé à 0,5 %.
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0010; role: provision; provision-id: aides_logement/autres_sources:p0008; source-lines: 114-141; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0010; role: provision; provision-id: aides_logement/autres_sources:p0008; source-lines: 114-141; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -279,7 +279,7 @@ période cumulée pendant laquelle il accueille l'enfant à son domicile au cour
 de l'année ;
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0011; role: provision; provision-id: aides_logement/autres_sources:p0009; source-lines: 144-228; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0011; role: provision; provision-id: aides_logement/autres_sources:p0009; source-lines: 144-228; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -306,7 +306,7 @@ ECLI:FR:CECHR:2017:398563.20170721
 1 euro = 6,55957 francs français
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0012; role: provision; provision-id: aides_logement/autres_sources:p0010; source-lines: 231-250; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0012; role: provision; provision-id: aides_logement/autres_sources:p0010; source-lines: 231-250; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -330,7 +330,7 @@ titre du mois de janvier 2022 jusqu'au mois de décembre 2025 est calculé selon
 ALspm = ALt × (1 - (2026-n) / 8)
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0013; role: provision; provision-id: aides_logement/autres_sources:p0011; source-lines: 253-269; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0013; role: provision; provision-id: aides_logement/autres_sources:p0011; source-lines: 253-269; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -347,7 +347,7 @@ code précité, le cas échéant adaptées selon les dispositions de l'article 2
 peuvent être modifiées par décret.
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0014; role: provision; provision-id: aides_logement/autres_sources:p0012; source-lines: 272-281; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0014; role: provision; provision-id: aides_logement/autres_sources:p0012; source-lines: 272-281; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -393,7 +393,7 @@ II. – La collectivité fixe les règles applicables dans les matières suivant
 1° Impôts, droits et taxes ; cadastre ;
 
 
-<!-- rtdf-block-id: aides_logement/autres_sources:b0015; role: provision; provision-id: aides_logement/autres_sources:p0013; source-lines: 284-322; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/autres_sources:b0015; role: provision; provision-id: aides_logement/autres_sources:p0013; source-lines: 284-322; relation: formalizes-preceding -->
 ```catala
 ```
 

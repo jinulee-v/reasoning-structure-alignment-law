@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/securite_sociale_R -->
+<!-- rsa-document-id: allocations_familiales/securite_sociale_R -->
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -24,7 +24,7 @@ ans sous réserve que leur rémunération n'excède pas le plafond fixé au deux
 alinéa du présent article.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0003; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0001; source-lines: 1-13; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0003; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0001; source-lines: 1-13; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -34,7 +34,7 @@ un mois, à 55 % du salaire minimum interprofessionnel de croissance défini aux
 articles L. 141-1 à L. 141-9 du code du travail, multiplié par 169.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0004; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0002; source-lines: 16-18; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0004; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0002; source-lines: 16-18; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -44,7 +44,7 @@ avantages devra être faite suivant les barèmes fixés pour l'application de la
 législation sur les assurances sociales.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0005; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0003; source-lines: 21-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0005; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0003; source-lines: 21-23; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -59,7 +59,7 @@ enfants ouvrent droit à la majoration des allocations familiales est fixé à
 14 ans.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0006; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0004; source-lines: 26-33; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0006; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0004; source-lines: 26-33; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -68,7 +68,7 @@ Le nombre minimum d'enfants à charge, mentionné au deuxième alinéa de l'arti
 L. 521-3 ouvrant droit à ladite majoration pour chaque enfant est fixé à trois.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0007; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0005; source-lines: 36-37; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0007; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0005; source-lines: 36-37; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -78,7 +78,7 @@ modifications induites par le décret n° 2008-409 s'appliquent aux enfants dont
 le onzième anniversaire est postérieur au 30 avril 2008.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0008; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0006; source-lines: 40-42; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0008; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0006; source-lines: 40-42; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -96,7 +96,7 @@ parents peut se voir reconnaître la qualité d'allocataire :
 une demande conjointe de partage.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0009; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0007; source-lines: 45-55; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0009; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0007; source-lines: 45-55; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -107,7 +107,7 @@ choisies qu'au bout d'un an, sauf modification des modalités de résidence du
 ou des enfants.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0010; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0008; source-lines: 58-61; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0010; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0008; source-lines: 58-61; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -121,7 +121,7 @@ multiplié par un coefficient résultant du rapport entre le nombre moyen
 d'enfants et le nombre total d'enfants.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0011; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0009; source-lines: 64-70; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0011; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0009; source-lines: 64-70; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -134,7 +134,7 @@ du nombre d'enfants à charge dans les conditions suivantes :
 2° Les autres enfants à charge comptent pour 1.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0012; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0010; source-lines: 73-78; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0012; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0010; source-lines: 73-78; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -144,7 +144,7 @@ ou des enfants en résidence alternée et, le cas échéant, du ou des autres
 enfants à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0013; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0011; source-lines: 81-83; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0013; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0011; source-lines: 81-83; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -156,7 +156,7 @@ nombre d'enfants à charge est évalué dans les conditions prévues au premier
 alinéa de l'article R. 521-3.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0014; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0012; source-lines: 86-90; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0014; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0012; source-lines: 86-90; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -165,7 +165,7 @@ Lorsque le ou les enfants ouvrant droit à ladite majoration sont en résidence
 alternée, le montant servi au titre de cette majoration est réduit de moitié.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0015; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0013; source-lines: 93-94; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0015; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0013; source-lines: 93-94; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -184,7 +184,7 @@ vigueur dans chacun des départements mentionnés à l'article L. 751-1 ,
 multiplié par 169.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_R:b0016; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0014; source-lines: 97-108; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_R:b0016; role: provision; provision-id: allocations_familiales/securite_sociale_R:p0014; source-lines: 97-108; relation: formalizes-preceding -->
 ```catala
 ```
 

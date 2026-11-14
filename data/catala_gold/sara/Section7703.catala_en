@@ -1,4 +1,4 @@
-<!-- rtdf-document-id: sara/section7703 -->
+<!-- rsa-document-id: sara/section7703 -->
 
 > Module Section7703
 > Using Definitions as W
@@ -25,7 +25,7 @@ declaration scope TreatedAsUnmarried:
     (1) the determination of whether an individual is married shall be made as of the close of his taxable year; except that if his spouse dies during his taxable year such determination shall be made as of the time of such death; and
 
 
-<!-- rtdf-block-id: sara/section7703:b0003; role: provision; provision-id: sara/section7703(a)(1); source-lines: 5-5; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section7703:b0003; role: provision; provision-id: sara/section7703(a)(1); source-lines: 5-5; relation: formalizes-preceding -->
 ```catala
 scope MaritalStatusA:
   definition result equals
@@ -54,7 +54,7 @@ scope MaritalStatusA:
     (2) an individual legally separated from his spouse under a decree of divorce or of separate maintenance shall not be considered as married.
 
 
-<!-- rtdf-block-id: sara/section7703:b0004; role: provision; provision-id: sara/section7703(a)(2); source-lines: 7-7; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section7703:b0004; role: provision; provision-id: sara/section7703(a)(2); source-lines: 7-7; relation: formalizes-preceding -->
 ```catala
 declaration legally_separated content boolean
   depends on world content W.World,
@@ -90,7 +90,7 @@ declaration subsection_b_conditions content boolean
     (1) an individual who is married (within the meaning of subsection (a)) and who files a separate return maintains as his home a household which constitutes for more than one-half of the taxable year the principal place of abode of a child with respect to whom such individual is entitled to a deduction for the taxable year under section 151,
 
 
-<!-- rtdf-block-id: sara/section7703:b0006; role: provision; provision-id: sara/section7703(b)(1); source-lines: 13-13; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section7703:b0006; role: provision; provision-id: sara/section7703(b)(1); source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
 scope TreatedAsUnmarried:
   definition holds equals
@@ -120,7 +120,7 @@ declaration maintains_home_for_child content boolean
     (2) such individual furnishes over one-half of the cost of maintaining such household during the taxable year, and
 
 
-<!-- rtdf-block-id: sara/section7703:b0007; role: provision; provision-id: sara/section7703(b)(2); source-lines: 15-15; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section7703:b0007; role: provision; provision-id: sara/section7703(b)(2); source-lines: 15-15; relation: formalizes-preceding -->
 ```catala
 declaration furnishes_over_half_household_cost content boolean
   depends on world content W.World,
@@ -148,7 +148,7 @@ declaration furnishes_over_half_household_cost content boolean
     (3) during the last 6 months of the taxable year, such individual's spouse is not a member of such household,
 
 
-<!-- rtdf-block-id: sara/section7703:b0008; role: provision; provision-id: sara/section7703(b)(3); source-lines: 17-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section7703:b0008; role: provision; provision-id: sara/section7703(b)(3); source-lines: 17-17; relation: formalizes-preceding -->
 ```catala
 declaration spouse_absent_from_household content boolean
   depends on world content W.World,

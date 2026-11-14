@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/archives -->
+<!-- rsa-document-id: aides_logement/archives -->
 
-<!-- rtdf-block-id: aides_logement/archives:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/archives:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/archives:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -19,7 +19,7 @@ Sont considérés comme personnes à charge, sous réserve qu'ils vivent
 habituellement au foyer :
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0003; role: provision; provision-id: aides_logement/archives:p0001; source-lines: 1-8; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0003; role: provision; provision-id: aides_logement/archives:p0001; source-lines: 1-8; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -29,7 +29,7 @@ sens des 1° et 2° de l'article L. 512-3 du code de la sécurité sociale et de
 l'article L. 823-2 du présent code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0004; role: provision; provision-id: aides_logement/archives:p0002; source-lines: 11-13; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0004; role: provision; provision-id: aides_logement/archives:p0002; source-lines: 11-13; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -49,7 +49,7 @@ sociale et bénéficiaires des articles L. 161-19 , L. 351-8 ou L. 643-3 du mêm
 code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0005; role: provision; provision-id: aides_logement/archives:p0003; source-lines: 16-28; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0005; role: provision; provision-id: aides_logement/archives:p0003; source-lines: 16-28; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -66,7 +66,7 @@ individuel prévu à l'article L. 815-9 du code de la sécurité sociale en vigu
 au 31 décembre de l'année de référence multiplié par 1,25.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0006; role: provision; provision-id: aides_logement/archives:p0004; source-lines: 31-40; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0006; role: provision; provision-id: aides_logement/archives:p0004; source-lines: 31-40; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -74,7 +74,7 @@ au 31 décembre de l'année de référence multiplié par 1,25.
 # Archives de l'arrêté du 27 septembre 2019 relatif au calcul des aides personnelles au logement et de la prime de déménagement
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0007; role: provision; provision-id: aides_logement/archives:p0005; source-lines: 43-43; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0007; role: provision; provision-id: aides_logement/archives:p0005; source-lines: 43-43; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -103,7 +103,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0008; role: provision; provision-id: aides_logement/archives:p0006; source-lines: 45-67; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0008; role: provision; provision-id: aides_logement/archives:p0006; source-lines: 45-67; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -152,7 +152,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0009; role: provision; provision-id: aides_logement/archives:p0007; source-lines: 70-111; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0009; role: provision; provision-id: aides_logement/archives:p0007; source-lines: 70-111; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -181,7 +181,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0010; role: provision; provision-id: aides_logement/archives:p0008; source-lines: 114-135; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0010; role: provision; provision-id: aides_logement/archives:p0008; source-lines: 114-135; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -193,7 +193,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 37,91 euros.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0011; role: provision; provision-id: aides_logement/archives:p0009; source-lines: 138-142; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0011; role: provision; provision-id: aides_logement/archives:p0009; source-lines: 138-142; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -233,7 +233,7 @@ une personne à charge                                2,70 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0012; role: provision; provision-id: aides_logement/archives:p0010; source-lines: 145-177; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0012; role: provision; provision-id: aides_logement/archives:p0010; source-lines: 145-177; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -244,7 +244,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0013; role: provision; provision-id: aides_logement/archives:p0011; source-lines: 180-183; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0013; role: provision; provision-id: aides_logement/archives:p0011; source-lines: 180-183; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -266,7 +266,7 @@ Si $\textrm{RL}<45\%$ Si $45\% < \textrm{RL} < 75\%$                 Si $\textrm
 $\textrm{TL}=0 \%$    $\textrm{TL}=0,45 \%\times (\textrm{RL}-45\%)$ $\textrm{TL}=0,45\%\times30 \%+0,68 \%\times(\textrm{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0014; role: provision; provision-id: aides_logement/archives:p0012; source-lines: 186-200; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0014; role: provision; provision-id: aides_logement/archives:p0012; source-lines: 186-200; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -281,7 +281,7 @@ Personne seule ou couple ayant une personne à charge  383,28
 Majoration par personne à charge	                    55,79
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0015; role: provision; provision-id: aides_logement/archives:p0013; source-lines: 203-210; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0015; role: provision; provision-id: aides_logement/archives:p0013; source-lines: 203-210; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -317,7 +317,7 @@ charge supplémentaire               47,36  41,84  38,11
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0016; role: provision; provision-id: aides_logement/archives:p0014; source-lines: 213-241; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0016; role: provision; provision-id: aides_logement/archives:p0014; source-lines: 213-241; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -331,7 +331,7 @@ Couple sans personne à charge	   58,08
 Majoration par personne à charge 13,17
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0017; role: provision; provision-id: aides_logement/archives:p0015; source-lines: 244-250; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0017; role: provision; provision-id: aides_logement/archives:p0015; source-lines: 244-250; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -360,7 +360,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0018; role: provision; provision-id: aides_logement/archives:p0016; source-lines: 253-274; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0018; role: provision; provision-id: aides_logement/archives:p0016; source-lines: 253-274; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -372,7 +372,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0019; role: provision; provision-id: aides_logement/archives:p0017; source-lines: 277-281; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0019; role: provision; provision-id: aides_logement/archives:p0017; source-lines: 277-281; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -386,7 +386,7 @@ Couple sans personne à charge	   58,08
 Majoration par personne à charge 13,17
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0020; role: provision; provision-id: aides_logement/archives:p0018; source-lines: 284-290; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0020; role: provision; provision-id: aides_logement/archives:p0018; source-lines: 284-290; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -419,7 +419,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0021; role: provision; provision-id: aides_logement/archives:p0019; source-lines: 293-318; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0021; role: provision; provision-id: aides_logement/archives:p0019; source-lines: 293-318; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -441,7 +441,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0022; role: provision; provision-id: aides_logement/archives:p0020; source-lines: 321-335; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0022; role: provision; provision-id: aides_logement/archives:p0020; source-lines: 321-335; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -453,7 +453,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0023; role: provision; provision-id: aides_logement/archives:p0021; source-lines: 338-342; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0023; role: provision; provision-id: aides_logement/archives:p0021; source-lines: 338-342; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -467,7 +467,7 @@ Couple sans personne à charge                            58,08
 Majoration par personne à charge                         13,17
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0024; role: provision; provision-id: aides_logement/archives:p0022; source-lines: 345-351; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0024; role: provision; provision-id: aides_logement/archives:p0022; source-lines: 345-351; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -495,7 +495,7 @@ TREL2321292A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0025; role: provision; provision-id: aides_logement/archives:p0023; source-lines: 354-374; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0025; role: provision; provision-id: aides_logement/archives:p0023; source-lines: 354-374; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -512,7 +512,7 @@ a) 90,13 euros lorsqu'il s'agit d'une personne seule ;
 b) 140,34 euros euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0026; role: provision; provision-id: aides_logement/archives:p0024; source-lines: 377-386; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0026; role: provision; provision-id: aides_logement/archives:p0024; source-lines: 377-386; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -524,7 +524,7 @@ a) 182,23 euros lorsqu'il s'agit d'une personne seule ;
 b) 283,23 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0027; role: provision; provision-id: aides_logement/archives:p0025; source-lines: 389-393; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0027; role: provision; provision-id: aides_logement/archives:p0025; source-lines: 389-393; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -536,7 +536,7 @@ a) 221,10 euros lorsqu'il s'agit d'une personne seule ;
 b) 343,58 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0028; role: provision; provision-id: aides_logement/archives:p0026; source-lines: 396-400; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0028; role: provision; provision-id: aides_logement/archives:p0026; source-lines: 396-400; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -548,7 +548,7 @@ a) 182,23 euros lorsqu'il s'agit d'une personne seule ;
 b) 283,23 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0029; role: provision; provision-id: aides_logement/archives:p0027; source-lines: 403-407; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0029; role: provision; provision-id: aides_logement/archives:p0027; source-lines: 403-407; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -571,7 +571,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 574 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0030; role: provision; provision-id: aides_logement/archives:p0028; source-lines: 410-425; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0030; role: provision; provision-id: aides_logement/archives:p0028; source-lines: 410-425; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -589,7 +589,7 @@ Bénéficiaire isolé ou couple sans personne à charge 40,26
 Par personne supplémentaire à charge                10,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0031; role: provision; provision-id: aides_logement/archives:p0029; source-lines: 428-438; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0031; role: provision; provision-id: aides_logement/archives:p0029; source-lines: 428-438; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -605,7 +605,7 @@ Couple sans personne à charge    40,26
 Majoration par personne à charge 10,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0032; role: provision; provision-id: aides_logement/archives:p0030; source-lines: 441-449; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0032; role: provision; provision-id: aides_logement/archives:p0030; source-lines: 441-449; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -630,7 +630,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0033; role: provision; provision-id: aides_logement/archives:p0031; source-lines: 452-469; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0033; role: provision; provision-id: aides_logement/archives:p0031; source-lines: 452-469; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -640,7 +640,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0034; role: provision; provision-id: aides_logement/archives:p0032; source-lines: 472-474; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0034; role: provision; provision-id: aides_logement/archives:p0032; source-lines: 472-474; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -672,7 +672,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  343
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0035; role: provision; provision-id: aides_logement/archives:p0033; source-lines: 477-501; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0035; role: provision; provision-id: aides_logement/archives:p0033; source-lines: 477-501; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -695,7 +695,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 574 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0036; role: provision; provision-id: aides_logement/archives:p0034; source-lines: 504-519; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0036; role: provision; provision-id: aides_logement/archives:p0034; source-lines: 504-519; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -713,7 +713,7 @@ Bénéficiaire isolé ou couple sans personne à charge 38,99
 Par personne supplémentaire à charge                10,03
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0037; role: provision; provision-id: aides_logement/archives:p0035; source-lines: 522-532; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0037; role: provision; provision-id: aides_logement/archives:p0035; source-lines: 522-532; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -729,7 +729,7 @@ Couple sans personne à charge    38,99
 Majoration par personne à charge 10,03
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0038; role: provision; provision-id: aides_logement/archives:p0036; source-lines: 535-543; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0038; role: provision; provision-id: aides_logement/archives:p0036; source-lines: 535-543; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -754,7 +754,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0039; role: provision; provision-id: aides_logement/archives:p0037; source-lines: 546-563; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0039; role: provision; provision-id: aides_logement/archives:p0037; source-lines: 546-563; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -764,7 +764,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0040; role: provision; provision-id: aides_logement/archives:p0038; source-lines: 566-568; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0040; role: provision; provision-id: aides_logement/archives:p0038; source-lines: 566-568; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -783,7 +783,7 @@ valeurs fixées au chapitre III relatif au calcul des aides personnelles au
 logement en secteur locatif.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0041; role: provision; provision-id: aides_logement/archives:p0039; source-lines: 571-582; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0041; role: provision; provision-id: aides_logement/archives:p0039; source-lines: 571-582; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -811,7 +811,7 @@ Conformément à l’article 2 de l’arrêté du 15 décembre 2023 (NOR : TREL2
 ces dispositions sont applicables aux prestations dues à compter du 1er janvier 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0042; role: provision; provision-id: aides_logement/archives:p0040; source-lines: 585-605; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0042; role: provision; provision-id: aides_logement/archives:p0040; source-lines: 585-605; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -830,7 +830,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 181 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0043; role: provision; provision-id: aides_logement/archives:p0041; source-lines: 608-619; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0043; role: provision; provision-id: aides_logement/archives:p0041; source-lines: 608-619; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -848,7 +848,7 @@ Bénéficiaire isolé ou couple sans personne à charge 38,99
 Par personne supplémentaire à charge                10,03
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0044; role: provision; provision-id: aides_logement/archives:p0042; source-lines: 622-632; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0044; role: provision; provision-id: aides_logement/archives:p0042; source-lines: 622-632; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -864,7 +864,7 @@ Couple sans personne à charge    38,99
 Majoration par personne à charge 10,03
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0045; role: provision; provision-id: aides_logement/archives:p0043; source-lines: 635-643; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0045; role: provision; provision-id: aides_logement/archives:p0043; source-lines: 635-643; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -889,7 +889,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0046; role: provision; provision-id: aides_logement/archives:p0044; source-lines: 646-663; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0046; role: provision; provision-id: aides_logement/archives:p0044; source-lines: 646-663; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -899,7 +899,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0047; role: provision; provision-id: aides_logement/archives:p0045; source-lines: 666-668; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0047; role: provision; provision-id: aides_logement/archives:p0045; source-lines: 666-668; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -923,7 +923,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 181 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0048; role: provision; provision-id: aides_logement/archives:p0046; source-lines: 671-687; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0048; role: provision; provision-id: aides_logement/archives:p0046; source-lines: 671-687; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -941,7 +941,7 @@ Bénéficiaire isolé ou couple sans personne à charge 37,67
 Par personne supplémentaire à charge                9,69
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0049; role: provision; provision-id: aides_logement/archives:p0047; source-lines: 690-700; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0049; role: provision; provision-id: aides_logement/archives:p0047; source-lines: 690-700; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -957,7 +957,7 @@ Couple sans personne à charge    37,67
 Majoration par personne à charge 9,69
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0050; role: provision; provision-id: aides_logement/archives:p0048; source-lines: 703-711; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0050; role: provision; provision-id: aides_logement/archives:p0048; source-lines: 703-711; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -982,7 +982,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0051; role: provision; provision-id: aides_logement/archives:p0049; source-lines: 714-731; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0051; role: provision; provision-id: aides_logement/archives:p0049; source-lines: 714-731; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -992,7 +992,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0052; role: provision; provision-id: aides_logement/archives:p0050; source-lines: 734-736; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0052; role: provision; provision-id: aides_logement/archives:p0050; source-lines: 734-736; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1017,7 +1017,7 @@ pas assujettie à l'impôt sur le revenu, le montant forfaitaire de ressources e
 pour la location et à 5 100 euros pour la résidence en logement-foyer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0053; role: provision; provision-id: aides_logement/archives:p0051; source-lines: 739-756; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0053; role: provision; provision-id: aides_logement/archives:p0051; source-lines: 739-756; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1050,7 +1050,7 @@ Conformément à l’article 3 de l’arrêté du 16 août 2022 (TREL2220744A),
 ces dispositions sont applicables pour les prestations dues à compter du 1er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0054; role: provision; provision-id: aides_logement/archives:p0052; source-lines: 759-784; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0054; role: provision; provision-id: aides_logement/archives:p0052; source-lines: 759-784; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1098,7 +1098,7 @@ Conformément à l’article 3 de l’arrêté du 16 août 2022 (TREL2220744A),
 ces dispositions sont applicables pour les prestations dues à compter du 1er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0055; role: provision; provision-id: aides_logement/archives:p0053; source-lines: 787-827; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0055; role: provision; provision-id: aides_logement/archives:p0053; source-lines: 787-827; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1127,7 +1127,7 @@ ces dispositions sont applicables pour les prestations dues à compter du
 1er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0056; role: provision; provision-id: aides_logement/archives:p0054; source-lines: 830-851; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0056; role: provision; provision-id: aides_logement/archives:p0054; source-lines: 830-851; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1139,7 +1139,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 36,63 euros.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0057; role: provision; provision-id: aides_logement/archives:p0055; source-lines: 854-858; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0057; role: provision; provision-id: aides_logement/archives:p0055; source-lines: 854-858; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1179,7 +1179,7 @@ une personne à charge                                2,70 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0058; role: provision; provision-id: aides_logement/archives:p0056; source-lines: 861-893; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0058; role: provision; provision-id: aides_logement/archives:p0056; source-lines: 861-893; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1190,7 +1190,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0059; role: provision; provision-id: aides_logement/archives:p0057; source-lines: 896-899; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0059; role: provision; provision-id: aides_logement/archives:p0057; source-lines: 896-899; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1212,7 +1212,7 @@ Si $\textrm{RL}<45\%$ Si $45\% < \textrm{RL} < 75\%$                 Si $\textrm
 $\textrm{TL}=0 \%$    $\textrm{TL}=0,45 \%\times (\textrm{RL}-45\%)$ $\textrm{TL}=0,45\%\times30 \%+0,68 \%\times(\textrm{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0060; role: provision; provision-id: aides_logement/archives:p0058; source-lines: 902-916; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0060; role: provision; provision-id: aides_logement/archives:p0058; source-lines: 902-916; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1227,7 +1227,7 @@ Personne seule ou couple ayant une personne à charge  370,32
 Majoration par personne à charge	                    53,90
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0061; role: provision; provision-id: aides_logement/archives:p0059; source-lines: 919-926; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0061; role: provision; provision-id: aides_logement/archives:p0059; source-lines: 919-926; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1257,7 +1257,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  323
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0062; role: provision; provision-id: aides_logement/archives:p0060; source-lines: 929-951; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0062; role: provision; provision-id: aides_logement/archives:p0060; source-lines: 929-951; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1292,7 +1292,7 @@ charge supplémentaire               45,76  40,43  36,82
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0063; role: provision; provision-id: aides_logement/archives:p0061; source-lines: 954-981; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0063; role: provision; provision-id: aides_logement/archives:p0061; source-lines: 954-981; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1306,7 +1306,7 @@ Couple sans personne à charge	   56,12
 Majoration par personne à charge 12,72
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0064; role: provision; provision-id: aides_logement/archives:p0062; source-lines: 984-990; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0064; role: provision; provision-id: aides_logement/archives:p0062; source-lines: 984-990; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1335,7 +1335,7 @@ dispositions sont applicables pour les prestations dues à compter du 1er
 juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0065; role: provision; provision-id: aides_logement/archives:p0063; source-lines: 993-1014; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0065; role: provision; provision-id: aides_logement/archives:p0063; source-lines: 993-1014; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1347,7 +1347,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0066; role: provision; provision-id: aides_logement/archives:p0064; source-lines: 1017-1021; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0066; role: provision; provision-id: aides_logement/archives:p0064; source-lines: 1017-1021; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1361,7 +1361,7 @@ Couple sans personne à charge	   56,12
 Majoration par personne à charge 12,72
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0067; role: provision; provision-id: aides_logement/archives:p0065; source-lines: 1024-1030; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0067; role: provision; provision-id: aides_logement/archives:p0065; source-lines: 1024-1030; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1395,7 +1395,7 @@ dispositions sont applicables pour les prestations dues à compter du
 1er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0068; role: provision; provision-id: aides_logement/archives:p0066; source-lines: 1033-1059; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0068; role: provision; provision-id: aides_logement/archives:p0066; source-lines: 1033-1059; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1417,7 +1417,7 @@ dispositions sont applicables pour les prestations dues à compter du 1er
 juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0069; role: provision; provision-id: aides_logement/archives:p0067; source-lines: 1062-1076; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0069; role: provision; provision-id: aides_logement/archives:p0067; source-lines: 1062-1076; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1429,7 +1429,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0070; role: provision; provision-id: aides_logement/archives:p0068; source-lines: 1079-1083; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0070; role: provision; provision-id: aides_logement/archives:p0068; source-lines: 1079-1083; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1443,7 +1443,7 @@ Couple sans personne à charge                            56,12
 Majoration par personne à charge                         12,72
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0071; role: provision; provision-id: aides_logement/archives:p0069; source-lines: 1086-1092; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0071; role: provision; provision-id: aides_logement/archives:p0069; source-lines: 1086-1092; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1471,7 +1471,7 @@ dispositions sont applicables pour les prestations dues à compter du 1er
 juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0072; role: provision; provision-id: aides_logement/archives:p0070; source-lines: 1095-1115; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0072; role: provision; provision-id: aides_logement/archives:p0070; source-lines: 1095-1115; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1488,7 +1488,7 @@ a) 87,08 euros lorsqu'il s'agit d'une personne seule ;
 b) 135,59 euros euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0073; role: provision; provision-id: aides_logement/archives:p0071; source-lines: 1118-1127; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0073; role: provision; provision-id: aides_logement/archives:p0071; source-lines: 1118-1127; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1500,7 +1500,7 @@ a) 176,07 euros lorsqu'il s'agit d'une personne seule ;
 b) 273,65 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0074; role: provision; provision-id: aides_logement/archives:p0072; source-lines: 1130-1134; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0074; role: provision; provision-id: aides_logement/archives:p0072; source-lines: 1130-1134; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1512,7 +1512,7 @@ a) 213,62 euros lorsqu'il s'agit d'une personne seule ;
 b) 331,96 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0075; role: provision; provision-id: aides_logement/archives:p0073; source-lines: 1137-1141; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0075; role: provision; provision-id: aides_logement/archives:p0073; source-lines: 1137-1141; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1524,7 +1524,7 @@ a) 176,07 euros lorsqu'il s'agit d'une personne seule ;
 b) 273,65 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0076; role: provision; provision-id: aides_logement/archives:p0074; source-lines: 1144-1148; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0076; role: provision; provision-id: aides_logement/archives:p0074; source-lines: 1144-1148; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1547,7 +1547,7 @@ a) Les plafonds de loyers visés au 2° de l'article D. 823-16 du code de la
 construction et de l'habitation, dont les valeurs sont fixées à l'article 7 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0077; role: provision; provision-id: aides_logement/archives:p0075; source-lines: 1151-1166; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0077; role: provision; provision-id: aides_logement/archives:p0075; source-lines: 1151-1166; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1557,7 +1557,7 @@ D. 823-16, au 4° des articles D. 842-6 et D. 842-15 du même code, dont les
 valeurs sont fixées respectivement aux articles 9, 34 et 40 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0078; role: provision; provision-id: aides_logement/archives:p0076; source-lines: 1169-1171; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0078; role: provision; provision-id: aides_logement/archives:p0076; source-lines: 1169-1171; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1567,7 +1567,7 @@ intervenant dans le calcul de " TL ", terme du taux de la participation
 personnelle (" Tp ") visé au 3° de l'article D. 823-17 du même code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0079; role: provision; provision-id: aides_logement/archives:p0077; source-lines: 1174-1176; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0079; role: provision; provision-id: aides_logement/archives:p0077; source-lines: 1174-1176; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1576,7 +1576,7 @@ d) Le forfait " R0 ", visé au 5° de l'article D. 823-17 du même code, dont
 les valeurs sont fixées à l'article 15 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0080; role: provision; provision-id: aides_logement/archives:p0078; source-lines: 1179-1180; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0080; role: provision; provision-id: aides_logement/archives:p0078; source-lines: 1179-1180; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1585,7 +1585,7 @@ e) Les mensualités plafonds visées à l'article D. 842-6 du même code, dont l
 valeurs sont fixées à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0081; role: provision; provision-id: aides_logement/archives:p0079; source-lines: 1183-1184; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0081; role: provision; provision-id: aides_logement/archives:p0079; source-lines: 1183-1184; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1594,7 +1594,7 @@ valeurs sont fixées à l'article 33 ;
 un ménage ayant un enfant à charge, est remplacée par " 8 051 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0082; role: provision; provision-id: aides_logement/archives:p0080; source-lines: 1187-1188; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0082; role: provision; provision-id: aides_logement/archives:p0080; source-lines: 1187-1188; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1610,7 +1610,7 @@ Bénéficiaire isolé ou couple sans personne à charge                         
 Par personne supplémentaire à charge dans la limite de six personnes à charge  9,69
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0083; role: provision; provision-id: aides_logement/archives:p0081; source-lines: 1191-1199; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0083; role: provision; provision-id: aides_logement/archives:p0081; source-lines: 1191-1199; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1626,7 +1626,7 @@ Couple sans personne à charge                                             37,67
 Majoration par personne à charge dans la limite de six personnes à charge 9,69
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0084; role: provision; provision-id: aides_logement/archives:p0082; source-lines: 1202-1210; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0084; role: provision; provision-id: aides_logement/archives:p0082; source-lines: 1202-1210; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1648,7 +1648,7 @@ Personne seule ou couple ayant 5 personnes à charge         1,69 %
 Personne seule ou couple ayant 6 personnes à charge et plus 1,62 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0085; role: provision; provision-id: aides_logement/archives:p0083; source-lines: 1213-1227; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0085; role: provision; provision-id: aides_logement/archives:p0083; source-lines: 1213-1227; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1657,7 +1657,7 @@ Personne seule ou couple ayant 6 personnes à charge et plus 1,62 %
 “ R0 ” applicable à Mayotte est identique à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0086; role: provision; provision-id: aides_logement/archives:p0084; source-lines: 1230-1231; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0086; role: provision; provision-id: aides_logement/archives:p0084; source-lines: 1230-1231; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1666,7 +1666,7 @@ NOTA : Conformément à l’article 3 de l’arrêté du 16 août 2022 (TREL2220
 applicables pour les prestations dues à compter du 1er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0087; role: provision; provision-id: aides_logement/archives:p0085; source-lines: 1234-1235; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0087; role: provision; provision-id: aides_logement/archives:p0085; source-lines: 1234-1235; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1697,7 +1697,7 @@ NOTA : Conformément à l’article 3 de l’arrêté du 29 juillet 2022 (NOR : 
 sont applicables pour les prestations dues à compter du 1 er juillet 2022.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0088; role: provision; provision-id: aides_logement/archives:p0086; source-lines: 1238-1261; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0088; role: provision; provision-id: aides_logement/archives:p0086; source-lines: 1238-1261; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1723,7 +1723,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  328
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0089; role: provision; provision-id: aides_logement/archives:p0087; source-lines: 1264-1282; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0089; role: provision; provision-id: aides_logement/archives:p0087; source-lines: 1264-1282; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1743,7 +1743,7 @@ valeurs fixées au chapitre III relatif au calcul des aides personnelles au
 logement en secteur locatif.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0090; role: provision; provision-id: aides_logement/archives:p0088; source-lines: 1285-1297; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0090; role: provision; provision-id: aides_logement/archives:p0088; source-lines: 1285-1297; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1770,7 +1770,7 @@ NOTA : Conformément à l’article 3 de l’arrêté du 26 décembre 2022
 dues à compter du 1er janvier 2023.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0091; role: provision; provision-id: aides_logement/archives:p0089; source-lines: 1300-1319; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0091; role: provision; provision-id: aides_logement/archives:p0089; source-lines: 1300-1319; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1788,7 +1788,7 @@ pas assujettie à l'impôt sur le revenu, le montant forfaitaire de ressources e
 pour la location et à 4 900 euros pour la résidence en logement-foyer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0092; role: provision; provision-id: aides_logement/archives:p0090; source-lines: 1322-1332; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0092; role: provision; provision-id: aides_logement/archives:p0090; source-lines: 1322-1332; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1817,7 +1817,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  311
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0093; role: provision; provision-id: aides_logement/archives:p0091; source-lines: 1335-1356; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0093; role: provision; provision-id: aides_logement/archives:p0091; source-lines: 1335-1356; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1837,7 +1837,7 @@ a) Les plafonds de loyers visés au 2° de l'article D. 823-16 du code de la con
 dont les valeurs sont fixées à l'article 7 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0094; role: provision; provision-id: aides_logement/archives:p0092; source-lines: 1359-1371; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0094; role: provision; provision-id: aides_logement/archives:p0092; source-lines: 1359-1371; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1846,7 +1846,7 @@ b) Les montants forfaitaires au titre des charges visés au 3° de l'article D. 
 D. 842-6 et D. 842-15 du même code, dont les valeurs sont fixées respectivement aux articles 9, 34 et 40 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0095; role: provision; provision-id: aides_logement/archives:p0093; source-lines: 1374-1375; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0095; role: provision; provision-id: aides_logement/archives:p0093; source-lines: 1374-1375; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1856,7 +1856,7 @@ c) Le loyer de référence " LR ", dont les valeurs sont fixées à l'article 14
 code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0096; role: provision; provision-id: aides_logement/archives:p0094; source-lines: 1378-1380; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0096; role: provision; provision-id: aides_logement/archives:p0094; source-lines: 1378-1380; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1865,7 +1865,7 @@ d) Le forfait " R0 ", visé au 5° de l'article D. 823-17 du même code, dont le
 l'article 15 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0097; role: provision; provision-id: aides_logement/archives:p0095; source-lines: 1383-1384; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0097; role: provision; provision-id: aides_logement/archives:p0095; source-lines: 1383-1384; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1874,7 +1874,7 @@ e) Les mensualités plafonds visées à l'article D. 842-6 du même code, dont l
 l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0098; role: provision; provision-id: aides_logement/archives:p0096; source-lines: 1387-1388; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0098; role: provision; provision-id: aides_logement/archives:p0096; source-lines: 1387-1388; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1883,7 +1883,7 @@ l'article 33 ;
 un ménage ayant un enfant à charge, est remplacée par " 7 742 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0099; role: provision; provision-id: aides_logement/archives:p0097; source-lines: 1391-1392; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0099; role: provision; provision-id: aides_logement/archives:p0097; source-lines: 1391-1392; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1899,7 +1899,7 @@ Bénéficiaire isolé ou couple sans personne à charge                         
 Par personne supplémentaire à charge dans la limite de six personnes à charge  9,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0100; role: provision; provision-id: aides_logement/archives:p0098; source-lines: 1395-1403; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0100; role: provision; provision-id: aides_logement/archives:p0098; source-lines: 1395-1403; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1915,7 +1915,7 @@ Couple sans personne à charge                                             36,40
 Majoration par personne à charge dans la limite de six personnes à charge 9,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0101; role: provision; provision-id: aides_logement/archives:p0099; source-lines: 1406-1414; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0101; role: provision; provision-id: aides_logement/archives:p0099; source-lines: 1406-1414; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1937,7 +1937,7 @@ Couple sans enfant                 2,99%
 6 enfants ou 6 personnes et plus   1,62%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0102; role: provision; provision-id: aides_logement/archives:p0100; source-lines: 1417-1431; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0102; role: provision; provision-id: aides_logement/archives:p0100; source-lines: 1417-1431; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1955,7 +1955,7 @@ logement pour les logements-foyers repose sur les valeurs fixées au chapitre II
 personnelles au logement en secteur locatif.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0103; role: provision; provision-id: aides_logement/archives:p0101; source-lines: 1434-1444; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0103; role: provision; provision-id: aides_logement/archives:p0101; source-lines: 1434-1444; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -1987,7 +1987,7 @@ Conformément au I de l’article 3 de l’arrêté du 23 septembre 2021, ces di
 pour les prestations dues à compter du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0104; role: provision; provision-id: aides_logement/archives:p0102; source-lines: 1447-1471; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0104; role: provision; provision-id: aides_logement/archives:p0102; source-lines: 1447-1471; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2036,7 +2036,7 @@ ces dispositions sont applicables pour les prestations dues à
 compter du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0105; role: provision; provision-id: aides_logement/archives:p0103; source-lines: 1474-1515; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0105; role: provision; provision-id: aides_logement/archives:p0103; source-lines: 1474-1515; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2065,7 +2065,7 @@ ces dispositions sont applicables pour les prestations dues à compter
 du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0106; role: provision; provision-id: aides_logement/archives:p0104; source-lines: 1518-1539; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0106; role: provision; provision-id: aides_logement/archives:p0104; source-lines: 1518-1539; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2077,7 +2077,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 35,39 euros.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0107; role: provision; provision-id: aides_logement/archives:p0105; source-lines: 1542-1546; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0107; role: provision; provision-id: aides_logement/archives:p0105; source-lines: 1542-1546; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2113,7 +2113,7 @@ Personne seule ou couple ayant une personne à charge 2,70%
 Majoration par personne à charge                    -0,06%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0108; role: provision; provision-id: aides_logement/archives:p0106; source-lines: 1549-1577; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0108; role: provision; provision-id: aides_logement/archives:p0106; source-lines: 1549-1577; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2124,7 +2124,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0109; role: provision; provision-id: aides_logement/archives:p0107; source-lines: 1580-1583; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0109; role: provision; provision-id: aides_logement/archives:p0107; source-lines: 1580-1583; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2146,7 +2146,7 @@ Si $\textrm{RL}<45\%$ Si $45\% < \textrm{RL} < 75\%$                 Si $\textrm
 $\textrm{TL}=0 \%$    $\textrm{TL}=0,45 \%\times (\textrm{RL}-45\%)$ $\textrm{TL}=0,45\%\times30 \%+0,68 \%\times(\textrm{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0110; role: provision; provision-id: aides_logement/archives:p0108; source-lines: 1586-1600; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0110; role: provision; provision-id: aides_logement/archives:p0108; source-lines: 1586-1600; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2161,7 +2161,7 @@ Personne seule ou couple ayant une personne à charge  357,80
 Majoration par personne à charge	                    52,08
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0111; role: provision; provision-id: aides_logement/archives:p0109; source-lines: 1603-1610; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0111; role: provision; provision-id: aides_logement/archives:p0109; source-lines: 1603-1610; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2195,7 +2195,7 @@ charge supplémentaire               44,21  39,06  35,57
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0112; role: provision; provision-id: aides_logement/archives:p0110; source-lines: 1613-1639; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0112; role: provision; provision-id: aides_logement/archives:p0110; source-lines: 1613-1639; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2209,7 +2209,7 @@ Couple sans personne à charge	   54,22
 Majoration par personne à charge 12,29
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0113; role: provision; provision-id: aides_logement/archives:p0111; source-lines: 1642-1648; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0113; role: provision; provision-id: aides_logement/archives:p0111; source-lines: 1642-1648; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2236,7 +2236,7 @@ dispositions sont applicables pour les prestations dues à compter
 du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0114; role: provision; provision-id: aides_logement/archives:p0112; source-lines: 1651-1670; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0114; role: provision; provision-id: aides_logement/archives:p0112; source-lines: 1651-1670; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2248,7 +2248,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0115; role: provision; provision-id: aides_logement/archives:p0113; source-lines: 1673-1677; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0115; role: provision; provision-id: aides_logement/archives:p0113; source-lines: 1673-1677; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2262,7 +2262,7 @@ Couple sans personne à charge	   54,22
 Majoration par personne à charge 12,29
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0116; role: provision; provision-id: aides_logement/archives:p0114; source-lines: 1680-1686; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0116; role: provision; provision-id: aides_logement/archives:p0114; source-lines: 1680-1686; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2291,7 +2291,7 @@ Conformément au I de l’article 3 de l’arrêté du 23 septembre 2021, ces di
 pour les prestations dues à compter du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0117; role: provision; provision-id: aides_logement/archives:p0115; source-lines: 1689-1710; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0117; role: provision; provision-id: aides_logement/archives:p0115; source-lines: 1689-1710; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2311,7 +2311,7 @@ Conformément au I de l’article 3 de l’arrêté du 23 septembre 2021, ces di
 les prestations dues à compter du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0118; role: provision; provision-id: aides_logement/archives:p0116; source-lines: 1713-1725; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0118; role: provision; provision-id: aides_logement/archives:p0116; source-lines: 1713-1725; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2323,7 +2323,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0119; role: provision; provision-id: aides_logement/archives:p0117; source-lines: 1728-1732; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0119; role: provision; provision-id: aides_logement/archives:p0117; source-lines: 1728-1732; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2337,7 +2337,7 @@ Couple sans personne à charge                            54,22
 Majoration par personne à charge                         12,29
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0120; role: provision; provision-id: aides_logement/archives:p0118; source-lines: 1735-1741; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0120; role: provision; provision-id: aides_logement/archives:p0118; source-lines: 1735-1741; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2362,7 +2362,7 @@ Conformément au I de l’article 3 de l’arrêté du 23 septembre 2021, ces di
 sont applicables pour les prestations dues à compter du 1er octobre 2021.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0121; role: provision; provision-id: aides_logement/archives:p0119; source-lines: 1744-1761; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0121; role: provision; provision-id: aides_logement/archives:p0119; source-lines: 1744-1761; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2379,7 +2379,7 @@ a) 84,14 euros lorsqu'il s'agit d'une personne seule ;
 b) 131,00 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0122; role: provision; provision-id: aides_logement/archives:p0120; source-lines: 1764-1773; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0122; role: provision; provision-id: aides_logement/archives:p0120; source-lines: 1764-1773; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2391,7 +2391,7 @@ a) 170,12 euros lorsqu'il s'agit d'une personne seule ;
 b) 264,40 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0123; role: provision; provision-id: aides_logement/archives:p0121; source-lines: 1776-1780; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0123; role: provision; provision-id: aides_logement/archives:p0121; source-lines: 1776-1780; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2403,7 +2403,7 @@ a) 206,40 euros lorsqu'il s'agit d'une personne seule ;
 b) 320,73 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0124; role: provision; provision-id: aides_logement/archives:p0122; source-lines: 1783-1787; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0124; role: provision; provision-id: aides_logement/archives:p0122; source-lines: 1783-1787; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2415,7 +2415,7 @@ a) 170,12 euros lorsqu'il s'agit d'une personne seule ;
 b) 264,40 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0125; role: provision; provision-id: aides_logement/archives:p0123; source-lines: 1790-1794; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0125; role: provision; provision-id: aides_logement/archives:p0123; source-lines: 1790-1794; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2435,7 +2435,7 @@ a) Les plafonds de loyers visés au 2° de l'article D. 823-16 du code de la con
 dont les valeurs sont fixées à l'article 7 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0126; role: provision; provision-id: aides_logement/archives:p0124; source-lines: 1797-1809; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0126; role: provision; provision-id: aides_logement/archives:p0124; source-lines: 1797-1809; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2444,7 +2444,7 @@ b) Les montants forfaitaires au titre des charges visés au 3° de l'article D. 
 D. 842-6 et D. 842-15 du même code, dont les valeurs sont fixées respectivement aux articles 9, 34 et 40 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0127; role: provision; provision-id: aides_logement/archives:p0125; source-lines: 1812-1813; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0127; role: provision; provision-id: aides_logement/archives:p0125; source-lines: 1812-1813; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2454,7 +2454,7 @@ de " TL ", terme du taux de la participation personnelle (" Tp ") visé au 3° d
 code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0128; role: provision; provision-id: aides_logement/archives:p0126; source-lines: 1816-1818; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0128; role: provision; provision-id: aides_logement/archives:p0126; source-lines: 1816-1818; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2463,7 +2463,7 @@ d) Le forfait " R0 ", visé au 5° de l'article D. 823-17 du même code, dont le
 l'article 15 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0129; role: provision; provision-id: aides_logement/archives:p0127; source-lines: 1821-1822; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0129; role: provision; provision-id: aides_logement/archives:p0127; source-lines: 1821-1822; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2472,7 +2472,7 @@ e) Les mensualités plafonds visées à l'article D. 842-6 du même code, dont l
 l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0130; role: provision; provision-id: aides_logement/archives:p0128; source-lines: 1825-1826; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0130; role: provision; provision-id: aides_logement/archives:p0128; source-lines: 1825-1826; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2481,7 +2481,7 @@ l'article 33 ;
 pour un ménage ayant un enfant à charge, est remplacée par " 7 584 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0131; role: provision; provision-id: aides_logement/archives:p0129; source-lines: 1829-1830; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0131; role: provision; provision-id: aides_logement/archives:p0129; source-lines: 1829-1830; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2497,7 +2497,7 @@ Bénéficiaire isolé ou couple sans personne à charge                         
 Par personne supplémentaire à charge dans la limite de six personnes à charge 9,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0132; role: provision; provision-id: aides_logement/archives:p0130; source-lines: 1833-1841; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0132; role: provision; provision-id: aides_logement/archives:p0130; source-lines: 1833-1841; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2513,7 +2513,7 @@ Couple sans personne à charge                                              36,4
 Majoration par personne à charge dans la limite de six personnes à charge  9,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0133; role: provision; provision-id: aides_logement/archives:p0131; source-lines: 1844-1852; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0133; role: provision; provision-id: aides_logement/archives:p0131; source-lines: 1844-1852; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2534,7 +2534,7 @@ Couple sans enfant                2,99%
 6 enfants ou 6 personnes et plus  1,62%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0134; role: provision; provision-id: aides_logement/archives:p0132; source-lines: 1855-1868; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0134; role: provision; provision-id: aides_logement/archives:p0132; source-lines: 1855-1868; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2568,7 +2568,7 @@ ces dispositions sont applicables pour les prestations dues à compter du 1er
 octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0135; role: provision; provision-id: aides_logement/archives:p0133; source-lines: 1871-1897; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0135; role: provision; provision-id: aides_logement/archives:p0133; source-lines: 1871-1897; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2616,7 +2616,7 @@ Conformément à l’article 3, I de l’arrêté du 25 septembre 2020, ces disp
 sont applicables pour les prestations dues à compter du 1er octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0136; role: provision; provision-id: aides_logement/archives:p0134; source-lines: 1900-1940; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0136; role: provision; provision-id: aides_logement/archives:p0134; source-lines: 1900-1940; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2645,7 +2645,7 @@ ces dispositions sont applicables pour les prestations dues à
 compter du 1er octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0137; role: provision; provision-id: aides_logement/archives:p0135; source-lines: 1943-1964; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0137; role: provision; provision-id: aides_logement/archives:p0135; source-lines: 1943-1964; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2657,7 +2657,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 35,24 euros.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0138; role: provision; provision-id: aides_logement/archives:p0136; source-lines: 1967-1971; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0138; role: provision; provision-id: aides_logement/archives:p0136; source-lines: 1967-1971; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2694,7 +2694,7 @@ Personne seule ou couple ayant une personne à charge 2,70%
 Majoration par personne à charge	                   -0,06%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0139; role: provision; provision-id: aides_logement/archives:p0137; source-lines: 1974-2003; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0139; role: provision; provision-id: aides_logement/archives:p0137; source-lines: 1974-2003; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2705,7 +2705,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0140; role: provision; provision-id: aides_logement/archives:p0138; source-lines: 2006-2009; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0140; role: provision; provision-id: aides_logement/archives:p0138; source-lines: 2006-2009; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2727,7 +2727,7 @@ Si $\text{RL}<45\%$ Si $45\% < \text{RL} < 75\%$               Si $\text{RL} >75
 $\text{TL}=0 \%$    $\text{TL}=0,45 \%\times (\text{RL}-45\%)$ $\text{TL}=0,45\%\times30 \%+0,68 \%\times(\text{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0141; role: provision; provision-id: aides_logement/archives:p0139; source-lines: 2012-2026; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0141; role: provision; provision-id: aides_logement/archives:p0139; source-lines: 2012-2026; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2742,7 +2742,7 @@ Personne seule ou couple ayant une personne à charge  356,3
 Majoration par personne à charge	                    51,86
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0142; role: provision; provision-id: aides_logement/archives:p0140; source-lines: 2029-2036; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0142; role: provision; provision-id: aides_logement/archives:p0140; source-lines: 2029-2036; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2778,7 +2778,7 @@ charge supplémentaire              44,03  38,90  35,42
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0143; role: provision; provision-id: aides_logement/archives:p0141; source-lines: 2039-2067; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0143; role: provision; provision-id: aides_logement/archives:p0141; source-lines: 2039-2067; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2792,7 +2792,7 @@ Couple sans personne à charge	   53,99
 Majoration par personne à charge 12,24
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0144; role: provision; provision-id: aides_logement/archives:p0142; source-lines: 2070-2076; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0144; role: provision; provision-id: aides_logement/archives:p0142; source-lines: 2070-2076; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2820,7 +2820,7 @@ Conformément à l’article 3, I de l’arrêté du 25 septembre 2020, ces disp
 sont applicables pour les prestations dues à compter du 1er octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0145; role: provision; provision-id: aides_logement/archives:p0143; source-lines: 2079-2099; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0145; role: provision; provision-id: aides_logement/archives:p0143; source-lines: 2079-2099; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2832,7 +2832,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0146; role: provision; provision-id: aides_logement/archives:p0144; source-lines: 2102-2106; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0146; role: provision; provision-id: aides_logement/archives:p0144; source-lines: 2102-2106; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2846,7 +2846,7 @@ Couple sans personne à charge	   53,99
 Majoration par personne à charge 12,24
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0147; role: provision; provision-id: aides_logement/archives:p0145; source-lines: 2109-2115; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0147; role: provision; provision-id: aides_logement/archives:p0145; source-lines: 2109-2115; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2876,7 +2876,7 @@ Conformément à l’article 3, I de l’arrêté du 25 septembre 2020, ces disp
 sont applicables pour les prestations dues à compter du 1er octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0148; role: provision; provision-id: aides_logement/archives:p0146; source-lines: 2118-2140; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0148; role: provision; provision-id: aides_logement/archives:p0146; source-lines: 2118-2140; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2895,7 +2895,7 @@ NOTA : Conformément à l’article 3, I de l’arrêté du 25 septembre 2020, c
 applicables pour les prestations dues à compter du 1er octobre 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0149; role: provision; provision-id: aides_logement/archives:p0147; source-lines: 2143-2154; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0149; role: provision; provision-id: aides_logement/archives:p0147; source-lines: 2143-2154; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2908,7 +2908,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0150; role: provision; provision-id: aides_logement/archives:p0148; source-lines: 2157-2162; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0150; role: provision; provision-id: aides_logement/archives:p0148; source-lines: 2157-2162; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2922,7 +2922,7 @@ Couple sans personne à charge     53,99
 Majoration par personne à charge  12,24
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0151; role: provision; provision-id: aides_logement/archives:p0149; source-lines: 2165-2171; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0151; role: provision; provision-id: aides_logement/archives:p0149; source-lines: 2165-2171; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2941,7 +2941,7 @@ Bénéficiaire isolé ou couple sans personne à charge 53,99
 Par personne supplémentaire à charge                12,24
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0152; role: provision; provision-id: aides_logement/archives:p0150; source-lines: 2174-2185; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0152; role: provision; provision-id: aides_logement/archives:p0150; source-lines: 2174-2185; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2961,7 +2961,7 @@ a) 83,79 euros lorsqu'il s'agit d'une personne seule ;
 b) 130,45 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0153; role: provision; provision-id: aides_logement/archives:p0151; source-lines: 2188-2200; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0153; role: provision; provision-id: aides_logement/archives:p0151; source-lines: 2188-2200; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2973,7 +2973,7 @@ a) 169,41 euros lorsqu'il s'agit d'une personne seule ;
 b) 263,29 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0154; role: provision; provision-id: aides_logement/archives:p0152; source-lines: 2203-2207; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0154; role: provision; provision-id: aides_logement/archives:p0152; source-lines: 2203-2207; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2985,7 +2985,7 @@ a) 205,54 euros lorsqu'il s'agit d'une personne seule ;
 b) 319,39 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0155; role: provision; provision-id: aides_logement/archives:p0153; source-lines: 2210-2214; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0155; role: provision; provision-id: aides_logement/archives:p0153; source-lines: 2210-2214; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -2997,7 +2997,7 @@ a) 169,41 euros lorsqu'il s'agit d'une personne seule ;
 b) 263,29 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0156; role: provision; provision-id: aides_logement/archives:p0154; source-lines: 2217-2221; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0156; role: provision; provision-id: aides_logement/archives:p0154; source-lines: 2217-2221; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3018,7 +3018,7 @@ a) Les plafonds de loyers visés au 2° de l'article D. 823-16 du code de la con
 l'habitation , dont les valeurs sont fixées à l'article 7 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0157; role: provision; provision-id: aides_logement/archives:p0155; source-lines: 2224-2237; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0157; role: provision; provision-id: aides_logement/archives:p0155; source-lines: 2224-2237; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3028,7 +3028,7 @@ articles D. 842-6 et D. 842-15 du même code, dont les valeurs sont fixées resp
 articles 9, 34 et 40 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0158; role: provision; provision-id: aides_logement/archives:p0156; source-lines: 2240-2242; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0158; role: provision; provision-id: aides_logement/archives:p0156; source-lines: 2240-2242; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3038,7 +3038,7 @@ le calcul de " TL ", terme du taux de la participation personnelle (" Tp ") vis�
 D. 823-17 du même code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0159; role: provision; provision-id: aides_logement/archives:p0157; source-lines: 2245-2247; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0159; role: provision; provision-id: aides_logement/archives:p0157; source-lines: 2245-2247; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3047,7 +3047,7 @@ d) Le forfait " R0 ", visé au 5° de l'article D. 823-17 du même code, dont le
 fixées à l'article 15 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0160; role: provision; provision-id: aides_logement/archives:p0158; source-lines: 2250-2251; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0160; role: provision; provision-id: aides_logement/archives:p0158; source-lines: 2250-2251; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3056,7 +3056,7 @@ e) Les mensualités plafonds visées à l'article D. 842-6 du même code, dont l
 fixées à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0161; role: provision; provision-id: aides_logement/archives:p0159; source-lines: 2254-2255; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0161; role: provision; provision-id: aides_logement/archives:p0159; source-lines: 2254-2255; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3065,7 +3065,7 @@ fixées à l'article 33 ;
 code, pour un ménage ayant un enfant à charge, est remplacée par " 7 584 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0162; role: provision; provision-id: aides_logement/archives:p0160; source-lines: 2258-2259; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0162; role: provision; provision-id: aides_logement/archives:p0160; source-lines: 2258-2259; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3082,7 +3082,7 @@ Bénéficiaire isolé ou couple sans personne à charge                         
 Par personne supplémentaire à charge dans la limite de six personnes à charge  9,32
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0163; role: provision; provision-id: aides_logement/archives:p0161; source-lines: 2262-2271; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0163; role: provision; provision-id: aides_logement/archives:p0161; source-lines: 2262-2271; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3098,7 +3098,7 @@ Couple sans personne à charge                                               36,
 Majoration par personne à charge dans la limite de six personnes à charge   9,32
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0164; role: provision; provision-id: aides_logement/archives:p0162; source-lines: 2274-2282; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0164; role: provision; provision-id: aides_logement/archives:p0162; source-lines: 2274-2282; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3120,7 +3120,7 @@ Couple sans enfant                2,99%
 6 enfants ou 6 personnes et plus  1,62%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0165; role: provision; provision-id: aides_logement/archives:p0163; source-lines: 2285-2299; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0165; role: provision; provision-id: aides_logement/archives:p0163; source-lines: 2285-2299; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3142,7 +3142,7 @@ assujettie à l'impôt sur le revenu, le montant minimal de ressources est fixé
 location et à 4 900 euros pour la résidence en logement-foyer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0166; role: provision; provision-id: aides_logement/archives:p0164; source-lines: 2302-2316; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0166; role: provision; provision-id: aides_logement/archives:p0164; source-lines: 2302-2316; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3205,7 +3205,7 @@ Personne seule ou couple ayant :
 -six personnes à charge ou plus        9 139
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0167; role: provision; provision-id: aides_logement/archives:p0165; source-lines: 2319-2374; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0167; role: provision; provision-id: aides_logement/archives:p0165; source-lines: 2319-2374; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3234,7 +3234,7 @@ Personne seule ou couple ayant :
     -par personne à charge supplémentaire  305
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0168; role: provision; provision-id: aides_logement/archives:p0166; source-lines: 2377-2398; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0168; role: provision; provision-id: aides_logement/archives:p0166; source-lines: 2377-2398; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3247,7 +3247,7 @@ du 1er janvier 2020.
 ### Article 33 | LEGIARTI000041489184 [archive]
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0169; role: provision; provision-id: aides_logement/archives:p0167; source-lines: 2401-2406; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0169; role: provision; provision-id: aides_logement/archives:p0167; source-lines: 2401-2406; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3266,7 +3266,7 @@ a) Les plafonds de loyers visés au 2° de l'article D. 823-16 du code de la con
 de l'habitation , dont les valeurs sont fixées à l'article 7 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0170; role: provision; provision-id: aides_logement/archives:p0168; source-lines: 2409-2420; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0170; role: provision; provision-id: aides_logement/archives:p0168; source-lines: 2409-2420; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3276,7 +3276,7 @@ b) Les montants forfaitaires au titre des charges visés au 3° de l'article D. 
 aux articles 9, 34 et 40 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0171; role: provision; provision-id: aides_logement/archives:p0169; source-lines: 2423-2425; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0171; role: provision; provision-id: aides_logement/archives:p0169; source-lines: 2423-2425; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3286,7 +3286,7 @@ dans le calcul de " TL ", terme du taux de la participation personnelle (" Tp ")
 de l'article D. 823-17 du même code ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0172; role: provision; provision-id: aides_logement/archives:p0170; source-lines: 2428-2430; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0172; role: provision; provision-id: aides_logement/archives:p0170; source-lines: 2428-2430; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3295,7 +3295,7 @@ d) Le forfait " R0 ", visé au 5° de l'article D. 823-17 du même code, dont le
 fixées à l'article 15 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0173; role: provision; provision-id: aides_logement/archives:p0171; source-lines: 2433-2434; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0173; role: provision; provision-id: aides_logement/archives:p0171; source-lines: 2433-2434; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3304,7 +3304,7 @@ e) Les mensualités plafonds visées à l'article D. 842-6 du même code, dont l
 fixées à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0174; role: provision; provision-id: aides_logement/archives:p0172; source-lines: 2437-2438; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0174; role: provision; provision-id: aides_logement/archives:p0172; source-lines: 2437-2438; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3313,7 +3313,7 @@ fixées à l'article 33 ;
 même code, pour un ménage ayant un enfant à charge, est remplacée par " 7 584 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0175; role: provision; provision-id: aides_logement/archives:p0173; source-lines: 2441-2442; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0175; role: provision; provision-id: aides_logement/archives:p0173; source-lines: 2441-2442; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3330,7 +3330,7 @@ Bénéficiaire isolé ou couple sans personne à charge                         
 Par personne supplémentaire à charge dans la limite de six personnes à charge  9,29
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0176; role: provision; provision-id: aides_logement/archives:p0174; source-lines: 2445-2454; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0176; role: provision; provision-id: aides_logement/archives:p0174; source-lines: 2445-2454; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3346,7 +3346,7 @@ Couple sans personne à charge                                               36,
 Majoration par personne à charge dans la limite de six personnes à charge   9,29
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0177; role: provision; provision-id: aides_logement/archives:p0175; source-lines: 2457-2465; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0177; role: provision; provision-id: aides_logement/archives:p0175; source-lines: 2457-2465; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3368,7 +3368,7 @@ Couple sans enfant                  2,99%
 6 enfants ou 6 personnes et plus    1,62%
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0178; role: provision; provision-id: aides_logement/archives:p0176; source-lines: 2468-2482; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0178; role: provision; provision-id: aides_logement/archives:p0176; source-lines: 2468-2482; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3434,7 +3434,7 @@ NOTA : Conformément à l'article 2 de l'arrêté du 3 janvier 2020 ( NOR : LOGL
 dispositions sont applicables pour les prestations dues à compter du 1er janvier 2020.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0179; role: provision; provision-id: aides_logement/archives:p0177; source-lines: 2485-2543; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0179; role: provision; provision-id: aides_logement/archives:p0177; source-lines: 2485-2543; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3452,7 +3452,7 @@ L. 25 du code des pensions civiles et militaires de retraite est fixé à
 soixante-deux ans pour les assurés nés à compter du 1er janvier 1955.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0180; role: provision; provision-id: aides_logement/archives:p0178; source-lines: 2546-2556; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0180; role: provision; provision-id: aides_logement/archives:p0178; source-lines: 2546-2556; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3483,7 +3483,7 @@ plusieurs autres régimes obligatoires :
 de cinq années ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0181; role: provision; provision-id: aides_logement/archives:p0179; source-lines: 2559-2582; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0181; role: provision; provision-id: aides_logement/archives:p0179; source-lines: 2559-2582; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3538,7 +3538,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 1° Soixante ans pour les assurés nés avant le 1er juillet 1951 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0182; role: provision; provision-id: aides_logement/archives:p0180; source-lines: 2585-2632; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0182; role: provision; provision-id: aides_logement/archives:p0180; source-lines: 2585-2632; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3547,7 +3547,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 1951 et le 31 décembre 1951 inclus ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0183; role: provision; provision-id: aides_logement/archives:p0181; source-lines: 2635-2636; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0183; role: provision; provision-id: aides_logement/archives:p0181; source-lines: 2635-2636; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3555,7 +3555,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 3° Soixante ans et neuf mois pour les assurés nés en 1952 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0184; role: provision; provision-id: aides_logement/archives:p0182; source-lines: 2639-2639; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0184; role: provision; provision-id: aides_logement/archives:p0182; source-lines: 2639-2639; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3563,7 +3563,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 4° Soixante et un ans et deux mois pour les assurés nés en 1953 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0185; role: provision; provision-id: aides_logement/archives:p0183; source-lines: 2642-2642; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0185; role: provision; provision-id: aides_logement/archives:p0183; source-lines: 2642-2642; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3571,7 +3571,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 5° Soixante et un ans et sept mois pour les assurés nés en 1954 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0186; role: provision; provision-id: aides_logement/archives:p0184; source-lines: 2645-2645; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0186; role: provision; provision-id: aides_logement/archives:p0184; source-lines: 2645-2645; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3579,7 +3579,7 @@ L'âge prévu au second alinéa de l'article L. 161-17-2 est fixé à :
 6° Soixante deux ans pour les assurés nés à compter du 1er janvier 1955.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0187; role: provision; provision-id: aides_logement/archives:p0185; source-lines: 2648-2648; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0187; role: provision; provision-id: aides_logement/archives:p0185; source-lines: 2648-2648; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3609,7 +3609,7 @@ LRUL2420421A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0188; role: provision; provision-id: aides_logement/archives:p0186; source-lines: 2651-2673; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0188; role: provision; provision-id: aides_logement/archives:p0186; source-lines: 2651-2673; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3658,7 +3658,7 @@ LRUL2420421A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0189; role: provision; provision-id: aides_logement/archives:p0187; source-lines: 2676-2717; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0189; role: provision; provision-id: aides_logement/archives:p0187; source-lines: 2676-2717; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3687,7 +3687,7 @@ LRUL2420421A), ces dispositions sont applicables aux prestations dues à
 compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0190; role: provision; provision-id: aides_logement/archives:p0188; source-lines: 2720-2741; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0190; role: provision; provision-id: aides_logement/archives:p0188; source-lines: 2720-2741; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3699,7 +3699,7 @@ La participation minimale P0 définie au 2° de l'article D. 823-17 du même cod
 défini au 2° de l'article D. 823-16 du même code et du forfait charge ou 39,15 euros.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0191; role: provision; provision-id: aides_logement/archives:p0189; source-lines: 2744-2748; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0191; role: provision; provision-id: aides_logement/archives:p0189; source-lines: 2744-2748; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3737,7 +3737,7 @@ une personne à charge                                2,70 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0192; role: provision; provision-id: aides_logement/archives:p0190; source-lines: 2751-2781; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0192; role: provision; provision-id: aides_logement/archives:p0190; source-lines: 2751-2781; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3748,7 +3748,7 @@ RL entre le loyer retenu dans la limite du plafond L et un loyer de référence 
 RL est exprimé en pourcentage et arrondi à la deuxième décimale.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0193; role: provision; provision-id: aides_logement/archives:p0191; source-lines: 2784-2787; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0193; role: provision; provision-id: aides_logement/archives:p0191; source-lines: 2784-2787; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3770,7 +3770,7 @@ Si $\textrm{RL}<45\%$ Si $45\% < \textrm{RL} < 75\%$                 Si $\textrm
 $\textrm{TL}=0 \%$    $\textrm{TL}=0,45 \%\times (\textrm{RL}-45\%)$ $\textrm{TL}=0,45\%\times30 \%+0,68 \%\times(\textrm{RL}-75\%)$
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0194; role: provision; provision-id: aides_logement/archives:p0192; source-lines: 2790-2804; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0194; role: provision; provision-id: aides_logement/archives:p0192; source-lines: 2790-2804; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3785,7 +3785,7 @@ Personne seule ou couple ayant une personne à charge  395,77
 Majoration par personne à charge	                    57,61
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0195; role: provision; provision-id: aides_logement/archives:p0193; source-lines: 2807-2814; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0195; role: provision; provision-id: aides_logement/archives:p0193; source-lines: 2807-2814; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3820,7 +3820,7 @@ charge supplémentaire              48,91  43,21  39,35
 --------------------------------------------------------
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0196; role: provision; provision-id: aides_logement/archives:p0194; source-lines: 2817-2844; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0196; role: provision; provision-id: aides_logement/archives:p0194; source-lines: 2817-2844; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3834,7 +3834,7 @@ Couple sans personne à charge	   59,97
 Majoration par personne à charge 13,60
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0197; role: provision; provision-id: aides_logement/archives:p0195; source-lines: 2847-2853; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0197; role: provision; provision-id: aides_logement/archives:p0195; source-lines: 2847-2853; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3861,7 +3861,7 @@ Conformément à l’article 3 de l’arrêté du 27 septembre 2024 (NOR : LRUL2
 sont applicables aux prestations dues à compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0198; role: provision; provision-id: aides_logement/archives:p0196; source-lines: 2856-2875; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0198; role: provision; provision-id: aides_logement/archives:p0196; source-lines: 2856-2875; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3873,7 +3873,7 @@ Dans le cas des copropriétaires prévus à l'article D. 832-16 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés aux articles 17 et 18 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0199; role: provision; provision-id: aides_logement/archives:p0197; source-lines: 2878-2882; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0199; role: provision; provision-id: aides_logement/archives:p0197; source-lines: 2878-2882; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3887,7 +3887,7 @@ Couple sans personne à charge	   59,97
 Majoration par personne à charge 13,60
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0200; role: provision; provision-id: aides_logement/archives:p0198; source-lines: 2885-2891; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0200; role: provision; provision-id: aides_logement/archives:p0198; source-lines: 2885-2891; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3918,7 +3918,7 @@ Conformément à l’article 3 de l’arrêté du 27 septembre 2024 (NOR : LRUL2
 sont applicables aux prestations dues à compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0201; role: provision; provision-id: aides_logement/archives:p0199; source-lines: 2894-2917; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0201; role: provision; provision-id: aides_logement/archives:p0199; source-lines: 2894-2917; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3939,7 +3939,7 @@ Conformément à l’article 3 de l’arrêté du 27 septembre 2024 (NOR : LRUL2
 sont applicables aux prestations dues à compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0202; role: provision; provision-id: aides_logement/archives:p0200; source-lines: 2920-2933; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0202; role: provision; provision-id: aides_logement/archives:p0200; source-lines: 2920-2933; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3951,7 +3951,7 @@ Dans le cas des copropriétaires prévus à l'article D. 842-10 du même code :
 1° Les plafonds de mensualités sont fixés à 75 % des plafonds de mensualités mentionnés à l'article 33 ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0203; role: provision; provision-id: aides_logement/archives:p0201; source-lines: 2936-2940; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0203; role: provision; provision-id: aides_logement/archives:p0201; source-lines: 2936-2940; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3965,7 +3965,7 @@ Couple sans personne à charge                            59,97
 Majoration par personne à charge                         13,60
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0204; role: provision; provision-id: aides_logement/archives:p0202; source-lines: 2943-2949; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0204; role: provision; provision-id: aides_logement/archives:p0202; source-lines: 2943-2949; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -3991,7 +3991,7 @@ Conformément à l’article 3 de l’arrêté du 27 septembre 2024 (NOR : LRUL2
 sont applicables aux prestations dues à compter du 1er octobre 2024.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0205; role: provision; provision-id: aides_logement/archives:p0203; source-lines: 2952-2970; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0205; role: provision; provision-id: aides_logement/archives:p0203; source-lines: 2952-2970; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4008,7 +4008,7 @@ a) 93,07 euros lorsqu'il s'agit d'une personne seule ;
 b) 144,92 euros euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0206; role: provision; provision-id: aides_logement/archives:p0204; source-lines: 2973-2982; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0206; role: provision; provision-id: aides_logement/archives:p0204; source-lines: 2973-2982; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4020,7 +4020,7 @@ a) 188,17 euros lorsqu'il s'agit d'une personne seule ;
 b) 292,46 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0207; role: provision; provision-id: aides_logement/archives:p0205; source-lines: 2985-2989; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0207; role: provision; provision-id: aides_logement/archives:p0205; source-lines: 2985-2989; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4032,7 +4032,7 @@ a) 228,31 euros lorsqu'il s'agit d'une personne seule ;
 b) 354,78 euros lorsqu'il s'agit d'un couple ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0208; role: provision; provision-id: aides_logement/archives:p0206; source-lines: 2992-2996; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0208; role: provision; provision-id: aides_logement/archives:p0206; source-lines: 2992-2996; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4044,7 +4044,7 @@ a) 188,17 euros lorsqu'il s'agit d'une personne seule ;
 b) 292,46 euros lorsqu'il s'agit d'un couple.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0209; role: provision; provision-id: aides_logement/archives:p0207; source-lines: 2999-3003; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0209; role: provision; provision-id: aides_logement/archives:p0207; source-lines: 2999-3003; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4065,7 +4065,7 @@ III, VI et VII du présent arrêté :
 enfant à charge, est remplacée par " 8 656 euros " ;
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0210; role: provision; provision-id: aides_logement/archives:p0208; source-lines: 3006-3019; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0210; role: provision; provision-id: aides_logement/archives:p0208; source-lines: 3006-3019; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4083,7 +4083,7 @@ Bénéficiaire isolé ou couple sans personne à charge 40,26
 Par personne supplémentaire à charge                10,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0211; role: provision; provision-id: aides_logement/archives:p0209; source-lines: 3022-3032; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0211; role: provision; provision-id: aides_logement/archives:p0209; source-lines: 3022-3032; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4099,7 +4099,7 @@ Couple sans personne à charge    40,26
 Majoration par personne à charge 10,36
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0212; role: provision; provision-id: aides_logement/archives:p0210; source-lines: 3035-3043; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0212; role: provision; provision-id: aides_logement/archives:p0210; source-lines: 3035-3043; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4124,7 +4124,7 @@ Personne seule ou couple ayant 7 personnes à charge 1,67 %
 Majoration par personne à charge supplémentaire     -0,06 %
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0213; role: provision; provision-id: aides_logement/archives:p0211; source-lines: 3046-3063; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0213; role: provision; provision-id: aides_logement/archives:p0211; source-lines: 3046-3063; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -4134,7 +4134,7 @@ D. 823-17 du même code, le forfait “ R0 ” applicable à Mayotte est identiq
 à celui applicable en outre-mer.
 
 
-<!-- rtdf-block-id: aides_logement/archives:b0214; role: provision; provision-id: aides_logement/archives:p0212; source-lines: 3066-3068; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/archives:b0214; role: provision; provision-id: aides_logement/archives:p0212; source-lines: 3066-3068; relation: formalizes-preceding -->
 ```catala
 ```
 

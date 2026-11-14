@@ -1,4 +1,4 @@
-# formalization_rtf
+# RSA (Reasoning Structure Alignment)
 
 The SARA → Catala port and its differential-testing apparatus, moved out of
 `scaling_formalization_compute/` on 2026-09-01 so that the two lines of work no

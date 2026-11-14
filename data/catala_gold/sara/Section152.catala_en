@@ -1,4 +1,4 @@
-<!-- rtdf-document-id: sara/section152 -->
+<!-- rsa-document-id: sara/section152 -->
 
 > Module Section152
 > Using Definitions as W
@@ -241,7 +241,7 @@ scope Dependent:
     (1) a qualifying child, or
 
 
-<!-- rtdf-block-id: sara/section152:b0004; role: provision; provision-id: sara/section152(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0004; role: provision; provision-id: sara/section152(a)(1); source-lines: 7-7; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_child_alternative content boolean
   depends on is_qualifying_child content boolean
@@ -251,7 +251,7 @@ declaration qualifying_child_alternative content boolean
     (2) a qualifying relative.
 
 
-<!-- rtdf-block-id: sara/section152:b0005; role: provision; provision-id: sara/section152(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0005; role: provision; provision-id: sara/section152(a)(2); source-lines: 9-9; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_relative_alternative content boolean
   depends on is_qualifying_relative content boolean
@@ -275,7 +275,7 @@ declaration dependency_exceptions_clear content boolean
     If an individual is a dependent of a taxpayer for any taxable year of such taxpayer beginning in a calendar year, such individual shall be treated as having no dependents for any taxable year of such individual beginning in such calendar year.
 
 
-<!-- rtdf-block-id: sara/section152:b0007; role: provision; provision-id: sara/section152(b)(1); source-lines: 15-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0007; role: provision; provision-id: sara/section152(b)(1); source-lines: 15-17; relation: formalizes-preceding -->
 ```catala
 declaration dependent_may_claim_no_dependents content boolean
   depends on claimant_is_dependent content boolean
@@ -287,7 +287,7 @@ declaration dependent_may_claim_no_dependents content boolean
     An individual shall not be treated as a dependent of a taxpayer under subsection (a) if such individual has made a joint return with the individual's spouse for the taxable year beginning in the calendar year in which the taxable year of the taxpayer begins.
 
 
-<!-- rtdf-block-id: sara/section152:b0008; role: provision; provision-id: sara/section152(b)(2); source-lines: 19-21; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0008; role: provision; provision-id: sara/section152(b)(2); source-lines: 19-21; relation: formalizes-preceding -->
 ```catala
 declaration filed_joint_return content boolean
   depends on world content W.World,
@@ -328,7 +328,7 @@ scope QualifyingChild:
         (A) who bears a relationship to the taxpayer described in paragraph (2),
 
 
-<!-- rtdf-block-id: sara/section152:b0011; role: provision; provision-id: sara/section152(c)(1)(A); source-lines: 31-31; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0011; role: provision; provision-id: sara/section152(c)(1)(A); source-lines: 31-31; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_child_relationship content boolean
   depends on world content W.World,
@@ -341,7 +341,7 @@ declaration qualifying_child_relationship content boolean
         (B) who has the same principal place of abode as the taxpayer for more than one-half of such taxable year,
 
 
-<!-- rtdf-block-id: sara/section152:b0012; role: provision; provision-id: sara/section152(c)(1)(B); source-lines: 33-33; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0012; role: provision; provision-id: sara/section152(c)(1)(B); source-lines: 33-33; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_child_residence content boolean
   depends on world content W.World,
@@ -354,7 +354,7 @@ declaration qualifying_child_residence content boolean
         (C) who meets the age requirements of paragraph (3), and
 
 
-<!-- rtdf-block-id: sara/section152:b0013; role: provision; provision-id: sara/section152(c)(1)(C); source-lines: 35-35; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0013; role: provision; provision-id: sara/section152(c)(1)(C); source-lines: 35-35; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_child_age content boolean
   depends on world content W.World,
@@ -376,7 +376,7 @@ declaration qualifying_child_age content boolean
         (E) who has not filed a joint return (other than only for a claim of refund) with the individual's spouse for the taxable year beginning in the calendar year in which the taxable year of the taxpayer begins.
 
 
-<!-- rtdf-block-id: sara/section152:b0014; role: provision; provision-id: sara/section152(c)(1)(E); source-lines: 37-37; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0014; role: provision; provision-id: sara/section152(c)(1)(E); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_child_no_joint_return content boolean
   depends on world content W.World,
@@ -403,7 +403,7 @@ declaration relationship_described_for_child content boolean
         (A) a child of the taxpayer or a descendant of such a child, or
 
 
-<!-- rtdf-block-id: sara/section152:b0016; role: provision; provision-id: sara/section152(c)(2)(A); source-lines: 43-43; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0016; role: provision; provision-id: sara/section152(c)(2)(A); source-lines: 43-43; relation: formalizes-preceding -->
 ```catala
 declaration child_relationship_clause content boolean
   depends on world content W.World,
@@ -416,7 +416,7 @@ declaration child_relationship_clause content boolean
         (B) a brother, sister, stepbrother, or stepsister of the taxpayer or a descendant of any such relative.
 
 
-<!-- rtdf-block-id: sara/section152:b0017; role: provision; provision-id: sara/section152(c)(2)(B); source-lines: 45-45; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0017; role: provision; provision-id: sara/section152(c)(2)(B); source-lines: 45-45; relation: formalizes-preceding -->
 ```catala
 declaration sibling_relationship_clause content boolean
   depends on world content W.World,
@@ -435,7 +435,7 @@ declaration sibling_relationship_clause content boolean
     For purposes of paragraph (1)(C), an individual meets the requirements of this paragraph if such individual is younger than the taxpayer claiming such individual as a qualifying child and is less than 25 years old at the end of the taxable year.
 
 
-<!-- rtdf-block-id: sara/section152:b0018; role: provision; provision-id: sara/section152(c)(3); source-lines: 47-49; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0018; role: provision; provision-id: sara/section152(c)(3); source-lines: 47-49; relation: formalizes-preceding -->
 ```catala
 declaration child_age_requirement content boolean
   depends on child_age content optional of integer,
@@ -480,7 +480,7 @@ declaration qualifying_relative_requirements content boolean
         (A) who bears a relationship to the taxpayer described in paragraph (2),
 
 
-<!-- rtdf-block-id: sara/section152:b0021; role: provision; provision-id: sara/section152(d)(1)(A); source-lines: 59-59; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0021; role: provision; provision-id: sara/section152(d)(1)(A); source-lines: 59-59; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_relative_relationship_requirement content boolean
   depends on world content W.World,
@@ -493,7 +493,7 @@ declaration qualifying_relative_relationship_requirement content boolean
         (B) who has no income for the calendar year in which such taxable year begins, and
 
 
-<!-- rtdf-block-id: sara/section152:b0022; role: provision; provision-id: sara/section152(d)(1)(B); source-lines: 61-61; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0022; role: provision; provision-id: sara/section152(d)(1)(B); source-lines: 61-61; relation: formalizes-preceding -->
 ```catala
 declaration qualifying_relative_no_income content boolean
   depends on world content W.World,
@@ -505,7 +505,7 @@ declaration qualifying_relative_no_income content boolean
         (D) who is not a qualifying child of such taxpayer or of any other taxpayer for any taxable year beginning in the calendar year in which such taxable year begins.
 
 
-<!-- rtdf-block-id: sara/section152:b0023; role: provision; provision-id: sara/section152(d)(1)(D); source-lines: 63-63; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0023; role: provision; provision-id: sara/section152(d)(1)(D); source-lines: 63-63; relation: formalizes-preceding -->
 ```catala
 declaration not_qualifying_child_of_any_taxpayer content boolean
   depends on individual content W.Entity,
@@ -537,7 +537,7 @@ declaration qualifying_relative_relationship content boolean
         (A) A child or a descendant of a child.
 
 
-<!-- rtdf-block-id: sara/section152:b0025; role: provision; provision-id: sara/section152(d)(2)(A); source-lines: 69-69; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0025; role: provision; provision-id: sara/section152(d)(2)(A); source-lines: 69-69; relation: formalizes-preceding -->
 ```catala
 declaration relative_child_relationship content boolean
   depends on world content W.World,
@@ -550,7 +550,7 @@ declaration relative_child_relationship content boolean
         (B) A brother, sister, stepbrother, or stepsister.
 
 
-<!-- rtdf-block-id: sara/section152:b0026; role: provision; provision-id: sara/section152(d)(2)(B); source-lines: 71-71; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0026; role: provision; provision-id: sara/section152(d)(2)(B); source-lines: 71-71; relation: formalizes-preceding -->
 ```catala
 declaration relative_sibling_relationship content boolean
   depends on world content W.World,
@@ -563,7 +563,7 @@ declaration relative_sibling_relationship content boolean
         (C) The father or mother, or an ancestor of either.
 
 
-<!-- rtdf-block-id: sara/section152:b0027; role: provision; provision-id: sara/section152(d)(2)(C); source-lines: 73-73; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0027; role: provision; provision-id: sara/section152(d)(2)(C); source-lines: 73-73; relation: formalizes-preceding -->
 ```catala
 declaration relative_parent_relationship content boolean
   depends on world content W.World,
@@ -576,7 +576,7 @@ declaration relative_parent_relationship content boolean
         (D) A stepfather or stepmother.
 
 
-<!-- rtdf-block-id: sara/section152:b0028; role: provision; provision-id: sara/section152(d)(2)(D); source-lines: 75-75; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0028; role: provision; provision-id: sara/section152(d)(2)(D); source-lines: 75-75; relation: formalizes-preceding -->
 ```catala
 declaration relative_step_parent_relationship content boolean
   depends on world content W.World,
@@ -591,7 +591,7 @@ declaration relative_step_parent_relationship content boolean
         (E) A son or daughter of a brother or sister of the taxpayer.
 
 
-<!-- rtdf-block-id: sara/section152:b0029; role: provision; provision-id: sara/section152(d)(2)(E); source-lines: 77-77; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0029; role: provision; provision-id: sara/section152(d)(2)(E); source-lines: 77-77; relation: formalizes-preceding -->
 ```catala
 declaration relative_niece_nephew_relationship content boolean
   depends on world content W.World,
@@ -606,7 +606,7 @@ declaration relative_niece_nephew_relationship content boolean
         (F) A brother or sister of the father or mother of the taxpayer.
 
 
-<!-- rtdf-block-id: sara/section152:b0030; role: provision; provision-id: sara/section152(d)(2)(F); source-lines: 79-79; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0030; role: provision; provision-id: sara/section152(d)(2)(F); source-lines: 79-79; relation: formalizes-preceding -->
 ```catala
 declaration relative_aunt_uncle_relationship content boolean
   depends on world content W.World,
@@ -621,7 +621,7 @@ declaration relative_aunt_uncle_relationship content boolean
         (G) A son-in-law, daughter-in-law, father-in-law, mother-in-law, brother-in-law, or sister-in-law.
 
 
-<!-- rtdf-block-id: sara/section152:b0031; role: provision; provision-id: sara/section152(d)(2)(G); source-lines: 81-81; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0031; role: provision; provision-id: sara/section152(d)(2)(G); source-lines: 81-81; relation: formalizes-preceding -->
 ```catala
 declaration relative_in_law_relationship content boolean
   depends on world content W.World,
@@ -652,7 +652,7 @@ scope DependentsOf:
 
         (H) An individual (other than an individual who at any time during the taxable year was the spouse, determined without regard to section 7703, of the taxpayer) who, for the taxable year of the taxpayer, has the same principal place of abode as the taxpayer and is a member of the taxpayer's household.
 
-<!-- rtdf-block-id: sara/section152:b0032; role: provision; provision-id: sara/section152(d)(2)(H); source-lines: 83-83; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section152:b0032; role: provision; provision-id: sara/section152(d)(2)(H); source-lines: 83-83; relation: formalizes-preceding -->
 ```catala
 declaration household_member_relationship content boolean
   depends on world content W.World,

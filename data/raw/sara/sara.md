@@ -7,7 +7,7 @@ Use the supplied source layout. `Definitions.catala_en` is the pre-completed
 home for factual records, shared enumerations and structures, and genuinely
 provision-neutral helpers used by multiple sections. It must not own statutory
 rules, required outputs, or cross-section orchestration. Each
-`Section[N].catala_en` module contains RTDF fences for independently operative
+`Section[N].catala_en` module contains RSA fences for independently operative
 statutory spans: leaf rules, substantive parent aggregation, and trailing
 `:closing` text. Bare headings have no blocks. Do not add preamble or synthetic
 block annotations. `Api.catala_en` is also unannotated and is the sole

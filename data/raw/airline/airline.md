@@ -7,7 +7,7 @@ Use the supplied source layout. `Definitions.catala_en` is the pre-completed hom
 for itinerary facts, shared enumerations and structures, and genuinely
 provision-neutral helpers used by the policy and API. It must not own policy
 rules, required outputs, or evaluator orchestration.
-`airlinepolicy.catala_en` contains RTDF fences for the independently
+`airlinepolicy.catala_en` contains RSA fences for the independently
 operative policy spans and its existing neutral preamble slots. Do not add new
 preamble or synthetic block annotations, and do not move policy rules away
 from the spans they formalize. `Api.catala_en` is also unannotated and is the

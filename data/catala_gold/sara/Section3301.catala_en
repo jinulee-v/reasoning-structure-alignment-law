@@ -1,4 +1,4 @@
-<!-- rtdf-document-id: sara/section3301 -->
+<!-- rsa-document-id: sara/section3301 -->
 
 > Module Section3301
 > Using Definitions as W
@@ -17,7 +17,7 @@ declaration scope UnemploymentTax:
 §3301. Rate of tax
 
 There is hereby imposed on every employer (as defined in section 3306(a)) for each calendar year an excise tax, with respect to having individuals in his employ, equal to 6 percent of the total wages (as defined in section 3306(b)) paid by such employer during the calendar year with respect to employment (as defined in section 3306(c)).
-<!-- rtdf-block-id: sara/section3301:b0003; role: provision; provision-id: sara/section3301; source-lines: 3-3; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section3301:b0003; role: provision; provision-id: sara/section3301; source-lines: 3-3; relation: formalizes-preceding -->
 ```catala
 scope UnemploymentTax:
   definition wages.world equals world

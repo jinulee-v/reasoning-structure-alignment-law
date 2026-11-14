@@ -1,4 +1,7 @@
 # Python
+.venv/
+.env
+/runs/
 __pycache__/
 *.py[cod]
 .pytest_cache/

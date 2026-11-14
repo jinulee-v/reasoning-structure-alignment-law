@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/prologue -->
+<!-- rsa-document-id: allocations_familiales/prologue -->
 
-<!-- rtdf-block-id: allocations_familiales/prologue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/prologue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/prologue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/prologue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -18,7 +18,7 @@ informatiques qui modélisent la situation dont parlent ces textes législatifs.
 ## Types de données manipulées par le programme
 
 
-<!-- rtdf-block-id: allocations_familiales/prologue:b0003; role: provision; provision-id: allocations_familiales/prologue:p0001; source-lines: 1-7; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/prologue:b0003; role: provision; provision-id: allocations_familiales/prologue:p0001; source-lines: 1-7; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -28,7 +28,7 @@ informatiques qui modélisent la situation dont parlent ces textes législatifs.
 ### Prestations familiales
 
 
-<!-- rtdf-block-id: allocations_familiales/prologue:b0004; role: provision; provision-id: allocations_familiales/prologue:p0002; source-lines: 10-12; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/prologue:b0004; role: provision; provision-id: allocations_familiales/prologue:p0002; source-lines: 10-12; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -36,7 +36,7 @@ informatiques qui modélisent la situation dont parlent ces textes législatifs.
 ### Allocations familiales
 
 
-<!-- rtdf-block-id: allocations_familiales/prologue:b0005; role: provision; provision-id: allocations_familiales/prologue:p0003; source-lines: 15-15; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/prologue:b0005; role: provision; provision-id: allocations_familiales/prologue:p0003; source-lines: 15-15; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 

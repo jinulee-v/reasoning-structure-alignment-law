@@ -1,21 +1,21 @@
-<!-- rtdf-document-id: airline/section1_non_textual -->
+<!-- rsa-document-id: airline/section1_non_textual -->
 
 > Module AirlinePolicy
 > Using Definitions as W
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
 # Bag fees
 All published bag fees apply at each check-in location and are base rates according to travel dates and destination; applicable taxes are not shown.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -23,7 +23,7 @@ All published bag fees apply at each check-in location and are base rates accord
 ## Carry-on bags
 You're allowed 1 carry-on bag and 1 personal item in all cabins.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0004; role: provision; provision-id: airline/section1_non_textual:p0002; source-lines: 5-5; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0004; role: provision; provision-id: airline/section1_non_textual:p0002; source-lines: 5-5; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -31,7 +31,7 @@ You're allowed 1 carry-on bag and 1 personal item in all cabins.
 ### Personal items
 Your personal item like a purse or small handbag must fit under the seat in front of you. Dimensions should not exceed 18 x 14 x 8 inches (45 x 35 x 20 cm).
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0005; role: provision; provision-id: airline/section1_non_textual:p0003; source-lines: 8-8; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0005; role: provision; provision-id: airline/section1_non_textual:p0003; source-lines: 8-8; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -42,7 +42,7 @@ These don't count as your personal item or carry-on:
 * Small, soft-sided cooler of breast milk
 * Child safety seats, strollers and medical or mobility devices
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0006; role: provision; provision-id: airline/section1_non_textual:p0004; source-lines: 10-14; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0006; role: provision; provision-id: airline/section1_non_textual:p0004; source-lines: 10-14; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -50,7 +50,7 @@ These don't count as your personal item or carry-on:
 ### Carry-on items
 You can bring only one carry-on item along with your personal item. Your carry-on must fit in in the overhead bin or under the seat in front of you. If it doesn't fit, it will need to be checked. Be sure all your carry-on items are labeled in case they are checked.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -58,7 +58,7 @@ You can bring only one carry-on item along with your personal item. Your carry-o
 #### Carry-on bag
 The total size of your carry-on, including the handles and wheels, cannot exceed 22 x 14 x 9 inches (56 x 36 x 23 cm) and must fit in the sizer at the airport.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0008; role: provision; provision-id: airline/section1_non_textual:p0006; source-lines: 20-20; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0008; role: provision; provision-id: airline/section1_non_textual:p0006; source-lines: 20-20; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -66,7 +66,7 @@ The total size of your carry-on, including the handles and wheels, cannot exceed
 #### Soft-sided garment bag
 Your soft-sided garment bag cannot exceed 51 inches / 130 cm (length + width + height).
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0009; role: provision; provision-id: airline/section1_non_textual:p0007; source-lines: 23-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0009; role: provision; provision-id: airline/section1_non_textual:p0007; source-lines: 23-23; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -74,21 +74,21 @@ Your soft-sided garment bag cannot exceed 51 inches / 130 cm (length + width + h
 ## Checked bags
 Travel within / between the U.S., Puerto Rico, and U.S. Virgin Islands – 1st checked bag fee is $40 and the 2nd checked bag fee is $45.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0011; role: provision; provision-id: airline/section1_non_textual:p0009; source-lines: 28-28; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0011; role: provision; provision-id: airline/section1_non_textual:p0009; source-lines: 28-28; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 Travel to / from Canada, Caribbean, Mexico, Central America, and Guyana – 1st checked bag fee is $35 and the 2nd checked bag fee is $45.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0012; role: provision; provision-id: airline/section1_non_textual:p0010; source-lines: 30-30; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0012; role: provision; provision-id: airline/section1_non_textual:p0010; source-lines: 30-30; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 All bag fees are non-refundable and apply per person, each way, even if you buy or get an upgrade that includes free checked bags. If you believe you were incorrectly charged for bag fees, contact an American representative for help or file a refund claim within 45 days.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0013; role: provision; provision-id: airline/section1_non_textual:p0011; source-lines: 32-32; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0013; role: provision; provision-id: airline/section1_non_textual:p0011; source-lines: 32-32; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -111,14 +111,14 @@ All bag fees are non-refundable and apply per person, each way, even if you buy 
 | Between Europe and U.S., Puerto Rico or connecting via Europe to another destination                                                                                                 | $75           | $0          | $0              | $0       | $0    |
 | To or from India, China, Japan, South Korea, Hong Kong, Australia and New Zealand                                                                                                    | $75           | $0          | $0              | $0       | $0    |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0014; role: provision; provision-id: airline/section1_non_textual:p0012; source-lines: 36-50; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0014; role: provision; provision-id: airline/section1_non_textual:p0012; source-lines: 36-50; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 ^Main Plus includes 1 extra free checked bag in addition to the Main Cabin allowance (max of 2).
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -139,14 +139,14 @@ All bag fees are non-refundable and apply per person, each way, even if you buy 
 | Between Europe, Israel, Qatar and U.S., Puerto Rico, U.S. Virgin Islands, Canada, Mexico, Caribbean (excluding Cuba), Central America, South America                        | $100          | $100        | $0              | $0       | $0    |
 | To or from India, China, Japan, South Korea, Hong Kong, Australia and New Zealand                                                                                           | $100          | $100        | $0              | $0       | $0    |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0016; role: provision; provision-id: airline/section1_non_textual:p0014; source-lines: 56-68; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0016; role: provision; provision-id: airline/section1_non_textual:p0014; source-lines: 56-68; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 ^Main Plus includes 1 extra free checked bag in addition to the Main Cabin allowance (max of 2).
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0017; role: provision; provision-id: airline/section1_non_textual:p0015; source-lines: 70-70; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0017; role: provision; provision-id: airline/section1_non_textual:p0015; source-lines: 70-70; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -160,7 +160,7 @@ All bag fees are non-refundable and apply per person, each way, even if you buy 
 | Between Europe, Israel, Qatar and U.S., Puerto Rico, U.S. Virgin Islands, Canada, Mexico, Caribbean, Central America, South America                        | $200          | $200       | $200            | $200     | $0     |
 | To or from India, China, Japan, South Korea, Hong Kong, Australia and New Zealand                                                                          | $200          | $200       | $200            | $200     | $0     |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0018; role: provision; provision-id: airline/section1_non_textual:p0016; source-lines: 74-79; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0018; role: provision; provision-id: airline/section1_non_textual:p0016; source-lines: 74-79; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -174,7 +174,7 @@ All bag fees are non-refundable and apply per person, each way, even if you buy 
 | Between Europe, Israel, Qatar and U.S., Puerto Rico, U.S. Virgin Islands, Canada, Mexico, Caribbean, Central America and South America                                         | $200          | $200       | $200            | $200     | $200   |
 | To or from India, China, Japan, South Korea, Hong Kong, Australia and New Zealand                                                                                              | $200          | $200       | $200            | $200     | $200   |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0019; role: provision; provision-id: airline/section1_non_textual:p0017; source-lines: 83-88; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0019; role: provision; provision-id: airline/section1_non_textual:p0017; source-lines: 83-88; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -183,7 +183,7 @@ All bag fees are non-refundable and apply per person, each way, even if you buy 
 
 In some cases, you won't have to pay the fees for up to 3 bags when traveling on itineraries marketed and operated by American Airlines. If you qualify for complimentary bags based on your AAdvantage® status or oneworld® status, the benefits are based on your highest status level at time of ticketing or check-in.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -192,14 +192,14 @@ If your status level is:
 * Higher at ticketing than at check-in, show your ticket receipt to the airport agent
 * Lower at ticketing than at check-in, current benefits will automatically apply
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0021; role: provision; provision-id: airline/section1_non_textual:p0019; source-lines: 94-96; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0021; role: provision; provision-id: airline/section1_non_textual:p0019; source-lines: 94-96; relation: formalizes-preceding -->
 ```catala
 ```
 
 
 Free checked bags may not apply to codeshare flights operated by our partners. Visit the website of the airline operating your flight for details.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0022; role: provision; provision-id: airline/section1_non_textual:p0020; source-lines: 98-98; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0022; role: provision; provision-id: airline/section1_non_textual:p0020; source-lines: 98-98; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -210,7 +210,7 @@ Free checked bags may not apply to codeshare flights operated by our partners. V
 * GOL Diamond Smiles members
 * oneworld® Ruby
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -239,7 +239,7 @@ or when traveling to these destinations (excluding Basic Economy):
 * Transatlantic
 * Uruguay
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0024; role: provision; provision-id: airline/section1_non_textual:p0022; source-lines: 106-128; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0024; role: provision; provision-id: airline/section1_non_textual:p0022; source-lines: 106-128; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -251,7 +251,7 @@ or when traveling to these destinations (excluding Basic Economy):
 * Confirmed Business customers
 * Confirmed Premium Economy customers
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -264,7 +264,7 @@ or when traveling to these destinations (excluding Basic Economy):
 * Active U.S. military and / or dependents with ID traveling on orders (1st - 5th bags free of charge)
 * Active U.S. military with ID on personal travel
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -272,7 +272,7 @@ or when traveling to these destinations (excluding Basic Economy):
 ### Weight and Size
 We calculate the size limits of your bag by adding the total outside dimensions of each bag, length + width + height.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0027; role: provision; provision-id: airline/section1_non_textual:p0025; source-lines: 146-146; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0027; role: provision; provision-id: airline/section1_non_textual:p0025; source-lines: 146-146; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -282,7 +282,7 @@ For all regions, except to / from Australia or New Zealand, your checked bag all
 * Weight: 50 lbs / 23 kgs
 * For First / Business, weight is 70 lbs / 32 kgs for complimentary bags and 50 lbs / 23 kgs for excess charged bags
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0028; role: provision; provision-id: airline/section1_non_textual:p0026; source-lines: 148-151; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0028; role: provision; provision-id: airline/section1_non_textual:p0026; source-lines: 148-151; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -291,7 +291,7 @@ For all confirmed customers on flights to / from Australia or New Zealand:
 * Dimension: 62 in / 158 cm
 * Weight: 70 lbs / 32kgs for complimentary bags and 50 lbs / 23 kgs for excess charged bags
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0029; role: provision; provision-id: airline/section1_non_textual:p0027; source-lines: 153-155; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0029; role: provision; provision-id: airline/section1_non_textual:p0027; source-lines: 153-155; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -300,7 +300,7 @@ For all confirmed customers on flights to / from Australia or New Zealand:
 
 More than one fee may apply per bag that exceeds standard dimensions for both weight and size. The higher fee between oversize and overweight applies, in addition to the checked bag fee.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -311,7 +311,7 @@ More than one fee may apply per bag that exceeds standard dimensions for both we
 |-------------|---------------|------------|-----------------|----------|--------|
 | All Regions | $30           | $30        | $30             | $30      | $30    |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0031; role: provision; provision-id: airline/section1_non_textual:p0029; source-lines: 163-165; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0031; role: provision; provision-id: airline/section1_non_textual:p0029; source-lines: 163-165; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -327,7 +327,7 @@ More than one fee may apply per bag that exceeds standard dimensions for both we
 | To or from Australia and New Zealand                                                                                                                         | $100          | $100       | $100            | $100       | $100      |
 | To or from India, China, Japan, South Korea and Hong Kong                                                                                                    | $100          | $100       | $100            | $100       | $100      |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0032; role: provision; provision-id: airline/section1_non_textual:p0030; source-lines: 169-176; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0032; role: provision; provision-id: airline/section1_non_textual:p0030; source-lines: 169-176; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -342,7 +342,7 @@ More than one fee may apply per bag that exceeds standard dimensions for both we
 | To or from Australia and New Zealand                                                                                                                       | Not accepted  | Not accepted  | Not accepted    | Not accepted   | Not accepted   |
 | To or from India, China, Japan, South Korea and Hong Kong                                                                                                  | $450          | $450          | $450            | $450           | $450           |
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -356,6 +356,6 @@ More than one fee may apply per bag that exceeds standard dimensions for both we
 | Panama / South America (except Guyana / Suriname)                            | $30                                  | $150                                  |
 | Europe, Israel, Qatar                                                        | $30                                  | $150                                  |
 | China, Japan, South Korea, Hong Kong, India, Australia, and New Zealand      | $30                                  | $200                                  |
-<!-- rtdf-block-id: airline/section1_non_textual:b0034; role: provision; provision-id: airline/section1_non_textual:p0032; source-lines: 190-196; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0034; role: provision; provision-id: airline/section1_non_textual:p0032; source-lines: 190-196; relation: formalizes-preceding -->
 ```catala
 ```

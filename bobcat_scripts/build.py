@@ -19,6 +19,7 @@ SOURCE = ROOT / ".toolchain/src/catala-bobcat"
 OPAM = ROOT / ".toolchain/envs/catala/bin/opam"
 OPAMROOT = ROOT / ".toolchain/opam"
 BINARY = SOURCE / "_build/default/compiler/catala.exe"
+CLERK = SOURCE / "_build/default/build_system/clerk.exe"
 REPOSITORY = "https://github.com/jinulee-v/bobcat.git"
 
 
@@ -44,15 +45,35 @@ def main() -> int:
     if not OPAM.exists():
         raise SystemExit(
             f"missing opam executable: {OPAM}\n"
-            "Run `bash install_toolchain.sh cutecat` once for dependencies.")
+            "Run `bash install_toolchain.sh ocaml,catala,bobcat-deps` once for dependencies.")
 
     env = os.environ.copy()
     env["OPAMROOT"] = str(OPAMROOT)
+    env["CATALA_SOURCE_ROOT"] = str(SOURCE)
+    env["LD_LIBRARY_PATH"] = os.pathsep.join(filter(None, (
+        str(ROOT / ".toolchain/bobcat-z3/lib"),
+        env.get("LD_LIBRARY_PATH", ""),
+    )))
     command = [str(OPAM), "exec", "--switch=cutecat", "--",
-               "dune", "build", "compiler/catala.exe"]
+               "dune", "build", "-p", "catala,catala-proof",
+               "compiler/catala.exe", "build_system/clerk.exe",
+               "@install"]
     subprocess.run(command, cwd=SOURCE, env=env, check=True)
     subprocess.run([str(BINARY), "bobcat", "--help=plain"],
                    env=env, stdout=subprocess.DEVNULL, check=True)
+    subprocess.run([str(CLERK), "json-schema", "--help=plain"],
+                   env=env, stdout=subprocess.DEVNULL, check=True)
+    # RSA needs the fork's schema/replay commands as well as its solver.
+    # Both host verification and contained agents already prepend this directory.
+    bindir = ROOT / ".toolchain/bobcat/bin"
+    bindir.mkdir(parents=True, exist_ok=True)
+    for name, binary in (("catala", BINARY), ("clerk", CLERK)):
+        link = bindir / name
+        if link.is_symlink():
+            link.unlink()
+        elif link.exists():
+            raise SystemExit(f"refusing to replace non-symlink: {link}")
+        link.symlink_to(os.path.relpath(binary, bindir))
     print(BINARY.relative_to(ROOT))
     return 0
 

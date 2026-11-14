@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: aides_logement/prologue -->
+<!-- rsa-document-id: aides_logement/prologue -->
 
-<!-- rtdf-block-id: aides_logement/prologue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/prologue:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: aides_logement/prologue:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -24,7 +24,7 @@ dans les sections suivantes.
 #### Calcul et éligibilité pour le secteur locatif
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0003; role: provision; provision-id: aides_logement/prologue:p0001; source-lines: 1-13; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0003; role: provision; provision-id: aides_logement/prologue:p0001; source-lines: 1-13; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -32,7 +32,7 @@ dans les sections suivantes.
 #### Calcul et éligibilité pour le secteur accession à la propriété
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0004; role: provision; provision-id: aides_logement/prologue:p0002; source-lines: 16-16; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0004; role: provision; provision-id: aides_logement/prologue:p0002; source-lines: 16-16; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -40,7 +40,7 @@ dans les sections suivantes.
 #### Calcul et éligibilité pour le secteur logement-foyer
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0005; role: provision; provision-id: aides_logement/prologue:p0003; source-lines: 19-19; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0005; role: provision; provision-id: aides_logement/prologue:p0003; source-lines: 19-19; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -48,7 +48,7 @@ dans les sections suivantes.
 #### Calcul et éligibilité pour tous les secteurs
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0006; role: provision; provision-id: aides_logement/prologue:p0004; source-lines: 22-22; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0006; role: provision; provision-id: aides_logement/prologue:p0004; source-lines: 22-22; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -56,7 +56,7 @@ dans les sections suivantes.
 ### Informations relatives aux impayés de dépense de logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0007; role: provision; provision-id: aides_logement/prologue:p0005; source-lines: 25-25; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0007; role: provision; provision-id: aides_logement/prologue:p0005; source-lines: 25-25; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -66,7 +66,7 @@ dans les sections suivantes.
 ### Éligibilité aux aides personnelles au logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0008; role: provision; provision-id: aides_logement/prologue:p0006; source-lines: 28-30; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0008; role: provision; provision-id: aides_logement/prologue:p0006; source-lines: 28-30; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -74,7 +74,7 @@ dans les sections suivantes.
 ### Éligibilité à l'aide personnalisée au logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0009; role: provision; provision-id: aides_logement/prologue:p0007; source-lines: 33-33; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0009; role: provision; provision-id: aides_logement/prologue:p0007; source-lines: 33-33; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -82,7 +82,7 @@ dans les sections suivantes.
 ### Éligibilité aux allocations de logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0010; role: provision; provision-id: aides_logement/prologue:p0008; source-lines: 36-36; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0010; role: provision; provision-id: aides_logement/prologue:p0008; source-lines: 36-36; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -90,7 +90,7 @@ dans les sections suivantes.
 ### Éligibilité à la prime de déménagement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0011; role: provision; provision-id: aides_logement/prologue:p0009; source-lines: 39-39; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0011; role: provision; provision-id: aides_logement/prologue:p0009; source-lines: 39-39; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -98,7 +98,7 @@ dans les sections suivantes.
 ### Calcul des contributions sociales s'appliquant aux aides personnelles au logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0012; role: provision; provision-id: aides_logement/prologue:p0010; source-lines: 42-42; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0012; role: provision; provision-id: aides_logement/prologue:p0010; source-lines: 42-42; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -108,7 +108,7 @@ dans les sections suivantes.
 #### Secteur locatif
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0013; role: provision; provision-id: aides_logement/prologue:p0011; source-lines: 45-47; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0013; role: provision; provision-id: aides_logement/prologue:p0011; source-lines: 45-47; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -116,7 +116,7 @@ dans les sections suivantes.
 #### Secteur logement-foyer
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0014; role: provision; provision-id: aides_logement/prologue:p0012; source-lines: 50-50; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0014; role: provision; provision-id: aides_logement/prologue:p0012; source-lines: 50-50; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -124,7 +124,7 @@ dans les sections suivantes.
 #### Secteur accession à la propriété
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0015; role: provision; provision-id: aides_logement/prologue:p0013; source-lines: 53-53; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0015; role: provision; provision-id: aides_logement/prologue:p0013; source-lines: 53-53; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -132,7 +132,7 @@ dans les sections suivantes.
 #### Tous secteurs
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0016; role: provision; provision-id: aides_logement/prologue:p0014; source-lines: 56-56; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0016; role: provision; provision-id: aides_logement/prologue:p0014; source-lines: 56-56; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -142,7 +142,7 @@ dans les sections suivantes.
 ### Secteur locatif
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0017; role: provision; provision-id: aides_logement/prologue:p0015; source-lines: 59-61; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0017; role: provision; provision-id: aides_logement/prologue:p0015; source-lines: 59-61; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -150,7 +150,7 @@ dans les sections suivantes.
 ### Secteur accession à la propriété
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0018; role: provision; provision-id: aides_logement/prologue:p0016; source-lines: 64-64; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0018; role: provision; provision-id: aides_logement/prologue:p0016; source-lines: 64-64; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -158,7 +158,7 @@ dans les sections suivantes.
 ### Secteur logement-foyer
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0019; role: provision; provision-id: aides_logement/prologue:p0017; source-lines: 67-67; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0019; role: provision; provision-id: aides_logement/prologue:p0017; source-lines: 67-67; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -166,7 +166,7 @@ dans les sections suivantes.
 #### Tous secteurs
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0020; role: provision; provision-id: aides_logement/prologue:p0018; source-lines: 70-70; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0020; role: provision; provision-id: aides_logement/prologue:p0018; source-lines: 70-70; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -174,7 +174,7 @@ dans les sections suivantes.
 ### Date d'ouverture des droits à la retraite
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0021; role: provision; provision-id: aides_logement/prologue:p0019; source-lines: 73-73; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0021; role: provision; provision-id: aides_logement/prologue:p0019; source-lines: 73-73; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -182,7 +182,7 @@ dans les sections suivantes.
 ### Quantification des impayés de dépense de logement
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0022; role: provision; provision-id: aides_logement/prologue:p0020; source-lines: 76-76; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0022; role: provision; provision-id: aides_logement/prologue:p0020; source-lines: 76-76; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -196,7 +196,7 @@ de l'éligibilité et du montant de l'aide au logement pour un ménage, en fonct
 de toutes les aides disponibles : APL, ALS, ALF.
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0023; role: provision; provision-id: aides_logement/prologue:p0021; source-lines: 79-85; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0023; role: provision; provision-id: aides_logement/prologue:p0021; source-lines: 79-85; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 
@@ -209,7 +209,7 @@ au logement. Voir le code Catala attaché à la décision n°398563 du conseil
 d'État.
 
 
-<!-- rtdf-block-id: aides_logement/prologue:b0024; role: provision; provision-id: aides_logement/prologue:p0022; source-lines: 88-93; relation: formalizes-preceding -->
+<!-- rsa-block-id: aides_logement/prologue:b0024; role: provision; provision-id: aides_logement/prologue:p0022; source-lines: 88-93; relation: formalizes-preceding -->
 ```catala-metadata
 ```
 

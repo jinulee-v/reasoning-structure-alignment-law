@@ -623,7 +623,7 @@ index 2af98f2..1f2f0b4 100644
  ┌─[RESULT]─ A ─
  │ Computation successful!
  └─
-diff --git a/taiga/illinois/eng/cs/juliahmr/jinulee/formalization_rtf/.toolchain/src/catala-cutecat/tests/concolic/good/list_input.catala_en b/tests/concolic/good/list_input.catala_en
+diff --git a/taiga/illinois/eng/cs/juliahmr/jinulee/reasoning-structure-alignment-law/.toolchain/src/catala-cutecat/tests/concolic/good/list_input.catala_en b/tests/concolic/good/list_input.catala_en
 new file mode 100644
 index 0000000..12f5655
 --- /dev/null

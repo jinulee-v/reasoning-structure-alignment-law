@@ -1,11 +1,11 @@
-<!-- rtdf-document-id: allocations_familiales/securite_sociale_L -->
+<!-- rsa-document-id: allocations_familiales/securite_sociale_L -->
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ```
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala
 ```
 
@@ -60,7 +60,7 @@ ouvre droit aux prestations familiales :
 1°) tout enfant jusqu'à la fin de l'obligation scolaire ;
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0003; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0001; source-lines: 1-49; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0003; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0001; source-lines: 1-49; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -69,7 +69,7 @@ ouvre droit aux prestations familiales :
 tout enfant dont la rémunération éventuelle n'excède pas un plafond.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0004; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0002; source-lines: 52-53; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0004; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0002; source-lines: 52-53; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -79,7 +79,7 @@ de logement mentionnés aux 3° et 4° de l'article L. 511-1 , l'âge limite
 peut être différent de celui mentionné au 2° du présent article.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0005; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0003; source-lines: 56-58; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0005; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0003; source-lines: 56-58; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -106,7 +106,7 @@ qui concerne le versement d'une l'allocation forfaitaire transitoire.
 Les allocations familiales sont dues à partir du deuxième enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0006; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0004; source-lines: 61-80; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0006; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0004; source-lines: 61-80; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -120,7 +120,7 @@ limite mentionné au 2° de l'article L. 512-3 . Cette allocation est versée
 celles de l'âge pour l'ouverture du droit aux allocations familiales.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0007; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0005; source-lines: 83-89; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0007; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0005; source-lines: 83-89; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -138,7 +138,7 @@ d'enfants à charge, sont révisés conformément à l'évolution annuelle de
 l'indice des prix à la consommation, hors tabac.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0008; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0006; source-lines: 92-102; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0008; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0006; source-lines: 92-102; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -154,7 +154,7 @@ Les allocations sont versées à la personne qui assume, dans quelques condition
 que ce soit, la charge effective et permanente de l'enfant.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0009; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0007; source-lines: 105-113; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0009; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0007; source-lines: 105-113; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -168,7 +168,7 @@ désaccord sur la désignation de l'allocataire. Un décret en Conseil d'Etat fi
 les conditions d'application du présent alinéa.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0010; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0008; source-lines: 116-122; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0010; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0008; source-lines: 116-122; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -179,7 +179,7 @@ du droit aux allocations familiales, ce droit s'ouvre du chef du père ou,
 à défaut, du chef de la mère.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0011; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0009; source-lines: 125-128; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0011; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0009; source-lines: 125-128; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -197,7 +197,7 @@ en charge morale ou matérielle de l'enfant ou en vue de faciliter le retour de
 l'enfant dans son foyer.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0012; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0010; source-lines: 131-141; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0012; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0010; source-lines: 131-141; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -214,7 +214,7 @@ c) divorce, séparation de corps ou de fait des parents ;
 d) enfants confiés à un service public, à une institution privée, à un particulier.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0013; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0011; source-lines: 144-153; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0013; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0011; source-lines: 144-153; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -233,7 +233,7 @@ Chacun des enfants à charge, à l'exception du plus âgé, ouvre droit à parti
 d'un âge minimum à une majoration des allocations familiales.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0014; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0012; source-lines: 156-167; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0014; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0012; source-lines: 156-167; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -243,7 +243,7 @@ bénéficient de ladite majoration pour chaque enfant à charge à partir
 de l'âge mentionné au premier alinéa.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0015; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0013; source-lines: 170-172; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0015; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0013; source-lines: 170-172; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -259,7 +259,7 @@ mensuelles de calcul revalorisées au 1er avril de chaque année par application
 du coefficient mentionné à l'article L. 161-25 .
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0016; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0014; source-lines: 175-183; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0016; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0014; source-lines: 175-183; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -278,7 +278,7 @@ l'ensemble des bénéficiaires de la législation générale de sécurité
 sociale, y compris les membres des professions agricoles.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0017; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0015; source-lines: 186-197; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0017; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0015; source-lines: 186-197; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -296,7 +296,7 @@ La base de calcul des prestations familiales est la même que celle qui est
 fixée en application de l'article L. 551-1 .
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0018; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0016; source-lines: 200-210; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0018; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0016; source-lines: 200-210; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -315,7 +315,7 @@ fixées par les articles L. 521-1 et L. 521-3 sont applicables dans les
 collectivités mentionnées à l'article L. 751-1 .
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0019; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0017; source-lines: 213-224; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0019; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0017; source-lines: 213-224; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -329,7 +329,7 @@ Les allocations familiales sont dues, pour tout enfant, à la personne qui a
 effectivement la charge de celui-ci.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0020; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0018; source-lines: 227-233; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0020; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0018; source-lines: 227-233; relation: formalizes-preceding -->
 ```catala
 ```
 
@@ -337,7 +337,7 @@ Toutefois, les quatre derniers alinéas de l'article L. 521-1 ne sont pas
 applicables lorsque le ménage ou la personne a un seul enfant à charge.
 
 
-<!-- rtdf-block-id: allocations_familiales/securite_sociale_L:b0021; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0019; source-lines: 235-236; relation: formalizes-preceding -->
+<!-- rsa-block-id: allocations_familiales/securite_sociale_L:b0021; role: provision; provision-id: allocations_familiales/securite_sociale_L:p0019; source-lines: 235-236; relation: formalizes-preceding -->
 ```catala
 ```
 

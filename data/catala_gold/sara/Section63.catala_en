@@ -1,4 +1,4 @@
-<!-- rtdf-document-id: sara/section63 -->
+<!-- rsa-document-id: sara/section63 -->
 
 > Module Section63
 > Using Definitions as W
@@ -61,7 +61,7 @@ declaration spouse_itemizes content boolean
 Except as provided in subsection (b), for purposes of this subtitle, the term "taxable income" means gross income minus the deductions allowed by this chapter (other than the standard deduction).
 
 
-<!-- rtdf-block-id: sara/section63:b0003; role: provision; provision-id: sara/section63(a); source-lines: 3-5; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0003; role: provision; provision-id: sara/section63(a); source-lines: 3-5; relation: formalizes-preceding -->
 ```catala
 scope TaxableIncome:
   definition filing.world equals world
@@ -111,7 +111,7 @@ scope TaxableIncome:
     (1) the standard deduction, and
 
 
-<!-- rtdf-block-id: sara/section63:b0005; role: provision; provision-id: sara/section63(b)(1); source-lines: 11-11; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0005; role: provision; provision-id: sara/section63(b)(1); source-lines: 11-11; relation: formalizes-preceding -->
 ```catala
 declaration nonitemizer_standard_component content money
   depends on standard_deduction content money
@@ -121,7 +121,7 @@ declaration nonitemizer_standard_component content money
     (2) the deduction for personal exemptions provided in section 151.
 
 
-<!-- rtdf-block-id: sara/section63:b0006; role: provision; provision-id: sara/section63(b)(2); source-lines: 13-13; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0006; role: provision; provision-id: sara/section63(b)(2); source-lines: 13-13; relation: formalizes-preceding -->
 ```catala
 declaration nonitemizer_personal_exemption_component content money
   depends on personal_exemptions content money
@@ -181,7 +181,7 @@ scope TaxableIncome:
         (A) the basic standard deduction, and
 
 
-<!-- rtdf-block-id: sara/section63:b0009; role: provision; provision-id: sara/section63(c)(1)(A); source-lines: 23-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0009; role: provision; provision-id: sara/section63(c)(1)(A); source-lines: 23-23; relation: formalizes-preceding -->
 ```catala
 declaration basic_component content money
   depends on basic_standard_deduction content money
@@ -191,7 +191,7 @@ declaration basic_component content money
         (B) the additional standard deduction.
 
 
-<!-- rtdf-block-id: sara/section63:b0010; role: provision; provision-id: sara/section63(c)(1)(B); source-lines: 25-25; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0010; role: provision; provision-id: sara/section63(c)(1)(B); source-lines: 25-25; relation: formalizes-preceding -->
 ```catala
 declaration additional_component content money
   depends on additional_standard_deduction content money
@@ -235,7 +235,7 @@ declaration joint_or_surviving_basic_amount content money
             (i) a joint return, or
 
 
-<!-- rtdf-block-id: sara/section63:b0013; role: provision; provision-id: sara/section63(c)(2)(A)(i); source-lines: 33-33; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0013; role: provision; provision-id: sara/section63(c)(2)(A)(i); source-lines: 33-33; relation: formalizes-preceding -->
 ```catala
 declaration joint_return_uses_joint_basic_amount content boolean
   depends on status content S2.FilingStatus
@@ -245,7 +245,7 @@ declaration joint_return_uses_joint_basic_amount content boolean
             (ii) a surviving spouse (as defined in section 2(a)),
 
 
-<!-- rtdf-block-id: sara/section63:b0014; role: provision; provision-id: sara/section63(c)(2)(A)(ii); source-lines: 35-35; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0014; role: provision; provision-id: sara/section63(c)(2)(A)(ii); source-lines: 35-35; relation: formalizes-preceding -->
 ```catala
 declaration surviving_spouse_uses_joint_basic_amount content boolean
   depends on status content S2.FilingStatus
@@ -255,7 +255,7 @@ declaration surviving_spouse_uses_joint_basic_amount content boolean
         (B) $4,400 in the case of a head of household (as defined in section 2(b)), or
 
 
-<!-- rtdf-block-id: sara/section63:b0015; role: provision; provision-id: sara/section63(c)(2)(B); source-lines: 37-37; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0015; role: provision; provision-id: sara/section63(c)(2)(B); source-lines: 37-37; relation: formalizes-preceding -->
 ```catala
 declaration head_of_household_basic_amount content money
   equals $4400
@@ -264,7 +264,7 @@ declaration head_of_household_basic_amount content money
         (C) $3,000 in any other case.
 
 
-<!-- rtdf-block-id: sara/section63:b0016; role: provision; provision-id: sara/section63(c)(2)(C); source-lines: 39-39; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0016; role: provision; provision-id: sara/section63(c)(2)(C); source-lines: 39-39; relation: formalizes-preceding -->
 ```catala
 declaration other_basic_amount content money
   equals $3000
@@ -275,7 +275,7 @@ declaration other_basic_amount content money
     For purposes of paragraph (1), the additional standard deduction is the sum of each additional amount to which the taxpayer is entitled under subsection (f).
 
 
-<!-- rtdf-block-id: sara/section63:b0017; role: provision; provision-id: sara/section63(c)(3); source-lines: 41-43; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0017; role: provision; provision-id: sara/section63(c)(3); source-lines: 41-43; relation: formalizes-preceding -->
 ```catala
 declaration additional_standard_deduction content money
   depends on status content S2.FilingStatus,
@@ -302,7 +302,7 @@ declaration dependent_basic_standard_deduction_cap content money
         (A) $500, or
 
 
-<!-- rtdf-block-id: sara/section63:b0019; role: provision; provision-id: sara/section63(c)(5)(A); source-lines: 49-49; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0019; role: provision; provision-id: sara/section63(c)(5)(A); source-lines: 49-49; relation: formalizes-preceding -->
 ```catala
 declaration dependent_floor_amount content money
   equals $500
@@ -311,7 +311,7 @@ declaration dependent_floor_amount content money
         (B) the sum of $250 and such individual's earned income.
 
 
-<!-- rtdf-block-id: sara/section63:b0020; role: provision; provision-id: sara/section63(c)(5)(B); source-lines: 51-51; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0020; role: provision; provision-id: sara/section63(c)(5)(B); source-lines: 51-51; relation: formalizes-preceding -->
 ```catala
 declaration dependent_earned_income_amount content money
   depends on earned_income content money
@@ -334,7 +334,7 @@ declaration ineligible_for_standard_deduction content boolean
         (A) a married individual filing a separate return where either spouse itemizes deductions,
 
 
-<!-- rtdf-block-id: sara/section63:b0022; role: provision; provision-id: sara/section63(c)(6)(A); source-lines: 57-57; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0022; role: provision; provision-id: sara/section63(c)(6)(A); source-lines: 57-57; relation: formalizes-preceding -->
 ```catala
 declaration married_separate_spouse_itemizes content boolean
   depends on status content S2.FilingStatus,
@@ -345,7 +345,7 @@ declaration married_separate_spouse_itemizes content boolean
         (B) a nonresident alien individual, or
 
 
-<!-- rtdf-block-id: sara/section63:b0023; role: provision; provision-id: sara/section63(c)(6)(B); source-lines: 59-59; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0023; role: provision; provision-id: sara/section63(c)(6)(B); source-lines: 59-59; relation: formalizes-preceding -->
 ```catala
 declaration nonresident_alien_ineligible content boolean
   depends on nonresident_alien content boolean
@@ -355,7 +355,7 @@ declaration nonresident_alien_ineligible content boolean
         (D) an estate or trust, common trust fund, or partnership,
 
 
-<!-- rtdf-block-id: sara/section63:b0024; role: provision; provision-id: sara/section63(c)(6)(D); source-lines: 61-61; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0024; role: provision; provision-id: sara/section63(c)(6)(D); source-lines: 61-61; relation: formalizes-preceding -->
 ```catala
 declaration nonindividual_entity_ineligible content boolean
   depends on is_estate_or_trust_or_fund_or_partnership content boolean
@@ -388,7 +388,7 @@ declaration special_2018_2025_rule content boolean
         (i) by substituting "$18,000" for "$4,400" in subparagraph (B), and
 
 
-<!-- rtdf-block-id: sara/section63:b0027; role: provision; provision-id: sara/section63(c)(7)(i); source-lines: 71-71; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0027; role: provision; provision-id: sara/section63(c)(7)(i); source-lines: 71-71; relation: formalizes-preceding -->
 ```catala
 declaration temporary_head_of_household_amount content money
   equals $18000
@@ -397,7 +397,7 @@ declaration temporary_head_of_household_amount content money
         (ii) by substituting "$12,000" for "$3,000" in subparagraph (C).
 
 
-<!-- rtdf-block-id: sara/section63:b0028; role: provision; provision-id: sara/section63(c)(7)(ii); source-lines: 73-73; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0028; role: provision; provision-id: sara/section63(c)(7)(ii); source-lines: 73-73; relation: formalizes-preceding -->
 ```catala
 declaration temporary_other_basic_amount content money
   equals $12000
@@ -427,7 +427,7 @@ declaration raw_itemized content money
     (1) the deductions allowable in arriving at adjusted gross income, and
 
 
-<!-- rtdf-block-id: sara/section63:b0030; role: provision; provision-id: sara/section63(d)(1); source-lines: 79-79; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0030; role: provision; provision-id: sara/section63(d)(1); source-lines: 79-79; relation: formalizes-preceding -->
 ```catala
 declaration itemized_after_above_line_exclusion content money
   depends on chapter_deductions content money,
@@ -440,7 +440,7 @@ declaration itemized_after_above_line_exclusion content money
     (2) the deduction for personal exemptions provided by section 151.
 
 
-<!-- rtdf-block-id: sara/section63:b0031; role: provision; provision-id: sara/section63(d)(2); source-lines: 81-81; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0031; role: provision; provision-id: sara/section63(d)(2); source-lines: 81-81; relation: formalizes-preceding -->
 ```catala
 declaration itemized_after_personal_exemption_exclusion content money
   depends on deductions_before_exclusion content money,
@@ -477,7 +477,7 @@ declaration aged_or_blind_count content integer
         (A) for himself if he has attained age 65 before the close of his taxable year, and
 
 
-<!-- rtdf-block-id: sara/section63:b0033; role: provision; provision-id: sara/section63(f)(1)(A); source-lines: 89-89; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0033; role: provision; provision-id: sara/section63(f)(1)(A); source-lines: 89-89; relation: formalizes-preceding -->
 ```catala
 declaration is_aged content boolean
   depends on world content W.World,
@@ -492,7 +492,7 @@ declaration is_aged content boolean
         (B) for the spouse of the taxpayer if the spouse has attained age 65 before the close of the taxable year and an additional exemption is allowable to the taxpayer for such spouse under section 151(b).
 
 
-<!-- rtdf-block-id: sara/section63:b0034; role: provision; provision-id: sara/section63(f)(1)(B); source-lines: 91-91; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0034; role: provision; provision-id: sara/section63(f)(1)(B); source-lines: 91-91; relation: formalizes-preceding -->
 ```catala
 declaration spouse_aged_additional_allowed content boolean
   depends on spouse_is_aged content boolean,
@@ -516,7 +516,7 @@ declaration blind_additional_amount content money
         (A) for himself if he is blind at the close of the taxable year, and
 
 
-<!-- rtdf-block-id: sara/section63:b0036; role: provision; provision-id: sara/section63(f)(2)(A); source-lines: 97-97; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0036; role: provision; provision-id: sara/section63(f)(2)(A); source-lines: 97-97; relation: formalizes-preceding -->
 ```catala
 declaration is_blind content boolean
   depends on world content W.World,
@@ -530,7 +530,7 @@ declaration is_blind content boolean
         (B) for the spouse of the taxpayer if the spouse is blind as of the close of the taxable year and an additional exemption is allowable to the taxpayer for such spouse under section 151(b).
 
 
-<!-- rtdf-block-id: sara/section63:b0037; role: provision; provision-id: sara/section63(f)(2)(B); source-lines: 99-99; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0037; role: provision; provision-id: sara/section63(f)(2)(B); source-lines: 99-99; relation: formalizes-preceding -->
 ```catala
 declaration spouse_blind_additional_allowed content boolean
   depends on spouse_is_blind content boolean,
@@ -554,7 +554,7 @@ declaration spouse_blind_at_relevant_time content boolean
     In the case of an individual who is not married and is not a surviving spouse, paragraphs (1) and (2) shall be applied by substituting "$750" for "$600".
 
 
-<!-- rtdf-block-id: sara/section63:b0039; role: provision; provision-id: sara/section63(f)(3); source-lines: 103-105; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0039; role: provision; provision-id: sara/section63(f)(3); source-lines: 103-105; relation: formalizes-preceding -->
 ```catala
 declaration additional_amount_per_circumstance content money
   depends on status content S2.FilingStatus
@@ -566,7 +566,7 @@ declaration additional_amount_per_circumstance content money
 
 For purposes of this section, marital status shall be determined under section 7703.
 
-<!-- rtdf-block-id: sara/section63:b0040; role: provision; provision-id: sara/section63(g); source-lines: 107-109; relation: formalizes-preceding -->
+<!-- rsa-block-id: sara/section63:b0040; role: provision; provision-id: sara/section63(g); source-lines: 107-109; relation: formalizes-preceding -->
 ```catala
 declaration marital_status_for_section63 content S2.FilingStatus
   depends on status_determined_under_section_7703 content S2.FilingStatus

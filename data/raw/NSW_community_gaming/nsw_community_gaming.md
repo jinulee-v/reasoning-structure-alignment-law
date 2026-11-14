@@ -26,7 +26,7 @@ default values in the code.
 
 ## Input variable descriptions
 
-After the Catala scopes typecheck, run `/rtdf/extract_input_requirements.sh`.
+After the Catala scopes typecheck, run `/rsa/extract_input_requirements.sh`.
 The helper calls `clerk json-schema` for every distinct file and scope selected
 in `REQUIREMENT_OUTPUTS.json`, then writes one global `fields`, `enums`, or
 `structs` description for each unique entry to `INPUT_VARIABLE_DESCRIPTION.json`.

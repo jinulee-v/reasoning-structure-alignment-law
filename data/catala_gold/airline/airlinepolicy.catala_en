@@ -1,6 +1,6 @@
 # Airline checked-bag policy
 
-<!-- rtdf-document-id: airline/section1_non_textual -->
+<!-- rsa-document-id: airline/section1_non_textual -->
 
 > Module AirlinePolicy
 
@@ -32,7 +32,7 @@ item fits the box in each, so no case can tell the two readings apart, and the
 The port follows the Prolog, which is the bug-compatible choice; the statute's
 contrary reading is recorded in `deontic_scripts/DEVIATIONS.md` A1.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0008; role: provision; provision-id: airline/section1_non_textual:p0006; source-lines: 20-20; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0008; role: provision; provision-id: airline/section1_non_textual:p0006; source-lines: 20-20; relation: formalizes-preceding -->
 ```catala-metadata
 ## An ordinary bag must fit the box --- "cannot exceed 22 x 14 x 9 inches".
 declaration ordinary_carry_on_fits content boolean
@@ -40,7 +40,7 @@ declaration ordinary_carry_on_fits content boolean
   equals it.length <= 22 and it.width <= 14 and it.height <= 9
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0009; role: provision; provision-id: airline/section1_non_textual:p0007; source-lines: 23-23; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0009; role: provision; provision-id: airline/section1_non_textual:p0007; source-lines: 23-23; relation: formalizes-preceding -->
 ```catala-metadata
 ## A soft-sided garment bag has its own limit and it is a sum.
 declaration garment_bag_fits content boolean
@@ -48,7 +48,7 @@ declaration garment_bag_fits content boolean
   equals (W.size_sum of it) <= 51
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
 ```catala-metadata
 ## Items satisfying their provision-specific carry-on limit do not need to be
 ## checked. Exempt item kinds are handled separately by `item_exempt`.
@@ -76,7 +76,7 @@ so the port carries them at no fee and does not count them as checked bags
 either. The diaper bag is the one with a number attached, and the number is per
 child, so it is the only exempt kind whose *position* among the items matters.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0006; role: provision; provision-id: airline/section1_non_textual:p0004; source-lines: 10-14; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0006; role: provision; provision-id: airline/section1_non_textual:p0004; source-lines: 10-14; relation: formalizes-preceding -->
 ```catala-metadata
 ## The diaper bag is allowanced rather than exempt --- one per child --- so it
 ## is false here and handled by position in `Trip.checked`.
@@ -114,7 +114,7 @@ fourth-and-beyond --- and a cabin column. Main Plus is not a column: the
 footnote makes it Main Cabin plus one extra free bag, so it reads the Main
 Cabin column and takes its allowance separately, below.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 declaration fee_cabin content W.Cabin
   depends on t content W.Itinerary
@@ -205,7 +205,7 @@ The table's rows are tried in the order the statute prints them, so that a
 route matching two rows takes the earlier one. Only the Basic Economy and Main
 Cabin columns are ever non-zero.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0014; role: provision; provision-id: airline/section1_non_textual:p0012; source-lines: 36-50; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0014; role: provision; provision-id: airline/section1_non_textual:p0012; source-lines: 36-50; relation: formalizes-preceding -->
 ```catala-metadata
 declaration first_bag_fee content money
   depends on t content W.Itinerary
@@ -266,7 +266,7 @@ declaration first_bag_fee content money
 
 ### Second Bag
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0016; role: provision; provision-id: airline/section1_non_textual:p0014; source-lines: 56-68; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0016; role: provision; provision-id: airline/section1_non_textual:p0014; source-lines: 56-68; relation: formalizes-preceding -->
 ```catala-metadata
 declaration second_bag_fee content money
   depends on t content W.Itinerary
@@ -304,7 +304,7 @@ declaration second_bag_fee content money
 Unlike the first two tables, this one charges every cabin. First is $0
 everywhere except the domestic row.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0018; role: provision; provision-id: airline/section1_non_textual:p0016; source-lines: 74-79; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0018; role: provision; provision-id: airline/section1_non_textual:p0016; source-lines: 74-79; relation: formalizes-preceding -->
 ```catala-metadata
 declaration third_bag_fee content money
   depends on t content W.Itinerary
@@ -318,14 +318,14 @@ declaration third_bag_fee content money
 
   "$200" in every cell of every row.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0019; role: provision; provision-id: airline/section1_non_textual:p0017; source-lines: 83-88; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0019; role: provision; provision-id: airline/section1_non_textual:p0017; source-lines: 83-88; relation: formalizes-preceding -->
 ```catala-metadata
 declaration fourth_bag_fee content money
   depends on t content W.Itinerary
   equals $200
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ## The published fee for the checked bag in position `pos`, before any
 ## complimentary allowance is applied. This dispatcher contains no fee rule
@@ -354,7 +354,7 @@ Only the *count* moves. A free bag does not renumber the ones behind it: in
 `airline_cases_complexity_0_airline_cases_12` a Main Plus passenger with four
 checked bags pays $0 + $45 + $150 + $200, not $0 + $40 + $45 + $150.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
 ```catala-metadata
 ## Whether the first-bag table already gives Main Cabin a free bag.
 declaration first_table_main_cabin_free content boolean
@@ -363,7 +363,7 @@ declaration first_table_main_cabin_free content boolean
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0017; role: provision; provision-id: airline/section1_non_textual:p0015; source-lines: 70-70; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0017; role: provision; provision-id: airline/section1_non_textual:p0015; source-lines: 70-70; relation: formalizes-preceding -->
 ```catala-metadata
 ## The repeated footnote after the second-bag table supplies the second step
 ## of the Main Cabin allowance used by Main Plus.
@@ -373,7 +373,7 @@ declaration second_table_main_cabin_free content boolean
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ## Convert the two provision-local table facts to the number of leading bags
 ## already free in Main Cabin. This is glue, not an additional policy rule.
@@ -385,7 +385,7 @@ declaration main_cabin_allowance content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0015; role: provision; provision-id: airline/section1_non_textual:p0013; source-lines: 52-52; relation: formalizes-preceding -->
 ```catala-metadata
 declaration main_plus_allowance content integer
   depends on t content W.Itinerary
@@ -428,7 +428,7 @@ Two readings had to be chosen, and the statute settles both:
   ticketing, show the receipt and get it; lower at ticketing, current benefits
   apply. Either way the better of the two is what the passenger receives.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala-metadata
 declaration status_rank content integer
   depends on s content W.EliteStatus
@@ -442,7 +442,7 @@ declaration status_rank content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0021; role: provision; provision-id: airline/section1_non_textual:p0019; source-lines: 94-96; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0021; role: provision; provision-id: airline/section1_non_textual:p0019; source-lines: 94-96; relation: formalizes-preceding -->
 ```catala-metadata
 
 declaration effective_status content W.EliteStatus
@@ -453,7 +453,7 @@ declaration effective_status content W.EliteStatus
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
 ```catala-metadata
 ## Gold, Ruby, and every higher status receive the first bag.
 declaration status_first_bag_free content boolean
@@ -462,7 +462,7 @@ declaration status_first_bag_free content boolean
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
 ```catala-metadata
 ## Platinum and higher status receive the second bag.
 declaration status_second_bag_free content boolean
@@ -471,7 +471,7 @@ declaration status_second_bag_free content boolean
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
 ```catala-metadata
 ## Platinum Pro and Executive Platinum receive the third bag.
 declaration status_third_bag_free content boolean
@@ -480,7 +480,7 @@ declaration status_third_bag_free content boolean
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala-metadata
 ## Assemble the consecutive status allowance from the three separately stated
 ## entitlements above.
@@ -493,7 +493,7 @@ declaration status_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## "Active U.S. military and / or dependents with ID traveling on orders
@@ -509,7 +509,7 @@ declaration military_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0025; role: provision; provision-id: airline/section1_non_textual:p0023; source-lines: 130-135; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## "Confirmed Domestic First customers, Confirmed Business customers,
@@ -527,7 +527,7 @@ declaration standard_cabin_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0026; role: provision; provision-id: airline/section1_non_textual:p0024; source-lines: 137-143; relation: formalizes-preceding -->
 ```catala-metadata
 ## Flagship First and Flagship Business Plus customers get three bags.
 declaration flagship_cabin_free_bags content integer
@@ -538,7 +538,7 @@ declaration flagship_cabin_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala-metadata
 ## Take the better cabin benefit; the grounds do not stack.
 declaration cabin_free_bags content integer
@@ -549,7 +549,7 @@ declaration cabin_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0024; role: provision; provision-id: airline/section1_non_textual:p0022; source-lines: 106-128; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0024; role: provision; provision-id: airline/section1_non_textual:p0022; source-lines: 106-128; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## "or when traveling to these destinations (excluding Basic Economy)".
@@ -573,7 +573,7 @@ declaration destination_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0023; role: provision; provision-id: airline/section1_non_textual:p0021; source-lines: 100-104; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## "Eligible AAdvantage Aviator and Citi / AAdvantage cardmembers (on domestic
@@ -584,7 +584,7 @@ declaration cardmember_free_bags content integer
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## The allowance the passenger actually receives: the best of the grounds, not
@@ -629,7 +629,7 @@ So the 70 lb allowance attaches to a bag that is *complimentary* --- one whose
 position is priced at $0 --- and only in First, Business, or on an Australia /
 New Zealand route. Everywhere else the allowance is 50 lbs for every bag.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0028; role: provision; provision-id: airline/section1_non_textual:p0026; source-lines: 148-151; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0028; role: provision; provision-id: airline/section1_non_textual:p0026; source-lines: 148-151; relation: formalizes-preceding -->
 ```catala-metadata
 ## Outside Australia and New Zealand, First and Business complimentary bags
 ## receive 70 lb; every other checked bag receives 50 lb.
@@ -641,7 +641,7 @@ declaration cabin_complimentary_weight_allowance content integer
     then 70 else 50
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0029; role: provision; provision-id: airline/section1_non_textual:p0027; source-lines: 153-155; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0029; role: provision; provision-id: airline/section1_non_textual:p0027; source-lines: 153-155; relation: formalizes-preceding -->
 ```catala-metadata
 ## Australia/New Zealand gives every complimentary bag the 70 lb allowance.
 declaration australasia_complimentary_weight_allowance content integer
@@ -649,7 +649,7 @@ declaration australasia_complimentary_weight_allowance content integer
   equals 70
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ## Select the applicable provision without attributing the dispatcher itself
 ## to either mutually exclusive route rule.
@@ -662,7 +662,7 @@ declaration complimentary_weight_allowance content integer
 
 ### Oversize Bags
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0034; role: provision; provision-id: airline/section1_non_textual:p0032; source-lines: 190-196; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0034; role: provision; provision-id: airline/section1_non_textual:p0032; source-lines: 190-196; relation: formalizes-preceding -->
 ```catala-metadata
 declaration oversize_fee content money
   depends on t content W.Itinerary, dim content integer
@@ -699,7 +699,7 @@ implementation that speaks where the statute is silent. A cross-check over the
 fuzzed suite found the two worlds that distinguish the two readings, both with
 a 101 lb bag. See DEVIATIONS A3.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0031; role: provision; provision-id: airline/section1_non_textual:p0029; source-lines: 163-165; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0031; role: provision; provision-id: airline/section1_non_textual:p0029; source-lines: 163-165; relation: formalizes-preceding -->
 ```catala-metadata
 declaration slightly_overweight_fee content money
   depends on t content W.Itinerary, weight content integer, allowance content integer
@@ -707,7 +707,7 @@ declaration slightly_overweight_fee content money
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0032; role: provision; provision-id: airline/section1_non_textual:p0030; source-lines: 169-176; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0032; role: provision; provision-id: airline/section1_non_textual:p0030; source-lines: 169-176; relation: formalizes-preceding -->
 ```catala-metadata
 declaration medium_overweight_fee content money
   depends on t content W.Itinerary, weight content integer, allowance content integer
@@ -717,7 +717,7 @@ declaration medium_overweight_fee content money
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
 ```catala-metadata
 declaration heavy_overweight_fee content money
   depends on t content W.Itinerary, weight content integer, allowance content integer
@@ -727,7 +727,7 @@ declaration heavy_overweight_fee content money
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 ## The weight bands are mutually exclusive. This dispatcher contains no
 ## statutory amount; each amount remains under its own table provision.
@@ -741,7 +741,7 @@ declaration overweight_fee content money
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
 ```catala-metadata
 
 ## A bag the policy will not carry at all: over 115 in, over 100 lbs, or in the
@@ -775,7 +775,7 @@ therefore optimal, and the port ranks the bags rather than enumerating the
 allocations, which is what `airline_cases_complexity_0_airline_cases_14` does
 with `choose_two/3` and `min_list/2` over all pairs.
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
 ```catala-metadata
 declaration structure Bag:
   data position content integer
@@ -790,7 +790,7 @@ declaration bag_saving content money
   equals b.charged - b.complimentary
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
+<!-- rsa-block-id: airline/section1_non_textual:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
 ```catala-metadata
 declaration scope Trip:
   input itinerary content W.Itinerary
@@ -806,7 +806,7 @@ declaration scope Trip:
   output total_cost content money
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0007; role: provision; provision-id: airline/section1_non_textual:p0005; source-lines: 17-17; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   ## Itinerary quantities are physical facts. Negative prices, child counts,
@@ -842,7 +842,7 @@ scope Trip:
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0020; role: provision; provision-id: airline/section1_non_textual:p0018; source-lines: 92-92; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition complimentary_count equals
@@ -852,7 +852,7 @@ scope Trip:
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition base_fees equals
@@ -862,7 +862,7 @@ scope Trip:
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition bags equals
@@ -896,7 +896,7 @@ scope Trip:
   ## savings is summed.
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0030; role: provision; provision-id: airline/section1_non_textual:p0028; source-lines: 159-159; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition excess_fees equals
@@ -911,7 +911,7 @@ scope Trip:
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0033; role: provision; provision-id: airline/section1_non_textual:p0031; source-lines: 180-186; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition accepted equals
@@ -919,7 +919,7 @@ scope Trip:
 
 ```
 
-<!-- rtdf-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
+<!-- rsa-block-id: airline/section1_non_textual:b0003; role: provision; provision-id: airline/section1_non_textual:p0001; source-lines: 2-2; relation: formalizes-preceding -->
 ```catala
 scope Trip:
   definition total_cost equals itinerary.ticket + base_fees + excess_fees
