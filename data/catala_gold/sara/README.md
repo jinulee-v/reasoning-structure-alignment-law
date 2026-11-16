@@ -25,33 +25,38 @@ and unemployment tax. This is the same dependency direction as the provisions:
 §1 selects a rate schedule after the other sections have supplied the legal
 quantities they define.
 
-The external `Definitions.World` has no optionals and no list-valued fields. It separates
-financial, relationship/return, employment/institution, and personal-status
-facts into bounded fixed-shape positions. Each family has its own closed kind;
-unused positions use an explicit no-fact constructor, and scalar sentinels are
-removed before provisions observe role or date collections. Catala provides a common internal event view only where
-a provision genuinely quantifies across families. The converter filters
-annual generator facts to the queried year and groups interchangeable
-employees only after totaling each employee's wages, preserving the
-per-employee wage cap through scalar multiplicity.
+The external `Definitions.World` contains five lists: `dependency_candidates`
+(Entity), `financial_facts`, `relationship_facts`, `employment_facts`, and
+`status_facts` (their respective fact structures). Empty lists represent absent
+families; no numbered slots or padding records are required. Attribute values use
+`Definitions.FactValue` (`Known` or `Named`), avoiding the OCaml runtime
+module name `Value`. Shared helpers
+flatten these lists into event views while preserving normalization and
+consistency checks. Repeated interchangeable employment facts may still use
+scalar multiplicity, preserving the per-employee wage cap.
 
-The deterministic Prolog-to-Catala mapping was implemented only after those
-declarations typechecked.  It lives in `prolog_to_catala/sara_fresh`: the
-grounder evaluates only case-local fact and generator clauses, and the adapter
-maps their ground extension to the final `World`, `Entity`, and `TaxPeriod`
-declarations. Generated Catala then evaluates the three upstream statutory
-scopes; the Python composer performs only typed field and enum-constructor
-conversion into `Section1.TotalTax`. Atom/string distinctions, linked country values,
-point-event intervals, duplicate solutions, and stable entity identifiers are
-all handled explicitly.  `INPUT_VARIABLE_DESCRIPTION.json` documents the
-resulting boundary.
+`prolog_to_catala/sara_fresh.adapter` accepts this native shape and migrates
+historical numbered-slot JSON. It checks aliases and removes inactive padding
+without truncating active facts. `legacy_inputs.json` remains the versioned
+historical fixture for the 97 protected cases; the exporter converts it into
+list-based Catala tests while checking original Prolog source hashes, subjects,
+years, and expected totals. Adding a new Prolog case still requires deriving
+and reviewing its factual fixture.
+
+BOBCat's `--bobcat-max-list-length=N` now bounds each symbolic input list
+(default 5). This bounds generated worlds, not concrete GT inputs: existing
+cases retain up to eight relationship facts. A smaller bound explores a smaller
+world and may miss behavior requiring more records. Intermediate representation
+capacity is a separate BOBCat setting; list inputs do not guarantee that every
+scope's symbolic search will finish quickly.
 
 No Prolog statute conclusion is used by the converter or composer. Generated
 Catala derives filing status, dependents, deductions, taxable income,
 employment, wages, and unemployment tax from the factual world. The evaluator
-then passes the three typed statutory results to `Api.TotalTax`, whose public
-input surface remains the same small type-specific boundary as
-`Section1.TotalTax`.
+can pass the three typed statutory results to `Api.TotalTax`, whose scalar
+input surface remains compatible with `Section1.TotalTax`. The native
+`Api.TotalTaxFromWorld` entry point now performs consistency validation and this
+composition directly from factual inputs.
 
 ## Acceptance gates
 
@@ -88,6 +93,44 @@ After a full independent-oracle run has produced that report,
 base case, applies the same twelve source-level amount mutations to the
 extensional facts, and evaluates all 1,164 current Catala inputs in parallel.
 
-The factual input contract uses bounded fixed-shape positions, and
-interchangeable repeated employment facts are represented by a scalar
-multiplicity.
+## Canonical facts and legacy compatibility
+
+Numbered `World` slots are accepted only by the Python migration adapter.
+Native Catala consumes the five lists. `prolog_to_catala.sara_fresh.adapter`
+validates both shapes and exposes a derived canonical view; the gold rules use
+matching shared helpers in `Definitions.catala_en`:
+
+| Representation | Merge rule |
+| --- | --- |
+| Birth and child-relationship dates | One explicit DOB per person; conflicting explicit DOBs fail. Relationship start dates remain separate (including adoption). An age helper may explicitly request SARA's relationship-date fallback; it prefers explicit DOBs and otherwise chooses the earliest available relationship date. Explicit-birth-only provisions keep that policy. |
+| Son/Daughter and inverse Father/Mother | One oriented child-parent edge per effective interval; retain original kinds as provenance. |
+| Brother/Sister/Sibling and reversed pairs | One unordered sibling edge per effective interval; retain original kinds. |
+| Repeated fact rows | Identical event ID + kind collapses; conflicting payloads fail. Multiplicity remains unchanged. |
+| Income and received Payment | The same transaction ID counts once in gross income if recipient, amount, multiplicity, and dates agree; disagreements fail. Different IDs remain distinct even when amounts match. |
+| Institution labels in purpose/location | A shared classification query reads either location or purpose. The canonical JSON view exposes a unique classification set, while original physical-location and purpose facts remain available. |
+| Explicit itemization and deduction evidence | One year-aware selection helper combines explicit election by subject with the original SARA dated-deduction convention; event identity is not taxpayer identity. |
+
+`Api.TotalTaxFromWorld` validates factual consistency before composing the gold
+sections. Existing scalar `Api.TotalTax` callers remain supported. Raw templates
+share the normalized helpers and perform the same input assertions in their API;
+normalization infrastructure is not added as a repairable raw scope.
+
+`legacy_inputs.json` is a compact, versioned snapshot of the 97 previously
+protected factual inputs. It is a compatibility fixture, not a second canonical
+input channel and not a general Prolog parser. Source hashes, query subjects,
+years, and expected amounts are checked against the original Prolog files before
+regeneration; changing those sources requires reviewing the fixture. Conversion
+never derives expected tax from the candidate model. Generated canonical JSON
+under `.port/sara_normalization/final` is disposable.
+
+```sh
+python3 -m prolog_to_catala.sara_fresh.export_catala_tests
+python3 -m prolog_to_catala.sara_fresh.export_catala_tests --check
+python3 -m unittest prolog_to_catala.sara_fresh.tests.test_normalization
+python3 -m prolog_to_catala.sara_fresh.check
+```
+
+The final check runs all 97 original expectations using native Catala, with
+absolute money error strictly less than $1. Invalid-input probes separately
+check rejection of contradictory DOBs, repeated event payloads, and transaction
+aliases. No expected answer is changed by normalization.

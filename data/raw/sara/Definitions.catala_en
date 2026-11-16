@@ -4,263 +4,306 @@ Use this unannotated module only for facts, types, and provision-neutral helper
 computations shared by multiple statutory sections. Do not place a statutory
 rule, required evaluator output, or cross-section API orchestration here.
 
+SARA factual-input and ground-truth conventions:
+
+- A residence fact links a resident in `subject_1` (an internal event agent) to
+  a home/place entity in `relative_1` (an internal event patient). Its
+  `identifier` identifies the residence event, not the home. Two people can
+  have separate residence events whose patients identify the same home;
+  co-residence does not require both people to be agents of one event.
+  A household-maintenance payment can reference that home/place entity in
+  `purpose_1` or `purpose_2`, rather than referencing a residence event.
+- `gross_income_individual` returns only the named person's income and
+  received payments. It does not combine joint filers' incomes. A joint-return
+  event identifies its filers through its subjects/agents;
+  `has_full_year_joint_return` checks that relationship and its year boundaries,
+  without aggregating any money. The SARA ground-truth computation combines
+  the two spouses' individual incomes when they have an applicable full-year
+  joint return; using the individual helper alone does not reproduce that
+  combined tax base.
+- An omitted service location is represented by absent location slots and an
+  empty internal `locations` list. The original SARA benchmark treats a service
+  with no location fact as performed in the United States (see
+  `data/prolog/sara/statutes/section3306.pl`, `s3306_c_A`). This is a benchmark
+  convention for absent factual input, not a claim that the statute supplies a
+  general location default. The fixed input helpers preserve the absence;
+  they do not insert `UnitedStates`. Explicitly supplied locations remain
+  supplied locations and must not be treated as absent merely because they
+  are represented by a named place instead of the `UnitedStates` literal.
+
+
+- Missing payment means remains absent in the internal event view. For the
+  agricultural cash-remuneration threshold specifically, the original SARA
+  ground truth accepts either no recorded means or an explicitly cash payment
+  (`section3306.pl`, `s3306_c_1_A_i`). Do not require a `Cash` value for that
+  threshold when means is absent, and do not generalize this convention to
+  every statutory test involving a payment medium.
+- `multiplicity` can encode repeated grounded solutions or a group of distinct,
+  interchangeable workers compressed into one representative service/payment
+  pair. For a compressed worker group, the monetary amount is per represented
+  worker and multiplicity is the number of represented workers. For example,
+  six workers paid $5,012 each can appear as amount $5,012 with multiplicity 6.
+  A per-worker wage cap applies before scaling by group size:
+  `min(5012, 7000) * 6`, not `min(5012 * 6, 7000)`. Matching service and payment
+  rows can both carry that same group multiplicity; multiplying those counts
+  together would count the group twice. `weighted_amounts` scales raw amounts
+  only; it does not apply per-worker caps or compute headcounts.
+- An `ItemizeDeductions` event can record an explicit election, but the protected
+  SARA inputs do not always include such an event when the case narrative
+  elects itemization. The original ground truth selects the itemized path when
+  `s63_d` finds at least one dated deduction fact for the taxpayer in the tax
+  year; the standard-deduction path requires that no such facts exist
+  (`section63.pl`, `s63_b` and `s63_d`). A separate election event, or a strictly
+  positive deduction total, is not required by that benchmark selection test.
+  The fixed input helpers do not synthesize an election event.
+
+Canonical input views: `parent_links` orients parent-child aliases;
+`sibling_links` merges symmetric aliases; `date_of_birth` prefers an explicit
+Birth fact and accepts relationship dates only when its fallback flag is true.
+Birth dates and relationship-effective dates can legitimately differ (adoption).
+Repeated event identities are deduplicated in event views, while gross income
+counts consistent Income/Payment aliases once per transaction identity. Equal
+amounts on different transaction identities remain distinct. Callers must use
+input consistency validation before evaluation: gold `Api.TotalTaxFromWorld`
+validates through `ValidatedWorld`; the raw API carries equivalent assertions.
+The public World uses five lists. Legacy numbered slots are accepted only by
+the Python migration adapter, which removes unused entries before conversion.
+
 > Module Definitions
 
 ```catala-metadata
-declaration enumeration TermKind:
-  -- Atom
-  -- String
+declaration enumeration TermKind: # Distinguishes Prolog atoms from Prolog strings with the same encoded identity.
+  -- Atom # Entity originated as a Prolog atom.
+  -- String # Entity originated as a Prolog string.
 
-declaration structure Entity:
-  data id content integer
-  data kind content TermKind
+declaration structure Entity: # Identity of a Prolog atom or string, including people, organizations, and events.
+  data id content integer # Encoded Prolog term identity; 0 is the absent-entity sentinel.
+  data kind content TermKind # Original Prolog term category from TermKind.
 
-declaration enumeration KnownValue:
-  -- AgriculturalLabor
-  -- DomesticService
-  -- Cash
-  -- UnitedStates
-  -- PrivateHome
-  -- LocalCollegeClub
-  -- CollegeFraternityOrSorority
-  -- SicknessProvision
-  -- AccidentDisabilityProvision
-  -- DeathProvision
-  -- EmployeeOrDependentProvision
-  -- ReligiousOrganization
-  -- Government
-  -- Hospital
-  -- EducationalInstitution
-  -- Student
-  -- ForeignGovernment
-  -- StateGovernment
-  -- OtherKnownValue
+declaration enumeration KnownValue: # Recognized literal values used in Prolog event attributes.
+  -- AgriculturalLabor # Agricultural labor service classification.
+  -- DomesticService # Domestic service classification.
+  -- Cash # Cash as the means of payment.
+  -- UnitedStates # United States location or country literal (usa).
+  -- PrivateHome # Private-home service location.
+  -- LocalCollegeClub # Local college club service location.
+  -- CollegeFraternityOrSorority # College fraternity or sorority service location.
+  -- SicknessProvision # Provision for sickness under a payment plan.
+  -- AccidentDisabilityProvision # Provision for accident disability under a payment plan.
+  -- DeathProvision # Provision for death under a payment plan.
+  -- EmployeeOrDependentProvision # Plan provision for employees or their dependents.
+  -- ReligiousOrganization # Religious organization classification.
+  -- Government # Government classification.
+  -- Hospital # Hospital classification.
+  -- EducationalInstitution # Educational institution classification.
+  -- Student # Student classification.
+  -- ForeignGovernment # Foreign government classification.
+  -- StateGovernment # State government classification.
+  -- OtherKnownValue # Sentinel for no usable literal attribute; Known containing this value is removed from the event view.
 
-declaration enumeration Value:
-  -- Known content KnownValue
-  -- Named content Entity
+declaration enumeration FactValue: # Literal or entity-valued attribute; absence uses Known OtherKnownValue or Named with Entity.id = 0, rather than an optional type.
+  -- Known content KnownValue # Recognized literal attribute, carried as a KnownValue.
+  -- Named content Entity # Named attribute, carried as an Entity reference.
 
-declaration enumeration EventKind:
-  -- Marriage
-  -- Birth
-  -- Death
-  -- Income
-  -- Payment
-  -- Service
-  -- Residence
-  -- Migration
-  -- Retirement
-  -- Deduction
-  -- Enrollment
-  -- Termination
-  -- Incarceration
-  -- LegalSeparation
-  -- JointReturn
-  -- ItemizeDeductions
-  -- Blindness
-  -- Disability
-  -- AttendingClasses
-  -- MedicalPatient
-  -- NonresidentAlien
-  -- Citizenship
-  -- Son
-  -- Daughter
-  -- Father
-  -- Mother
-  -- Brother
-  -- Sister
-  -- Sibling
-  -- Business
-  -- BusinessTrust
-  -- Plan
-  -- Hospital
-  -- MedicalInstitution
-  -- PenalInstitution
-  -- EducationalInstitution
-  -- NursesTrainingSchool
-  -- InternationalOrganization
-  -- AmericanEmployer
-  -- UnemploymentCompensationAgreement
+declaration enumeration EventKind: # Prolog event predicates and entity classifications in the common event view.
+  -- Marriage # Marriage event.
+  -- Birth # Birth event; its start records the birth date.
+  -- Death # Death event.
+  -- Income # Income event; the agent is the income recipient.
+  -- Payment # Payment event; the agent pays and the patient receives.
+  -- Service # Service event; the agent works for the patient employer.
+  -- Residence # Residence event; subjects/agents are residents, relatives/patients identify the home/place, and identifier identifies the event rather than the home.
+  -- Migration # Migration event.
+  -- Retirement # Retirement event.
+  -- Deduction # Deduction fact; dated taxpayer deduction facts can select the SARA GT itemized path without an ItemizeDeductions event.
+  -- Enrollment # Enrollment event.
+  -- Termination # Termination event.
+  -- Incarceration # Incarceration event.
+  -- LegalSeparation # Legal-separation event.
+  -- JointReturn # Joint tax return whose agents are the joint filers.
+  -- ItemizeDeductions # Explicit election to itemize deductions when supplied; SARA GT may instead select itemization from dated deduction facts without this event.
+  -- Blindness # Blindness status.
+  -- Disability # Disability status.
+  -- AttendingClasses # Class-attendance status.
+  -- MedicalPatient # Medical-patient status.
+  -- NonresidentAlien # Recorded nonresident-alien status; retained in the internal event list. NoStatusFact is the legacy no-fact marker; native status inputs use an empty list when absent.
+  -- Citizenship # Citizenship fact.
+  -- Son # Son relationship; agent is the son and patient is the parent.
+  -- Daughter # Daughter relationship; agent is the daughter and patient is the parent.
+  -- Father # Father relationship; agent is the father and patient is the child.
+  -- Mother # Mother relationship; agent is the mother and patient is the child.
+  -- Brother # Brother relationship; agent is the brother of the patient.
+  -- Sister # Sister relationship; agent is the sister of the patient.
+  -- Sibling # Sibling relationship between agent and patient.
+  -- Business # Entity classified as a business.
+  -- BusinessTrust # Entity classified as a business trust.
+  -- Plan # Entity classified as a payment or benefit plan.
+  -- Hospital # Hospital classification.
+  -- MedicalInstitution # Entity classified as a medical institution.
+  -- PenalInstitution # Entity classified as a penal institution.
+  -- EducationalInstitution # Educational institution classification.
+  -- NursesTrainingSchool # Entity classified as a nurses training school.
+  -- InternationalOrganization # Entity classified as an international organization.
+  -- AmericanEmployer # Entity classified as an American employer.
+  -- UnemploymentCompensationAgreement # Unemployment-compensation agreement fact.
 
-declaration enumeration FinancialFactKind:
-  -- NoFinancialFact
-  -- Income
-  -- Payment
-  -- Deduction
+declaration enumeration FinancialFactKind: # Kinds of external financial facts, including a legacy no-fact marker.
+  -- NoFinancialFact # Legacy no-fact marker; omitted from the internal event list. Use an empty list for absent native inputs.
+  -- Income # Income event; the agent is the income recipient.
+  -- Payment # Payment event; the agent pays and the patient receives.
+  -- Deduction # Deduction fact; dated taxpayer deduction facts can select the SARA GT itemized path without an ItemizeDeductions event.
 
-declaration enumeration RelationshipFactKind:
-  -- NoRelationshipFact
-  -- Marriage
-  -- Birth
-  -- Death
-  -- Residence
-  -- Migration
-  -- LegalSeparation
-  -- JointReturn
-  -- Son
-  -- Daughter
-  -- Father
-  -- Mother
-  -- Brother
-  -- Sister
-  -- Sibling
+declaration enumeration RelationshipFactKind: # Kinds of external relationship facts, including a legacy no-fact marker.
+  -- NoRelationshipFact # Legacy no-fact marker; omitted from the internal event list. Use an empty list for absent native inputs.
+  -- Marriage # Marriage event.
+  -- Birth # Birth event; its start records the birth date.
+  -- Death # Death event.
+  -- Residence # Residence event; subjects/agents are residents, relatives/patients identify the home/place, and identifier identifies the event rather than the home.
+  -- Migration # Migration event.
+  -- LegalSeparation # Legal-separation event.
+  -- JointReturn # Joint tax return whose agents are the joint filers.
+  -- Son # Son relationship; agent is the son and patient is the parent.
+  -- Daughter # Daughter relationship; agent is the daughter and patient is the parent.
+  -- Father # Father relationship; agent is the father and patient is the child.
+  -- Mother # Mother relationship; agent is the mother and patient is the child.
+  -- Brother # Brother relationship; agent is the brother of the patient.
+  -- Sister # Sister relationship; agent is the sister of the patient.
+  -- Sibling # Sibling relationship between agent and patient.
 
-declaration enumeration EmploymentFactKind:
-  -- NoEmploymentFact
-  -- Service
-  -- Retirement
-  -- Business
-  -- BusinessTrust
-  -- Plan
-  -- Hospital
-  -- MedicalInstitution
-  -- PenalInstitution
-  -- EducationalInstitution
-  -- NursesTrainingSchool
-  -- InternationalOrganization
-  -- AmericanEmployer
+declaration enumeration EmploymentFactKind: # Kinds of external employment and institution facts, including a legacy no-fact marker.
+  -- NoEmploymentFact # Legacy no-fact marker; omitted from the internal event list. Use an empty list for absent native inputs.
+  -- Service # Service event; the agent works for the patient employer.
+  -- Retirement # Retirement event.
+  -- Business # Entity classified as a business.
+  -- BusinessTrust # Entity classified as a business trust.
+  -- Plan # Entity classified as a payment or benefit plan.
+  -- Hospital # Hospital classification.
+  -- MedicalInstitution # Entity classified as a medical institution.
+  -- PenalInstitution # Entity classified as a penal institution.
+  -- EducationalInstitution # Educational institution classification.
+  -- NursesTrainingSchool # Entity classified as a nurses training school.
+  -- InternationalOrganization # Entity classified as an international organization.
+  -- AmericanEmployer # Entity classified as an American employer.
 
-declaration enumeration StatusFactKind:
-  -- NoStatusFact
-  -- Enrollment
-  -- Termination
-  -- Incarceration
-  -- ItemizeDeductions
-  -- Blindness
-  -- Disability
-  -- AttendingClasses
-  -- MedicalPatient
-  -- NonresidentAlien
-  -- Citizenship
-  -- UnemploymentCompensationAgreement
+declaration enumeration StatusFactKind: # Kinds of external status facts, including a legacy no-fact marker.
+  -- NoStatusFact # Legacy no-fact marker; omitted from the internal event list. Use an empty list for absent native inputs.
+  -- Enrollment # Enrollment event.
+  -- Termination # Termination event.
+  -- Incarceration # Incarceration event.
+  -- ItemizeDeductions # Explicit election to itemize deductions when supplied; SARA GT may instead select itemization from dated deduction facts without this event.
+  -- Blindness # Blindness status.
+  -- Disability # Disability status.
+  -- AttendingClasses # Class-attendance status.
+  -- MedicalPatient # Medical-patient status.
+  -- NonresidentAlien # Recorded nonresident-alien status; retained in the internal event list. NoStatusFact is the legacy no-fact marker; native status inputs use an empty list when absent.
+  -- Citizenship # Citizenship fact.
+  -- UnemploymentCompensationAgreement # Unemployment-compensation agreement fact.
 
-declaration structure Event:
-  data identifier content Entity
-  data kind content EventKind
-  data agents content list of Entity
-  data patients content list of Entity
-  data starts content list of date
-  data ends content list of date
-  data amounts content list of money
-  data purposes content list of Value
-  data locations content list of Value
-  data means content list of Value
-  data reasons content list of Value
-  data beneficiaries content list of Entity
-  data countries content list of Value
-  data types content list of Value
-  data destinations content list of Value
-  ## Number of identical grounded Prolog solutions represented by this row.
-  data multiplicity content integer
+declaration structure Event: # Internal common view of a Prolog event or classified entity and its associated facts.
+  data identifier content Entity # Entity identifying this event or classified organization, institution, or plan.
+  data kind content EventKind # Fact classification selected from EventKind.
+  data agents content list of Entity # People or organizations acting in the event or holding the status, such as workers, joint filers, or residents; separate residents may have separate events at the same home.
+  data patients content list of Entity # People or entities receiving or affected by the action, such as employers or payment recipients; for Residence, these are home/place entities, not residence-event identifiers.
+  data starts content list of date # Recorded start dates; an empty list means no recorded start.
+  data ends content list of date # Recorded end dates; an empty list means no recorded end.
+  data amounts content list of money # Monetary amounts before weighting by multiplicity.
+  data purposes content list of FactValue # Work performed, benefits promised by a plan, or events that a payment compensates for, according to kind.
+  data locations content list of FactValue # Places or institutions where the activity occurs.
+  data means content list of FactValue # How payment is made: cash or a reference to the benefit plan providing it. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data reasons content list of FactValue # Causes of the event, such as disability or death leading to termination.
+  data beneficiaries content list of Entity # People receiving benefits from the event or plan.
+  data countries content list of FactValue # Countries associated with the event or geographical entity.
+  data types content list of FactValue # Classifications of the activity or entity, such as agricultural labor or a business category.
+  data destinations content list of FactValue # Places to which a person migrates.
+  ## Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
+  data multiplicity content integer # Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
 
 ## External facts are separated by legal-domain shape. `Event` remains an
 ## internal common view used by provisions that quantify across fact families.
-declaration structure FinancialFact:
-  data identifier content Entity
-  data kind content FinancialFactKind
-  data agent content Entity
-  data patient content Entity
-  data start content date
-  data end content date
-  data start_present content boolean
-  data end_present content boolean
-  data amount content money
-  data purpose_1 content Value
-  data purpose_2 content Value
-  data means content Value
-  data beneficiary content Entity
-  data multiplicity content integer
+declaration structure FinancialFact: # External income, payment, or deduction fact.
+  data identifier content Entity # Entity identifying this event or classified organization, institution, or plan.
+  data kind content FinancialFactKind # Fact classification selected from FinancialFactKind.
+  data agent content Entity # Income recipient, payer, or person claiming a deduction, according to kind; id 0 means absent.
+  data patient content Entity # Payment recipient or other entity affected by the financial fact; id 0 means absent.
+  data start content date # Start date; used only when start_present is true.
+  data end content date # End date; used only when end_present is true.
+  data start_present content boolean # True when a start date is recorded; false makes start irrelevant.
+  data end_present content boolean # True when an end date is recorded; false makes end irrelevant.
+  data amount content money # Monetary amount before multiplicity scaling; for a compressed worker group this is per worker, so apply any per-worker cap before scaling.
+  data purpose_1 content FactValue # What the payment compensates for, usually a Named reference to a service or termination event; household-maintenance payments may instead name the home/place entity linked by a Residence fact; entry 1. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data purpose_2 content FactValue # What the payment compensates for, usually a Named reference to a service or termination event; household-maintenance payments may instead name the home/place entity linked by a Residence fact; entry 2. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data means content FactValue # How payment is made: cash or a reference to the benefit plan providing it. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data beneficiary content Entity # Person receiving the benefit of a payment or plan; id 0 means absent.
+  data multiplicity content integer # Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
 
-declaration structure RelationshipFact:
-  data identifier content Entity
-  data kind content RelationshipFactKind
-  data subject_1 content Entity
-  data subject_2 content Entity
-  data subject_3 content Entity
-  data subject_4 content Entity
-  data relative_1 content Entity
-  data relative_2 content Entity
-  data start content date
-  data end content date
-  data start_present content boolean
-  data end_present content boolean
-  data multiplicity content integer
+declaration structure RelationshipFact: # External family, life-event, residence, or joint-return fact.
+  data identifier content Entity # Entity identifying this event or classified organization, institution, or plan.
+  data kind content RelationshipFactKind # Fact classification selected from RelationshipFactKind.
+  data subject_1 content Entity # Person participating in the event, such as a spouse, joint filer, or the family member described by kind; entry 1; id 0 means absent.
+  data subject_2 content Entity # Person participating in the event, such as a spouse, joint filer, or the family member described by kind; entry 2; id 0 means absent.
+  data subject_3 content Entity # Person participating in the event, such as a spouse, joint filer, or the family member described by kind; entry 3; id 0 means absent.
+  data subject_4 content Entity # Person participating in the event, such as a spouse, joint filer, or the family member described by kind; entry 4; id 0 means absent.
+  data relative_1 content Entity # Entity related to the subject: e.g. the parent of a Son, child of a Father, or home/place occupied by a Residence subject; entry 1; id 0 means absent.
+  data relative_2 content Entity # Entity related to the subject, interpreted by kind as for relative_1; entry 2; id 0 means absent.
+  data start content date # Start date; used only when start_present is true.
+  data end content date # End date; used only when end_present is true.
+  data start_present content boolean # True when a start date is recorded; false makes start irrelevant.
+  data end_present content boolean # True when an end date is recorded; false makes end irrelevant.
+  data multiplicity content integer # Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
 
-declaration structure EmploymentFact:
-  data identifier content Entity
-  data kind content EmploymentFactKind
-  data worker content Entity
-  data employer content Entity
-  data start content date
-  data end content date
-  data start_present content boolean
-  data end_present content boolean
-  data purpose_1 content Value
-  data purpose_2 content Value
-  data location_1 content Value
-  data location_2 content Value
-  data location_3 content Value
-  data location_4 content Value
-  data reason content Value
-  data beneficiary content Entity
-  data multiplicity content integer
+declaration structure EmploymentFact: # External employment, retirement, business, plan, or institution fact.
+  data identifier content Entity # Entity identifying this event or classified organization, institution, or plan.
+  data kind content EmploymentFactKind # Fact classification selected from EmploymentFactKind.
+  data worker content Entity # Employee performing service, or the actor associated with retirement or a plan (for example, the employer establishing it); id 0 means absent.
+  data employer content Entity # Employer receiving the service; for other kinds, the entity affected by the fact; id 0 means absent.
+  data start content date # Start date; used only when start_present is true.
+  data end content date # End date; used only when end_present is true.
+  data start_present content boolean # True when a start date is recorded; false makes start irrelevant.
+  data end_present content boolean # True when an end date is recorded; false makes end irrelevant.
+  data purpose_1 content FactValue # Work performed (e.g. AgriculturalLabor or DomesticService), or benefits promised by a Plan (e.g. SicknessProvision); entry 1. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data purpose_2 content FactValue # Work performed (e.g. AgriculturalLabor or DomesticService), or benefits promised by a Plan (e.g. SicknessProvision); entry 2. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data location_1 content FactValue # Place where the work occurs, such as PrivateHome, UnitedStates, or a Named institution; entry 1. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data location_2 content FactValue # Place where the work occurs, such as PrivateHome, UnitedStates, or a Named institution; entry 2. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data location_3 content FactValue # Place where the work occurs, such as PrivateHome, UnitedStates, or a Named institution; entry 3. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data location_4 content FactValue # Place where the work occurs, such as PrivateHome, UnitedStates, or a Named institution; entry 4. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data reason content FactValue # Cause of retirement or termination, such as disability or a reference to a death event. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data beneficiary content Entity # Person receiving the benefit of a payment or plan; id 0 means absent.
+  data multiplicity content integer # Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
 
-declaration structure StatusFact:
-  data identifier content Entity
-  data kind content StatusFactKind
-  data subject content Entity
-  data object content Entity
-  data start content date
-  data end content date
-  data start_present content boolean
-  data end_present content boolean
-  data location content Value
-  data reason content Value
-  data multiplicity content integer
+declaration structure StatusFact: # External personal-status, enrollment, or agreement fact.
+  data identifier content Entity # Entity identifying this event or classified organization, institution, or plan.
+  data kind content StatusFactKind # Fact classification selected from StatusFactKind.
+  data subject content Entity # Person or organization holding the status or initiating the event; id 0 means absent.
+  data object content Entity # Entity affected by the event, such as the employment being terminated or the institution attended; id 0 means absent.
+  data start content date # Start date; used only when start_present is true.
+  data end content date # End date; used only when end_present is true.
+  data start_present content boolean # True when a start date is recorded; false makes start irrelevant.
+  data end_present content boolean # True when an end date is recorded; false makes end irrelevant.
+  data location content FactValue # Place or institution associated with the status, such as a school or hospital. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data reason content FactValue # Cause of retirement or termination, such as disability or a reference to a death event. Absent when Known contains OtherKnownValue or Named contains an Entity with id 0.
+  data multiplicity content integer # Number of represented grounded solutions or interchangeable workers; compressed worker groups require per-worker caps before scaling and must not be counted twice through matching service/payment rows.
 
-declaration structure World:
-  data dependency_1 content Entity
-  data dependency_2 content Entity
-  data dependency_3 content Entity
-  data dependency_4 content Entity
-  data dependency_5 content Entity
-  data dependency_6 content Entity
-  data financial_1 content FinancialFact
-  data financial_2 content FinancialFact
-  data financial_3 content FinancialFact
-  data financial_4 content FinancialFact
-  data financial_5 content FinancialFact
-  data financial_6 content FinancialFact
-  data relationship_1 content RelationshipFact
-  data relationship_2 content RelationshipFact
-  data relationship_3 content RelationshipFact
-  data relationship_4 content RelationshipFact
-  data relationship_5 content RelationshipFact
-  data relationship_6 content RelationshipFact
-  data relationship_7 content RelationshipFact
-  data relationship_8 content RelationshipFact
-  data employment_1 content EmploymentFact
-  data employment_2 content EmploymentFact
-  data employment_3 content EmploymentFact
-  data employment_4 content EmploymentFact
-  data status_1 content StatusFact
-  data status_2 content StatusFact
-  data status_3 content StatusFact
+declaration structure World: # List-based factual input; empty lists represent absent fact families. No fixed slot count or padding is required.
+  data dependency_candidates content list of Entity # Dependency candidate entities; [] when none are recorded.
+  data financial_facts content list of FinancialFact # Income, payment, and deduction facts; [] when none are recorded.
+  data relationship_facts content list of RelationshipFact # Family, residence, life-event, and joint-return facts; [] when none are recorded.
+  data employment_facts content list of EmploymentFact # Service, plan, retirement, and institution facts; [] when none are recorded.
+  data status_facts content list of StatusFact # Personal status, enrollment, and agreement facts; [] when none are recorded.
 
-declaration structure TaxPeriod:
-  data tax_year content integer
-  data first_day content date
-  data last_day content date
+declaration structure TaxPeriod: # Tax year and its calendar boundaries.
+  data tax_year content integer # Calendar year used by the tax provisions.
+  data first_day content date # First day of the tax period.
+  data last_day content date # Last day of the tax period.
 
-declaration structure Relationship:
-  data subject content Entity
-  data relative content Entity
-  data starts content list of date
-  data ends content list of date
+declaration structure Relationship: # Directed family relationship extracted from event agents and patients.
+  data subject content Entity # Agent of the family event, whose relationship to relative is described.
+  data relative content Entity # Patient of the family event, related to subject.
+  data starts content list of date # Recorded start dates of the family relationship.
+  data ends content list of date # Recorded end dates of the family relationship.
 
-declaration structure MaritalResult:
-  data married content boolean
-  data spouses content list of Entity
+declaration structure MaritalResult: # Marital-status result and the spouses identified by the evaluator.
+  data married content boolean # Whether the marital-status evaluator regards the taxpayer as married.
+  data spouses content list of Entity # Spouse entities identified by the marital-status evaluator.
 
 declaration same_entity content boolean
   depends on left content Entity,
@@ -300,12 +343,12 @@ declaration status_events_of_kind content list of Event
   depends on world content World,
              kind content EventKind
 
-declaration gross_income_individual content money
+declaration gross_income_individual content money # One person only: sums that person's Income amounts and received Payment amounts, weighted by multiplicity; does not add a spouse's income for a joint return.
   depends on world content World,
              person content Entity,
              period content TaxPeriod
 
-declaration has_full_year_joint_return content boolean
+declaration has_full_year_joint_return content boolean # Tests the two filers and exact full-year return boundaries; does not combine their income or compute a filing-status conclusion.
   depends on world content World,
              taxpayer content Entity,
              spouse content Entity,
@@ -315,7 +358,7 @@ declaration all_entities content list of Entity
   depends on world content World
 
 declaration has_value content boolean
-  depends on values content list of Value,
+  depends on values content list of FactValue,
              expected content KnownValue
 
 declaration dependency_candidates content list of Entity
@@ -333,8 +376,8 @@ declaration employment_event_kind content EventKind
 declaration status_event_kind content EventKind
   depends on kind content StatusFactKind
 
-declaration usable_values content list of Value
-  depends on values content list of Value
+declaration usable_values content list of FactValue
+  depends on values content list of FactValue
 
 declaration financial_fact_values content list of Event
   depends on value content FinancialFact
@@ -360,8 +403,40 @@ declaration employment_and_institution_events content list of Event
 declaration personal_status_events content list of Event
   depends on world content World
 
-declaration weighted_amounts content list of money
+declaration weighted_amounts content list of money # Scales each raw amount by event multiplicity; does not apply per-worker caps or combine separate service/payment group counts.
   depends on event content Event
+
+## Public inputs are lists; use the normalized views below for aliases. Legacy
+## numbered-slot fixtures are converted by the Python adapter before evaluation.
+declaration unique_events content list of Event
+  depends on rows content list of Event
+
+declaration unique_transactions content list of Event
+  depends on rows content list of Event
+
+declaration parent_links content list of Relationship
+  depends on world content World
+
+declaration sibling_links content list of Relationship
+  depends on world content World
+
+declaration date_of_birth content optional of date
+  depends on world content World,
+             person content Entity,
+             allow_relationship_fallback content boolean
+
+declaration has_classification content boolean
+  depends on event content Event,
+             classification content KnownValue
+
+declaration has_itemization_evidence content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             period content TaxPeriod
+
+declaration all_input_events content list of Event
+  depends on world content World
+
 ```
 
 ```catala
@@ -426,12 +501,12 @@ declaration status_event_kind content EventKind
     -- StatusFactKind.UnemploymentCompensationAgreement:
         EventKind.UnemploymentCompensationAgreement
 
-declaration usable_values content list of Value
-  depends on values content list of Value
+declaration usable_values content list of FactValue
+  depends on values content list of FactValue
   equals list of value among values such that
     match value with pattern
-    -- Value.Known content known: known != KnownValue.OtherKnownValue
-    -- Value.Named content named: named.id != 0
+    -- FactValue.Known content known: known != KnownValue.OtherKnownValue
+    -- FactValue.Named content named: named.id != 0
 
 declaration financial_fact_values content list of Event
   depends on value content FinancialFact
@@ -522,41 +597,32 @@ declaration status_fact_values content list of Event
 declaration financial_events content list of Event
   depends on world content World
   equals
-    (financial_fact_values of world.financial_1)
-    ++ (financial_fact_values of world.financial_2)
-    ++ (financial_fact_values of world.financial_3)
-    ++ (financial_fact_values of world.financial_4)
-    ++ (financial_fact_values of world.financial_5)
-    ++ (financial_fact_values of world.financial_6)
+    unique_events of
+      (combine all fact among world.financial_facts in events initially []
+       with events ++ (financial_fact_values of fact))
 
 declaration relationship_and_return_events content list of Event
   depends on world content World
   equals
-    (relationship_fact_values of world.relationship_1)
-    ++ (relationship_fact_values of world.relationship_2)
-    ++ (relationship_fact_values of world.relationship_3)
-    ++ (relationship_fact_values of world.relationship_4)
-    ++ (relationship_fact_values of world.relationship_5)
-    ++ (relationship_fact_values of world.relationship_6)
-    ++ (relationship_fact_values of world.relationship_7)
-    ++ (relationship_fact_values of world.relationship_8)
+    unique_events of
+      (combine all fact among world.relationship_facts in events initially []
+       with events ++ (relationship_fact_values of fact))
 
 declaration employment_and_institution_events content list of Event
   depends on world content World
   equals
-    (employment_fact_values of world.employment_1)
-    ++ (employment_fact_values of world.employment_2)
-    ++ (employment_fact_values of world.employment_3)
-    ++ (employment_fact_values of world.employment_4)
+    unique_events of
+      (combine all fact among world.employment_facts in events initially []
+       with events ++ (employment_fact_values of fact))
 
 declaration personal_status_events content list of Event
   depends on world content World
   equals
-    (status_fact_values of world.status_1)
-    ++ (status_fact_values of world.status_2)
-    ++ (status_fact_values of world.status_3)
+    unique_events of
+      (combine all fact among world.status_facts in events initially []
+       with events ++ (status_fact_values of fact))
 
-declaration weighted_amounts content list of money
+declaration weighted_amounts content list of money # Scales each raw amount by event multiplicity; does not apply per-worker caps or combine separate service/payment group counts.
   depends on event content Event
   equals map each amount among event.amounts to
     amount * (decimal of event.multiplicity)
@@ -638,23 +704,21 @@ declaration relationship_events content list of Relationship
       in result initially []
       with result ++ rows
 
-declaration gross_income_individual content money
+declaration gross_income_individual content money # One person only: sums that person's Income amounts and received Payment amounts, weighted by multiplicity; does not add a spouse's income for a joint return.
   depends on world content World,
              person content Entity,
              period content TaxPeriod
   equals
     Money.sum of
-      (combine all event among (financial_events of world)
-         in amounts initially []
-         with
-           if ((event.kind = EventKind.Income and has_agent of event, person)
-               or (event.kind = EventKind.Payment
-                   and has_patient of event, person))
-              and overlaps_period of event.starts, event.ends, period
-           then amounts ++ (weighted_amounts of event)
-           else amounts)
+      (combine all event among
+        (unique_transactions of
+          (list of receipt among (financial_events of world) such that
+            ((receipt.kind = EventKind.Income and has_agent of receipt, person)
+             or (receipt.kind = EventKind.Payment and has_patient of receipt, person))
+            and overlaps_period of receipt.starts, receipt.ends, period))
+       in amounts initially [] with amounts ++ (weighted_amounts of event))
 
-declaration has_full_year_joint_return content boolean
+declaration has_full_year_joint_return content boolean # Tests the two filers and exact full-year return boundaries; does not combine their income or compute a filing-status conclusion.
   depends on world content World,
              taxpayer content Entity,
              spouse content Entity,
@@ -671,18 +735,125 @@ declaration all_entities content list of Entity
     dependency_candidates of world
 
 declaration has_value content boolean
-  depends on values content list of Value,
+  depends on values content list of FactValue,
              expected content KnownValue
   equals exists value among values such that
     match value with pattern
-    -- Value.Known content known: known = expected
-    -- Value.Named content name: false
+    -- FactValue.Known content known: known = expected
+    -- FactValue.Named content name: false
 
 declaration dependency_candidates content list of Entity
   depends on world content World
   equals
-    list of candidate among
-      [world.dependency_1; world.dependency_2; world.dependency_3;
-       world.dependency_4; world.dependency_5; world.dependency_6]
+    list of candidate among world.dependency_candidates
     such that candidate.id != 0
+
+```
+
+```catala
+
+declaration all_input_events content list of Event
+  depends on world content World
+  equals
+    (combine all fact among world.financial_facts in events initially []
+        with events ++ (financial_fact_values of fact))
+    ++ (combine all fact among world.relationship_facts in events initially []
+        with events ++ (relationship_fact_values of fact))
+    ++ (combine all fact among world.employment_facts in events initially []
+        with events ++ (employment_fact_values of fact))
+    ++ (combine all fact among world.status_facts in events initially []
+        with events ++ (status_fact_values of fact))
+
+declaration unique_events content list of Event
+  depends on rows content list of Event
+  equals combine all candidate among rows in kept initially []
+    with if exists previous among kept such that
+      same_entity of candidate.identifier, previous.identifier
+        and candidate.kind = previous.kind
+    then kept else kept ++ [candidate]
+
+declaration unique_transactions content list of Event
+  depends on rows content list of Event
+  equals combine all candidate among rows in kept initially []
+    with if exists previous among kept such that
+      same_entity of candidate.identifier, previous.identifier
+    then kept else kept ++ [candidate]
+
+declaration parent_links content list of Relationship
+  depends on world content World
+  equals
+    let children equals (relationship_events of world, EventKind.Son)
+      ++ (relationship_events of world, EventKind.Daughter) in
+    let parents equals (relationship_events of world, EventKind.Father)
+      ++ (relationship_events of world, EventKind.Mother) in
+    let oriented equals children ++ (map each parent among parents to
+      Relationship { -- subject: parent.relative -- relative: parent.subject
+        -- starts: parent.starts -- ends: parent.ends }) in
+    combine all candidate among oriented in kept initially []
+      with if exists previous among kept such that
+        same_entity of candidate.subject, previous.subject
+          and same_entity of candidate.relative, previous.relative
+          and candidate.starts = previous.starts and candidate.ends = previous.ends
+      then kept else kept ++ [candidate]
+
+declaration sibling_links content list of Relationship
+  depends on world content World
+  equals
+    let rows equals (relationship_events of world, EventKind.Brother)
+      ++ (relationship_events of world, EventKind.Sister)
+      ++ (relationship_events of world, EventKind.Sibling) in
+    combine all candidate among rows in kept initially []
+      with if exists previous among kept such that
+        ((same_entity of candidate.subject, previous.subject
+          and same_entity of candidate.relative, previous.relative)
+         or (same_entity of candidate.subject, previous.relative
+          and same_entity of candidate.relative, previous.subject))
+        and candidate.starts = previous.starts and candidate.ends = previous.ends
+      then kept else kept ++ [candidate]
+
+declaration date_of_birth content optional of date
+  depends on world content World,
+             person content Entity,
+             allow_relationship_fallback content boolean
+  equals
+    let explicit_dates equals
+      combine all event among (relationship_events_of_kind of world, EventKind.Birth)
+      in dates initially [] with if has_agent of event, person
+        then dates ++ event.starts else dates in
+    match (List.first_element of explicit_dates) with pattern
+    -- Present content born: Present content born
+    -- Absent:
+      if not allow_relationship_fallback then Absent else
+        let candidates equals combine all event
+          among (relationship_and_return_events of world)
+          in dates initially [] with if
+            (event.kind = EventKind.Son or event.kind = EventKind.Daughter)
+              and has_agent of event, person
+            then dates ++ event.starts else dates in
+        List.first_element of
+          (combine all candidate among candidates in earliest initially []
+           with match (List.first_element of earliest) with pattern
+           -- Absent: [candidate]
+           -- Present content previous:
+             if candidate < previous then [candidate] else earliest)
+
+declaration has_classification content boolean
+  depends on event content Event,
+             classification content KnownValue
+  equals has_value of event.purposes, classification
+    or has_value of event.locations, classification
+
+declaration has_itemization_evidence content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             period content TaxPeriod
+  equals
+    (exists election among (status_events_of_kind of world, EventKind.ItemizeDeductions)
+     such that has_agent of election, taxpayer
+       and overlaps_period of election.starts, election.ends, period)
+    or (exists deduction among (financial_events_of_kind of world, EventKind.Deduction)
+      such that has_agent of deduction, taxpayer
+        and exists start among deduction.starts such that
+          period.first_day <= start and start <= period.last_day)
+
 ```

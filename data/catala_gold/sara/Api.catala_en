@@ -26,6 +26,13 @@ declaration scope TotalTax:
   section_1 scope S1.TotalTax
   output income_tax content money
   output total_tax content money
+
+declaration scope TotalTaxFromWorld:
+  input world content W.World
+  input taxpayer content W.Entity
+  input period content W.TaxPeriod
+  validation scope W.ValidatedWorld
+  output total_tax content money
 ```
 
 ```catala
@@ -35,4 +42,24 @@ scope TotalTax:
   definition section_1.unemployment_tax equals unemployment_tax
   definition income_tax equals section_1.income_tax
   definition total_tax equals section_1.total_tax
+```
+
+```catala
+scope TotalTaxFromWorld:
+  definition validation.world equals world
+  definition total_tax equals
+    let checked equals validation.checked_world in
+    let filing equals output of S2.FilingStatusFor with {
+      -- world: checked -- taxpayer: taxpayer -- period: period } in
+    let taxable equals output of S63.TaxableIncome with {
+      -- world: checked -- taxpayer: taxpayer -- period: period } in
+    let payroll equals output of S3301.UnemploymentTax with {
+      -- world: checked -- employer: taxpayer -- period: period } in
+    let category equals match filing.status with pattern
+      -- S2.FilingStatus.JointOrSurviving: S1.FilingStatus.JointOrSurviving
+      -- S2.FilingStatus.HeadOfHousehold: S1.FilingStatus.HeadOfHousehold
+      -- S2.FilingStatus.Unmarried: S1.FilingStatus.Unmarried
+      -- S2.FilingStatus.MarriedFilingSeparately: S1.FilingStatus.MarriedFilingSeparately in
+    (output of TotalTax with { -- taxable_income: taxable.taxable_income
+      -- filing_status: category -- unemployment_tax: payroll.tax }).total_tax
 ```

@@ -228,22 +228,6 @@
       ],
       "blocks": [
         {
-          "block_id": "airline/section1_non_textual:b0001",
-          "kind": "catala-metadata",
-          "role": "preamble-metadata",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
-          "block_id": "airline/section1_non_textual:b0002",
-          "kind": "catala",
-          "role": "preamble-definitions",
-          "relation": "preamble",
-          "provision_id": null,
-          "original_source_lines": null
-        },
-        {
           "block_id": "airline/section1_non_textual:b0003",
           "kind": "catala",
           "role": "provision",

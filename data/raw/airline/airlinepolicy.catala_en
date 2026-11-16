@@ -3,15 +3,6 @@
 > Module AirlinePolicy
 > Using Definitions as W
 
-<!-- rsa-block-id: airline/section1_non_textual:b0001; role: preamble-metadata; provision-id: none; source-lines: none; relation: preamble -->
-```catala-metadata
-```
-
-
-<!-- rsa-block-id: airline/section1_non_textual:b0002; role: preamble-definitions; provision-id: none; source-lines: none; relation: preamble -->
-```catala
-```
-
 # Bag fees
 All published bag fees apply at each check-in location and are base rates according to travel dates and destination; applicable taxes are not shown.
 

@@ -32,4 +32,20 @@ declaration scope TotalTax:
 ```catala
 # Define TotalTax.total_tax by composing the statutory section scopes. Keep
 # cross-section orchestration here rather than assigning it to one provision.
+scope TotalTax:
+  assertion for all left among (W.all_input_events of world) we have
+    for all right among (W.all_input_events of world) we have
+      not (W.same_entity of left.identifier, right.identifier and left.kind = right.kind)
+      or left = right
+  assertion for all left among (W.relationship_events_of_kind of world, W.EventKind.Birth)
+    we have for all right among (W.relationship_events_of_kind of world, W.EventKind.Birth)
+      we have not (exists person among left.agents such that W.has_agent of right, person)
+        or left.starts = [] or right.starts = [] or left.starts = right.starts
+  assertion for all income among (W.financial_events_of_kind of world, W.EventKind.Income)
+    we have for all payment among (W.financial_events_of_kind of world, W.EventKind.Payment)
+      we have not (W.same_entity of income.identifier, payment.identifier)
+        or (income.agents = payment.patients
+          and income.amounts = payment.amounts
+          and income.multiplicity = payment.multiplicity
+          and income.starts = payment.starts and income.ends = payment.ends)
 ```

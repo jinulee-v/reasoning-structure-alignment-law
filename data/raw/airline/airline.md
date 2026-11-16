@@ -13,9 +13,10 @@ preamble or synthetic block annotations, and do not move policy rules away
 from the spans they formalize. `Api.catala_en` is also unannotated and is the
 sole evaluator-facing integration layer. Its protected prose records the
 requirement ID, scope, and output contract, and its metadata fence already
-declares the required `TotalCost.total_cost` output. Keep that scope and output
-unchanged. Add factual inputs, internal variables, and policy subscopes to the
-declaration, then implement policy composition in its Catala fence. Do not
+declares the fixed `TotalCost.itinerary` input and required `TotalCost.total_cost`
+output. Keep that scope, input, and output unchanged. Add internal variables and
+policy subscopes to the declaration, then implement policy composition in its
+Catala fence. Do not
 duplicate policy rules in `Api`, and do not add XML block annotations to
 `Definitions` or `Api`.
 Do not edit `Definitions.catala_en`; it is the fixed shared input contract.
@@ -28,10 +29,16 @@ Do not edit `Definitions.catala_en`; it is the fixed shared input contract.
   allowances. Return a non-optional monetary amount; `total_cost` itself must
   never be `Absent`.
 
-Inputs must describe facts stated by a case, and it is already completed for you. Do not require a caller to supply
-a carry-on/checked-bag classification, fee classification, allowance decision,
-or other conclusion that the policy is supposed to derive, except when a case
-explicitly supplies a policy premise.
+The factual input contract is complete. `TotalCost` must accept exactly one
+input: `itinerary content W.Itinerary`. Do not add any other factual inputs,
+including optional flags, to the evaluator API, and do not extend or replace
+the structures or enumerations in `Definitions.catala_en`. Policy subscopes may
+receive existing itinerary facts or values derived internally from those facts;
+they must not introduce additional facts that callers need to supply.
+Do not require a caller to supply a carry-on/checked-bag classification, fee
+classification, allowance decision, or other conclusion that the policy is
+supposed to derive. If the policy mentions a factual premise absent from the
+fixed input contract, do not invent a new input for it.
 
 Encode the intrinsic domain of factual inputs with Catala assertions. Constrain
 shares to 0% through 100%, and ages, durations, counts, or amounts to be

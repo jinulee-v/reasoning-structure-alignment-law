@@ -25,14 +25,9 @@ declaration scope TaxableIncome:
 ```catala
 declaration itemizes content boolean
   depends on world content W.World,
-             taxpayer content W.Entity
-  equals
-    (exists election among
-       (W.status_events_of_kind of world, W.EventKind.ItemizeDeductions)
-     such that W.same_entity of election.identifier, taxpayer)
-    or (exists deduction among
-          (W.financial_events_of_kind of world, W.EventKind.Deduction)
-        such that W.has_agent of deduction, taxpayer)
+             taxpayer content W.Entity,
+             period content W.TaxPeriod
+  equals W.has_itemization_evidence of world, taxpayer, period
 
 declaration is_nonresident_alien content boolean
   depends on world content W.World,
@@ -45,13 +40,11 @@ declaration is_nonresident_alien content boolean
 
 declaration spouse_itemizes content boolean
   depends on world content W.World,
-             spouse content optional of W.Entity
+             spouse content optional of W.Entity,
+             period content W.TaxPeriod
   equals match spouse with pattern
-         -- Absent: false
-         -- Present content person:
-              exists deduction among
-                (W.financial_events_of_kind of world, W.EventKind.Deduction)
-              such that W.has_agent of deduction, person
+    -- Absent: false
+    -- Present content person: W.has_itemization_evidence of world, person, period
 ```
 
 §63. Taxable income defined
@@ -99,7 +92,7 @@ In the case of an individual who does not elect to itemize his deductions for th
 scope TaxableIncome:
   definition taxable_income equals
     let deductions equals
-      if itemizes of world, taxpayer
+      if itemizes of world, taxpayer, period
       then itemized_deductions + personal_exemptions
       else (nonitemizer_standard_component of standard_deduction)
            + (nonitemizer_personal_exemption_component of personal_exemptions) in
@@ -168,7 +161,7 @@ scope TaxableIncome:
     let ineligible equals
       ineligible_for_standard_deduction of
         (married_separate_spouse_itemizes of status,
-           (spouse_itemizes of world, filing.spouse)),
+           (spouse_itemizes of world, filing.spouse, period)),
         (is_nonresident_alien of world, taxpayer, period), false in
     let additional equals
       additional_standard_deduction of status,
@@ -483,10 +476,9 @@ declaration is_aged content boolean
   depends on world content W.World,
              person content W.Entity,
              period content W.TaxPeriod
-  equals exists event among (W.relationship_events_of_kind of world, W.EventKind.Birth)
-         such that W.has_agent of event, person
-           and exists born among event.starts
-               such that period.tax_year - (Date.get_year of born) >= 65
+  equals match (W.date_of_birth of world, person, false) with pattern
+    -- Absent: false
+    -- Present content born: period.tax_year - (Date.get_year of born) >= 65
 ```
 
         (B) for the spouse of the taxpayer if the spouse has attained age 65 before the close of the taxable year and an additional exemption is allowable to the taxpayer for such spouse under section 151(b).

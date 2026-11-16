@@ -82,31 +82,19 @@ declaration direct_child content boolean
              child content W.Entity,
              parent content W.Entity,
              period content W.TaxPeriod
-  equals
-    exists event among (W.relationship_and_return_events of world) such that
-      ((event.kind = W.EventKind.Son or event.kind = W.EventKind.Daughter)
-       and W.has_agent of event, child
-       and W.has_patient of event, parent
-       and W.overlaps_period of event.starts, event.ends, period)
-      or
-      ((event.kind = W.EventKind.Father or event.kind = W.EventKind.Mother)
-       and W.has_agent of event, parent
-       and W.has_patient of event, child
-       and W.overlaps_period of event.starts, event.ends, period)
+  equals exists edge among (W.parent_links of world) such that
+    W.same_entity of edge.subject, child and W.same_entity of edge.relative, parent
+      and W.overlaps_period of edge.starts, edge.ends, period
 
 declaration sibling_of content boolean
   depends on world content W.World,
              one content W.Entity,
              other content W.Entity,
              period content W.TaxPeriod
-  equals
-    exists event among (W.relationship_and_return_events of world) such that
-      (event.kind = W.EventKind.Brother
-       or event.kind = W.EventKind.Sister
-       or event.kind = W.EventKind.Sibling)
-      and ((W.has_agent of event, one and W.has_patient of event, other)
-           or (W.has_agent of event, other and W.has_patient of event, one))
-      and W.overlaps_period of event.starts, event.ends, period
+  equals exists edge among (W.sibling_links of world) such that
+    ((W.same_entity of edge.subject, one and W.same_entity of edge.relative, other)
+     or (W.same_entity of edge.subject, other and W.same_entity of edge.relative, one))
+    and W.overlaps_period of edge.starts, edge.ends, period
 
 declaration child_or_descendant content boolean
   depends on world content W.World,
@@ -141,19 +129,9 @@ declaration age_at_end content optional of integer
   depends on world content W.World,
              individual content W.Entity,
              period content W.TaxPeriod
-  equals
-    match (List.first_element of
-      (combine all event among (W.relationship_and_return_events of world)
-       in dates initially []
-       with if (event.kind = W.EventKind.Birth
-                or event.kind = W.EventKind.Son
-                or event.kind = W.EventKind.Daughter)
-               and W.has_agent of event, individual
-            then dates ++ event.starts else dates))
-    with pattern
+  equals match (W.date_of_birth of world, individual, true) with pattern
     -- Absent: Absent
-    -- Present content born:
-       Present content (period.tax_year - (Date.get_year of born))
+    -- Present content born: Present content (period.tax_year - (Date.get_year of born))
 
 declaration relationship_for_relative content boolean
   depends on world content W.World,

@@ -4,6 +4,18 @@ Use this unannotated module only for facts, types, and provision-neutral helper
 computations shared by multiple statutory sections. Do not place a statutory
 rule, required evaluator output, or cross-section API orchestration here.
 
+Canonical input views: `parent_links` orients parent-child aliases;
+`sibling_links` merges symmetric aliases; `date_of_birth` prefers an explicit
+Birth fact and accepts relationship dates only when its fallback flag is true.
+Birth dates and relationship-effective dates can legitimately differ (adoption).
+Repeated event identities are deduplicated in event views, while gross income
+counts consistent Income/Payment aliases once per transaction identity. Equal
+amounts on different transaction identities remain distinct. Callers must use
+input consistency validation before evaluation: gold `Api.TotalTaxFromWorld`
+validates through `ValidatedWorld`; the raw API carries equivalent assertions.
+The public World uses five lists. Legacy numbered slots are accepted only by
+the Python migration adapter, which removes unused entries before conversion.
+
 > Module Definitions
 
 ```catala-metadata
@@ -36,7 +48,7 @@ declaration enumeration KnownValue:
   -- StateGovernment
   -- OtherKnownValue
 
-declaration enumeration Value:
+declaration enumeration FactValue:
   -- Known content KnownValue
   -- Named content Entity
 
@@ -142,14 +154,14 @@ declaration structure Event:
   data starts content list of date
   data ends content list of date
   data amounts content list of money
-  data purposes content list of Value
-  data locations content list of Value
-  data means content list of Value
-  data reasons content list of Value
+  data purposes content list of FactValue
+  data locations content list of FactValue
+  data means content list of FactValue
+  data reasons content list of FactValue
   data beneficiaries content list of Entity
-  data countries content list of Value
-  data types content list of Value
-  data destinations content list of Value
+  data countries content list of FactValue
+  data types content list of FactValue
+  data destinations content list of FactValue
   ## Number of identical grounded Prolog solutions represented by this row.
   data multiplicity content integer
 
@@ -165,9 +177,9 @@ declaration structure FinancialFact:
   data start_present content boolean
   data end_present content boolean
   data amount content money
-  data purpose_1 content Value
-  data purpose_2 content Value
-  data means content Value
+  data purpose_1 content FactValue
+  data purpose_2 content FactValue
+  data means content FactValue
   data beneficiary content Entity
   data multiplicity content integer
 
@@ -195,13 +207,13 @@ declaration structure EmploymentFact:
   data end content date
   data start_present content boolean
   data end_present content boolean
-  data purpose_1 content Value
-  data purpose_2 content Value
-  data location_1 content Value
-  data location_2 content Value
-  data location_3 content Value
-  data location_4 content Value
-  data reason content Value
+  data purpose_1 content FactValue
+  data purpose_2 content FactValue
+  data location_1 content FactValue
+  data location_2 content FactValue
+  data location_3 content FactValue
+  data location_4 content FactValue
+  data reason content FactValue
   data beneficiary content Entity
   data multiplicity content integer
 
@@ -214,38 +226,16 @@ declaration structure StatusFact:
   data end content date
   data start_present content boolean
   data end_present content boolean
-  data location content Value
-  data reason content Value
+  data location content FactValue
+  data reason content FactValue
   data multiplicity content integer
 
-declaration structure World:
-  data dependency_1 content Entity
-  data dependency_2 content Entity
-  data dependency_3 content Entity
-  data dependency_4 content Entity
-  data dependency_5 content Entity
-  data dependency_6 content Entity
-  data financial_1 content FinancialFact
-  data financial_2 content FinancialFact
-  data financial_3 content FinancialFact
-  data financial_4 content FinancialFact
-  data financial_5 content FinancialFact
-  data financial_6 content FinancialFact
-  data relationship_1 content RelationshipFact
-  data relationship_2 content RelationshipFact
-  data relationship_3 content RelationshipFact
-  data relationship_4 content RelationshipFact
-  data relationship_5 content RelationshipFact
-  data relationship_6 content RelationshipFact
-  data relationship_7 content RelationshipFact
-  data relationship_8 content RelationshipFact
-  data employment_1 content EmploymentFact
-  data employment_2 content EmploymentFact
-  data employment_3 content EmploymentFact
-  data employment_4 content EmploymentFact
-  data status_1 content StatusFact
-  data status_2 content StatusFact
-  data status_3 content StatusFact
+declaration structure World: # List-based factual input; empty lists represent absent fact families. No fixed slot count or padding is required.
+  data dependency_candidates content list of Entity # Dependency candidate entities; [] when none are recorded.
+  data financial_facts content list of FinancialFact # Income, payment, and deduction facts; [] when none are recorded.
+  data relationship_facts content list of RelationshipFact # Family, residence, life-event, and joint-return facts; [] when none are recorded.
+  data employment_facts content list of EmploymentFact # Service, plan, retirement, and institution facts; [] when none are recorded.
+  data status_facts content list of StatusFact # Personal status, enrollment, and agreement facts; [] when none are recorded.
 
 declaration structure TaxPeriod:
   data tax_year content integer
@@ -315,7 +305,7 @@ declaration all_entities content list of Entity
   depends on world content World
 
 declaration has_value content boolean
-  depends on values content list of Value,
+  depends on values content list of FactValue,
              expected content KnownValue
 
 declaration dependency_candidates content list of Entity
@@ -333,8 +323,8 @@ declaration employment_event_kind content EventKind
 declaration status_event_kind content EventKind
   depends on kind content StatusFactKind
 
-declaration usable_values content list of Value
-  depends on values content list of Value
+declaration usable_values content list of FactValue
+  depends on values content list of FactValue
 
 declaration financial_fact_values content list of Event
   depends on value content FinancialFact
@@ -362,6 +352,41 @@ declaration personal_status_events content list of Event
 
 declaration weighted_amounts content list of money
   depends on event content Event
+
+## Public inputs are lists; use the normalized views below for aliases. Legacy
+## numbered-slot fixtures are converted by the Python adapter before evaluation.
+declaration unique_events content list of Event
+  depends on rows content list of Event
+
+declaration unique_transactions content list of Event
+  depends on rows content list of Event
+
+declaration parent_links content list of Relationship
+  depends on world content World
+
+declaration sibling_links content list of Relationship
+  depends on world content World
+
+declaration date_of_birth content optional of date
+  depends on world content World,
+             person content Entity,
+             allow_relationship_fallback content boolean
+
+declaration has_classification content boolean
+  depends on event content Event,
+             classification content KnownValue
+
+declaration has_itemization_evidence content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             period content TaxPeriod
+
+declaration all_input_events content list of Event
+  depends on world content World
+
+declaration scope ValidatedWorld:
+  input world content World
+  output checked_world content World
 ```
 
 ```catala
@@ -426,12 +451,12 @@ declaration status_event_kind content EventKind
     -- StatusFactKind.UnemploymentCompensationAgreement:
         EventKind.UnemploymentCompensationAgreement
 
-declaration usable_values content list of Value
-  depends on values content list of Value
+declaration usable_values content list of FactValue
+  depends on values content list of FactValue
   equals list of value among values such that
     match value with pattern
-    -- Value.Known content known: known != KnownValue.OtherKnownValue
-    -- Value.Named content named: named.id != 0
+    -- FactValue.Known content known: known != KnownValue.OtherKnownValue
+    -- FactValue.Named content named: named.id != 0
 
 declaration financial_fact_values content list of Event
   depends on value content FinancialFact
@@ -522,39 +547,30 @@ declaration status_fact_values content list of Event
 declaration financial_events content list of Event
   depends on world content World
   equals
-    (financial_fact_values of world.financial_1)
-    ++ (financial_fact_values of world.financial_2)
-    ++ (financial_fact_values of world.financial_3)
-    ++ (financial_fact_values of world.financial_4)
-    ++ (financial_fact_values of world.financial_5)
-    ++ (financial_fact_values of world.financial_6)
+    unique_events of
+      (combine all fact among world.financial_facts in events initially []
+       with events ++ (financial_fact_values of fact))
 
 declaration relationship_and_return_events content list of Event
   depends on world content World
   equals
-    (relationship_fact_values of world.relationship_1)
-    ++ (relationship_fact_values of world.relationship_2)
-    ++ (relationship_fact_values of world.relationship_3)
-    ++ (relationship_fact_values of world.relationship_4)
-    ++ (relationship_fact_values of world.relationship_5)
-    ++ (relationship_fact_values of world.relationship_6)
-    ++ (relationship_fact_values of world.relationship_7)
-    ++ (relationship_fact_values of world.relationship_8)
+    unique_events of
+      (combine all fact among world.relationship_facts in events initially []
+       with events ++ (relationship_fact_values of fact))
 
 declaration employment_and_institution_events content list of Event
   depends on world content World
   equals
-    (employment_fact_values of world.employment_1)
-    ++ (employment_fact_values of world.employment_2)
-    ++ (employment_fact_values of world.employment_3)
-    ++ (employment_fact_values of world.employment_4)
+    unique_events of
+      (combine all fact among world.employment_facts in events initially []
+       with events ++ (employment_fact_values of fact))
 
 declaration personal_status_events content list of Event
   depends on world content World
   equals
-    (status_fact_values of world.status_1)
-    ++ (status_fact_values of world.status_2)
-    ++ (status_fact_values of world.status_3)
+    unique_events of
+      (combine all fact among world.status_facts in events initially []
+       with events ++ (status_fact_values of fact))
 
 declaration weighted_amounts content list of money
   depends on event content Event
@@ -644,15 +660,13 @@ declaration gross_income_individual content money
              period content TaxPeriod
   equals
     Money.sum of
-      (combine all event among (financial_events of world)
-         in amounts initially []
-         with
-           if ((event.kind = EventKind.Income and has_agent of event, person)
-               or (event.kind = EventKind.Payment
-                   and has_patient of event, person))
-              and overlaps_period of event.starts, event.ends, period
-           then amounts ++ (weighted_amounts of event)
-           else amounts)
+      (combine all event among
+        (unique_transactions of
+          (list of receipt among (financial_events of world) such that
+            ((receipt.kind = EventKind.Income and has_agent of receipt, person)
+             or (receipt.kind = EventKind.Payment and has_patient of receipt, person))
+            and overlaps_period of receipt.starts, receipt.ends, period))
+       in amounts initially [] with amounts ++ (weighted_amounts of event))
 
 declaration has_full_year_joint_return content boolean
   depends on world content World,
@@ -671,18 +685,142 @@ declaration all_entities content list of Entity
     dependency_candidates of world
 
 declaration has_value content boolean
-  depends on values content list of Value,
+  depends on values content list of FactValue,
              expected content KnownValue
   equals exists value among values such that
     match value with pattern
-    -- Value.Known content known: known = expected
-    -- Value.Named content name: false
+    -- FactValue.Known content known: known = expected
+    -- FactValue.Named content name: false
 
 declaration dependency_candidates content list of Entity
   depends on world content World
   equals
-    list of candidate among
-      [world.dependency_1; world.dependency_2; world.dependency_3;
-       world.dependency_4; world.dependency_5; world.dependency_6]
+    list of candidate among world.dependency_candidates
     such that candidate.id != 0
+
+```
+
+```catala
+
+declaration all_input_events content list of Event
+  depends on world content World
+  equals
+    (combine all fact among world.financial_facts in events initially []
+        with events ++ (financial_fact_values of fact))
+    ++ (combine all fact among world.relationship_facts in events initially []
+        with events ++ (relationship_fact_values of fact))
+    ++ (combine all fact among world.employment_facts in events initially []
+        with events ++ (employment_fact_values of fact))
+    ++ (combine all fact among world.status_facts in events initially []
+        with events ++ (status_fact_values of fact))
+
+declaration unique_events content list of Event
+  depends on rows content list of Event
+  equals combine all candidate among rows in kept initially []
+    with if exists previous among kept such that
+      same_entity of candidate.identifier, previous.identifier
+        and candidate.kind = previous.kind
+    then kept else kept ++ [candidate]
+
+declaration unique_transactions content list of Event
+  depends on rows content list of Event
+  equals combine all candidate among rows in kept initially []
+    with if exists previous among kept such that
+      same_entity of candidate.identifier, previous.identifier
+    then kept else kept ++ [candidate]
+
+declaration parent_links content list of Relationship
+  depends on world content World
+  equals
+    let children equals (relationship_events of world, EventKind.Son)
+      ++ (relationship_events of world, EventKind.Daughter) in
+    let parents equals (relationship_events of world, EventKind.Father)
+      ++ (relationship_events of world, EventKind.Mother) in
+    let oriented equals children ++ (map each parent among parents to
+      Relationship { -- subject: parent.relative -- relative: parent.subject
+        -- starts: parent.starts -- ends: parent.ends }) in
+    combine all candidate among oriented in kept initially []
+      with if exists previous among kept such that
+        same_entity of candidate.subject, previous.subject
+          and same_entity of candidate.relative, previous.relative
+          and candidate.starts = previous.starts and candidate.ends = previous.ends
+      then kept else kept ++ [candidate]
+
+declaration sibling_links content list of Relationship
+  depends on world content World
+  equals
+    let rows equals (relationship_events of world, EventKind.Brother)
+      ++ (relationship_events of world, EventKind.Sister)
+      ++ (relationship_events of world, EventKind.Sibling) in
+    combine all candidate among rows in kept initially []
+      with if exists previous among kept such that
+        ((same_entity of candidate.subject, previous.subject
+          and same_entity of candidate.relative, previous.relative)
+         or (same_entity of candidate.subject, previous.relative
+          and same_entity of candidate.relative, previous.subject))
+        and candidate.starts = previous.starts and candidate.ends = previous.ends
+      then kept else kept ++ [candidate]
+
+declaration date_of_birth content optional of date
+  depends on world content World,
+             person content Entity,
+             allow_relationship_fallback content boolean
+  equals
+    let explicit_dates equals
+      combine all event among (relationship_events_of_kind of world, EventKind.Birth)
+      in dates initially [] with if has_agent of event, person
+        then dates ++ event.starts else dates in
+    match (List.first_element of explicit_dates) with pattern
+    -- Present content born: Present content born
+    -- Absent:
+      if not allow_relationship_fallback then Absent else
+        let candidates equals combine all event
+          among (relationship_and_return_events of world)
+          in dates initially [] with if
+            (event.kind = EventKind.Son or event.kind = EventKind.Daughter)
+              and has_agent of event, person
+            then dates ++ event.starts else dates in
+        List.first_element of
+          (combine all candidate among candidates in earliest initially []
+           with match (List.first_element of earliest) with pattern
+           -- Absent: [candidate]
+           -- Present content previous:
+             if candidate < previous then [candidate] else earliest)
+
+declaration has_classification content boolean
+  depends on event content Event,
+             classification content KnownValue
+  equals has_value of event.purposes, classification
+    or has_value of event.locations, classification
+
+declaration has_itemization_evidence content boolean
+  depends on world content World,
+             taxpayer content Entity,
+             period content TaxPeriod
+  equals
+    (exists election among (status_events_of_kind of world, EventKind.ItemizeDeductions)
+     such that has_agent of election, taxpayer
+       and overlaps_period of election.starts, election.ends, period)
+    or (exists deduction among (financial_events_of_kind of world, EventKind.Deduction)
+      such that has_agent of deduction, taxpayer
+        and exists start among deduction.starts such that
+          period.first_day <= start and start <= period.last_day)
+
+scope ValidatedWorld:
+  assertion for all left among (all_input_events of world) we have
+    for all right among (all_input_events of world) we have
+      not (same_entity of left.identifier, right.identifier and left.kind = right.kind)
+      or left = right
+  assertion for all left among (relationship_events_of_kind of world, EventKind.Birth)
+    we have for all right among (relationship_events_of_kind of world, EventKind.Birth)
+      we have not (exists person among left.agents such that has_agent of right, person)
+        or left.starts = [] or right.starts = [] or left.starts = right.starts
+  assertion for all income among (financial_events_of_kind of world, EventKind.Income)
+    we have for all payment among (financial_events_of_kind of world, EventKind.Payment)
+      we have not (same_entity of income.identifier, payment.identifier)
+        or (income.agents = payment.patients
+          and income.amounts = payment.amounts
+          and income.multiplicity = payment.multiplicity
+          and income.starts = payment.starts and income.ends = payment.ends)
+  definition checked_world equals world
 ```

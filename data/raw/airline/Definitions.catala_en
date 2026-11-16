@@ -2,44 +2,20 @@
 
 > Module Definitions
 
-The typed rendering of a DeonticBench *airline* case. Where SARA's Layer 0 has
-to quarantine a neo-Davidsonian event base, this one is small: every one of the
-300 cases is a single sentence in one grammar --- a passenger, a cabin, an
-origin, a destination, a numbered list of items with dimensions and weight, and
-a ticket price --- so the world model is that sentence, typed.
-
-Three decisions, each measured over all 300 cases rather than assumed:
-
-- **Cities are an enumeration, and the gazetteer lives here.** The statute
-  reasons about countries and regions; the cases name cities. 73 distinct cities
-  appear, a closed set, so the city -> country map is part of the world model
-  and not of the statute --- the same separation SARA draws between its symbol
-  table and its sections.
-- **Dimensions are compared componentwise, in the order given.** The carry-on
-  test could plausibly sort both triples first (a bag may be turned on its
-  side). Measured: the two readings disagree on **none** of the 2,372 items in
-  the corpus, so the simpler one is used and nothing is riding on it.
-- **Money is Catala's `money`.** Every fee in the statute is a whole number of
-  dollars, but the type carries the intent.
+Shared types, passenger and baggage facts, and geographic helpers for an airline
+itinerary. Item dimensions are in inches, weights are in pounds, and monetary
+amounts are in U.S. dollars.
 
 ```catala-metadata
-## The cabin the passenger is ticketed in. `MainPlus` is not a column of any
-## fee table --- it is Main Cabin plus one extra free checked bag, per the
-## footnote to the First and Second Bag tables --- but it is a cabin a case can
-## state, so it is a case of the enumeration.
-declaration enumeration Cabin:
-  -- BasicEconomy
-  -- MainCabin
-  -- MainPlus
-  -- PremiumEconomy
-  -- Business
-  -- First
+declaration enumeration Cabin: # The passenger's ticketed cabin or fare category.
+  -- BasicEconomy # Basic Economy fare.
+  -- MainCabin # Main Cabin fare.
+  -- MainPlus # Main Plus fare.
+  -- PremiumEconomy # Premium Economy cabin.
+  -- Business # Business cabin.
+  -- First # First cabin.
 
-## The countries the fee tables distinguish, restricted to those the corpus
-## reaches. Regions the tables name but no case visits (Guyana, Suriname,
-## Honduras) are absent: a case cannot express them, so a scope cannot be
-## driven down them.
-declaration enumeration Country:
+declaration enumeration Country: # Country, territory, or geographic region of an itinerary endpoint; Europe is represented as one region.
   -- UnitedStates
   -- PuertoRico
   -- Canada
@@ -67,8 +43,7 @@ declaration enumeration Country:
   -- Australia
   -- NewZealand
 
-## The 73 cities the corpus names.
-declaration enumeration City:
+declaration enumeration City: # City of departure or arrival.
   -- Atlanta
   -- Austin
   -- Boston
@@ -147,9 +122,7 @@ declaration enumeration City:
   -- Sydney
   -- Auckland
 
-## The gazetteer. This is world knowledge, not statute: the tables are written
-## in terms of countries and the cases are written in terms of cities.
-declaration country_of content Country
+declaration country_of content Country # Country, territory, or region associated with a city.
   depends on c content City
   equals
     match c with pattern
@@ -231,107 +204,65 @@ declaration country_of content Country
     -- Sydney: Country.Australia
     -- Auckland: Country.NewZealand
 
-## AAdvantage and oneworld status, as the Complimentary Bags section grades it.
-## The two programmes are collapsed into one ladder because the statute grants
-## the same allowance at each rung --- Gold with Ruby, Platinum with Sapphire,
-## Platinum Pro and Executive Platinum with Emerald --- and a case that holds
-## both gets the better of them, which is the same as holding the higher.
-## GOL Diamond Smiles sits at `Gold`, its one free bag.
-declaration enumeration EliteStatus:
-  -- NoStatus
-  ## AAdvantage Gold, oneworld Ruby, GOL Diamond Smiles: 1st bag
-  -- Gold
-  ## AAdvantage Platinum, oneworld Sapphire: 1st and 2nd
-  -- Platinum
-  ## AAdvantage Platinum Pro, oneworld Emerald: 1st, 2nd and 3rd
-  -- PlatinumPro
-  ## AAdvantage Executive Platinum: 1st, 2nd and 3rd
-  -- ExecutivePlatinum
+declaration enumeration EliteStatus: # Passenger loyalty tier, including equivalent partner-program statuses.
+  -- NoStatus # No elite loyalty status.
+  -- Gold # AAdvantage Gold, oneworld Ruby, or GOL Diamond Smiles status.
+  -- Platinum # AAdvantage Platinum or oneworld Sapphire status.
+  -- PlatinumPro # AAdvantage Platinum Pro or oneworld Emerald status.
+  -- ExecutivePlatinum # AAdvantage Executive Platinum status.
 
-## "Active U.S. military and / or dependents with ID traveling on orders
-## (1st - 5th bags free of charge)"; "Active U.S. military with ID on personal
-## travel" gets the three the tier above it gets.
-declaration enumeration MilitaryStatus:
-  -- NotMilitary
-  -- OnOrders
-  -- PersonalTravel
+declaration enumeration MilitaryStatus: # Active U.S. military affiliation and travel purpose.
+  -- NotMilitary # No qualifying active U.S. military affiliation recorded.
+  -- OnOrders # Active U.S. military member or dependent with ID traveling on military orders.
+  -- PersonalTravel # Active U.S. military member with ID traveling for personal reasons.
 
-## What kind of thing the passenger is carrying. The statute prices only
-## ordinary bags; the rest are named so that the rules that *exempt* them, or
-## give them their own limit, can be written at all.
-declaration enumeration ItemKind:
-  -- OrdinaryBag
-  ## "Your soft-sided garment bag cannot exceed 51 inches / 130 cm
-  ## (length + width + height)" --- a carry-on with its own limit, not the box.
-  -- SoftSidedGarmentBag
-  ## "These don't count as your personal item or carry-on" --- one diaper bag
-  ## per child, so this one is allowanced rather than simply exempt.
-  -- DiaperBag
-  -- BreastPump
-  -- BreastMilkCooler
-  -- ChildSafetySeat
-  -- Stroller
-  -- MedicalOrMobilityDevice
+declaration enumeration ItemKind: # Type of baggage or other item accompanying the passenger.
+  -- OrdinaryBag # Standard suitcase or other ordinary bag.
+  -- SoftSidedGarmentBag # Soft-sided bag for transporting clothing on hangers.
+  -- DiaperBag # Bag containing diapers and other child-care supplies.
+  -- BreastPump # Breast pump equipment.
+  -- BreastMilkCooler # Small soft-sided cooler containing breast milk.
+  -- ChildSafetySeat # Child safety seat.
+  -- Stroller # Child stroller.
+  -- MedicalOrMobilityDevice # Medical equipment or a device assisting mobility.
 
-## One item the passenger presents at check-in. `length`, `width` and `height`
-## are inches; `weight` is pounds. The statute adds the three dimensions and
-## never uses them separately except for the carry-on box. These physical
-## measurements are required to be nonnegative by the
-## `AirlinePolicy.Trip` scope.
-declaration structure Item:
-  data kind content ItemKind
-  data length content integer
-  data width content integer
-  data height content integer
-  data weight content integer
+declaration structure Item: # One piece of baggage or other item accompanying the passenger.
+  data kind content ItemKind # Type of item.
+  data length content integer # Outside length in inches; nonnegative.
+  data width content integer # Outside width in inches; nonnegative.
+  data height content integer # Outside height in inches; nonnegative.
+  data weight content integer # Weight in pounds; nonnegative.
 
-## The total outside dimensions, which is what "Weight and Size" says to
-## compare against the 62 in allowance.
-declaration size_sum content integer
+declaration size_sum content integer # Sum of an item's outside length, width, and height, in inches.
   depends on it content Item
   equals it.length + it.width + it.height
 
-## A case, entire.
-declaration structure Itinerary:
-  data origin content City
-  data destination content City
-  data cabin content Cabin
-  ## The nonnegative base ticket price before baggage fees.
-  data ticket content money
-  data items content list of Item
-  ## "the benefits are based on your highest status level at time of ticketing
-  ## or check-in". The statute then says what to do when the two differ, and
-  ## both branches come to the same thing: the higher one applies. So both are
-  ## carried and `AirlinePolicy.effective_status` takes the better.
-  data status_at_ticketing content EliteStatus
-  data status_at_checkin content EliteStatus
-  ## "Eligible AAdvantage Aviator and Citi / AAdvantage cardmembers (on
-  ## domestic American Airlines operated itineraries)".
-  data cardmember content boolean
-  data military content MilitaryStatus
-  ## "Confirmed Flagship First and Flagship Business Plus customers", which is
-  ## a fare product rather than a cabin, so it rides alongside `cabin`.
-  data flagship content boolean
-  ## How many children the passenger is travelling with, for "Diaper bags
-  ## (1 per child)". This count is nonnegative.
-  data children content integer
+declaration structure Itinerary: # Passenger travel details, accompanying items, and recorded eligibility attributes.
+  data origin content City # City of departure.
+  data destination content City # City of arrival.
+  data cabin content Cabin # Passenger's ticketed cabin or fare category.
+  data ticket content money # Base ticket price in U.S. dollars before baggage fees; nonnegative.
+  data items content list of Item # Items accompanying the passenger, in their recorded order.
+  data status_at_ticketing content EliteStatus # Passenger loyalty status when the ticket was issued.
+  data status_at_checkin content EliteStatus # Passenger loyalty status at check-in.
+  data cardmember content boolean # True if the passenger is an eligible AAdvantage Aviator or Citi / AAdvantage cardmember.
+  data military content MilitaryStatus # Passenger's active U.S. military affiliation and travel purpose.
+  data flagship content boolean # True if the passenger has a confirmed Flagship First or Flagship Business Plus fare.
+  data children content integer # Number of children traveling with the passenger; nonnegative.
 
-declaration origin_country content Country
+declaration origin_country content Country # Country, territory, or region of departure.
   depends on t content Itinerary
   equals country_of of t.origin
 
-declaration destination_country content Country
+declaration destination_country content Country # Country, territory, or region of arrival.
   depends on t content Itinerary
   equals country_of of t.destination
 
-## "Between X and Y" in the tables is symmetric, and every row but the two Cuba
-## rows is stated that way. This is the test those rows use.
-declaration touches content boolean
+declaration touches content boolean # True if at least one itinerary endpoint belongs to the supplied set of countries, territories, or regions.
   depends on t content Itinerary, cs content list of Country
   equals (cs contains (origin_country of t)) or (cs contains (destination_country of t))
 
-## "Within and between ..." --- both endpoints inside the named set.
-declaration within content boolean
+declaration within content boolean # True if both itinerary endpoints belong to the supplied set of countries, territories, or regions.
   depends on t content Itinerary, cs content list of Country
   equals (cs contains (origin_country of t)) and (cs contains (destination_country of t))
 ```

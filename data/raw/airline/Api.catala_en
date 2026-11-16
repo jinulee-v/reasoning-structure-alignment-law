@@ -1,8 +1,9 @@
 # Airline evaluator API
 
 This file is the evaluator-facing contract. The required scope and output below
-are fixed; add factual inputs, internal variables, and policy subscopes without
-renaming or removing them.
+are fixed. The sole factual input is `itinerary content W.Itinerary`; do not add
+inputs or change the shared factual types. Add internal variables and policy
+subscopes without renaming or removing the fixed input, scope, or output.
 
 - Requirement ID `AIRLINE-TOTAL-COST`: scope `TotalCost`, output `total_cost`.
 
@@ -12,8 +13,9 @@ renaming or removing them.
 
 ```catala-metadata
 declaration scope TotalCost:
-  # Add factual inputs, internal variables, and policy subscopes here.
-  # Keep the predeclared output below unchanged.
+  input itinerary content W.Itinerary
+  # Add internal variables and policy subscopes here; do not add inputs.
+  # Keep the predeclared input and output unchanged.
   output total_cost content money
 ```
 

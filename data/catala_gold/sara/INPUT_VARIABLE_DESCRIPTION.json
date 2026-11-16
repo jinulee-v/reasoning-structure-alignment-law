@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 10,
   "scope": "Api.TotalTax",
   "fields": {
     "taxable_income": "The money output of Section63.TaxableIncome for the taxpayer and period.",
@@ -16,9 +16,20 @@
   },
   "composition": {
     "factual_input": "The deterministic converter emits Definitions.World, Entity, and TaxPeriod inputs for Sections 2, 63, and 3301.",
-    "world_shape": "Six dependency candidates, six financial facts, eight relationship facts, four employment facts, and three status facts in required fixed positions; unused positions use closed no-fact constructors.",
+    "world_shape": "Five lists: dependency_candidates (Entity), financial_facts (FinancialFact), relationship_facts (RelationshipFact), employment_facts (EmploymentFact), status_facts (StatusFact). Empty lists mean no facts; no fixed capacities or padding.",
     "legal_evaluation": "Generated Catala evaluates Section2.FilingStatusFor, Section63.TaxableIncome, and Section3301.UnemploymentTax. The evaluator converts those typed outputs into Api.TotalTax inputs; Api delegates the statutory schedule and summation to Section1.TotalTax.",
-    "converter": "prolog_to_catala.sara_fresh.adapter.catala_inputs",
-    "composer": "prolog_to_catala.sara_fresh.compiled_worker.evaluate"
+    "converter": "prolog_to_catala.sara_fresh.adapter.catala_inputs accepts native lists or legacy numbered-slot JSON; versioned legacy_inputs.json fixtures are migrated for the 97 original tax cases.",
+    "composer": "Api.TotalTaxFromWorld validates the list-based factual World and composes the gold scopes natively; existing scalar Api.TotalTax remains available.",
+    "attribute_value_type": "Definitions.FactValue: Known classification or Named Entity reference. Renamed from Value to avoid the OCaml runtime module name."
+  },
+  "normalization": {
+    "factual_entry_scope": "Api.TotalTaxFromWorld",
+    "canonical_view": "prolog_to_catala.sara_fresh.normalization.normalize_world",
+    "birth_dates": "Explicit DOBs are distinct from relationship effective dates; reject conflicting explicit DOBs. Relationship-date age fallback is requested per provision.",
+    "family_edges": "Normalize child-parent orientation and symmetric sibling edges per effective interval; retain source kinds.",
+    "transactions": "Deduplicate the same transaction identity, never equal amounts across distinct identities; reject inconsistent aliases.",
+    "classifications": "Merge purpose/location classification labels in a derived set without replacing physical locations.",
+    "itemization": "Year-aware evidence helper merges explicit election subjects and dated deduction facts.",
+    "provenance": "Historical numbered rows remain only in legacy_inputs.json; native inputs and generated Catala tests use lists. Derived canonical JSON is not an independently editable source."
   }
 }

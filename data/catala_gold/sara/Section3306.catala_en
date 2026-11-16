@@ -17,21 +17,21 @@ declaration scope EmployerAndWages:
 
 ```catala
 declaration references_entity content boolean
-  depends on values content list of W.Value,
+  depends on values content list of W.FactValue,
              entity content W.Entity
   equals exists value among values such that
     match value with pattern
-    -- W.Value.Known content known: false
-    -- W.Value.Named content named: W.same_entity of named, entity
+    -- W.FactValue.Known content known: false
+    -- W.FactValue.Named content named: W.same_entity of named, entity
 
 declaration service_is_excluded content boolean
   depends on service content W.Event,
              employer content W.Entity,
              employee content W.Entity
   equals
-    W.has_value of service.purposes, W.KnownValue.ReligiousOrganization
-    or W.has_value of service.locations, W.KnownValue.ForeignGovernment
-    or W.has_value of service.locations, W.KnownValue.StateGovernment
+    W.has_classification of service, W.KnownValue.ReligiousOrganization
+    or W.has_classification of service, W.KnownValue.ForeignGovernment
+    or W.has_classification of service, W.KnownValue.StateGovernment
     or service.kind != W.EventKind.Service
 
 declaration payment_matches_service content boolean
@@ -51,16 +51,11 @@ declaration family_service content boolean
   depends on world content W.World,
              employer content W.Entity,
              employee content W.Entity
-  equals exists event among (W.relationship_and_return_events of world) such that
-    ((event.kind = W.EventKind.Father
-      or event.kind = W.EventKind.Mother
-      or event.kind = W.EventKind.Son
-      or event.kind = W.EventKind.Daughter)
-     and ((W.has_agent of event, employer and W.has_patient of event, employee)
-          or (W.has_agent of event, employee and W.has_patient of event, employer)))
-    or (event.kind = W.EventKind.Marriage
-        and W.has_agent of event, employer
-        and W.has_agent of event, employee)
+  equals (exists edge among (W.parent_links of world) such that
+    (W.same_entity of edge.subject, employer and W.same_entity of edge.relative, employee)
+    or (W.same_entity of edge.subject, employee and W.same_entity of edge.relative, employer))
+    or (exists marriage among (W.relationship_events_of_kind of world, W.EventKind.Marriage)
+      such that W.has_agent of marriage, employer and W.has_agent of marriage, employee)
 
 declaration payment_is_excluded content boolean
   depends on world content W.World,
@@ -607,11 +602,10 @@ declaration son_daughter_or_spouse_service content boolean
   depends on world content W.World,
              employer content W.Entity,
              employee content W.Entity
-  equals exists event among (W.relationship_and_return_events of world) such that
-    ((event.kind = W.EventKind.Son or event.kind = W.EventKind.Daughter)
-     and W.has_agent of event, employer and W.has_patient of event, employee)
-    or (event.kind = W.EventKind.Marriage
-        and W.has_agent of event, employer and W.has_agent of event, employee)
+  equals (exists edge among (W.parent_links of world) such that
+    W.same_entity of edge.subject, employer and W.same_entity of edge.relative, employee)
+    or (exists marriage among (W.relationship_events_of_kind of world, W.EventKind.Marriage)
+      such that W.has_agent of marriage, employer and W.has_agent of marriage, employee)
 ```
 
         (B) service performed by a child under the age of 21 in the employ of his father or mother;
@@ -624,13 +618,11 @@ declaration child_under_twenty_one_parent_service content boolean
              employer content W.Entity,
              employee content W.Entity,
              period content W.TaxPeriod
-  equals exists event among (W.relationship_and_return_events of world) such that
-    (event.kind = W.EventKind.Father or event.kind = W.EventKind.Mother)
-    and W.has_agent of event, employer and W.has_patient of event, employee
-    and exists birth among (W.relationship_events_of_kind of world, W.EventKind.Birth)
-        such that W.has_agent of birth, employee
-          and exists born among birth.starts such that
-            period.tax_year - (Date.get_year of born) < 21
+  equals exists edge among (W.parent_links of world) such that
+    W.same_entity of edge.subject, employee and W.same_entity of edge.relative, employer
+    and (match (W.date_of_birth of world, employee, false) with pattern
+      -- Absent: false
+      -- Present content born: period.tax_year - (Date.get_year of born) < 21)
 ```
 
     (6) service performed in the employ of the United States Government
@@ -640,8 +632,7 @@ declaration child_under_twenty_one_parent_service content boolean
 ```catala
 declaration federal_government_service content boolean
   depends on service content W.Event
-  equals W.has_value of service.locations, W.KnownValue.Government
-         or W.has_value of service.purposes, W.KnownValue.Government
+  equals W.has_classification of service, W.KnownValue.Government
 ```
 
     (7) service performed in the employ of a State, or any political subdivision thereof.
@@ -651,8 +642,7 @@ declaration federal_government_service content boolean
 ```catala
 declaration state_government_service content boolean
   depends on service content W.Event
-  equals W.has_value of service.locations, W.KnownValue.StateGovernment
-         or W.has_value of service.purposes, W.KnownValue.StateGovernment
+  equals W.has_classification of service, W.KnownValue.StateGovernment
 ```
 
     (10)
@@ -663,9 +653,7 @@ declaration state_government_service content boolean
 ```catala
 declaration educational_institution_service content boolean
   depends on service content W.Event
-  equals W.has_value of service.locations, W.KnownValue.EducationalInstitution
-         or W.has_value of service.purposes,
-                           W.KnownValue.EducationalInstitution
+  equals W.has_classification of service, W.KnownValue.EducationalInstitution
 ```
 
             (i) by a student who is enrolled and is regularly attending classes at such school, college, or university, or
@@ -715,7 +703,7 @@ declaration hospital_patient_service content boolean
   depends on world content W.World,
              service content W.Event,
              employee content W.Entity
-  equals (W.has_value of service.locations, W.KnownValue.Hospital)
+  equals (W.has_classification of service, W.KnownValue.Hospital)
          and exists patient_event among
                (W.status_events_of_kind of world, W.EventKind.MedicalPatient)
              such that W.has_agent of patient_event, employee
@@ -728,8 +716,7 @@ declaration hospital_patient_service content boolean
 ```catala
 declaration foreign_government_service content boolean
   depends on service content W.Event
-  equals W.has_value of service.locations, W.KnownValue.ForeignGovernment
-         or W.has_value of service.purposes, W.KnownValue.ForeignGovernment
+  equals W.has_classification of service, W.KnownValue.ForeignGovernment
 ```
 
     (13) service performed as a student nurse in the employ of a hospital or a nurses' training school by an individual who is enrolled and is regularly attending classes in a nurses' training school;
@@ -741,7 +728,7 @@ declaration student_nurse_service content boolean
   depends on world content W.World,
              service content W.Event,
              employee content W.Entity
-  equals (W.has_value of service.locations, W.KnownValue.Hospital
+  equals (W.has_classification of service, W.KnownValue.Hospital
           or exists school among
                (W.employment_events_of_kind of world, W.EventKind.NursesTrainingSchool)
              such that W.has_patient of service, school.identifier)

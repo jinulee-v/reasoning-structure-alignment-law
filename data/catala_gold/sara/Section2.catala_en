@@ -42,11 +42,11 @@ declaration scope FilingStatusFor:
 
 ```catala
 declaration value_references_entity content boolean
-  depends on value content W.Value,
+  depends on value content W.FactValue,
              entity content W.Entity
   equals match value with pattern
-         -- W.Value.Known content known: false
-         -- W.Value.Named content named: W.same_entity of named, entity
+         -- W.FactValue.Known content known: false
+         -- W.FactValue.Named content named: W.same_entity of named, entity
 
 declaration home_costs content money
   depends on world content W.World,
