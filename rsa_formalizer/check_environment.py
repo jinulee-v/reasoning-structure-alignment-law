@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -29,7 +28,6 @@ def main() -> int:
             check(f"Python package {module}", True)
         except ImportError:
             check(f"Python package {module}", False)
-    check("OPENAI_API_KEY (environment or .env)", bool(os.getenv("OPENAI_API_KEY")))
     check("Codex credentials (codex login)", credential_file().is_file())
     for name in ("codex", "apptainer", "catala", "clerk"):
         binary = shutil.which(name, path=environment["PATH"])
@@ -50,6 +48,14 @@ def main() -> int:
         "data/raw/sara/tests_catala/SaraTaxCases.catala_en",
     ):
         check(relative, (root / relative).is_file())
+    runtime_interface = (
+        root / ".toolchain/src/catala-bobcat/runtimes/ocaml/catala_runtime.mli"
+    )
+    check(
+        "BOBCat dependency-tracing runtime",
+        runtime_interface.is_file()
+        and "log_variable_definition_with_reads" in runtime_interface.read_text(),
+    )
     clerk = shutil.which("clerk", path=environment["PATH"])
     if clerk:
         result = subprocess.run(

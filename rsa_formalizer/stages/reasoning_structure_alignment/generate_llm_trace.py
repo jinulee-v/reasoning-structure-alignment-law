@@ -8,8 +8,6 @@ import os
 import re
 import subprocess
 import time
-import urllib.error
-import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
@@ -18,6 +16,8 @@ import yaml
 
 from rsa_formalizer.stages import utils as exp
 from rsa_formalizer.stages.utils import usage as usage_tracking
+from rsa_formalizer.stages.utils import prompt_cache, subscription_api
+from rsa_formalizer.stages.utils.input_contract import field_descriptions
 from rsa_formalizer.bobcat import compiled_json
 from rsa_formalizer.bobcat.trace import (
     requirement_descriptions,
@@ -181,6 +181,7 @@ def _prompt(
     output_schema: dict[str, Any],
     dataset: str | None = None,
     requirement_description: str | None = None,
+    field_documentation: str = "",
 ) -> str:
     symbolic = case["inputs"]
     fields = _output_fields(output_schema)
@@ -200,7 +201,13 @@ def _prompt(
         _answer_example(output_schema), ensure_ascii=False, indent=2
     )
     natural_case = ""
-    if case.get("natural_language_facts"):
+    if case.get("input_authority") == "structured_json":
+        natural_case = (
+            "The structured input below is the complete authoritative case. "
+            "Do not assume additional facts from a test designer's rationale, "
+            "a separate narrative, or unstated defaults.\n\n"
+        )
+    elif case.get("natural_language_facts"):
         natural_case = (
             "The test designer stated this case in natural language. Treat these as "
             "the governing case facts; the JSON below is only the implementation "
@@ -209,8 +216,13 @@ def _prompt(
             f"Facts:\n{case['natural_language_facts']}\n\n"
             f"Question:\n{case.get('natural_language_question', '')}\n\n"
         )
-    return (
+    contract = (
+        f"INPUT FIELD DESCRIPTIONS\n{field_documentation}\n\n"
+        if field_documentation else ""
+    )
+    prompt = (
         f"Statutes:\n{statutes}\n\n"
+        f"{contract}"
         f"{natural_case}"
         "The case is as follows (YAML):\n"
         f"{yaml.safe_dump(symbolic, allow_unicode=True, sort_keys=False)}\n"
@@ -251,7 +263,9 @@ def _prompt(
         "brackets in the supplied statutes are citable. Unlabeled ancestor text remains "
         "part of the rule context inherited by its labeled descendants, but must not be "
         "cited separately. Whenever you directly apply a rule, cite its labeled leaf "
-        "provision. If an operation uses multiple alternatives or components, cite every "
+        "provision. Write each citation in ordinary prose using the exact leaf ID "
+        "shown inside the statute's square brackets, without changing its spelling. "
+        "If an operation uses multiple alternatives or components, cite every "
         "labeled leaf that contributes to the operation.\n\n"
         "After the numbered steps, emit exactly one literal <answer> opening tag and "
         "one literal </answer> closing tag, each on its own line. Between them, "
@@ -271,6 +285,14 @@ def _prompt(
         f"{answer_example}\n"
         "</answer>\n"
     )
+    if case.get("input_authority") == "structured_json":
+        case_text = "The case is as follows (YAML):\n" + yaml.safe_dump(
+            symbolic, allow_unicode=True, sort_keys=False) + "\n"
+        before, marker, after = prompt.partition(case_text)
+        if not marker:
+            raise ValueError("cannot identify structured case boundary")
+        return prompt_cache.CacheablePrompt(before + after, case_text, "provision-reasoning")
+    return prompt
 
 
 def _allowed_provision_ids(statutes: str) -> list[str]:
@@ -424,6 +446,7 @@ def _sample(
     provider = config["reasoning_trace"]["provider"].lower()
     model = config["reasoning_trace"]["model"]
     error = None
+    cache_metadata = {}
     if provider == "claude-code":
         if response_schema is not None:
             raise exp.RunnerError(
@@ -469,57 +492,11 @@ def _sample(
         elif not isinstance(output, str):
             error = "Claude Code reasoning response has no text result"
             output = None
-    elif provider == "anthropic":
-        key_name = config["reasoning_trace"].get("api_key_env", "ANTHROPIC_API_KEY")
-        key = os.environ.get(key_name)
-        if not key:
-            raise exp.RunnerError(
-                f"reasoning API key environment variable is missing: {key_name}"
-            )
-        request_body: dict[str, Any] = {
-            "model": model,
-            "max_tokens": config["reasoning_trace"].get("max_output_tokens", 4096),
-            "messages": [{"role": "user", "content": prompt}],
-        }
-        if response_schema is not None:
-            request_body["output_config"] = {
-                "format": {
-                    "type": "json_schema",
-                    "schema": response_schema,
-                }
-            }
-        payload = json.dumps(request_body).encode("utf-8")
-        request = urllib.request.Request(
-            "https://api.anthropic.com/v1/messages",
-            data=payload,
-            headers={
-                "x-api-key": key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
-            method="POST",
-        )
-        try:
-            with urllib.request.urlopen(request, timeout=600) as response:
-                raw = json.load(response)
-        except urllib.error.HTTPError as error:
-            detail = error.read().decode("utf-8", "replace")
-            raise exp.RunnerError(
-                f"Anthropic request failed ({error.code}): {detail[-2000:]}"
-            ) from error
-        output = "".join(
-            block.get("text", "")
-            for block in raw.get("content", [])
-            if block.get("type") == "text"
-        )
-    elif provider == "openai":
-        from openai import OpenAI
-
-        key_name = config["reasoning_trace"].get("api_key_env", "OPENAI_API_KEY")
-        client = OpenAI(
-            api_key=os.environ.get(key_name),
-            base_url=config["reasoning_trace"].get("base_url"),
-        )
+    elif provider in {"anthropic", "claude-subscription"}:
+        raw = subscription_api.claude_response(config["reasoning_trace"], prompt, response_schema)
+        output = "".join(block.get("text", "") for block in raw.get("content", [])
+                         if block.get("type") == "text")
+    elif provider in {"openai", "codex"}:
         request: dict[str, Any] = {"model": model, "input": prompt}
         if response_schema is not None:
             request["text"] = {
@@ -530,9 +507,13 @@ def _sample(
                     "schema": response_schema,
                 }
             }
-        response = client.responses.create(**request)
-        raw = response.model_dump(mode="json")
-        output = response.output_text
+        cache_identity = None
+        if isinstance(prompt, prompt_cache.CacheablePrompt) and config.get("prompt_cache", {}).get("enabled"):
+            cache_identity = prompt_cache.configure_subscription_request(request, prompt)
+        raw = subscription_api.codex_response(request, config["reasoning_trace"])
+        if cache_identity:
+            cache_metadata = prompt_cache.record_response(cache_identity, raw, prompt.group)
+        output = subscription_api.output_text(raw)
     else:
         from openai import OpenAI
 
@@ -557,6 +538,7 @@ def _sample(
         raw = response.model_dump(mode="json")
         output = response.choices[0].message.content or "" if response.choices else ""
     return {
+        **cache_metadata,
         "raw_response": raw,
         "output_text": output,
         "request_id": raw.get("id") or raw.get("session_id"),
@@ -583,6 +565,10 @@ def reason(
     )
     schemas = {
         (item["compiler_file"], item["scope"]): item["output_schema"]
+        for item in schema_scopes(formats)
+    }
+    input_documentation = {
+        (item["compiler_file"], item["scope"]): field_descriptions(run_directory, item["input_schema"])
         for item in schema_scopes(formats)
     }
     dataset_source = Path(config.get("dataset", {}).get("source", ""))
@@ -614,6 +600,7 @@ def reason(
             schema,
             dataset_name,
             descriptions.get(requirement_id) if requirement_id else None,
+            input_documentation.get((case["source"], case["target"]), ""),
         )
         prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         cache_fingerprint = hashlib.sha256(
@@ -658,10 +645,23 @@ def reason(
         extracted_tree = None
         extraction_error = None
         extraction_sampled: dict[str, Any] = {}
-        if not sampled.get("error") and isinstance(sampled.get("output_text"), str):
+        target_cited = None
+        if case.get("required_provision"):
+            from .provision_testing import cites_target
+
+            target_cited = cites_target(sampled.get("output_text") or "", case["required_provision"])
+        if (not sampled.get("error") and isinstance(sampled.get("output_text"), str)
+                and target_cited is not False
+                and not state.get("_skip_reasoning_structure_extraction", False)):
             extraction_prompt = _execution_tree_prompt(
                 _reasoning_without_answer(sampled["output_text"]), provisions
             )
+            if case.get("input_authority") == "structured_json":
+                prefix, marker, suffix = extraction_prompt.partition("Candidate solution:\n")
+                if not marker:
+                    raise ValueError("cannot identify extraction case boundary")
+                extraction_prompt = prompt_cache.CacheablePrompt(
+                    prefix, marker + suffix, "provision-reasoning-extraction")
             extraction_prompt_sha256 = hashlib.sha256(
                 extraction_prompt.encode("utf-8")
             ).hexdigest()
@@ -695,6 +695,7 @@ def reason(
                 extraction_error = f"{type(error).__name__}: {error}"
         record = {
             "id": case["id"],
+            "target_provision_cited": target_cited,
             "prompt_file": prompt_file.name,
             "execution_tree_prompt_file": (
                 f"{case['id']}.execution-tree.prompt.txt"

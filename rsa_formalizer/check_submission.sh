@@ -5,9 +5,11 @@ workspace=${1:-/workspace}
 cd "$workspace"
 clerk start --color=never >/dev/null
 clerk typecheck . --color=never
-if [[ ! -f sara.md && ! -f airline.md ]]; then
-  clerk test . --color=never
+if [[ -f sara.md || -f airline.md ]]; then
+  # The evaluator needs a compiled API even when there are no local test scopes.
+  clerk build ocaml/Api.cmo --color=never
 fi
+clerk test . --color=never
 
 python3 - <<'PY'
 import json

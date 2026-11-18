@@ -12,10 +12,6 @@ from pathlib import Path
 from unittest import mock
 
 from rsa_formalizer.stages import utils as experiment
-from rsa_formalizer.stages import reasoning_structure_alignment as stage
-from rsa_formalizer.stages.reasoning_structure_alignment import (
-    generate_bobcat_test as bobcat_stage,
-)
 from rsa_formalizer.stages.reasoning_structure_alignment import (
     generate_llm_trace as llm_stage,
 )
@@ -567,9 +563,9 @@ class PostValidationTest(unittest.TestCase):
         }
         response = io.BytesIO(json.dumps(raw).encode())
         with (
-            mock.patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}),
+            mock.patch.dict(os.environ, {"CLAUDE_CODE_OAUTH_TOKEN": "test-token"}),
             mock.patch.object(
-                llm_stage.urllib.request, "urlopen", return_value=response
+                llm_stage.subscription_api.urllib.request, "urlopen", return_value=response
             ) as sent,
         ):
             observed = llm_stage._sample(
@@ -639,32 +635,24 @@ class PostValidationTest(unittest.TestCase):
                 )
         self.assertNotIn("unrecognized_model", str(raised.exception))
 
-    def test_openai_request_uses_free_text_output(self):
-        output = mock.Mock(output_text="step-by-step answer")
-        output.model_dump.return_value = {"id": "response-1", "usage": {}}
-        with mock.patch("openai.OpenAI") as client_class:
-            client_class.return_value.responses.create.return_value = output
-            llm_stage._sample(
-                {"reasoning_trace": {"provider": "openai", "model": "example"}},
-                "question",
-            )
-        kwargs = client_class.return_value.responses.create.call_args.kwargs
-        self.assertNotIn("text", kwargs)
+    def test_openai_alias_uses_codex_subscription(self):
+        raw = {"id": "response-1", "usage": {}, "output": [
+            {"type": "message", "content": [{"type": "output_text", "text": "answer"}]}]}
+        with mock.patch.object(llm_stage.subscription_api, "codex_response", return_value=raw) as sent:
+            observed = llm_stage._sample(
+                {"reasoning_trace": {"provider": "openai", "model": "example"}}, "question")
+        self.assertNotIn("text", sent.call_args.args[0])
+        self.assertEqual(observed["output_text"], "answer")
+        self.assertEqual(observed["request_id"], "response-1")
 
-    def test_openai_execution_tree_request_uses_strict_schema(self):
-        output = mock.Mock(output_text='{"steps": []}')
-        output.model_dump.return_value = {"id": "response-1", "usage": {}}
+    def test_codex_execution_tree_request_uses_strict_schema(self):
         schema = llm_stage._execution_tree_schema(["law/a"])
-        with mock.patch("openai.OpenAI") as client_class:
-            client_class.return_value.responses.create.return_value = output
+        with mock.patch.object(llm_stage.subscription_api, "codex_response", return_value={}) as sent:
             llm_stage._sample(
-                {"reasoning_trace": {"provider": "openai", "model": "example"}},
-                "extract",
-                schema,
-            )
-        kwargs = client_class.return_value.responses.create.call_args.kwargs
-        self.assertTrue(kwargs["text"]["format"]["strict"])
-        self.assertEqual(kwargs["text"]["format"]["schema"], schema)
+                {"reasoning_trace": {"provider": "codex", "model": "example"}}, "extract", schema)
+        request = sent.call_args.args[0]
+        self.assertTrue(request["text"]["format"]["strict"])
+        self.assertEqual(request["text"]["format"]["schema"], schema)
 
     def test_compatible_provider_requests_free_text_output(self):
         choice = mock.Mock()
@@ -1192,247 +1180,6 @@ scope Defaulted:
                 )
                 self.assertEqual(json.loads(completed.stdout), expected)
 
-    def test_generation_excludes_scopes_with_empty_input_or_output(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            snapshot = root / "initial/snapshot"
-            snapshot.mkdir(parents=True)
-            (snapshot / "program.catala_en").write_text("", encoding="utf-8")
-            cached = root / "initial/validation/input_formats.json"
-            cached.parent.mkdir()
-            cached.write_text(
-                json.dumps(
-                    {
-                        "candidate": {
-                            "scopes": [
-                                {
-                                    "file": "program.catala_en",
-                                    "compiler_file": "program.catala_en",
-                                    "scope": name,
-                                    "input_schema": {
-                                        "$ref": "#/definitions/Input",
-                                        "definitions": {
-                                            "Input": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "number": {"type": "integer"}
-                                                },
-                                            }
-                                        },
-                                    },
-                                    "output_schema": {
-                                        "$ref": "#/definitions/Output",
-                                        "definitions": {
-                                            "Output": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "answer": {"type": "integer"}
-                                                },
-                                            }
-                                        },
-                                    },
-                                }
-                                for name in ("First", "Second")
-                            ]
-                            + [
-                                {
-                                    "file": "program.catala_en",
-                                    "compiler_file": "program.catala_en",
-                                    "scope": "EmptyInput",
-                                    "input_schema": {"type": "object"},
-                                    "output_schema": {
-                                        "type": "object",
-                                        "properties": {"answer": {"type": "integer"}},
-                                    },
-                                },
-                                {
-                                    "file": "program.catala_en",
-                                    "compiler_file": "program.catala_en",
-                                    "scope": "EmptyOutput",
-                                    "input_schema": {
-                                        "type": "object",
-                                        "properties": {"number": {"type": "integer"}},
-                                    },
-                                    "output_schema": {"type": "object"},
-                                },
-                                {
-                                    "file": "program.catala_en",
-                                    "compiler_file": "program.catala_en",
-                                    "scope": "WithoutJsonSchema",
-                                    "input_schema": None,
-                                    "output_schema": None,
-                                },
-                            ]
-                        }
-                    }
-                )
-            )
-            config = {"dataset": {"name": "example"}, "runtime": {}}
-            seen = []
-
-            def fake_run(target, project):
-                seen.append((target.scope, target.timeout, target.harness))
-                payload = {
-                    "input": {"number": 3},
-                    "outputs": {"answer": "3"},
-                    "branches": [],
-                }
-                return bobcat_run.RunResult(
-                    stdout=(
-                        "[RESULT] BOBCAT_REPLAY "
-                        + json.dumps(payload)
-                        + "\n[RESULT] BOBCAT_DONE 0\n"
-                    ),
-                    stderr="",
-                    returncode=0,
-                    seconds=0.1,
-                    timed_out=False,
-                    command=["catala", "bobcat"],
-                )
-
-            with (
-                mock.patch.object(
-                    stage.exp, "publish_stage_snapshot", return_value=snapshot
-                ),
-                mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
-                mock.patch.object(bobcat_run, "run_bobcat", side_effect=fake_run),
-            ):
-                rows = bobcat_stage.generate_tests(
-                    root, config, {"recursive_phase": "initial"}, trace_stage.DEFAULTS
-                )
-            self.assertEqual({scope for scope, _, _ in seen}, {"First", "Second"})
-            self.assertTrue(
-                all(
-                    timeout == 1800 and harness == snapshot / "program.catala_en"
-                    for _, timeout, harness in seen
-                )
-            )
-            self.assertEqual(len(rows), 2)
-
-    def test_generate_tests_include_scopes_outside_requirement_mapping(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            stage_root = root / "initial"
-            validation = stage_root / "validation"
-            validation.mkdir(parents=True)
-            (validation / "requirement_outputs.json").write_text(
-                json.dumps(
-                    {
-                        "requirements": [
-                            {
-                                "requirement_id": "R1",
-                                "scope": "Answer",
-                                "output": "amount",
-                                "file": "program.catala_en",
-                            },
-                        ]
-                    }
-                )
-            )
-            snapshot = stage_root / "snapshot"
-            snapshot.mkdir()
-            source = snapshot / "program.catala_en"
-            source.write_text("", encoding="utf-8")
-            scopes = [
-                {
-                    "scope": "Answer",
-                    "file": "program.catala_en",
-                    "compiler_file": "program.catala_en",
-                },
-                {
-                    "scope": "Helper",
-                    "file": "program.catala_en",
-                    "compiler_file": "program.catala_en",
-                },
-            ]
-            seen = []
-
-            def fake_run(target, project):
-                seen.append((target.scope, target.output))
-                payload = {
-                    "input": {"number": 3},
-                    "outputs": {"answer": "3"},
-                    "branches": [],
-                }
-                return bobcat_run.RunResult(
-                    stdout=(
-                        "[RESULT] BOBCAT_REPLAY "
-                        + json.dumps(payload)
-                        + "\n[RESULT] BOBCAT_DONE 0\n"
-                    ),
-                    stderr="",
-                    returncode=0,
-                    seconds=0.1,
-                    timed_out=False,
-                    command=["catala", "bobcat"],
-                )
-
-            config = {"dataset": {"name": "fixture"}}
-            with (
-                mock.patch.object(
-                    stage.exp, "publish_stage_snapshot", return_value=snapshot
-                ),
-                mock.patch.object(bobcat_stage, "_all_scopes", return_value=scopes),
-                mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
-                mock.patch.object(bobcat_run, "run_bobcat", side_effect=fake_run),
-            ):
-                rows = bobcat_stage.generate_tests(
-                    root, config, {"recursive_phase": "initial"}, trace_stage.DEFAULTS
-                )
-
-            self.assertEqual(seen, [("Answer", None), ("Helper", None)])
-            self.assertEqual({row["target"] for row in rows}, {"Answer", "Helper"})
-            self.assertTrue(all("requirement_id" not in row for row in rows))
-
-    def test_generate_tests_rejects_failed_bobcat_invocation(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            snapshot = root / "initial/snapshot"
-            snapshot.mkdir(parents=True)
-            (snapshot / "program.catala_en").write_text("", encoding="utf-8")
-            scopes = [
-                {
-                    "scope": "Answer",
-                    "file": "program.catala_en",
-                    "compiler_file": "program.catala_en",
-                    "input_schema": {
-                        "type": "object",
-                        "properties": {"number": {"type": "integer"}},
-                    },
-                    "output_schema": {
-                        "type": "object",
-                        "properties": {"answer": {"type": "integer"}},
-                    },
-                }
-            ]
-            failed = bobcat_run.RunResult(
-                stdout="",
-                stderr="interface mismatch on Catala_runtime",
-                returncode=123,
-                seconds=0.1,
-                timed_out=False,
-                command=["catala", "bobcat"],
-            )
-            with (
-                mock.patch.object(
-                    stage.exp, "publish_stage_snapshot", return_value=snapshot
-                ),
-                mock.patch.object(bobcat_stage, "_all_scopes", return_value=scopes),
-                mock.patch.object(bobcat_run, "prepare_project", return_value=snapshot),
-                mock.patch.object(bobcat_run, "run_bobcat", return_value=failed),
-                self.assertRaisesRegex(experiment.RunnerError, "exited 123"),
-            ):
-                bobcat_stage.generate_tests(
-                    root,
-                    {"dataset": {"name": "fixture"}},
-                    {"recursive_phase": "initial"},
-                    trace_stage.DEFAULTS,
-                )
-            stderr = root / "initial/tests_bobcat/raw"
-            self.assertIn(
-                "interface mismatch",
-                next(stderr.glob("*.stderr")).read_text(encoding="utf-8"),
-            )
 
     def test_block_path_keeps_first_concrete_visit_per_statute(self):
         with tempfile.TemporaryDirectory() as directory:

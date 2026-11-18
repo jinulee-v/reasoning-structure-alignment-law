@@ -15,10 +15,14 @@ if [[ "${1:-}" == --check ]]; then
     shift
     exec .venv/bin/python -m rsa_formalizer.check_environment "$@"
 fi
+if [[ "${1:-}" == repair ]]; then
+    shift
+    exec .venv/bin/python -m rsa_formalizer.main_repair "$@"
+fi
 if [[ "${1:-}" == resume ]]; then
-    exec .venv/bin/python rsa_formalizer/main.py "$@"
+    exec .venv/bin/python rsa_formalizer/main_initial.py "$@"
 fi
 .venv/bin/python -m rsa_formalizer.check_environment
-exec .venv/bin/python rsa_formalizer/main.py start \
+exec .venv/bin/python rsa_formalizer/main_initial.py start \
     --dataset data/raw/sara --agent codex --agent-provider openai \
     --image "$RSA_ROOT/.toolchain/rsa.sif" "$@"

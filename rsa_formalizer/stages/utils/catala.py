@@ -58,6 +58,7 @@ def run_checked(
             command,
             cwd=cwd,
             env=environment,
+            stdin=subprocess.DEVNULL,
             text=True,
             capture_output=True,
             timeout=timeout,

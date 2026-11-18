@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import datetime as dt
+import filecmp
 import fcntl
 import hashlib
 import json
@@ -23,6 +24,7 @@ SNAPSHOT_SCHEMA_VERSION = 2
 TRANSLATOR_MODEL = "gpt-5.6-sol"
 FENCE_START = re.compile(r"^```(catala(?:-metadata)?)(?:[ \t].*)?\r?\n?$")
 FENCE_END = re.compile(r"^```[ \t]*\r?\n?$")
+INLINE_FENCE_END = re.compile(rb"(?<!`)```[ \t]*(?:\r?\n)?\Z")
 SCOPE_DECLARATION = re.compile(
     r"^[ \t]*(?:#[^\n]*\n[ \t]*)*(?:declaration[ \t]+scope|"
     r"déclaration[ \t]+champ[ \t]+d'application)[ \t]+"
@@ -68,6 +70,9 @@ def atomic_json(path: Path, value: Any, *, indent: int = 2) -> None:
             output.write("\n")
             output.flush()
             os.fsync(output.fileno())
+        if (path.is_file() and path.stat().st_size == temporary.stat().st_size
+                and filecmp.cmp(path, temporary, shallow=False)):
+            return
         os.replace(temporary, path)
         directory_fd = os.open(path.parent, os.O_DIRECTORY)
         try:
@@ -131,8 +136,11 @@ def run_lock(run_directory: Path) -> Iterator[None]:
 
 
 def parse_fenced_document(path: Path) -> FenceDocument:
-    # Replace Catala fence bodies with a marker while retaining every other byte.
+    # Replace Catala bodies with a marker, preserving protected text. Catala also
+    # accepts closing backticks attached to the final code line; expose the same
+    # logical boundary as a standalone closing fence to integrity/progress tools.
     data = path.read_bytes()
+    document_newline = b"\r\n" if b"\r\n" in data else b"\n"
     lines = data.splitlines(keepends=True)
     skeleton: list[bytes] = []
     blocks: list[bytes] = []
@@ -152,6 +160,17 @@ def parse_fenced_document(path: Path) -> FenceDocument:
         elif FENCE_END.fullmatch(decoded):
             blocks.append(b"".join(body))
             skeleton.append(line)
+            body = None
+        elif closing := INLINE_FENCE_END.search(line):
+            code = line[:closing.start()]
+            newline = (
+                b"\r\n" if line.endswith(b"\r\n")
+                else b"\n" if line.endswith(b"\n")
+                else document_newline
+            )
+            body.append(code + newline)
+            blocks.append(b"".join(body))
+            skeleton.append(line[closing.start():])
             body = None
         else:
             body.append(line)

@@ -117,10 +117,15 @@ If Catala implementation is wrong, fix it.\n"
 
     clerk start
     clerk typecheck .
+    clerk build ocaml/Api.cmo
+    clerk test .
 
 `clerk start` initializes the standard library in the temporary build directory;
-`clerk typecheck .` builds and checks every Catala document. Do not stop while
-typechecking still fails. The protected evaluator tests run during verification
+`clerk typecheck .` checks every Catala document; `clerk build ocaml/Api.cmo`
+compiles the evaluator API and its dependencies, checking module exports; and
+`clerk test .` runs any local test scopes. Scopes used across modules must be
+exported through `catala-metadata` declarations. Do not stop while these checks
+still fail. The protected evaluator tests run during verification
 after submission; they are not in this workspace.
 """
         if uses_api_contract

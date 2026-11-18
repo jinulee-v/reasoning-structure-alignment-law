@@ -629,6 +629,7 @@ def generate_source(
     *,
     source_text: str | None = None,
     source_name: str | None = None,
+    trace_scopes: list[str] | None = None,
 ) -> str:
     # Catala prints an unused scope argument as `_`, while trace mode then tries
     # to read that wildcard back when logging it. Give only that generated
@@ -681,7 +682,13 @@ def generate_source(
             f"(Catala_runtime.Value.embed {output_module}.rtype result)"
         )
     dispatch = "\n".join(arms)
-    driver = f"""
+    projection = ""
+    retrieve = "Catala_runtime.retrieve_log ()"
+    if trace_scopes is not None:
+        from .compact_trace import ocaml_projection
+        projection = ocaml_projection(sorted(set(trace_scopes) | {scope["scope"] for scope in scopes}))
+        retrieve += " |> rsa_project_trace"
+    driver = projection + f"""
 let execute scope input = match scope with
 {dispatch}
 | _ -> failwith ("unknown compiled scope " ^ scope)
@@ -698,8 +705,8 @@ let () =
         let result = execute scope input
         in
         if trace then begin
-          let events = Catala_runtime.retrieve_log () |> List.map
-            (fun event -> Json_input.from_string (Catala_runtime.Json.raw_event event)) in
+          let events = {retrieve} |> List.rev_map
+            (fun event -> Json_input.from_string (Catala_runtime.Json.raw_event event)) |> List.rev in
           print_endline (Json_input.to_string (`Assoc [
             "dependency_semantics", `String "runtime_reads_branch_outcomes_call_returns_scope_inputs_v5";
             "result", Json_input.from_string result;
@@ -902,6 +909,7 @@ def build_bridges(
     environment: dict[str, str],
     timeout: int = 600,
     selected: set[tuple[str, str]] | None = None,
+    trace_scopes: list[str] | None = None,
 ) -> dict[str, str]:
     # Compile JSON-line runners for schema-described Catala scopes.
     groups: dict[str, list[dict[str, Any]]] = {}
@@ -932,6 +940,7 @@ def build_bridges(
                 [clerk, "raw-target", f"_build/ocaml/{compiler_stem}.cmx"],
                 cwd=project,
                 env=environment,
+                stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -942,6 +951,7 @@ def build_bridges(
                 [clerk, "raw-target", "_build/libcatala/ocaml/catala_runtime.cmx"],
                 cwd=project,
                 env=environment,
+                stdin=subprocess.DEVNULL,
                 capture_output=True,
                 text=True,
                 timeout=timeout,
@@ -984,6 +994,7 @@ def build_bridges(
                     scopes,
                     source_text=source_text,
                     source_name=source,
+                    trace_scopes=trace_scopes,
                 ),
                 encoding="utf-8",
             )

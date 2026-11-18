@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import datetime as dt
 import os
 import re
 import shutil
@@ -48,20 +47,10 @@ def slug(value: str, *, limit: int = 48) -> str:
     return (normalized or "unspecified")[:limit]
 
 
-def new_run_id(
-    dataset: Path, agent: str, agent_model: str, reasoning_trace_model: str
-) -> str:
-    timestamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%d-%H%M")
-    return "-".join(
-        (
-            timestamp,
-            slug(agent),
-            slug(agent_model),
-            slug(reasoning_trace_model),
-            slug(dataset.name),
-            uuid.uuid4().hex[:8],
-        )
-    )
+def new_run_id(dataset: Path, agent: str, agent_model: str,
+               reasoning_trace_model: str, *, suffix: str | None = None) -> str:
+    from rsa_formalizer.utils.run_names import initial_name
+    return initial_name(agent_model, dataset.name, suffix)
 
 
 def publish_copy(source: Path, destination: Path) -> None:
@@ -96,11 +85,7 @@ def stage_directory(run_directory: Path, state: dict[str, Any]) -> Path:
     if state.get("recursive_phase") == "initial":
         return run_directory / "initial"
     if state.get("recursive_phase") == "scope":
-        from rsa_formalizer.stages.reasoning_structure_alignment.repair import (
-            recursive as recursive_repair,
-        )
-
-        return recursive_repair.revision_directory(run_directory, state)
+        raise RunnerError("legacy recursive scope repair is no longer supported")
     raise RunnerError("run state has no recursive phase")
 
 
@@ -126,14 +111,7 @@ def publish_stage_snapshot(run_directory: Path, state: dict[str, Any]) -> Path:
 
 
 def create_run(args: Any) -> Path:
-    from rsa_formalizer.stages.reasoning_structure_alignment import repair
-
-    repair_settings = {
-        "max_revisions_per_scope": getattr(args, "max_scope_revisions", 2),
-        "scope_selection": getattr(args, "repair_scope_selection", "all"),
-    }
-    repair.max_revisions_per_scope({"repair": repair_settings})
-    repair.scope_selection({"repair": repair_settings})
+    repair_settings = {"mode": "initial_validation"}
     dataset = resolve_dataset(args.dataset)
     reasoning_trace_provider = (
         getattr(args, "reasoning_trace_provider", None) or args.agent_provider
@@ -141,8 +119,11 @@ def create_run(args: Any) -> Path:
     reasoning_trace_model = (
         getattr(args, "reasoning_trace_model", None) or args.agent_model
     )
-    run_id = args.run_id or new_run_id(
-        dataset, args.agent, args.agent_model, reasoning_trace_model
+    if getattr(args, "run_id", None):
+        raise RunnerError("custom run IDs are no longer supported; use --suffix")
+    run_id = new_run_id(
+        dataset, args.agent, args.agent_model, reasoning_trace_model,
+        suffix=getattr(args, "suffix", None),
     )
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", run_id):
         raise RunnerError("run ID may contain only letters, digits, '.', '_' and '-'")
@@ -183,7 +164,7 @@ def create_run(args: Any) -> Path:
             ),
         },
         "information_extraction": {
-            "provider": getattr(args, "extraction_provider", "openai"),
+            "provider": getattr(args, "extraction_provider", "codex"),
             "model": getattr(args, "extraction_model", None) or "gpt-6-luna",
             **(
                 {"base_url": args.extraction_base_url}
@@ -200,27 +181,6 @@ def create_run(args: Any) -> Path:
             "jobs": getattr(args, "extraction_jobs", 8),
         },
         "reasoning_structure_alignment": {
-            "bobcat_timeout_seconds": getattr(args, "bobcat_timeout_seconds", 1800),
-            "bobcat_positive_hundred_money_inputs": getattr(
-                args, "bobcat_positive_hundred_money_inputs", True
-            ),
-            "bobcat_max_list_length": getattr(args, "bobcat_max_list_length", None),
-            "bobcat_representation_capacity": getattr(
-                args, "bobcat_representation_capacity", 64
-            ),
-            "bobcat_solver_timeout_ms": getattr(args, "bobcat_solver_timeout_ms", None),
-            "bobcat_solver_timeout_max_ms": getattr(
-                args, "bobcat_solver_timeout_max_ms", None
-            ),
-            "bobcat_objective_timeout_ms": getattr(
-                args, "bobcat_objective_timeout_ms", None
-            ),
-            "llm_generated_tests_per_scope": getattr(
-                args, "llm_generated_tests_per_scope", 6
-            ),
-            "metamorphic_pairs_per_scope": getattr(
-                args, "metamorphic_pairs_per_scope", 6
-            ),
             "statute_source": getattr(args, "statute_source", "gold"),
         },
         "runtime": runtime,

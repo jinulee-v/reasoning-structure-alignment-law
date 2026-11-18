@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
 from rsa_formalizer.stages import utils as exp
 from . import compiled_json
+from .compact_trace import FORMAT as COMPACT_FORMAT, annotated_scopes
+from .records import ReplayRecords
 from .trace import (
     DYNAMIC_SLICE_DEPENDENCY_SEMANTICS,
     DYNAMIC_SLICE_METHOD,
@@ -25,6 +28,8 @@ from .trace import (
 
 
 _CASE_METADATA = (
+    "target_provision",
+    "input_authority",
     "case_origin",
     "test_strategy",
     "test_rationale",
@@ -78,30 +83,43 @@ def replay_compiled(
     config: dict[str, Any],
     state: dict[str, Any],
     cases: list[dict[str, Any]],
+    *,
+    bridge_timeout_seconds: int = 600,
 ) -> list[dict[str, Any]]:
+    jobs = config.get("execution", {}).get("replay_jobs", 4)
+    if isinstance(jobs, bool) or not isinstance(jobs, int) or jobs < 1:
+        raise ValueError("execution.replay_jobs must be a positive integer")
     stage_root = exp.stage_directory(run_directory, state)
     root = stage_root / "tests_bobcat_symbolic_results"
     root.mkdir(parents=True, exist_ok=True)
     cached = [(root / f"{case['id']}.json") for case in cases]
+    mode = config.get("execution", {}).get("replay_trace_mode", "xml_scopes")
+    if mode not in {"xml_scopes", "full"}:
+        raise ValueError(f"unknown replay trace mode: {mode}")
+    trace_format = COMPACT_FORMAT if mode == "xml_scopes" else "full"
+    trace_scopes = annotated_scopes(stage_root / "snapshot") if mode == "xml_scopes" else None
     dependency_cache = root / "dependency_graphs.json"
     dependency_error_cache = root / "dependency_errors.json"
+
+    def complete_cached_case(path: Path) -> bool:
+        if not path.is_file():
+            return False
+        result = exp.load_json(path)
+        return (
+            result.get("execution_tree") is not None
+            and result.get("dynamic_slice_tree") is not None
+            and not result.get("dynamic_slice_error")
+            and result.get("dynamic_slice_schema_version") == DYNAMIC_SLICE_SCHEMA_VERSION
+            and result.get("dependency_semantics") == DYNAMIC_SLICE_DEPENDENCY_SEMANTICS
+            and result.get("replay_trace_format", "full") == trace_format
+        )
+
     if (
         cases
         and dependency_cache.is_file()
         and dependency_error_cache.is_file()
-        and all(
-            path.is_file()
-            and exp.load_json(path).get("execution_tree") is not None
-            and exp.load_json(path).get("dynamic_slice_tree") is not None
-            and not exp.load_json(path).get("dynamic_slice_error")
-            and exp.load_json(path).get("dynamic_slice_schema_version")
-            == DYNAMIC_SLICE_SCHEMA_VERSION
-            and exp.load_json(path).get("dependency_semantics")
-            == DYNAMIC_SLICE_DEPENDENCY_SEMANTICS
-            for path in cached
-        )
+        and all(complete_cached_case(path) for path in cached)
     ):
-        outputs = []
         for case, path in zip(cases, cached):
             output = exp.load_json(path)
             changed = _sync_case_metadata(output, case)
@@ -110,7 +128,7 @@ def replay_compiled(
                 changed = True
             if changed:
                 exp.atomic_json(path, output)
-            outputs.append(output)
+        outputs = ReplayRecords(cached)
         persist_execution_forests(root, outputs)
         return outputs
     project = root / "project"
@@ -137,6 +155,8 @@ def replay_compiled(
         {**formats, "scopes": schema_scopes(formats)},
         environment=environment,
         selected=selected,
+        trace_scopes=trace_scopes,
+        timeout=bridge_timeout_seconds,
     )
     exp.atomic_json(root / "build_errors.json", errors)
     graphs: dict[str, dict[str, dict[str, set[str]]]] = {}
@@ -162,8 +182,10 @@ def replay_compiled(
         },
     )
     exp.atomic_json(root / "dependency_errors.json", dependency_errors)
-    outputs = []
-    for case in cases:
+
+    def replay_case(case: dict[str, Any]) -> None:
+        # Bridges and dependency graphs are built once before workers start.
+        # Each worker owns its subprocess, trace objects, and per-case JSON file.
         destination = root / f"{case['id']}.json"
         if destination.is_file():
             cached_result = exp.load_json(destination)
@@ -177,6 +199,7 @@ def replay_compiled(
             == DYNAMIC_SLICE_SCHEMA_VERSION
             and cached_result.get("dependency_semantics")
             == DYNAMIC_SLICE_DEPENDENCY_SEMANTICS
+            and cached_result.get("replay_trace_format", "full") == trace_format
         ):
             changed = _sync_case_metadata(cached_result, case)
             if cached_result.get("source") != case["source"]:
@@ -184,13 +207,14 @@ def replay_compiled(
                 changed = True
             if changed:
                 exp.atomic_json(destination, cached_result)
-            outputs.append(cached_result)
-            continue
+            return
         executable = compiled_json.compiled_path(
             project, case["source"], case["target"]
         )
         result = {
             "id": case["id"],
+            "target_provision": case.get("target_provision"),
+            "input_authority": case.get("input_authority"),
             "source": case["source"],
             "target": case["target"],
             "inputs": case["inputs"],
@@ -207,6 +231,7 @@ def replay_compiled(
             "mapped_provision_ids": case.get("mapped_provision_ids"),
             "output": None,
             "error": None,
+            "replay_trace_format": trace_format,
             "dynamic_slice_schema_version": DYNAMIC_SLICE_SCHEMA_VERSION,
             "dynamic_slice_method": DYNAMIC_SLICE_METHOD,
         }
@@ -295,8 +320,23 @@ def replay_compiled(
             except (OSError, ValueError, subprocess.TimeoutExpired) as error:
                 result["error"] = f"{type(error).__name__}: {error}"
                 result["dynamic_slice_error"] = result["error"]
-        exp.atomic_json(destination, result)
-        outputs.append(result)
+        exp.atomic_json(destination, result, indent=None)
+        # Do not retain case-sized traces in futures or the coordinator.
+        del result, cached_result
+        completed = observed = tree = None
+
+    if jobs == 1:
+        for number, case in enumerate(cases, 1):
+            replay_case(case)
+            print(f"Catala replay {number}/{len(cases)}: {case['id']}", flush=True)
+    elif cases:
+        with ThreadPoolExecutor(max_workers=min(jobs, len(cases))) as executor:
+            futures = {executor.submit(replay_case, case): case["id"] for case in cases}
+            for number, future in enumerate(as_completed(futures), 1):
+                future.result()
+                print(f"Catala replay {number}/{len(cases)}: {futures[future]}", flush=True)
+    # Completion order may vary; disk-backed results retain the input case order.
+    outputs = ReplayRecords(cached)
     persist_execution_forests(root, outputs)
     return outputs
 

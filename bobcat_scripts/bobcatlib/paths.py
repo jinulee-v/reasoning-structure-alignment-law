@@ -166,7 +166,7 @@ _OPAM = ROOT / ".toolchain/opam"
 DEPENDENCY_SWITCH = _OPAM / "cutecat"
 SOURCE = ROOT / ".toolchain/src/catala-bobcat"
 CATALA = SOURCE / "_build/default/compiler/catala.exe"
-CLERK = DEPENDENCY_SWITCH / "bin/clerk"
+CLERK = ROOT / ".toolchain/bobcat/bin/clerk"
 BOBCAT_REPOSITORY = "https://github.com/jinulee-v/bobcat.git"
 
 INSTALLER = ROOT / "install_toolchain.sh"
@@ -182,7 +182,7 @@ def bobcat_env() -> dict:
     """
     env = os.environ.copy()
     env["OPAMROOT"] = str(_OPAM)
-    env["PATH"] = ":".join([str(CATALA.parent),
+    env["PATH"] = ":".join([str(CLERK.parent), str(CATALA.parent),
                             str(DEPENDENCY_SWITCH / "bin"),
                             str(ROOT / ".toolchain/envs/catala/bin"),
                             env.get("PATH", "")])

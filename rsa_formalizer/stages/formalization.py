@@ -19,7 +19,6 @@ from rsa_formalizer.agents.base import (
 )
 
 from .utils import usage as usage_tracking
-from rsa_formalizer.stages.reasoning_structure_alignment import repair
 from .utils import (
     ROOT,
     AgentProgress,
@@ -49,6 +48,16 @@ def commit_agent_result_if_complete(run_directory: Path, state: dict[str, Any]) 
     summary = load_json(summary_path)
     if summary.get("status") != "completed":
         return False
+    config = load_json(run_directory / "config.json")
+    if (config.get("repair", {}).get("mode") in {"reasoning_structure_alignment", "baseline_final_answer_only"}
+            and config.get("repair", {}).get("require_case_diagnoses", True)):
+        from .reasoning_structure_alignment import case_diagnoses
+        case_diagnoses.validate(
+            agent_directory / case_diagnoses.FILENAME,
+            run_directory / (state.get("provision_feedback") or "provision_repair/feedback"),
+            remaining_only=True,
+            workspace=run_directory / "workspace",
+        )
     # Revalidate on every resume; a manually changed workspace invalidates the checkpoint.
     integrity = validate_workspace(run_directory / "input", run_directory / "workspace")
     if not integrity_manifest_matches(summary.get("integrity"), integrity):
@@ -114,17 +123,15 @@ def record_agent_usage(
 
 def recover_agent_usage(run_directory: Path, config: dict[str, Any]) -> None:
     ledger = run_directory / "usage.jsonl"
-    legacy = (
-        [
-            row
-            for line in ledger.read_text(encoding="utf-8").splitlines()
-            if line.strip()
-            if not (row := json.loads(line)).get("usage_id")
-        ]
-        if ledger.is_file()
-        else []
-    )
-    agents = [run_directory / "initial/agent"]
+    rows = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()
+            if line.strip()] if ledger.is_file() else []
+    legacy = [row for row in rows if not row.get("usage_id")]
+    inherited_sessions = {
+        row.get("source_session_id") or row.get("session_id")
+        for row in rows
+        if row.get("source_session_id") or row.get("run_id") != config.get("run_id")
+    }
+    agents = [run_directory / "initial/agent", run_directory / "provision_repair/session/agent"]
     agents += list(
         (run_directory / "refinement").glob("*/revisions/*/session/agent")
     )
@@ -135,6 +142,11 @@ def recover_agent_usage(run_directory: Path, config: dict[str, Any]) -> None:
     for artifacts in sessions:
         if not (artifacts / "invocation.json").is_file():
             continue
+        if artifacts == run_directory / "initial/agent":
+            session_id = load_json(artifacts / "invocation.json").get("session_id")
+            if session_id and session_id in inherited_sessions:
+                # Copied initial records already belong to the shared physical call.
+                continue
         result_path = artifacts / "result.json"
         result = load_json(result_path) if result_path.is_file() else {}
         if result.get("usage") in legacy:
@@ -151,7 +163,12 @@ def recover_agent_usage(run_directory: Path, config: dict[str, Any]) -> None:
 
 
 def archive_interrupted_session(agent_directory: Path) -> None:
-    names = ("prompt.txt", "invocation.json", "stdout.jsonl", "stderr.log", "result.json")
+    names = (
+        "prompt.txt", "invocation.json", "stdout.jsonl", "stderr.log", "result.json",
+        "codex_token_usage.json",
+        "case_diagnoses.json",
+        "case_diagnoses_replay.json",
+    )
     existing = [agent_directory / name for name in names if (agent_directory / name).exists()]
     if not existing:
         return
@@ -165,6 +182,17 @@ def archive_interrupted_session(agent_directory: Path) -> None:
     recovery.mkdir(parents=True, exist_ok=False)
     for path in existing:
         shutil.move(path, recovery / path.name)
+
+
+def progress_reference(run_directory: Path, state: dict[str, Any]) -> Path:
+    """Compare scope edits with that revision's immutable pre-session snapshot."""
+    if state.get("provision_baseline"):
+        reference = Path(state["provision_baseline"])
+    else:
+        reference = run_directory / "input"
+    if not reference.is_dir():
+        raise RunnerError(f"missing progress baseline: {reference}")
+    return reference
 
 
 def run_agent_stage(
@@ -199,13 +227,23 @@ def run_agent_stage(
         config["dataset"]["name"], False
     )
     focus = None
-    if state.get("recursive_phase") == "scope":
-        from rsa_formalizer.stages.reasoning_structure_alignment.repair import (
-            recursive as recursive_repair,
-        )
-
-        focus = recursive_repair.current_scope(state)
-    prompt = repair.prompt(prompt, focus)
+    repair_mode = config.get("repair", {}).get("mode")
+    require_case_diagnoses = (
+        repair_mode in {"reasoning_structure_alignment", "baseline_final_answer_only"}
+        and config.get("repair", {}).get("require_case_diagnoses", True)
+    )
+    remaining_diagnoses_only = repair_mode in {"reasoning_structure_alignment", "baseline_final_answer_only"}
+    case_diagnosis_error = None
+    if repair_mode == "reasoning_structure_alignment":
+        from .reasoning_structure_alignment.provision_repair import AGENT_PROMPT
+        prompt = AGENT_PROMPT
+    elif repair_mode == "baseline_final_answer_only":
+        from .baselines.final_answer_only.provision_repair import AGENT_PROMPT
+        prompt = AGENT_PROMPT
+    resume_context = config.get("repair", {}).get("resume_context")
+    if resume_context:
+        prompt += "\n\nInterrupted-run recovery context:\n" + resume_context + "\n"
+    progress_baseline = progress_reference(run_directory, state)
     prompt_path = agent_directory / "prompt.txt"
     prompt_path.write_text(prompt, encoding="utf-8")
     with tempfile.TemporaryDirectory(prefix="rsa-apptainer-") as runtime_workdir_name:
@@ -221,18 +259,39 @@ def run_agent_stage(
         except AgentConfigurationError as error:
             raise RunnerError(str(error)) from error
         feedback = (
-            run_directory / state["recursive_scope_task"]
-            if state.get("recursive_scope_task")
+            run_directory / (state.get("provision_feedback") or state["recursive_scope_task"])
+            if state.get("provision_feedback") or state.get("recursive_scope_task")
             else None
         )
         submission_check_directory = runtime_workdir / "submission-check"
         submission_check_directory.mkdir()
         submission_check_socket = submission_check_directory / "validator.sock"
 
+        def save_case_diagnoses() -> None:
+            if require_case_diagnoses:
+                from .reasoning_structure_alignment import case_diagnoses
+                rows = case_diagnoses.validate(
+                    submission_check_directory / case_diagnoses.FILENAME, feedback,
+                    remaining_only=remaining_diagnoses_only,
+                    workspace=run_directory / "workspace",
+                )
+                atomic_json(agent_directory / case_diagnoses.FILENAME, rows)
+                if remaining_diagnoses_only:
+                    replay = case_diagnoses.latest_replay(feedback, run_directory / "workspace")
+                    atomic_json(agent_directory / "case_diagnoses_replay.json", {
+                        **replay,
+                        "report_sha256": sha256_file(agent_directory / case_diagnoses.FILENAME),
+                    })
+
         def check_submission() -> tuple[bool, str]:
             cleanup_clerk_artifacts(run_directory / "workspace")
+            if repair_mode in {"reasoning_structure_alignment", "baseline_final_answer_only"}:
+                from .validation import submissions
+                submissions.record(run_directory, config, run_directory / "workspace",
+                                   trigger="submission_check", agent_home=agent_home)
             try:
                 validate_workspace(run_directory / "input", run_directory / "workspace")
+                save_case_diagnoses()
                 mapping = load_requirement_outputs(
                     run_directory / "workspace", require_resolved=True
                 )
@@ -252,9 +311,15 @@ def run_agent_stage(
                 "All Catala blocks are reachable from the union of contracted outputs."
             )
 
-        def regenerate_scope_analysis() -> dict[str, Any]:
-            cleanup_clerk_artifacts(run_directory / "workspace")
-            return repair.regenerate_active_scope(run_directory, config, state)
+        commands = {}
+        if repair_mode in {"reasoning_structure_alignment", "baseline_final_answer_only"}:
+            if repair_mode == "reasoning_structure_alignment":
+                from .reasoning_structure_alignment import candidate_review as provision_candidate_review
+            else:
+                from .baselines.final_answer_only import candidate_review as provision_candidate_review
+            def replay_candidate() -> dict:
+                return provision_candidate_review.review(run_directory, config, agent_home=agent_home)
+            commands["replay_candidate"] = replay_candidate
 
         command = apptainer.invocation(
             config,
@@ -273,6 +338,8 @@ def run_agent_stage(
             "command": command,
             "forwarded_environment_names": config["agent"]["environment"],
             "prompt_sha256": sha256_file(prompt_path),
+            "progress_baseline": str(progress_baseline.relative_to(run_directory)),
+            "repair_scope": focus["id"] if focus else None,
         }
         atomic_json(agent_directory / "invocation.json", invocation)
         state.update(updated_at=utc_now())
@@ -289,9 +356,17 @@ def run_agent_stage(
                 )
                 progress = AgentProgress(
                     agent_directory / "stdout.jsonl",
-                    run_directory / "input",
+                    progress_baseline,
                     run_directory / "workspace",
+                    change_context="scope" if focus else "run",
+                    codex_home=agent_home if definition.name == "codex" else None,
                 )
+                def report_progress(elapsed_seconds: float) -> None:
+                    progress.report(elapsed_seconds)
+                    record_agent_usage(
+                        run_directory, config, agent_directory,
+                        elapsed=round(elapsed_seconds, 3), status="running",
+                    )
                 if progress_interval > 0:
                     print(
                         f"agent session started: {agent_directory}",
@@ -301,21 +376,33 @@ def run_agent_stage(
                 with apptainer.submission_check_service(
                     submission_check_socket,
                     check_submission,
-                    {"regenerate_scope_analysis": regenerate_scope_analysis},
+                    commands,
                 ):
                     exit_code, timed_out, elapsed = apptainer.execute(
                         command,
                         prompt,
                         agent_directory / "stdout.jsonl",
                         agent_directory / "stderr.log",
-                        int(config["runtime"]["timeout_seconds"]),
+                        config["runtime"].get("agent_timeout_seconds"),
                         apptainer.environment(config, submission_check=True),
-                        progress.report,
+                        report_progress,
                         progress_interval,
                     )
             except AgentConfigurationError as error:
                 raise RunnerError(str(error)) from error
         finally:
+            try:
+                save_case_diagnoses()
+            except RunnerError as diagnosis_error:
+                case_diagnosis_error = str(diagnosis_error)
+            if definition.name == "codex":
+                usage_tracking.capture_codex_usage(
+                    agent_home, agent_directory / "stdout.jsonl"
+                )
+            if repair_mode in {"reasoning_structure_alignment", "baseline_final_answer_only"}:
+                from .validation import submissions
+                submissions.record(run_directory, config, run_directory / "workspace",
+                                   trigger="agent_exit", agent_home=agent_home)
             record_agent_usage(
                 run_directory,
                 config,
@@ -342,6 +429,8 @@ def run_agent_stage(
     recursive_session = state.get("recursive_phase") == "scope"
     if (exit_code == 0 and not timed_out) or recursive_session:
         try:
+            if case_diagnosis_error:
+                raise RunnerError(case_diagnosis_error)
             integrity = validate_workspace(
                 run_directory / "input", run_directory / "workspace"
             )

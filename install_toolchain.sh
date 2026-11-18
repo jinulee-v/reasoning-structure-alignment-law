@@ -26,8 +26,11 @@
 #   bash install_toolchain.sh              # everything
 #   bash install_toolchain.sh cutecat      # just CUTECat
 #   bash install_toolchain.sh swipl,ocaml  # just those two
+#   bash install_toolchain.sh claude-code # just the native coding agent
 #
-# Stages: swipl, ocaml, catala, cutecat, bobcat-deps. Everything outside a stage (the
+# Stages: swipl, ocaml, catala, cutecat, bobcat-deps, claude-code.
+# The claude-code-only stage skips the OCaml bootstrap and final compiler checks.
+# Everything outside the other stages (the
 # micromamba download, `opam init`, the variables, the final checks) is cheap
 # and idempotent, and always runs.
 set -u
@@ -44,6 +47,7 @@ export MAMBA_ROOT_PREFIX="$T/mamba"
 SWIPL_VERSION=10.0.0
 OCAML_VERSION=4.14.2
 CATALA_VERSION=1.2.1
+CLAUDE_CODE_VERSION=2.1.311
 
 # CUTECat is not released: it is the `cutecat-rebase` branch of the Catala
 # compiler, whose `compiler/concolic/` adds a `catala concolic` subcommand.
@@ -75,6 +79,53 @@ want() {
 log() { printf '\n=== %s ===\n' "$*"; }
 skip() { printf '\n--- skipping %s (not in "%s") ---\n' "$*" "$STAGES"; }
 die() { printf '\nFAILED: %s\n' "$*" >&2; exit 1; }
+
+# ---- Claude Code: repository-local native binary --------------------------
+# Use the official installer's release manifest and checksum protocol without
+# writing to ~/.local or changing the user's shell configuration.
+install_claude_code() (
+    set -euo pipefail
+    case "$(uname -s):$(uname -m)" in
+        Linux:x86_64) claude_platform=linux-x64 ;;
+        Linux:aarch64|Linux:arm64) claude_platform=linux-arm64 ;;
+        *) echo "unsupported Claude Code platform" >&2; exit 1 ;;
+    esac
+    if ldd /bin/ls 2>&1 | grep -q musl; then
+        claude_platform="$claude_platform-musl"
+    fi
+    claude_dest="$T/claude-code/$CLAUDE_CODE_VERSION/$claude_platform"
+    mkdir -p "$claude_dest" "$T/bin"
+    if [ ! -x "$claude_dest/claude" ]; then
+        claude_download=$(mktemp -d "$T/claude-code/.download.XXXXXX")
+        trap 'rm -rf "$claude_download"' EXIT
+        claude_url="https://downloads.claude.ai/claude-code-releases/$CLAUDE_CODE_VERSION"
+        curl -fLsS --retry 3 "$claude_url/manifest.json" -o "$claude_download/manifest.json"
+        claude_checksum=$(python3 -c \
+            'import json,sys; print(json.load(open(sys.argv[1]))["platforms"][sys.argv[2]]["checksum"])' \
+            "$claude_download/manifest.json" "$claude_platform")
+        [[ "$claude_checksum" =~ ^[a-f0-9]{64}$ ]] || exit 1
+        curl -fLsS --retry 3 "$claude_url/$claude_platform/claude" -o "$claude_download/claude"
+        printf '%s  %s\n' "$claude_checksum" "$claude_download/claude" | sha256sum -c -
+        chmod 0755 "$claude_download/claude"
+        mv "$claude_download/claude" "$claude_dest/claude"
+        mv "$claude_download/manifest.json" "$claude_dest/manifest.json"
+    fi
+    if [ -e "$T/bin/claude" ] && [ ! -L "$T/bin/claude" ]; then
+        echo "refusing to replace non-symlink $T/bin/claude" >&2
+        exit 1
+    fi
+    ln -sfn "../claude-code/$CLAUDE_CODE_VERSION/$claude_platform/claude" "$T/bin/claude"
+    "$T/bin/claude" --version
+)
+
+if want claude-code; then
+    log "Claude Code $CLAUDE_CODE_VERSION"
+    install_claude_code || die "Claude Code installation"
+fi
+if [ "$STAGES" = claude-code ]; then
+    echo "Claude Code ready: $T/bin/claude"
+    exit 0
+fi
 
 # ---- micromamba ----------------------------------------------------------
 if [ ! -x "$MM" ]; then

@@ -42,7 +42,7 @@ def city_catala(c: str) -> str:
 
 
 def check_gazetteer() -> None:
-    """Every city the corpus names must be a case of `AirlineWorld.City`.
+    """Every city the corpus names must be a case of `Definitions.City`.
 
     The default spelling rule --- drop spaces and hyphens --- is right for
     twenty of the twenty-one multi-word cities and wrong for "Rio de Janeiro",
@@ -52,13 +52,13 @@ def check_gazetteer() -> None:
     than as the one-line emitter bug it is.  So the mapping is checked against
     the port's own declaration before anything is emitted.
     """
-    src = (paths.CATALA_PROJECT / "AirlineWorld.catala_en").read_text()
+    src = (paths.RAW_TEXT / "Definitions.catala_en").read_text()
     block = src.split("declaration enumeration City:", 1)[1].split("```", 1)[0]
     declared = set(re.findall(r"^\s*--\s*(\w+)", block, re.M))
     wrong = {c: city_catala(c) for c in CITY_ATOM_ALL if city_catala(c) not in declared}
     if wrong:
         raise RuntimeError(
-            "these cities do not name a case of AirlineWorld.City: "
+            "these cities do not name a case of Definitions.City: "
             + ", ".join(f"{k!r} -> {v}" for k, v in sorted(wrong.items())))
 
 

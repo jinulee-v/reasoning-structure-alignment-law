@@ -1,0 +1,13 @@
+# Concrete CoverUp replay must distinguish base and exception outcomes.
+
+```catala
+declaration scope CoverupException:
+  input enabled content boolean
+  output result content integer
+
+scope CoverupException:
+  definition result equals 0
+  exception definition result
+    under condition enabled
+    consequence equals 1
+```

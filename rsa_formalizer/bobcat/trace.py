@@ -9,21 +9,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-from bobcat_scripts.bobcatlib import run as bobcat_run
 from rsa_formalizer.stages import utils as exp
 
-DEFAULTS = {
-    "bobcat_timeout_seconds": 1800,
-    "bobcat_positive_hundred_money_inputs": True,
-    "bobcat_max_list_length": None,
-    "bobcat_representation_capacity": bobcat_run.DEFAULT_REPRESENTATION_CAPACITY,
-    "bobcat_solver_timeout_ms": None,
-    "bobcat_solver_timeout_max_ms": None,
-    "bobcat_objective_timeout_ms": None,
-    "llm_generated_tests_per_scope": 6,
-    "metamorphic_pairs_per_scope": 6,
-    "statute_source": "gold",
-}
 _SITE = re.compile(r"@([^@:=>/]+\.catala_[A-Za-z]+):(\d+):")
 _BLOCK_DETAILS = re.compile(r"<!-- rsa-block-id: ([^;]+);[^>]*provision-id: ([^;]+);")
 _DOCUMENT_ID = re.compile(r"<!--\s*rsa-document-id:\s*([^\s>]+)\s*-->")
@@ -40,80 +27,6 @@ REQUIREMENT_DESCRIPTIONS_FILE = "REQUIREMENT_DESCRIPTIONS.json"
 _LABELED_PROVISION = re.compile(r"^\[([^\]\n]+)\]", re.MULTILINE)
 REASONING_RESULT_FORMAT = "reasoning_with_json_answer_and_execution_tree"
 
-
-def effective_options(config: dict[str, Any]) -> dict[str, Any]:
-    options = {
-        **DEFAULTS,
-        **config.get("reasoning_structure_alignment", config.get("post_validation", {})),
-    }
-    if options["statute_source"] != "gold":
-        raise exp.RunnerError("only gold statute context is implemented")
-    options.pop("output_format", None)
-    if int(options["bobcat_timeout_seconds"]) <= 0:
-        raise exp.RunnerError("BOBCat timeout must be positive")
-    if (
-        options["bobcat_max_list_length"] is not None
-        and int(options["bobcat_max_list_length"]) < 0
-    ):
-        raise exp.RunnerError("BOBCat maximum list length must be nonnegative")
-    if int(options["bobcat_representation_capacity"]) < max(
-        1, int(options["bobcat_max_list_length"] or 0)
-    ):
-        raise exp.RunnerError(
-            "BOBCat representation capacity must cover the input-list bound"
-        )
-    for key in (
-        "bobcat_solver_timeout_ms",
-        "bobcat_solver_timeout_max_ms",
-        "bobcat_objective_timeout_ms",
-    ):
-        if options[key] is not None and int(options[key]) <= 0:
-            raise exp.RunnerError(f"{key} must be positive")
-    if (
-        isinstance(options["llm_generated_tests_per_scope"], bool)
-        or not isinstance(options["llm_generated_tests_per_scope"], int)
-        or options["llm_generated_tests_per_scope"] < 0
-    ):
-        raise exp.RunnerError(
-            "LLM-generated tests per scope must be a non-negative integer"
-        )
-    if (
-        isinstance(options["metamorphic_pairs_per_scope"], bool)
-        or not isinstance(options["metamorphic_pairs_per_scope"], int)
-        or options["metamorphic_pairs_per_scope"] < 0
-    ):
-        raise exp.RunnerError(
-            "metamorphic pairs per scope must be a non-negative integer"
-        )
-    if (
-        options["bobcat_solver_timeout_ms"] is not None
-        and options["bobcat_solver_timeout_max_ms"] is not None
-        and int(options["bobcat_solver_timeout_max_ms"])
-        < int(options["bobcat_solver_timeout_ms"])
-    ):
-        raise exp.RunnerError(
-            "BOBCat maximum solver timeout must cover its initial timeout"
-        )
-    return options
-
-
-def backfill_options(run_directory: Path, config: dict[str, Any]) -> dict[str, Any]:
-    # Persist newly introduced options for old and new runs alike.
-    options = effective_options(config)
-    changed = (
-        config.get("reasoning_structure_alignment") != options
-        or "post_validation" in config
-    )
-    if "provider" not in config.get("reasoning_trace", {}):
-        config["reasoning_trace"]["provider"] = config.get("agent", {}).get(
-            "provider", "openai"
-        )
-        changed = True
-    if changed:
-        config["reasoning_structure_alignment"] = options
-        config.pop("post_validation", None)
-        exp.atomic_json(run_directory / "config.json", config)
-    return options
 
 
 def scope_records(formats: dict[str, Any]) -> list[dict[str, Any]]:
@@ -692,6 +605,13 @@ def execution_tree_size(tree: list[dict[str, Any]]) -> int:
 
 
 def persist_execution_forests(root: Path, results: list[dict[str, Any]]) -> None:
+    if hasattr(results, "case_files"):
+        for field, filename in (("execution_tree", "execution_tree.json"),
+                                ("dynamic_slice_tree", "dynamic_slice_tree.json")):
+            exp.atomic_json(root / filename, {"schema_version": 3,
+                "storage": "per_case_files", "field": field,
+                "case_files": [path.name for path in results.case_files]})
+        return
     # Store full coverage and dependency-sliced execution-tree forests.
     for field, filename in (
         ("execution_tree", "execution_tree.json"),
@@ -754,6 +674,7 @@ def _code_blocks(source: Path) -> tuple[tuple[int, int, str], ...]:
             if marker:
                 blocks.append((start, number - 1, marker))
             start = None
+            marker = None
     return tuple(blocks)
 
 

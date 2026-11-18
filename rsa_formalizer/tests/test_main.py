@@ -8,12 +8,13 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 from unittest import mock
 
-from rsa_formalizer import runner
-from rsa_formalizer import main as cli_main
+from rsa_formalizer import pipeline
+from rsa_formalizer import main_initial as cli_main
 from rsa_formalizer.stages import validation as apply_nl_test
 from rsa_formalizer.stages import formalization
 from rsa_formalizer.stages.validation import verification as validation_verification
@@ -179,7 +180,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
     def arguments(self) -> argparse.Namespace:
         return argparse.Namespace(
             dataset=str(self.dataset),
-            run_id="test-run",
+            suffix="test-run",
             agent="mini-swe-agent",
             image="example/agent:test",
             agent_provider="openai",
@@ -219,7 +220,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         )
         self.assertIsNone(args.reasoning_trace_provider)
         self.assertIsNone(args.reasoning_trace_model)
-        self.assertEqual(args.extraction_provider, "openai")
+        self.assertEqual(args.extraction_provider, "codex")
         self.assertEqual(args.extraction_model, "gpt-6-luna")
 
     def test_run_defaults_reasoning_to_agent(self) -> None:
@@ -232,7 +233,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         oracle_tests.mkdir()
         (oracle_tests / "Case.catala_en").write_text("#[test]\n", encoding="utf-8")
         with mock.patch.object(run_state, "RUNS", self.root / "runs"):
-            run_directory = runner.create_run(args)
+            run_directory = run_state.create_run(args)
         self.assertTrue(legacy_file.is_file())
         self.assertFalse((run_directory / "input" / legacy_file.name).exists())
         self.assertFalse((run_directory / "workspace" / legacy_file.name).exists())
@@ -246,7 +247,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         self.assertEqual(
             config["information_extraction"],
             {
-                "provider": "openai",
+                "provider": "codex",
                 "model": "gpt-6-luna",
                 "corpora": ["original"],
                 "jobs": 8,
@@ -256,8 +257,8 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
     def test_agent_stage_is_durable_and_idempotent(self) -> None:
         runs = self.root / "runs"
         with mock.patch.object(run_state, "RUNS", runs):
-            run_directory = runner.create_run(self.arguments())
-            state = runner.resume_run(run_directory)
+            run_directory = run_state.create_run(self.arguments())
+            state = pipeline.resume_run(run_directory)
             self.assertEqual(state["next_stage"], "validation")
             self.assertEqual(state["status"], "agent_completed")
             self.assertIn("agent", state["completed_stages"])
@@ -316,11 +317,11 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         runs = self.root / "rejected-runs"
 
         with mock.patch.object(run_state, "RUNS", runs):
-            run_directory = runner.create_run(self.arguments())
+            run_directory = run_state.create_run(self.arguments())
             with self.assertRaisesRegex(
                 main.RunnerError, "translation not happening for all provisions"
             ):
-                runner.resume_run(run_directory)
+                pipeline.resume_run(run_directory)
 
         state = main.load_json(run_directory / "state.json")
         self.assertNotIn("agent", state["completed_stages"])
@@ -414,7 +415,7 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
         )
         self.assertRegex(
             run_id,
-            r"^\d{8}-\d{4}-codex-openai-gpt-5-deepinfra-model-x-dataset-[0-9a-f]{8}$",
+            r"^\d{8}-\d{4}-initial-openai-gpt-5-dataset$",
         )
 
     def test_prompt_documents_the_offline_catala_workflow(self) -> None:
@@ -474,7 +475,8 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
 
     def test_sara_prompt_uses_the_predeclared_api_contract(self) -> None:
         prompt = formalization_prompt("sara", False)
-        self.assertNotIn("clerk test .", prompt)
+        self.assertIn("clerk test .", prompt)
+        self.assertIn("clerk build ocaml/Api.cmo", prompt)
         self.assertIn("protected evaluator tests run during verification", prompt)
         self.assertIn("`Api.catala_en` as the evaluator-facing contract", prompt)
         self.assertIn("`Definitions.catala_en` is exclusively", prompt)
@@ -489,7 +491,8 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
 
     def test_airline_prompt_uses_the_predeclared_api_contract(self) -> None:
         prompt = formalization_prompt("airline", False)
-        self.assertNotIn("clerk test .", prompt)
+        self.assertIn("clerk test .", prompt)
+        self.assertIn("clerk build ocaml/Api.cmo", prompt)
         self.assertIn("protected evaluator tests run during verification", prompt)
         self.assertIn("`Api.catala_en` as the evaluator-facing contract", prompt)
         self.assertIn("Do not rename or remove those scopes or outputs", prompt)
@@ -733,6 +736,33 @@ print(json.dumps({"type": "turn.completed", "usage": {"input_tokens": 120, "outp
                 "message": "translation not happening for all provisions",
             },
         )
+
+    def test_submission_check_service_survives_disconnected_client(self) -> None:
+        socket_path = self.root / "submission-service/validator.sock"
+        started, release = threading.Event(), threading.Event()
+
+        def check():
+            started.set()
+            if not release.wait(5):
+                raise RuntimeError("test callback was not released")
+            return True, "accepted"
+
+        with apptainer.submission_check_service(socket_path, check):
+            try:
+                with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                    client.connect(str(socket_path))
+                    client.sendall(b"check\n")
+                    self.assertTrue(started.wait(5))
+                # The first client closed before the callback could respond.
+                release.set()
+                with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                    client.settimeout(5)
+                    client.connect(str(socket_path))
+                    client.sendall(b"check\n")
+                    response = json.loads(client.recv(4096))
+                self.assertEqual(response, {"accepted": True, "message": "accepted"})
+            finally:
+                release.set()
 
     def test_environment_exposes_sandbox_python_and_ninja(self) -> None:
         config = {
@@ -1508,7 +1538,7 @@ print(json.dumps({'target': 'Run', 'path': 'program.catala_en', 'inputs': {},
         state = {"recursive_phase": "initial", "completed_stages": ["agent"]}
         config = {
             "run_id": "run",
-            "dataset": {"name": "example", "source": str(source)},
+            "dataset": {"name": "example", "source": str(source), "tests_source": str(tests)},
             "runtime": {"timeout_seconds": 30},
         }
         report = json.dumps({
@@ -1547,7 +1577,7 @@ print(json.dumps({'target': 'Run', 'path': 'program.catala_en', 'inputs': {},
             self.assertEqual(execute.call_count, 1)
             self.assertTrue(apply_nl_test.run_verification_stage(run, config, state))
             self.assertEqual(execute.call_count, 1)
-        self.assertEqual(state["next_stage"], "reasoning_structure_alignment")
+            self.assertEqual(state["next_stage"], "finished")
 
     def test_native_catala_verification_requires_cases(self) -> None:
         source = self.root / "empty-dataset"
@@ -1555,7 +1585,7 @@ print(json.dumps({'target': 'Run', 'path': 'program.catala_en', 'inputs': {},
         with self.assertRaisesRegex(main.RunnerError, "no Catala test cases"):
             apply_nl_test.run_verification_stage(
                 self.root / "run",
-                {"dataset": {"name": "example", "source": str(source)}},
+                {"dataset": {"name": "example", "source": str(source), "tests_source": str(source / "tests_catala")}},
                 {"recursive_phase": "initial"},
             )
 

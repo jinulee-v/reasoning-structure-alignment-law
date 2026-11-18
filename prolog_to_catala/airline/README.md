@@ -1,5 +1,20 @@
 # DeonticBench *airline* → Catala port
 
+Regenerate the protected native Catala suite used by the RSA formalizer with:
+
+```bash
+.venv/bin/python -m prolog_to_catala.airline.export_catala_tests
+```
+
+This writes all 300 original cases to
+`data/catala_gold/airline/tests_catala/AirlineCases.catala_en`, targeting
+`Api.TotalCost.total_cost`. Inputs use the existing corpus-text adapter because
+the per-case Prolog fact schemas differ. Generation executes each original
+Prolog program, checks its answer against the corpus label, and checks the
+normalized itinerary against the shared Prolog oracle before emitting a test.
+It does not consult a candidate Catala implementation. Use `--check` to verify
+that the checked-in suite is current without rewriting it.
+
 Translating DeonticBench's [airline](https://huggingface.co/datasets/gydou/DeonticBench)
 domain (Dou et al. 2026) — the published American Airlines checked-bag policy,
 with 300 cases — into Catala, and validating it differentially against the

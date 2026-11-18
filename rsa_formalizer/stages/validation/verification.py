@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import json
 import re
-import shutil
 import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any
+
+from rsa_formalizer.bobcat.compiled_json import MONEY_TOLERANCE
 
 from ..utils import (
     VERIFICATION_SCHEMA_VERSION,
@@ -18,6 +19,7 @@ from ..utils import (
     extract_input_formats,
     load_json,
     publish_stage_snapshot,
+    resolve_gold_dataset,
     stage_directory,
     toolchain_environment,
     tree_hash,
@@ -26,6 +28,31 @@ from ..utils import (
 )
 
 TEST_SCOPE = re.compile(r"(?m)^#\[test\]\s*\ndeclaration scope (\w+):")
+MONEY_ASSERTION = re.compile(
+    r"(?m)^(?P<indent>[ \t]*)assertion[ \t]+"
+    r"(?P<actual>\w+(?:\.\w+)*)[ \t]+=[ \t]+"
+    r"(?P<expected>\(money[ \t]+of[ \t]+-?\d+(?:\.\d+)?\))"
+    r"(?P<suffix>[ \t]*(?:#[^\n]*)?)$"
+)
+
+
+def money_assertions_with_tolerance(source: str) -> str:
+    """Stage generated money-literal assertions with the JSON evaluator's policy.
+
+    Other assertions retain their exact semantics. The protected source tests
+    stay unchanged; the tolerant assertions are executed by Catala itself.
+    """
+    tolerance = f"(money of {MONEY_TOLERANCE})"
+
+    def replace(match: re.Match[str]) -> str:
+        actual, expected = match["actual"], match["expected"]
+        return (
+            f'{match["indent"]}assertion '
+            f"({actual} > {expected} - {tolerance}) and "
+            f"({actual} < {expected} + {tolerance}){match['suffix']}"
+        )
+
+    return MONEY_ASSERTION.sub(replace, source)
 
 
 def validate_verification_result(path: Path) -> dict[str, Any]:
@@ -62,7 +89,8 @@ def validate_verification_result(path: Path) -> dict[str, Any]:
 
 def verification_fingerprint(snapshot: Path, tests: Path) -> dict[str, Any]:
     return {
-        "runner": "native-catala-v1",
+        "runner": "native-catala-v2",
+        "money_tolerance": {"absolute": str(MONEY_TOLERANCE), "exclusive": True},
         "workspace": tree_hash(snapshot),
         "catala_tests": tree_hash(tests),
     }
@@ -73,7 +101,7 @@ def commit_verification_result(run_directory: Path, state: dict[str, Any], resul
         if stage not in state["completed_stages"]:
             state["completed_stages"].append(stage)
     state.update(
-        next_stage="reasoning_structure_alignment",
+        next_stage="finished",
         status="verified",
         verification_summary=result["summary"],
         updated_at=utc_now(),
@@ -137,11 +165,20 @@ def _test_records(
 def run_verification_stage(
     run_directory: Path, config: dict[str, Any], state: dict[str, Any]
 ) -> bool:
-    source = Path(config["dataset"]["source"]).resolve()
-    tests = source / "tests_catala"
+    gold = resolve_gold_dataset(config["dataset"]["name"])
+    explicit_tests = config["dataset"].get("tests_source")
+    if explicit_tests:
+        tests = Path(explicit_tests).resolve()
+    elif gold is not None:
+        tests = gold / "tests_catala"
+    else:
+        raise RunnerError("protected Catala tests require a gold dataset or explicit tests_source")
     files = sorted(tests.glob("*.catala_*")) if tests.is_dir() else []
     if not files:
         raise RunnerError(f"dataset has no Catala test cases: {tests}")
+    expected_suite_hash = config.get("validation_suite_sha256")
+    if expected_suite_hash and tree_hash(tests) != expected_suite_hash:
+        raise RunnerError("protected Catala suite changed after the experiment fork")
     expected = _declared_tests(files)
     stage_root = stage_directory(run_directory, state)
     snapshot = publish_stage_snapshot(run_directory, state)
@@ -177,12 +214,15 @@ def run_verification_stage(
             destination = candidate / path.name
             if destination.exists():
                 raise RunnerError(f"Catala test collides with candidate file: {path.name}")
-            shutil.copy2(path, destination)
+            destination.write_text(
+                money_assertions_with_tolerance(path.read_text(encoding="utf-8")),
+                encoding="utf-8",
+            )
         command = ["clerk", "test", *[path.name for path in files], "--json", "--color=never"]
         try:
             completed = subprocess.run(
                 command, cwd=candidate, env=environment, text=True,
-                capture_output=True, timeout=timeout,
+                stdin=subprocess.DEVNULL, capture_output=True, timeout=timeout,
             )
             diagnostic = (completed.stdout + "\n" + completed.stderr).strip()
             report = _json_report(completed.stdout)
@@ -198,6 +238,7 @@ def run_verification_stage(
     denominator = counts["pass"] + counts["fail"]
     result = {
         "schema_version": VERIFICATION_SCHEMA_VERSION,
+        "money_tolerance": {"absolute": str(MONEY_TOLERANCE), "exclusive": True},
         "cases": records,
         "summary": {
             "total": len(records), "passed": counts["pass"],

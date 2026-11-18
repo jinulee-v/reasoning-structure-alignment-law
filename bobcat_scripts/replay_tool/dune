@@ -1,0 +1,5 @@
+(executable
+ (name catala_bobcat_replay)
+ (modes plugin)
+ (flags (-linkall))
+ (libraries catala.shared_ast catala.driver))

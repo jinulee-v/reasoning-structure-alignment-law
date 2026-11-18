@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -26,7 +27,8 @@ def api_counts(usage: dict[str, Any]) -> dict[str, Any]:
     cached = (
         usage.get("input_tokens_details") or usage.get("prompt_tokens_details") or {}
     ).get("cached_tokens", usage.get("cache_read_input_tokens"))
-    written = usage.get("cache_creation_input_tokens")
+    written = (usage.get("input_tokens_details") or {}).get(
+        "cache_write_tokens", usage.get("cache_creation_input_tokens"))
     # Anthropic separates cached tokens from its base input count.
     if inputs is not None and (
         "cache_read_input_tokens" in usage or "cache_creation_input_tokens" in usage
@@ -177,6 +179,18 @@ def api_call(
         {"usage_id": usage_id, "accounting": accounting, "response": response},
     )
     record(run, usage_id, accounting)
+    if accounting.get("total_tokens") is not None:
+        # Per-request totals include cached input once and reasoning within output.
+        # Aggregate the upserted ledger so live session updates are not re-added.
+        rows = [json.loads(line) for line in (run / "usage.jsonl").read_text().splitlines() if line.strip()]
+        known = sum(row.get("total_tokens") or 0 for row in rows)
+        print(
+            f"[usage] stage={context.get('stage', 'api')} case={context.get('case_id', '-')} "
+            f"request_tokens={accounting['total_tokens']:,} "
+            f"(in={accounting['input_tokens']:,}, cached={accounting.get('cached_input_tokens') or 0:,}, "
+            f"out={accounting['output_tokens']:,}) recorded_run_tokens={known:,}",
+            file=sys.stderr, flush=True,
+        )
     return response
 
 
@@ -232,10 +246,67 @@ def find_usage_objects(value: Any) -> Iterator[dict[str, Any]]:
             yield from find_usage_objects(nested)
 
 
+def capture_codex_usage(agent_home: Path, stdout_path: Path) -> dict[str, Any] | None:
+    """Persist this thread's latest cumulative counters, never sum snapshots."""
+    from rsa_formalizer.stages.utils.common import atomic_json
+
+    if not stdout_path.is_file():
+        return None
+    thread_id = None
+    with stdout_path.open(encoding="utf-8", errors="replace") as stream:
+        for line in stream:
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(event, dict) and event.get("type") == "thread.started":
+                thread_id = event.get("thread_id")
+                break
+    if not isinstance(thread_id, str) or not re.fullmatch(r"[a-zA-Z0-9_-]+", thread_id):
+        return None
+    latest = None
+    sessions = agent_home / ".codex/sessions"
+    for path in sorted(sessions.glob(f"**/*{thread_id}*.jsonl")):
+        with path.open(encoding="utf-8", errors="replace") as stream:
+            for line in stream:
+                if '"token_count"' not in line:
+                    continue
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                payload = event.get("payload") or {}
+                if payload.get("type") != "token_count":
+                    continue
+                total = (payload.get("info") or {}).get("total_token_usage")
+                if isinstance(total, dict) and all(
+                    isinstance(total.get(key), int)
+                    for key in ("input_tokens", "output_tokens", "total_tokens")
+                ):
+                    latest = total
+    if latest is None:
+        return None
+    counts = api_counts({
+        "input_tokens": latest.get("input_tokens"),
+        "output_tokens": latest.get("output_tokens"),
+        "total_tokens": latest.get("total_tokens"),
+        "input_tokens_details": {"cached_tokens": latest.get("cached_input_tokens")},
+        "output_tokens_details": {"reasoning_tokens": latest.get("reasoning_output_tokens")},
+    })
+    counts.update(
+        cache_write_tokens=latest.get("cache_write_input_tokens"),
+        count_source="provider-reported-partial",
+        usage_source="codex-session-total-token-usage",
+    )
+    atomic_json(stdout_path.with_name("codex_token_usage.json"), counts)
+    return counts
+
+
 def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
     candidates: list[dict[str, Any]] = []
     claude_messages: dict[str, dict[str, Any]] = {}
     final_usage = False
+    final_candidates: list[dict[str, Any]] = []
     for raw_line in stdout_path.read_text(
         encoding="utf-8", errors="replace"
     ).splitlines():
@@ -249,6 +320,7 @@ def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
             event.get("usage"), dict
         ):
             final_usage = True
+            final_candidates.append(event["usage"])
         message = event.get("message")
         if (
             event.get("type") == "assistant"
@@ -283,6 +355,10 @@ def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
             ),
             "count_source": "provider-reported-partial",
         }
+
+    if final_candidates:
+        # Final aggregate usage is authoritative over per-model breakdowns.
+        candidates = [final_candidates[-1]]
 
     if candidates:
 
@@ -335,6 +411,13 @@ def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
                 0,
                 counts["input_tokens"] - (counts["cached_input_tokens"] or 0),
             )
+        persisted = stdout_path.with_name("codex_token_usage.json")
+        if persisted.is_file():
+            partial = json.loads(persisted.read_text(encoding="utf-8"))
+            if all(counts[key] == partial.get(key) for key in ("input_tokens", "output_tokens")):
+                for key in ("reasoning_tokens", "cache_write_tokens"):
+                    if counts[key] is None:
+                        counts[key] = partial.get(key)
         return {
             **counts,
             "uncached_input_tokens": uncached_input,
@@ -343,6 +426,10 @@ def extract_usage(stdout_path: Path, prompt: str) -> dict[str, Any]:
             and counts["output_tokens"] is not None
             else "unavailable",
         }
+
+    persisted = stdout_path.with_name("codex_token_usage.json")
+    if persisted.is_file():
+        return json.loads(persisted.read_text(encoding="utf-8"))
 
     # Agent logs do not expose the complete prompt/tool context.
     return {
@@ -361,11 +448,15 @@ class AgentProgress:
     # Incrementally summarize a coding agent's JSONL stream and workspace.
 
     def __init__(
-        self, stdout_path: Path, input_directory: Path, workspace: Path
+        self, stdout_path: Path, input_directory: Path, workspace: Path,
+        *, codex_home: Path | None = None, change_context: str = "run",
     ) -> None:
         self.stdout_path = stdout_path
         self.input_directory = input_directory
         self.workspace = workspace
+        self.codex_home = codex_home
+        self.change_context = change_context
+        self.codex_usage: dict[str, Any] | None = None
         self.offset = 0
         self.partial = b""
         self.tool_ids: set[str] = set()
@@ -444,7 +535,7 @@ class AgentProgress:
                 usage, "cached_input_tokens", "cache_read_input_tokens"
             )
             # Claude's result usage separates cache reads/creation from base input; Codex reports cached tokens as a subset of input.
-            if "cache_creation_input_tokens" in usage:
+            if "cache_creation_input_tokens" in usage or "cache_read_input_tokens" in usage:
                 input_tokens += cached + self._number(
                     usage, "cache_creation_input_tokens"
                 )
@@ -458,6 +549,8 @@ class AgentProgress:
             )
 
     def refresh(self) -> None:
+        if self.codex_home is not None:
+            self.codex_usage = capture_codex_usage(self.codex_home, self.stdout_path)
         try:
             with self.stdout_path.open("rb") as stream:
                 stream.seek(self.offset)
@@ -488,6 +581,10 @@ class AgentProgress:
         if self.claude_messages:
             columns = zip(*self.claude_messages.values())
             return tuple(sum(column) for column in columns)  # type: ignore[return-value]
+        if self.codex_usage is not None:
+            keys = ("input_tokens", "cached_input_tokens", "output_tokens", "total_tokens")
+            if all(self.codex_usage.get(key) is not None for key in keys):
+                return tuple(self.codex_usage[key] for key in keys)
         return None
 
     def report(self, elapsed: float) -> None:
@@ -507,6 +604,7 @@ class AgentProgress:
                 f"catala={fences['filled']}/{fences['total']} filled, "
                 f"{fences['valid']}/{fences['total']} code-valid, "
                 f"{fences['changed']} changed"
+                + (" this scope" if self.change_context == "scope" else "")
             )
         except (OSError, RunnerError):
             # The agent can be between writes when this snapshot is taken.

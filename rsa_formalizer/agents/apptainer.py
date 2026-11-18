@@ -32,6 +32,9 @@ SUBMISSION_CHECK_HELPER_SOURCE = (
 REGENERATE_ANALYSIS_HELPER_SOURCE = (
     Path(__file__).resolve().parents[1] / "regenerate_scope_analysis.py"
 )
+REPLAY_CANDIDATE_HELPER_SOURCE = (
+    Path(__file__).resolve().parents[1] / "utils" / "replay_candidate.py"
+)
 MINI_SWE_AGENT_HELPER_SOURCE = Path(__file__).with_name("run_mini_swe_agent.py")
 SUBMISSION_CHECK_DIRECTORY_MOUNT = "/rsa/submission-check"
 SUBMISSION_CHECK_SOCKET_MOUNT = f"{SUBMISSION_CHECK_DIRECTORY_MOUNT}/validator.sock"
@@ -99,6 +102,14 @@ def configurations(
         and agent.get("prefer_host_binary", True)
     ):
         discovered = shutil.which(agent["command"][0])
+        if discovered is None:
+            local_binary = (
+                Path(__file__).resolve().parents[2]
+                / ".toolchain/bin"
+                / agent["command"][0]
+            )
+            if local_binary.is_file() and os.access(local_binary, os.X_OK):
+                discovered = str(local_binary)
         binary = Path(discovered) if discovered else None
     binary = binary.expanduser().resolve() if binary else None
     toolchain = (
@@ -176,6 +187,8 @@ def invocation(
         f"{SUBMISSION_CHECK_HELPER_SOURCE}:{SUBMISSION_CHECK_HELPER_MOUNT}:ro",
         "--bind",
         f"{REGENERATE_ANALYSIS_HELPER_SOURCE}:{REGENERATE_ANALYSIS_HELPER_MOUNT}:ro",
+        "--bind",
+        f"{REPLAY_CANDIDATE_HELPER_SOURCE}:/rsa/replay_candidate.py:ro",
         "--bind",
         f"{MINI_SWE_AGENT_HELPER_SOURCE}:{MINI_SWE_AGENT_HELPER_MOUNT}:ro",
         "--bind",
@@ -332,7 +345,10 @@ def submission_check_service(
                         "accepted": False,
                         "message": f"service command failed: {type(error).__name__}: {error}",
                     }
-                connection.sendall((json.dumps(response) + "\n").encode("utf-8"))
+                # The agent may time out or cancel a long regeneration request.
+                # Its disconnected socket must not kill the shared check service.
+                with contextlib.suppress(BrokenPipeError, ConnectionResetError):
+                    connection.sendall((json.dumps(response) + "\n").encode("utf-8"))
 
     worker = threading.Thread(target=serve, daemon=True)
     worker.start()
@@ -364,7 +380,7 @@ def execute(
     prompt: str,
     stdout_path: Path,
     stderr_path: Path,
-    timeout: int,
+    timeout: int | None,
     process_environment: dict[str, str],
     progress: Callable[[float], None] | None = None,
     progress_interval: float = 30.0,

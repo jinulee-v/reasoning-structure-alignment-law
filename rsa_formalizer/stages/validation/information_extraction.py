@@ -18,6 +18,7 @@ from jsonschema import Draft202012Validator
 
 from rsa_formalizer.stages import utils as exp
 from rsa_formalizer.stages.utils import usage as usage_tracking
+from rsa_formalizer.stages.utils import subscription_api
 from rsa_formalizer.bobcat.compiled_json import (
     build_bridges,
     compiled_path,
@@ -86,41 +87,31 @@ def natural_case(dataset: str, row: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def _call_openai(
+def _call_model(
     settings: dict[str, Any],
     prompt: str,
     schema: dict[str, Any],
     *,
     name: str,
 ) -> dict[str, Any]:
-    from openai import OpenAI
-
-    provider = settings.get("provider", "openai").lower()
-    if provider != "openai":
+    provider = settings.get("provider", "codex").lower()
+    strict_schema = _openai_schema(schema)
+    if provider in {"openai", "codex"}:
+        raw = subscription_api.codex_response({
+            "model": settings["model"], "input": prompt,
+            "text": {"format": {"type": "json_schema", "name": name,
+                                "strict": True, "schema": strict_schema}},
+        }, settings)
+        output = subscription_api.output_text(raw)
+    elif provider in {"anthropic", "claude-subscription"}:
+        raw = subscription_api.claude_response(settings, prompt, strict_schema)
+        output = "".join(block.get("text", "") for block in raw.get("content", [])
+                         if block.get("type") == "text")
+    else:
         raise exp.RunnerError(f"unsupported extraction provider: {provider!r}")
-    key_name = settings.get("api_key_env", "OPENAI_API_KEY")
-    key = os.environ.get(key_name)
-    if not key:
-        raise exp.RunnerError(
-            f"extraction API key environment variable is missing: {key_name}"
-        )
-    client = OpenAI(api_key=key, base_url=settings.get("base_url"))
-    response = client.responses.create(
-        model=settings["model"],
-        input=prompt,
-        text={
-            "format": {
-                "type": "json_schema",
-                "name": name,
-                "strict": True,
-                "schema": _openai_schema(schema),
-            }
-        },
-    )
-    raw = response.model_dump(mode="json")
     # Preserve the response/usage even when structured output is malformed.
     try:
-        parsed, parse_error = json.loads(response.output_text), None
+        parsed, parse_error = json.loads(output), None
     except (ValueError, TypeError) as error:
         parsed, parse_error = None, str(error)
     return {
@@ -455,7 +446,7 @@ def extract(
                 run_directory,
                 {**_usage_context(config, state, "input"), "case_id": identifier},
                 fingerprint + exp.sha256_bytes(prompt.encode()),
-                lambda: _call_openai(
+                lambda: _call_model(
                     settings,
                     prompt,
                     scope["input_schema"],

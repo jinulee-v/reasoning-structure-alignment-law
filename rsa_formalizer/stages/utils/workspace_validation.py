@@ -55,6 +55,10 @@ RSA_BLOCK_ID = re.compile(rb"<!--[ \t]*rsa-block-id:[ \t]*([^;>]+)[ \t]*;")
 MODULE_DECLARATION = re.compile(
     r"(?m)^[ \t]*>[ \t]*Module[ \t]+([^\s]+)[ \t]*$"
 )
+CATALA_IMPORT = re.compile(
+    rb">[ \t]*Using[ \t]+[A-Za-z_][A-Za-z_0-9]*[ \t]+as[ \t]+"
+    rb"[A-Za-z_][A-Za-z_0-9]*[ \t]*"
+)
 DECLARATION_SYMBOL = re.compile(
     r"^[ \t]*(?:#[^\n]*\n[ \t]*)*(?:declaration|déclaration)[ \t]+"
     r"(?:(?:scope|structure|enumeration|champ[ \t]+d'application|"
@@ -98,6 +102,24 @@ def _module_name(source: Path) -> str | None:
         source.read_text(encoding="utf-8", errors="replace")
     )
     return match.group(1) if match else None
+
+
+def _skeleton_without_added_imports(baseline: bytes, candidate: bytes) -> bytes:
+    """Permit new Catala module imports in the header, preserving all law text."""
+    header = baseline.split(b"```catala", 1)[0]
+    original = {line.strip() for line in header.splitlines()
+                if CATALA_IMPORT.fullmatch(line.strip())}
+    lines = candidate.splitlines(keepends=True)
+    before_fence = True
+    retained = []
+    for line in lines:
+        if before_fence and line.startswith(b"```catala"):
+            before_fence = False
+        if (before_fence and CATALA_IMPORT.fullmatch(line.strip())
+                and line.strip() not in original):
+            continue
+        retained.append(line)
+    return b"".join(retained)
 
 
 def _qualified_symbol_matches_module(
@@ -673,7 +695,9 @@ def validate_workspace(input_directory: Path, workspace: Path) -> dict[str, Any]
             candidate = parse_fenced_document(candidate_path)
             if normalize_protected_whitespace(
                 baseline.skeleton
-            ) != normalize_protected_whitespace(candidate.skeleton):
+            ) != normalize_protected_whitespace(
+                _skeleton_without_added_imports(baseline.skeleton, candidate.skeleton)
+            ):
                 raise RunnerError(
                     f"agent changed statute prose, RSA annotations, or fences in {relative}"
                 )

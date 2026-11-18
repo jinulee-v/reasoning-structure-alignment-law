@@ -6,10 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from rsa_formalizer.stages import utils as exp
-from rsa_formalizer.stages.reasoning_structure_alignment.generate_llm_trace import (
-    parse_final_answer,
-)
-from . import compiled_json
+from . import compiled_json, computation_graph
 from .trace import (
     compare_provision_ids,
     execution_blocks,
@@ -27,6 +24,8 @@ def compare(
     symbolic: list[dict[str, Any]],
     natural: list[dict[str, Any]],
 ) -> dict[str, Any]:
+    from rsa_formalizer.stages.reasoning_structure_alignment.generate_llm_trace import parse_final_answer
+
     root = exp.stage_directory(run_directory, state) / "tests_bobcat_comparison"
     root.mkdir(parents=True, exist_ok=True)
     by_id = {record["id"]: record for record in natural}
@@ -50,6 +49,7 @@ def compare(
         if scope_counts[item["scope"]] == 1
     }
     records = []
+    graph_source = None
     for formal in symbolic:
         response = by_id.get(formal["id"], {})
         final_answer, parse_error = parse_final_answer(response.get("output_text"))
@@ -113,11 +113,13 @@ def compare(
         catala_slice_statutes = execution_statute_tree(
             snapshot, formal.get("dynamic_slice_tree", [])
         )
-        llm_execution_tree = response.get("execution_tree")
-        provision_alignment = compare_provision_ids(
+        graph_record = response.get("computation_graph")
+        graph_only = graph_record is not None and formal.get("case_origin") == "provision"
+        llm_execution_tree = None if graph_only else response.get("execution_tree")
+        provision_alignment = (None if graph_only else compare_provision_ids(
             statute_tree_ids(catala_slice_statutes),
             reasoning_tree_provision_ids(llm_execution_tree),
-        )
+        ))
         generated_reasoning_tree = formal.get("generated_reasoning_tree")
         generation_provision_alignment = (
             compare_provision_ids(
@@ -127,6 +129,21 @@ def compare(
             if isinstance(generated_reasoning_tree, dict)
             else None
         )
+        graph_alignment = None
+        if graph_record is not None:
+            graph_alignment = {"status": graph_record.get("status"), "error": graph_record.get("error")}
+            if code_error:
+                graph_alignment = {"status": "execution_error", "error": str(code_error)}
+            elif graph_record.get("status") == "complete":
+                try:
+                    if graph_source is None:
+                        graph_source = computation_graph.source_catalog(snapshot)
+                    prepared = computation_graph.prepare(formal.get("execution_tree", []), snapshot,
+                        formal.get("inputs"), formal.get("dynamic_slice_tree"), graph_source)
+                    graph_alignment = computation_graph.compare(prepared, graph_record["graph"],
+                        response.get("output_text") or "", graph_record["catalog"])
+                except (ValueError, KeyError, TypeError) as error:
+                    graph_alignment = {"status": "comparison_error", "error": f"{type(error).__name__}: {error}"}
         records.append(
             {
                 "id": formal["id"],
@@ -163,16 +180,21 @@ def compare(
                 "catala_dynamic_slice_tree": catala_slice_statutes,
                 "llm_reasoning_trace": response.get("output_text"),
                 "llm_execution_tree": llm_execution_tree,
-                "llm_execution_tree_extraction_error": response.get(
+                "llm_execution_tree_extraction_error": (None if graph_only else response.get(
                     "execution_tree_extraction_error"
-                ),
+                )),
                 "provision_alignment": provision_alignment,
+                "computation_graph_alignment": graph_alignment,
                 "llm_final_answer": final_answer,
                 "final_answer_parse_error": parse_error,
                 "final_answer_aligned": aligned,
             }
         )
     summary = {
+        "computation_graphs_compared": sum((r.get("computation_graph_alignment") or {}).get("status") == "compared" for r in records),
+        "computation_value_mismatch_cases": sum(bool((r.get("computation_graph_alignment") or {}).get("value_mismatches")) for r in records),
+        "computation_attribution_difference_cases": sum(bool((r.get("computation_graph_alignment") or {}).get("provision_attribution_differences")) for r in records),
+        "computation_graph_diagnostics": sum(r.get("computation_graph_alignment") is not None and r["computation_graph_alignment"].get("status") != "compared" for r in records),
         "total": len(records),
         "llm_traces_generated": sum(
             not row["llm_reasoning_error"]
